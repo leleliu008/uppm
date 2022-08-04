@@ -1,0 +1,39 @@
+name: alpinelinux
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  alpinelinux:
+    strategy:
+      fail-fast: false
+      matrix:
+        tag: ['3.15','3.14','3.12','3.13']
+
+    runs-on: ubuntu-latest
+
+    container: alpine:${{ matrix.tag }}
+
+    steps:
+      - run: apk add cmake ninja gcc libc-dev tree curl openssl libgit2 libarchive libyaml
+
+      - uses: actions/checkout@main
+
+      - run:  cmake -S . -B   build.d -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_COLOR_MAKEFILE=ON -DCMAKE_VERBOSE_MAKEFILE=ON -G Ninja
+      - run:  cmake --build   build.d
+      - run:  cmake --install build.d
+
+      - run:  tree output
+
+      - run:  ./output/bin/uppm --help
+      - run:  ./output/bin/uppm --version
+      - run:  ./output/bin/uppm env
+      - run:  ./output/bin/uppm update
+      - run:  ./output/bin/uppm search    zip
+      - run:  ./output/bin/uppm info      unzip
+      - run:  ./output/bin/uppm install   unzip
+      - run:  ./output/bin/uppm tree      unzip
+      - run:  ./output/bin/uppm uninstall unzip
