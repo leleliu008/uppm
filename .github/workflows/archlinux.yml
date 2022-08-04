@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@main
 
       - run:  cmake --version
-      - run:  cmake -S . -B   build.d -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_COLOR_MAKEFILE=ON -DCMAKE_VERBOSE_MAKEFILE=ON
+      - run:  cmake -S . -B   build.d -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_COLOR_MAKEFILE=ON -DCMAKE_VERBOSE_MAKEFILE=ON -G Ninja
       - run:  cmake --build   build.d
       - run:  cmake --install build.d
       - run:  tree output
