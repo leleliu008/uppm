@@ -4,22 +4,26 @@
 #include "core/fs.h"
 #include "uppm.h"
 
+UPPMFormulaRepo* uppm_formula_repo_default_new(char * userHomeDir, size_t userHomeDirLength) {
+    char * formulaRepoPath = (char*)calloc(userHomeDirLength + 23, sizeof(char));
+    sprintf(formulaRepoPath, "%s/.uppm/repos.d/offical", userHomeDir);
+
+    UPPMFormulaRepo * formulaRepo = (UPPMFormulaRepo*)calloc(1, sizeof(UPPMFormulaRepo));
+    formulaRepo->path = formulaRepoPath;
+    formulaRepo->name = strdup("offical");
+    formulaRepo->url  = strdup("https://github.com/leleliu008/uppm-formula-repository-linux-x86_64.git");
+
+    return formulaRepo;
+}
+
 int uppm_formula_repo_list_new(UPPMFormulaRepoList * * out) {
     char * userHomeDir = getenv("HOME");
+
     if (userHomeDir == NULL || strcmp(userHomeDir, "") == 0) {
         return UPPM_ENV_HOME_NOT_SET;
     }
 
     size_t userHomeDirLength = strlen(userHomeDir);
-
-    size_t  uppmHomeDirLength = userHomeDirLength + 7;
-    char    uppmHomeDir[uppmHomeDirLength];
-    memset (uppmHomeDir, 0, uppmHomeDirLength);
-    sprintf(uppmHomeDir, "%s/.uppm", userHomeDir);
-
-    if (!exists_and_is_a_directory(uppmHomeDir)) {
-        return UPPM_FORMULA_REPO_NOT_EXIST;
-    }
 
     size_t  formulaRepoConfigFilePathLength = userHomeDirLength + 13;
     char    formulaRepoConfigFilePath[formulaRepoConfigFilePathLength];
@@ -36,7 +40,7 @@ int uppm_formula_repo_list_new(UPPMFormulaRepoList * * out) {
 
         UPPMFormulaRepoList * formulaRepoList = NULL;
 
-        size_t capacity = 0;
+        size_t capacity = 3;
 
         char line[300];
         while(fgets(line, 300, formulaRepoConfigFile)) {
@@ -65,37 +69,37 @@ int uppm_formula_repo_list_new(UPPMFormulaRepoList * * out) {
 
             if (formulaRepoList == NULL) {
                 formulaRepoList = (UPPMFormulaRepoList*)calloc(1, sizeof(UPPMFormulaRepoList));
+                formulaRepoList->repos = (UPPMFormulaRepo**)calloc(capacity, sizeof(UPPMFormulaRepo*));
+                formulaRepoList->repos[0] = uppm_formula_repo_default_new(userHomeDir, userHomeDirLength);
+                formulaRepoList->size     = 1;
             }
 
-            UPPMFormulaRepo * formulaRepo = (UPPMFormulaRepo*)calloc(1, sizeof(UPPMFormulaRepo));
-            formulaRepo->path = formulaRepoPath;
-            formulaRepo->name = strdup(repoName);
-            formulaRepo->url  = strdup(repoUrl);
+            if (strcmp(repoName, "offical") == 0) {
+                free(formulaRepoList->repos[0]->url);
+                formulaRepoList->repos[0]->url = strdup(repoUrl);
+            } else {
+                UPPMFormulaRepo * formulaRepo = (UPPMFormulaRepo*)calloc(1, sizeof(UPPMFormulaRepo));
+                formulaRepo->path = formulaRepoPath;
+                formulaRepo->name = strdup(repoName);
+                formulaRepo->url  = strdup(repoUrl);
 
-            if (formulaRepoList->size == capacity) {
-                capacity += 5;
-                formulaRepoList->repos = (UPPMFormulaRepo**)realloc(formulaRepoList->repos, capacity * sizeof(UPPMFormulaRepo*));
+                if (formulaRepoList->size == capacity) {
+                    capacity += 5;
+                    formulaRepoList->repos = (UPPMFormulaRepo**)realloc(formulaRepoList->repos, capacity * sizeof(UPPMFormulaRepo*));
+                }
+
+                formulaRepoList->repos[formulaRepoList->size] = formulaRepo;
+                formulaRepoList->size += 1;
             }
-
-            formulaRepoList->repos[formulaRepoList->size] = formulaRepo;
-            formulaRepoList->size += 1;
         }
 
         fclose(formulaRepoConfigFile);
 
         (*out) = formulaRepoList;
     } else {
-        char * formulaRepoPath = (char*)calloc(userHomeDirLength + 23, sizeof(char));
-        sprintf(formulaRepoPath, "%s/.uppm/repos.d/offical", userHomeDir);
-
-        UPPMFormulaRepo * formulaRepo = (UPPMFormulaRepo*)calloc(1, sizeof(UPPMFormulaRepo));
-        formulaRepo->path = formulaRepoPath;
-        formulaRepo->name = strdup("offical");
-        formulaRepo->url  = strdup("https://github.com/leleliu008/uppm-formula-repository-linux-x86_64.git");
-
         UPPMFormulaRepoList * formulaRepoList = (UPPMFormulaRepoList*)calloc(1, sizeof(UPPMFormulaRepoList));
         formulaRepoList->repos = (UPPMFormulaRepo**)calloc(1, sizeof(UPPMFormulaRepo*));
-        formulaRepoList->repos[0] = formulaRepo;
+        formulaRepoList->repos[0] = uppm_formula_repo_default_new(userHomeDir, userHomeDirLength);
         formulaRepoList->size     = 1;
 
         (*out) = formulaRepoList;
