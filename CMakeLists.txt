@@ -41,6 +41,15 @@ find_package(LibArchive REQUIRED)
 
 find_package(LibGit2 REQUIRED)
 
+# https://cmake.org/cmake/help/latest/module/FindLibLZMA.html
+find_package(LibLZMA REQUIRED)
+
+# https://cmake.org/cmake/help/latest/module/FindZLIB.html
+find_package(ZLIB REQUIRED)
+
+# https://cmake.org/cmake/help/v3.0/module/FindBZip2.html
+find_package(BZip2 REQUIRED)
+
 ########################################################################################
 
 aux_source_directory(src/core CORE_SRCS)
@@ -54,6 +63,9 @@ target_link_libraries(uppm CURL::libcurl)
 target_link_libraries(uppm OpenSSL::SSL)
 target_link_libraries(uppm OpenSSL::Crypto)
 target_link_libraries(uppm LibArchive::LibArchive)
+target_link_libraries(uppm LibLZMA::LibLZMA)
+target_link_libraries(uppm ${ZLIB_LIBRARIES})
+target_link_libraries(uppm ${BZIP2_LIBRARIES})
 target_link_libraries(uppm ${LIBGIT2_LIBRARY})
 target_link_libraries(uppm -lyaml)
 
