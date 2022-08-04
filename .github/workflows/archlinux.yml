@@ -1,0 +1,28 @@
+name: archlinux
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  archlinux:
+
+    runs-on: ubuntu-latest
+
+    container: archlinux
+
+    steps:
+      - run: pacman -Syyuu --noconfirm
+      - run: pacman -S     --noconfirm git cmake ninja gcc tree curl openssl libgit2 libarchive libyaml
+
+      - uses: actions/checkout@main
+
+      - run:  cmake --version
+      - run:  cmake -S . -B   build.d -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_COLOR_MAKEFILE=ON -DCMAKE_VERBOSE_MAKEFILE=ON
+      - run:  cmake --build   build.d
+      - run:  cmake --install build.d
+      - run:  tree output
+      - run:  ./output/bin/uppm --help
+      - run:  ./output/bin/uppm --version
