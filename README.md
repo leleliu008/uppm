@@ -27,9 +27,8 @@ ppkg install uppm
 |[liblzma](https://tukaani.org/xz/)|required|for uncompressing .tar.xz files.|
 |[bzip2](https://sourceware.org/bzip2/)|required|for uncompressing .tar.bz2 files.|
 |[zlib](https://zlib.net/)|required|for uncompressing .tar.gz and .zip files.|
-
-### method-1: use [vcpkg](https://github.com/microsoft/vcpkg)
-**step1. install vcpkg**
+ 
+**step1. install [vcpkg](https://github.com/microsoft/vcpkg)**
 ```bash
 git clone https://github.com/microsoft/vcpkg.git
 cd vcpkg
@@ -48,14 +47,14 @@ vcpkg install libyaml libgit2 libarchive curl openssl
 git clone https://github.com/leleliu008/uppm
 ```
 
-**step3. cd to uppm source dir**
+**step4. cd to uppm source dir**
 ```bash
 cd uppm
 ```
 
-**step4. build and install uppm**
+**step5. build and install uppm**
 ```bash
-cmake -S . -B   build.d -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake -DCMAKE_INSTALL_PREFIX=/usr/local
+cmake -S . -B   build.d -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake
 cmake --build   build.d
 cmake --install build.d
 ```
