@@ -1,10 +1,16 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "fs.h"
+#include "core/fs.h"
 #include "uppm.h"
 
-int uppm_formula_path(const char * pkgName, char ** out) {
+int uppm_formula_path(const char * packageName, char ** out) {
+    int resultCode = uppm_is_package_name(packageName);
+
+    if (resultCode != UPPM_OK) {
+        return resultCode;
+    }
+
     char * userHomeDir = getenv("HOME");
 
     if (userHomeDir == NULL || strcmp(userHomeDir, "") == 0) {
@@ -22,9 +28,9 @@ int uppm_formula_path(const char * pkgName, char ** out) {
         return UPPM_FORMULA_REPO_NOT_EXIST;
     }
 
-    size_t  formulaFilePathLength = userHomeDirLength + 36 + strlen(pkgName);
+    size_t  formulaFilePathLength = userHomeDirLength + 36 + strlen(packageName);
     char *  formulaFilePath = (char*)calloc(formulaFilePathLength, sizeof(char));
-    sprintf(formulaFilePath, "%s/.uppm/repos.d/offical/formula/%s.yml", userHomeDir, pkgName);
+    sprintf(formulaFilePath, "%s/.uppm/repos.d/offical/formula/%s.yml", userHomeDir, packageName);
 
     if (exists_and_is_a_regular_file(formulaFilePath)) {
         (*out) = formulaFilePath;
@@ -60,9 +66,9 @@ int uppm_formula_path(const char * pkgName, char ** out) {
             return UPPM_REPOS_CONFIG_READ_ERROR;
         }
 
-        size_t  formulaFilePathLength = userHomeDirLength + 30 + strlen(formulaRepoName) + strlen(pkgName);
+        size_t  formulaFilePathLength = userHomeDirLength + 30 + strlen(formulaRepoName) + strlen(packageName);
         char *  formulaFilePath = (char*)calloc(formulaFilePathLength, sizeof(char));
-        sprintf(formulaFilePath, "%s/.uppm/repos.d/%s/formula/%s.yml", userHomeDir, formulaRepoName, pkgName);
+        sprintf(formulaFilePath, "%s/.uppm/repos.d/%s/formula/%s.yml", userHomeDir, formulaRepoName, packageName);
 
         if (exists_and_is_a_regular_file(formulaFilePath)) {
             (*out) = formulaFilePath;

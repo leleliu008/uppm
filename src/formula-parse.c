@@ -10,11 +10,10 @@ typedef enum {
     FORMULA_KEY_CODE_webpage,
     FORMULA_KEY_CODE_version,
     FORMULA_KEY_CODE_license,
-    FORMULA_KEY_CODE_git_url,
     FORMULA_KEY_CODE_bin_url,
     FORMULA_KEY_CODE_bin_sha,
     FORMULA_KEY_CODE_dep_pkg,
-    FORMULA_KEY_CODE_install
+    FORMULA_KEY_CODE_install,
 } UPPMFormulaKeyCode;
 
 void uppm_formula_dump(UPPMFormula * formula) {
@@ -23,11 +22,11 @@ void uppm_formula_dump(UPPMFormula * formula) {
         printf("webpage: %s\n", formula->webpage);
         printf("version: %s\n", formula->version);
         printf("license: %s\n", formula->license);
-        printf("git_url: %s\n", formula->git_url);
         printf("bin_url: %s\n", formula->bin_url);
         printf("bin_sha: %s\n", formula->bin_sha);
         printf("dep_pkg: %s\n", formula->dep_pkg);
         printf("install: %s\n", formula->install);
+        printf("git_url: %s\n", formula->path);
     }
 }
 
@@ -53,11 +52,6 @@ void uppm_formula_free(UPPMFormula * formula) {
             formula->license = NULL;
         }
 
-        if (formula->git_url != NULL) {
-            free(formula->git_url);
-            formula->git_url = NULL;
-        }
-
         if (formula->bin_url != NULL) {
             free(formula->bin_url);
             formula->bin_url = NULL;
@@ -78,6 +72,11 @@ void uppm_formula_free(UPPMFormula * formula) {
             formula->install = NULL;
         }
 
+        if (formula->path != NULL) {
+            free(formula->path);
+            formula->path = NULL;
+        }
+
         free(formula);
         formula = NULL;
     }
@@ -92,8 +91,6 @@ static UPPMFormulaKeyCode uppm_formula_key_code_from_key_name(char * key) {
         return FORMULA_KEY_CODE_version;
     } else if (strcmp(key, "license") == 0) {
         return FORMULA_KEY_CODE_license;
-    } else if (strcmp(key, "git-url") == 0) {
-        return FORMULA_KEY_CODE_git_url;
     } else if (strcmp(key, "bin-url") == 0) {
         return FORMULA_KEY_CODE_bin_url;
     } else if (strcmp(key, "bin-sha") == 0) {
@@ -114,7 +111,6 @@ void uppm_formula_set_value(UPPMFormulaKeyCode keyCode, char * value, UPPMFormul
         case FORMULA_KEY_CODE_webpage:  formula->webpage = value; break;
         case FORMULA_KEY_CODE_version:  formula->version = value; break;
         case FORMULA_KEY_CODE_license:  formula->license = value; break;
-        case FORMULA_KEY_CODE_git_url:  formula->git_url = value; break;
         case FORMULA_KEY_CODE_bin_url:  formula->bin_url = value; break;
         case FORMULA_KEY_CODE_bin_sha:  formula->bin_sha = value; break;
         case FORMULA_KEY_CODE_dep_pkg:  formula->dep_pkg = value; break;
@@ -123,16 +119,26 @@ void uppm_formula_set_value(UPPMFormulaKeyCode keyCode, char * value, UPPMFormul
     }
 }
 
-int uppm_formula_parse(const char * filepath, UPPMFormula * * out) {
-    if ((filepath == NULL) || (strcmp(filepath, "") == 0)) {
-        fprintf(stderr, "%s\n", "filepath is not given.");
-        return UPPM_ARG_INVALID;
+int uppm_formula_parse(const char * packageName, UPPMFormula * * out) {
+    int resultCode = uppm_is_package_name(packageName);
+
+    if (resultCode != UPPM_OK) {
+        return resultCode;
     }
 
-    FILE * file = fopen(filepath, "r");
+    char * formulaFilePath = NULL;
+
+    resultCode = uppm_formula_path(packageName, &formulaFilePath);
+
+    if (resultCode != UPPM_OK) {
+        return resultCode;
+    }
+
+    FILE * file = fopen(formulaFilePath, "r");
 
     if (file == NULL) {
-        perror(filepath);
+        perror(formulaFilePath);
+        free(formulaFilePath);
         return UPPM_ERROR;
     }
 
@@ -142,6 +148,7 @@ int uppm_formula_parse(const char * filepath, UPPMFormula * * out) {
     // https://libyaml.docsforge.com/master/api/yaml_parser_initialize/
     if (yaml_parser_initialize(&parser) == 0) {
         perror("Failed to initialize yaml parser");
+        free(formulaFilePath);
         return UPPM_ERROR;
     }
 
@@ -158,7 +165,7 @@ int uppm_formula_parse(const char * filepath, UPPMFormula * * out) {
     do {
         // https://libyaml.docsforge.com/master/api/yaml_parser_scan/
         if (yaml_parser_scan(&parser, &token) == 0) {
-            fprintf(stderr, "syntax error: %s\n", filepath);
+            fprintf(stderr, "syntax error: %s\n", formulaFilePath);
             success = false;
             goto clean;
         }
@@ -176,6 +183,7 @@ int uppm_formula_parse(const char * filepath, UPPMFormula * * out) {
                 } else if (lastTokenType == 2) {
                     if (formula == NULL) {
                         formula = (UPPMFormula*)calloc(1, sizeof(UPPMFormula));
+                        formula->path = formulaFilePath;
                     }
                     uppm_formula_set_value(formulaKeyCode, (char*)token.data.scalar.value, formula);
                 }
@@ -199,13 +207,13 @@ clean:
 
     if (success) {
         if ((formula->bin_url == NULL) || (strcmp(formula->bin_url, "") == 0)) {
-            fprintf(stderr, "bin-url not configed in %s\n", filepath);
+            fprintf(stderr, "bin-url not configed in %s\n", formulaFilePath);
             uppm_formula_free(formula);
             return UPPM_ERROR;
         }
 
         if ((formula->bin_sha == NULL) || (strcmp(formula->bin_url, "") == 0)) {
-            fprintf(stderr, "bin-sha not configed in %s\n", filepath);
+            fprintf(stderr, "bin-sha not configed in %s\n", formulaFilePath);
             uppm_formula_free(formula);
             return UPPM_ERROR;
         }
@@ -221,6 +229,8 @@ clean:
     } else {
         if (formula != NULL) {
             uppm_formula_free(formula);
+        } else {
+            free(formulaFilePath);
         }
         return UPPM_ERROR;
     }

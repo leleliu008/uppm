@@ -5,25 +5,16 @@
 #include <libgen.h>
 #include <sys/stat.h>
 
-#include "fs.h"
-#include "http.h"
+#include "core/fs.h"
+#include "core/http.h"
+#include "core/sha256sum.h"
+
 #include "uppm.h"
-#include "sha256sum.h"
 
-int uppm_fetch(const char * pkgName) {
-    char * formulaFilePath = NULL;
-
-    int resultCode = uppm_formula_path(pkgName, &formulaFilePath);
-
-    if (resultCode != UPPM_OK) {
-        return resultCode;
-    }
-
+int uppm_fetch(const char * packageName) {
     UPPMFormula * formula = NULL;
 
-    resultCode = uppm_formula_parse(formulaFilePath, &formula);
-
-    free(formulaFilePath);
+    int resultCode = uppm_formula_parse(packageName, &formula);
 
     if (resultCode != UPPM_OK) {
         return resultCode;

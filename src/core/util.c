@@ -1,12 +1,17 @@
 #include <stdio.h>
+#include <string.h>
 #include <stdbool.h>
 #include <regex.h>
 #include "util.h"
 
 bool regex_match(const char * contentStr, const char * regexStr) {
+    if (contentStr == NULL) {
+        return false;
+    }
+
     regex_t regex;
 
-    if (regcomp(&regex, regexStr, 0) == 0) {
+    if (regcomp(&regex, regexStr, REG_EXTENDED) == 0) {
         regmatch_t regmatch[2];
         if (regexec(&regex, contentStr, 2, regmatch, 0) == 0) {
             //printf("regmatch[0].rm_so=%d\n", regmatch[0].rm_so);

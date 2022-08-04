@@ -6,14 +6,14 @@
 #include <libgen.h>
 #include <sys/stat.h>
 
-#include "fs.h"
-#include "http.h"
+#include "core/fs.h"
+#include "core/http.h"
+#include "core/sha256sum.h"
+#include "core/untar.h"
+#include "core/rm-r.h"
 #include "uppm.h"
-#include "sha256sum.h"
-#include "untar.h"
-#include "rm-r.h"
 
-int uppm_install(const char * pkgName) {
+int uppm_install(const char * packageName) {
     char * userHomeDir = getenv("HOME");
 
     if (userHomeDir == NULL || strcmp(userHomeDir, "") == 0) {
@@ -23,10 +23,10 @@ int uppm_install(const char * pkgName) {
 
     size_t userHomeDirLength = strlen(userHomeDir);
 
-    size_t  installDirLength = userHomeDirLength + strlen(pkgName) + 20;
+    size_t  installDirLength = userHomeDirLength + strlen(packageName) + 20;
     char    installDir[installDirLength];
     memset (installDir, 0, installDirLength);
-    sprintf(installDir, "%s/.uppm/installed/%s", userHomeDir, pkgName);
+    sprintf(installDir, "%s/.uppm/installed/%s", userHomeDir, packageName);
 
     size_t  installedMetadataFilePathLength = installDirLength + 26;
     char    installedMetadataFilePath[installedMetadataFilePathLength];
@@ -35,7 +35,7 @@ int uppm_install(const char * pkgName) {
 
     if (exists_and_is_a_directory(installDir)) {
         if (exists_and_is_a_regular_file(installedMetadataFilePath)) {
-            fprintf(stderr, "package [%s] already has been installed.\n", pkgName);
+            fprintf(stderr, "package [%s] already has been installed.\n", packageName);
             return UPPM_OK;
         } else {
             if (rm_r(installDir) != 0) {
@@ -44,20 +44,11 @@ int uppm_install(const char * pkgName) {
         }
     }
 
-    char * formulaFilePath = NULL;
-
-    int resultCode = uppm_formula_path(pkgName, &formulaFilePath);
-
-    if (resultCode != UPPM_OK) {
-        return resultCode;
-    }
-
     UPPMFormula * formula = NULL;
 
-    resultCode = uppm_formula_parse(formulaFilePath, &formula);
+    int resultCode = uppm_formula_parse(packageName, &formula);
 
     if (resultCode != UPPM_OK) {
-        free(formulaFilePath);
         return resultCode;
     }
 
@@ -79,7 +70,6 @@ int uppm_install(const char * pkgName) {
 
         if (resultCode != UPPM_OK) {
             uppm_formula_free(formula);
-            free(formulaFilePath);
             return resultCode;
         }
     }
@@ -106,7 +96,6 @@ int uppm_install(const char * pkgName) {
 
         if (resultCode != UPPM_OK) {
             uppm_formula_free(formula);
-            free(formulaFilePath);
             return resultCode;
         }
 
@@ -118,7 +107,6 @@ int uppm_install(const char * pkgName) {
         } else {
             fprintf(stderr, "sha256sum mismatch.\n    expect : %s\n    actual : %s\n", formula->bin_sha, actualSHA256SUM);
             free(actualSHA256SUM);
-            free(formulaFilePath);
             uppm_formula_free(formula);
             return UPPM_SHA256_MISMATCH;
         }
@@ -130,7 +118,6 @@ int uppm_install(const char * pkgName) {
         resultCode = untar_extract(installDir, binFilePath, ARCHIVE_EXTRACT_TIME, true, 1);
 
         if (resultCode != UPPM_OK) {
-            free(formulaFilePath);
             uppm_formula_free(formula);
             return resultCode;
         }
@@ -174,7 +161,6 @@ int uppm_install(const char * pkgName) {
         resultCode = system(shellCode);
 
         if (resultCode != UPPM_OK) {
-            free(formulaFilePath);
             uppm_formula_free(formula);
             return resultCode;
         }
@@ -184,22 +170,17 @@ int uppm_install(const char * pkgName) {
 
     if (installedMetadataFile == NULL) {
         perror(installedMetadataFilePath);
-        free(formulaFilePath);
         uppm_formula_free(formula);
         return UPPM_ERROR;
     }
 
-    FILE * formulaFile = fopen(formulaFilePath, "r");
+    FILE * formulaFile = fopen(formula->path, "r");
 
     if (formulaFile == NULL) {
-        perror(formulaFilePath);
-        free(formulaFilePath);
+        perror(formula->path);
         uppm_formula_free(formula);
         return UPPM_FORMULA_FILE_OPEN_ERROR;
     }
-
-    free(formulaFilePath);
-    formulaFilePath = NULL;
 
     uppm_formula_free(formula);
     formula = NULL;
@@ -212,7 +193,7 @@ int uppm_install(const char * pkgName) {
 
     fclose(formulaFile);
 
-    fprintf(installedMetadataFile, "pkgname: %s\ndatatime: %lu\nuppmvers: %s\n", pkgName, time(NULL), UPPM_VERSION);
+    fprintf(installedMetadataFile, "pkgname: %s\ndatatime: %lu\nuppmvers: %s\n", packageName, time(NULL), UPPM_VERSION);
 
     fclose(installedMetadataFile);
 

@@ -2,17 +2,23 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "fs.h"
-#include "log.h"
+#include "core/fs.h"
+#include "core/log.h"
 #include "uppm.h"
 
-int uppm_info(const char * pkgName) {
-    char * formulaFilePath = NULL;
-
-    int resultCode = uppm_formula_path(pkgName, &formulaFilePath);
+int uppm_info_of_the_available_package(const char * packageName) {
+    int resultCode = uppm_is_package_name(packageName);
 
     if (resultCode != UPPM_OK) {
-        fprintf(stderr, "package [%s] is not avaiable.\n", pkgName);
+        return resultCode;
+    }
+
+    char * formulaFilePath = NULL;
+
+    resultCode = uppm_formula_path(packageName, &formulaFilePath);
+
+    if (resultCode != UPPM_OK) {
+        fprintf(stderr, "package [%s] is not avaiable.\n", packageName);
         return resultCode;
     }
 
@@ -24,7 +30,7 @@ int uppm_info(const char * pkgName) {
         return UPPM_FORMULA_FILE_OPEN_ERROR;
     }
 
-    printf("pkgname: %s%s%s\n", COLOR_GREEN, pkgName, COLOR_OFF);
+    printf("pkgname: %s%s%s\n", COLOR_GREEN, packageName, COLOR_OFF);
 
     char buff[1024];
     int  size = 0;
@@ -39,7 +45,15 @@ int uppm_info(const char * pkgName) {
     free(formulaFilePath);
     formulaFilePath = NULL;
 
-    ////////////////////////////////////////////////////////////
+    return UPPM_OK;
+}
+
+int uppm_info_of_the_installed_package(const char * packageName) {
+    int resultCode = uppm_is_package_name(packageName);
+
+    if (resultCode != UPPM_OK) {
+        return resultCode;
+    }
 
     char * userHomeDir = getenv("HOME");
 
@@ -50,10 +64,10 @@ int uppm_info(const char * pkgName) {
 
     size_t userHomeDirLength = strlen(userHomeDir);
 
-    size_t  installDirLength = userHomeDirLength + strlen(pkgName) + 20;
+    size_t  installDirLength = userHomeDirLength + strlen(packageName) + 20;
     char    installDir[installDirLength];
     memset (installDir, 0, installDirLength);
-    sprintf(installDir, "%s/.uppm/installed/%s", userHomeDir, pkgName);
+    sprintf(installDir, "%s/.uppm/installed/%s", userHomeDir, packageName);
 
     size_t  installedMetadataFilePathLength = installDirLength + 25;
     char    installedMetadataFilePath[installedMetadataFilePathLength];
@@ -61,7 +75,7 @@ int uppm_info(const char * pkgName) {
     sprintf(installedMetadataFilePath, "%s/uppm-installed-metadata", installDir);
 
     if (!exists_and_is_a_regular_file(installedMetadataFilePath)) {
-        return UPPM_OK;
+        return UPPM_PACKAGE_IS_NOT_INSTALLED;
     }
 
     FILE * installedMetadataFile = fopen(installedMetadataFilePath, "r");
@@ -71,9 +85,8 @@ int uppm_info(const char * pkgName) {
         return UPPM_INSTALLED_METADATA_FILE_OPEN_ERROR;
     }
 
-    LOG_GREEN("\ninstalled:");
-
-    size = 0;
+    char buff[1024];
+    int  size = 0;
     while((size = fread(buff, 1, 1024, installedMetadataFile)) != 0) {
         fwrite(buff, 1, size, stdout);
     }

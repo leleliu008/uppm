@@ -2,16 +2,16 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "fs.h"
+#include "core/fs.h"
 #include "uppm.h"
 
-int uppm_formula_cat(const char * pkgName) {
+int uppm_formula_cat(const char * packageName) {
     char * formulaFilePath = NULL;
 
-    int resultCode = uppm_formula_path(pkgName, &formulaFilePath);
+    int resultCode = uppm_formula_path(packageName, &formulaFilePath);
 
     if (resultCode != UPPM_OK) {
-        fprintf(stderr, "package [%s] is not avaiable.\n", pkgName);
+        fprintf(stderr, "package [%s] is not avaiable.\n", packageName);
         return resultCode;
     }
 

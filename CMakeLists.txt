@@ -43,9 +43,10 @@ find_package(LibGit2 REQUIRED)
 
 ########################################################################################
 
-aux_source_directory(src SRCS)
+aux_source_directory(src/core CORE_SRCS)
+aux_source_directory(src           SRCS)
 
-add_executable(uppm "${SRCS}")
+add_executable(uppm "${CORE_SRCS};${SRCS}")
 
 ########################################################################################
 
@@ -54,9 +55,12 @@ target_link_libraries(uppm OpenSSL::SSL)
 target_link_libraries(uppm OpenSSL::Crypto)
 target_link_libraries(uppm LibArchive::LibArchive)
 target_link_libraries(uppm ${LIBGIT2_LIBRARY})
-target_link_libraries(uppm -lpcre)
 target_link_libraries(uppm -lyaml)
-target_link_libraries(uppm -lhttp_parser)
+
+if (DEFINED VCPKG_INSTALLED_DIR)
+    target_link_libraries(uppm -lpcre)
+    target_link_libraries(uppm -lhttp_parser)
+endif()
 
 target_include_directories(uppm PRIVATE "${CMAKE_BINARY_DIR}")
 

@@ -3,10 +3,29 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include "fs.h"
+#include "core/fs.h"
+#include "core/util.h"
 #include "uppm.h"
 
-int uppm_is_package_available(const char * pkgName) {
+int uppm_is_package_name(const char * packageName) {
+    if (packageName == NULL) {
+        return UPPM_PACKAGE_NAME_IS_NULL;
+    } else if (strcmp(packageName, "") == 0) {
+        return UPPM_PACKAGE_NAME_IS_EMPTY;
+    } else if (regex_match(packageName, "^[A-Za-z0-9+-.]+$")) {
+        return UPPM_OK;
+    } else {
+        return UPPM_PACKAGE_NAME_IS_INVALID;
+    }
+}
+
+int uppm_is_package_available(const char * packageName) {
+    int resultCode = uppm_is_package_name(packageName);
+
+    if (resultCode != UPPM_OK) {
+        return resultCode;
+    }
+
     char * userHomeDir = getenv("HOME");
 
     if (userHomeDir == NULL || strcmp(userHomeDir, "") == 0) {
@@ -47,20 +66,20 @@ int uppm_is_package_available(const char * pkgName) {
                 return UPPM_REPOS_CONFIG_READ_ERROR;
             }
 
-            size_t  formulaRepoPathLength = userHomeDirLength + 30 + strlen(formulaRepoName) + strlen(pkgName);
+            size_t  formulaRepoPathLength = userHomeDirLength + 30 + strlen(formulaRepoName) + strlen(packageName);
             char    formulaRepoPath[formulaRepoPathLength];
             memset (formulaRepoPath, 0, formulaRepoPathLength);
-            sprintf(formulaRepoPath, "%s/.uppm/repos.d/%s/formula/%s.yml", userHomeDir, formulaRepoName, pkgName);
+            sprintf(formulaRepoPath, "%s/.uppm/repos.d/%s/formula/%s.yml", userHomeDir, formulaRepoName, packageName);
 
             if (exists_and_is_a_regular_file(formulaRepoPath)) {
                 return UPPM_OK;
             }
         }
     } else {
-        size_t  formulaRepoPathLength = userHomeDirLength + 36 + strlen(pkgName);
+        size_t  formulaRepoPathLength = userHomeDirLength + 36 + strlen(packageName);
         char    formulaRepoPath[formulaRepoPathLength];
         memset (formulaRepoPath, 0, formulaRepoPathLength);
-        sprintf(formulaRepoPath, "%s/.uppm/repos.d/offical/formula/%s.yml", userHomeDir, pkgName);
+        sprintf(formulaRepoPath, "%s/.uppm/repos.d/offical/formula/%s.yml", userHomeDir, packageName);
 
         if (exists_and_is_a_regular_file(formulaRepoPath)) {
             return UPPM_OK;
@@ -70,7 +89,13 @@ int uppm_is_package_available(const char * pkgName) {
     return UPPM_PACKAGE_IS_NOT_AVAILABLE;
 }
 
-int uppm_is_package_installed(const char * pkgName) {
+int uppm_is_package_installed(const char * packageName) {
+    int resultCode = uppm_is_package_name(packageName);
+
+    if (resultCode != UPPM_OK) {
+        return resultCode;
+    }
+
     char * userHomeDir = getenv("HOME");
 
     if (userHomeDir == NULL || strcmp(userHomeDir, "") == 0) {
@@ -91,7 +116,7 @@ int uppm_is_package_installed(const char * pkgName) {
     size_t  installedMetadataFilePathLength = userHomeDirLength + 45;
     char    installedMetadataFilePath[installedMetadataFilePathLength];
     memset (installedMetadataFilePath, 0, installedMetadataFilePathLength);
-    sprintf(installedMetadataFilePath, "%s/.uppm/installed/%s/uppm-installed-metadata", userHomeDir, pkgName);
+    sprintf(installedMetadataFilePath, "%s/.uppm/installed/%s/uppm-installed-metadata", userHomeDir, packageName);
 
     if (exists_and_is_a_regular_file(installedMetadataFilePath)) {
         return UPPM_OK;
@@ -100,7 +125,12 @@ int uppm_is_package_installed(const char * pkgName) {
     }
 }
 
-int uppm_is_package_outdated(const char * pkgName) {
-    (void)pkgName;
+int uppm_is_package_outdated(const char * packageName) {
+    int resultCode = uppm_is_package_name(packageName);
+
+    if (resultCode != UPPM_OK) {
+        return resultCode;
+    }
+
     return 0;
 }

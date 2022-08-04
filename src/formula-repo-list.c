@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "fs.h"
+#include "core/fs.h"
 #include "uppm.h"
 
 int uppm_formula_repo_list_new(UPPMFormulaRepoList * * out) {

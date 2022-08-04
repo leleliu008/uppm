@@ -3,18 +3,16 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "fs.h"
+#include "core/fs.h"
 #include "uppm.h"
 
-int uppm_formula_bat(const char * pkgName) {
+int uppm_formula_bat(const char * packageName) {
     char * formulaFilePath = NULL;
 
-    int resultCode = UPPM_OK;
-
-    resultCode = uppm_formula_path(pkgName, &formulaFilePath);
+    int resultCode = uppm_formula_path(packageName, &formulaFilePath);
 
     if (resultCode != UPPM_OK) {
-        fprintf(stderr, "package [%s] is not avaiable.\n", pkgName);
+        fprintf(stderr, "package [%s] is not avaiable.\n", packageName);
         return resultCode;
     }
 
@@ -22,6 +20,7 @@ int uppm_formula_bat(const char * pkgName) {
 
     if (resultCode == -1) {
         fprintf(stderr, "command not found: bat\n");
+        resultCode = UPPM_ERROR;
     }
 
     free(formulaFilePath);

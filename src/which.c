@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include "find-executables.h"
+#include "core/find-executables.h"
 
 static void show_help(const char * programName) {
     printf("USAGE: %s <COMMAND-NAME> [-a]\n", programName);

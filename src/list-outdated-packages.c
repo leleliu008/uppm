@@ -3,9 +3,9 @@
 #include <dirent.h>
 #include <fnmatch.h>
 
+#include "core/log.h"
+#include "core/fs.h"
 #include "uppm.h"
-#include "log.h"
-#include "fs.h"
 
 int uppm_list_the_outdated__packages() {
     char * userHomeDir = getenv("HOME");

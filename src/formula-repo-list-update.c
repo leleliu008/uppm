@@ -1,7 +1,7 @@
 #include <stdio.h>
 
-#include "fs.h"
-#include "git.h"
+#include "core/fs.h"
+#include "core/git.h"
 #include "uppm.h"
 
 int uppm_formula_repo_list_update() {

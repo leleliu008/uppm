@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "core/log.h"
 #include "uppm.h"
-#include "log.h"
 
 int uppm_main(int argc, char* argv[]) {
     if (argc == 1) {
@@ -28,12 +28,17 @@ int uppm_main(int argc, char* argv[]) {
     }
 
     if (strcmp(action, "env") == 0) {
-        printf("NATIVE_OS_KIND = %s\n", getenv("NATIVE_OS_KIND"));
-        printf("NATIVE_OS_NAME = %s\n", getenv("NATIVE_OS_NAME"));
-        printf("NATIVE_OS_ARCH = %s\n", getenv("NATIVE_OS_ARCH"));
+        printf("export NATIVE_OS_KIND='%s'\n", getenv("NATIVE_OS_KIND"));
+        printf("export NATIVE_OS_NAME='%s'\n", getenv("NATIVE_OS_NAME"));
+        printf("export NATIVE_OS_ARCH='%s'\n", getenv("NATIVE_OS_ARCH"));
         printf("\n");
-        printf("UPPM_HOME      = %s\n", getenv("UPPM_HOME"));
-        printf("UPPM_VERSION   = %s\n", getenv("UPPM_VERSION"));
+        printf("export UPPM_HOME='%s'\n",    getenv("UPPM_HOME"));
+        printf("export UPPM_VERSION='%s'\n", getenv("UPPM_VERSION"));
+        printf("\n");
+        printf("export HOME='%s'\n",    getenv("HOME"));
+        printf("export PATH='%s'\n",    getenv("PATH"));
+        printf("\n");
+        printf("export ACLOCALPATH='%s'\n", getenv("ACLOCAL_PATH"));
         return 0;
     }
 
@@ -42,12 +47,7 @@ int uppm_main(int argc, char* argv[]) {
     }
 
     if (strcmp(action, "search") == 0) {
-        if (argv[2] == NULL) {
-            fprintf(stderr, "Usage: %s search <KEYWORD>, <KEYWORD> is not given.\n", argv[0]);
-            return 1;
-        } else {
-            return uppm_search(argv[2]);
-        }
+        return uppm_search(argv[2]);
     }
 
     if (strcmp(action, "info") == 0) {
@@ -55,7 +55,16 @@ int uppm_main(int argc, char* argv[]) {
             fprintf(stderr, "Usage: %s info <PACKAGE-NAME>, <PACKAGE-NAME> is not given.\n", argv[0]);
             return 1;
         } else {
-            return uppm_info(argv[2]);
+            return uppm_info_of_the_available_package(argv[2]);
+        }
+    }
+
+    if (strcmp(action, "tree") == 0) {
+        if (argv[2] == NULL) {
+            fprintf(stderr, "Usage: %s tree <PACKAGE-NAME>, <PACKAGE-NAME> is not given.\n", argv[0]);
+            return 1;
+        } else {
+            return uppm_tree_of_the_installed_package(argv[2]);
         }
     }
 

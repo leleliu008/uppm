@@ -3,11 +3,19 @@
 #include <dirent.h>
 #include <fnmatch.h>
 
+#include "core/log.h"
+#include "core/fs.h"
 #include "uppm.h"
-#include "log.h"
-#include "fs.h"
 
 int uppm_search(const char * keyword) {
+    if (keyword == NULL) {
+        return UPPM_ARG_IS_NULL;
+    }
+
+    if (strcmp(keyword, "") == 0) {
+        return UPPM_ARG_IS_EMPTY;
+    }
+
     char * userHomeDir = getenv("HOME");
 
     if (userHomeDir == NULL || strcmp(userHomeDir, "") == 0) {
@@ -68,7 +76,7 @@ int uppm_search(const char * keyword) {
                 }
 
                 //printf("%s\n", packageName);
-                resultCode = uppm_info(packageName);
+                resultCode = uppm_info_of_the_available_package(packageName);
 
                 if (resultCode != UPPM_OK) {
                     uppm_formula_repo_list_free(formulaRepoList);
