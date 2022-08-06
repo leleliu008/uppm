@@ -30,6 +30,8 @@ message(STATUS "CMAKE_FIND_ROOT_PATH = ${CMAKE_FIND_ROOT_PATH}")
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_MODULE_PATH})
 
+find_package(PkgConfig)
+
 # https://cmake.org/cmake/help/latest/module/FindOpenSSL.html
 set(OPENSSL_USE_STATIC_LIBS, TRUE)
 find_package(OpenSSL REQUIRED)
@@ -51,6 +53,8 @@ find_package(ZLIB REQUIRED)
 # https://cmake.org/cmake/help/v3.0/module/FindBZip2.html
 find_package(BZip2 REQUIRED)
 
+find_package(LibYAML REQUIRED)
+
 ########################################################################################
 
 aux_source_directory(src/core CORE_SRCS)
@@ -68,7 +72,7 @@ target_link_libraries(uppm LibLZMA::LibLZMA)
 target_link_libraries(uppm ${ZLIB_LIBRARIES})
 target_link_libraries(uppm ${BZIP2_LIBRARIES})
 target_link_libraries(uppm ${LIBGIT2_LIBRARY})
-target_link_libraries(uppm -lyaml)
+target_link_libraries(uppm ${LIBYAML_LIBRARY})
 
 if (DEFINED VCPKG_INSTALLED_DIR)
     target_link_libraries(uppm -lpcre)
@@ -76,11 +80,13 @@ if (DEFINED VCPKG_INSTALLED_DIR)
 endif()
 
 target_include_directories(uppm PRIVATE "${CMAKE_BINARY_DIR}")
+target_include_directories(uppm PRIVATE "${LIBGIT2_LIBRARY}")
+target_include_directories(uppm PRIVATE "${LIBYAML_LIBRARY}")
 
-if ("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL FreeBSD)
-    target_include_directories(uppm PRIVATE   /usr/local/include)
-    target_link_options       (uppm PRIVATE -L/usr/local/lib)
-endif()
+#if ("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL FreeBSD)
+#    target_include_directories(uppm PRIVATE /usr/local/include)
+#    target_link_directories   (uppm PRIVATE /usr/local/lib)
+#endif()
 
 ########################################################################################
 
