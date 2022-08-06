@@ -74,6 +74,10 @@ int uppm_depends(const char * packageName) {
         return resultCode;
     }
 
+    if (strcmp(buff, "digraph G {\n}") == 0) {
+        return UPPM_OK;
+    }
+
     ///////////////////////////////////////////////////////////////////////
 
     curl_global_init(CURL_GLOBAL_ALL);

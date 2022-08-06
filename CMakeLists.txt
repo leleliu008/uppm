@@ -80,8 +80,8 @@ if (DEFINED VCPKG_INSTALLED_DIR)
 endif()
 
 target_include_directories(uppm PRIVATE "${CMAKE_BINARY_DIR}")
-target_include_directories(uppm PRIVATE "${LIBGIT2_LIBRARY}")
-target_include_directories(uppm PRIVATE "${LIBYAML_LIBRARY}")
+target_include_directories(uppm PRIVATE "${LIBGIT2_INCLUDE_DIR}")
+target_include_directories(uppm PRIVATE "${LIBYAML_INCLUDE_DIR}")
 
 #if ("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL FreeBSD)
 #    target_include_directories(uppm PRIVATE /usr/local/include)
