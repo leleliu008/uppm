@@ -1,0 +1,42 @@
+name: FreeBSD
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    runs-on: macos-10.15
+
+    strategy:
+      fail-fast: false
+      matrix:
+        version: [12, 13]
+    
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: leleliu008/github-actions-vagrant@v1
+        with:
+          mem: 2048
+          box: generic/freebsd${{ matrix.version }}
+          run: |
+            run pkg install -y cmake ninja gcc tree curl openssl libgit2 libarchive libyaml xz bzip2 zlib
+
+            run cmake -S . -B   build.d -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_COLOR_MAKEFILE=ON -DCMAKE_VERBOSE_MAKEFILE=ON -G Ninja
+            run cmake --build   build.d
+            run cmake --install build.d
+
+            run tree output
+
+            run ./output/bin/uppm --help
+            run ./output/bin/uppm --version
+            run ./output/bin/uppm env
+            run ./output/bin/uppm update
+            run ./output/bin/uppm search    zip
+            run ./output/bin/uppm info      unzip
+            run ./output/bin/uppm install   unzip
+            run ./output/bin/uppm tree      unzip
+            run ./output/bin/uppm uninstall unzip
