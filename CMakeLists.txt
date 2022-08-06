@@ -77,6 +77,11 @@ endif()
 
 target_include_directories(uppm PRIVATE "${CMAKE_BINARY_DIR}")
 
+if ("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL FreeBSD)
+    target_include_directories(uppm PRIVATE   /usr/local/include)
+    target_link_options       (uppm PRIVATE -L/usr/local/lib)
+endif()
+
 ########################################################################################
 
 configure_file(src/config.h.in config.h @ONLY)

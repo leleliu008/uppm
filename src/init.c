@@ -105,4 +105,6 @@ int uppm_init() {
         }
         closedir(dir);
     }
+
+    return UPPM_OK;
 }
