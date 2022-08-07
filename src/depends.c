@@ -24,17 +24,23 @@ int uppm_depends_internal(const char * packageName, char buff[256]) {
     strcat(buff, "\"");
     strcat(buff, " -> { ");
 
-    size_t index = 0;
-    char * depList[10];
+    size_t depPackageNamesLength = strlen(formula->dep_pkg);
+    size_t depPackageNamesCopyLength = depPackageNamesLength + 1;
+    char   depPackageNamesCopy[depPackageNamesCopyLength];
+    memset(depPackageNamesCopy, 0, depPackageNamesCopyLength);
+    strcpy(depPackageNamesCopy, formula->dep_pkg);
 
-    char * depPackageName = strtok(strdup(formula->dep_pkg), " ");
+    size_t index = 0;
+    char * depPackageNameList[10];
+
+    char * depPackageName = strtok(depPackageNamesCopy, " ");
 
     while (depPackageName != NULL) {
         strcat(buff, "\"");
         strcat(buff, depPackageName);
         strcat(buff, "\" ");
 
-        depList[index] = depPackageName;
+        depPackageNameList[index] = depPackageName;
         index++;
         depPackageName = strtok (NULL, " ");
     }
@@ -42,7 +48,7 @@ int uppm_depends_internal(const char * packageName, char buff[256]) {
     strcat(buff, "}\n");
 
     for (size_t i = 0; i < index; i++) {
-        resultCode = uppm_depends_internal(depList[i], buff);
+        resultCode = uppm_depends_internal(depPackageNameList[i], buff);
 
         if (resultCode != UPPM_OK) {
             uppm_formula_free(formula);

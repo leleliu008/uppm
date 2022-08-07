@@ -15,8 +15,8 @@ ppkg install uppm
 ## Build from source
 |dependency|required?|purpose|
 |----|---------|-------|
-|[cmake](https://cmake.org/)|required |for generating `Makefile`|
-|[gmake](https://www.gnu.org/software/make/)|required |for doing jobs that read from `Makefile`|
+|[cmake](https://cmake.org/)|required |for generating `build.ninja`|
+|[ninja](https://ninja-build.org/)|required |for doing jobs that read from `build.ninja`|
 |[pkg-config>=0.18](https://www.freedesktop.org/wiki/Software/pkg-config/)|recommended|for finding libraries|
 ||||
 |[libyaml](https://github.com/yaml/libyaml/)|required|for parsing formula files.|
@@ -27,34 +27,62 @@ ppkg install uppm
 |[liblzma](https://tukaani.org/xz/)|required|for uncompressing .tar.xz files.|
 |[bzip2](https://sourceware.org/bzip2/)|required|for uncompressing .tar.bz2 files.|
 |[zlib](https://zlib.net/)|required|for uncompressing .tar.gz and .zip files.|
- 
-**step1. install [vcpkg](https://github.com/microsoft/vcpkg)**
+
+
+**[AlpineLinux](https://www.alpinelinux.org/)**
+
+```bash
+apk add cmake ninja gcc tree libc-dev curl-dev openssl-dev libgit2-dev libarchive-dev yaml-dev xz-dev bzip2-dev zlib-dev
+
+git clone https://github.com/leleliu008/uppm
+cd uppm
+
+cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=/usr/local
+cmake --build   build.d
+cmake --install build.d
+```
+
+**[ArchLinux](https://archlinux.org/)**
+
+```bash
+pacman -Syyuu --noconfirm
+pacman -S     --noconfirm git cmake ninja gcc tree curl openssl libgit2 libarchive libyaml
+
+git clone https://github.com/leleliu008/uppm
+cd uppm
+
+cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=/usr/local
+cmake --build   build.d
+cmake --install build.d
+```
+
+**[FreeBSD](https://www.freebsd.org/)**
+
+```bash
+pkg install -y cmake ninja gcc tree curl openssl libgit2 libarchive libyaml
+
+git clone https://github.com/leleliu008/uppm
+cd uppm
+
+cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=/usr/local
+cmake --build   build.d
+cmake --install build.d
+```
+
+**[vcpkg](https://github.com/microsoft/vcpkg)**
 ```bash
 git clone https://github.com/microsoft/vcpkg.git
 cd vcpkg
 ./bootstrap-vcpkg.sh
 export VCPKG_ROOT="$PWD/vcpkg"
 export PATH="$VCPKG_ROOT:$PATH"
-```
 
-**step2. install dependent libraries via vcpkg**
-```bash
 vcpkg install libyaml libgit2 libarchive curl openssl
-```
 
-**step3. fetch uppm source tree from github**
-```bash
 git clone https://github.com/leleliu008/uppm
-```
-
-**step4. cd to uppm source dir**
-```bash
 cd uppm
-```
 
-**step5. build and install uppm**
-```bash
-cmake -S . -B   build.d -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake
+cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake
 cmake --build   build.d
 cmake --install build.d
 ```

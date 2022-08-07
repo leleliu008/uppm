@@ -37,8 +37,14 @@ int uppm_main(int argc, char* argv[]) {
         printf("\n");
         printf("export HOME='%s'\n",    getenv("HOME"));
         printf("export PATH='%s'\n",    getenv("PATH"));
-        printf("\n");
-        printf("export ACLOCALPATH='%s'\n", getenv("ACLOCAL_PATH"));
+
+        const char * ACLOCAL_PATH = getenv("ACLOCAL_PATH");
+
+        if (ACLOCAL_PATH != NULL) {
+            printf("\n");
+            printf("export ACLOCALPATH='%s'\n", ACLOCAL_PATH);
+        }
+
         return 0;
     }
 

@@ -13,7 +13,25 @@
 #include "core/rm-r.h"
 #include "uppm.h"
 
+int uppm_install_the_given_packages(const char * packageNames[], size_t size) {
+    for (size_t i = 0; i < size; i++) {
+        const char * packageName = packageNames[i];
+
+        UPPMFormula * formula = NULL;
+
+        int resultCode = uppm_formula_parse(packageName, &formula);
+
+        if (resultCode != UPPM_OK) {
+            return resultCode;
+        }
+
+
+    }
+}
+
 int uppm_install(const char * packageName) {
+    fprintf(stderr, "prepare to install package [%s].\n", packageName);
+
     char * userHomeDir = getenv("HOME");
 
     if (userHomeDir == NULL || strcmp(userHomeDir, "") == 0) {
@@ -33,15 +51,9 @@ int uppm_install(const char * packageName) {
     memset (installedMetadataFilePath, 0, installedMetadataFilePathLength);
     sprintf(installedMetadataFilePath, "%s/uppm-installed-metadata", installDir);
 
-    if (exists_and_is_a_directory(installDir)) {
-        if (exists_and_is_a_regular_file(installedMetadataFilePath)) {
-            fprintf(stderr, "package [%s] already has been installed.\n", packageName);
-            return UPPM_OK;
-        } else {
-            if (rm_r(installDir) != 0) {
-                return UPPM_ERROR;
-            }
-        }
+    if (exists_and_is_a_regular_file(installedMetadataFilePath)) {
+        fprintf(stderr, "package [%s] already has been installed.\n", packageName);
+        return UPPM_OK;
     }
 
     UPPMFormula * formula = NULL;
@@ -50,6 +62,34 @@ int uppm_install(const char * packageName) {
 
     if (resultCode != UPPM_OK) {
         return resultCode;
+    }
+
+    if ((formula->dep_pkg != NULL) && (strcmp(formula->dep_pkg, "") != 0)) {
+        size_t depPackageNamesLength = strlen(formula->dep_pkg);
+        size_t depPackageNamesCopyLength = depPackageNamesLength + 1;
+        char   depPackageNamesCopy[depPackageNamesCopyLength];
+        memset(depPackageNamesCopy, 0, depPackageNamesCopyLength);
+        strcpy(depPackageNamesCopy, formula->dep_pkg);
+
+        size_t index = 0;
+        char * depPackageNameList[10];
+
+        char * depPackageName = strtok(depPackageNamesCopy, " ");
+
+        while (depPackageName != NULL) {
+            depPackageNameList[index] = depPackageName;
+            index++;
+            depPackageName = strtok (NULL, " ");
+        }
+
+        for (size_t i = 0; i < index; i++) {
+            resultCode = uppm_install(depPackageNameList[i]);
+
+            if (resultCode != UPPM_OK) {
+                uppm_formula_free(formula);
+                return resultCode;
+            }
+        }
     }
 
     size_t  urlLength = strlen(formula->bin_url);
@@ -112,6 +152,12 @@ int uppm_install(const char * packageName) {
         }
     } else {
         fprintf(stderr, "%s already have been fetched.\n", binFilePath);
+    }
+
+    if (exists_and_is_a_directory(installDir)) {
+        if (rm_r(installDir) != 0) {
+            return UPPM_ERROR;
+        }
     }
 
     if (formula->install == NULL) {
