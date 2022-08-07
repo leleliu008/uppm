@@ -28,11 +28,23 @@ ppkg install uppm
 |[bzip2](https://sourceware.org/bzip2/)|required|for uncompressing .tar.bz2 files.|
 |[zlib](https://zlib.net/)|required|for uncompressing .tar.gz and .zip files.|
 
+**[Ubuntu](https://ubuntu.com/)**
+
+```bash
+apt -y install cmake ninja-build libcurl4 libcurl4-openssl-dev libyaml-dev libgit2-dev libarchive-dev liblzma-dev libbz2-dev
+
+git clone https://github.com/leleliu008/uppm
+cd uppm
+
+cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=/usr/local
+cmake --build   build.d
+cmake --install build.d
+```
 
 **[AlpineLinux](https://www.alpinelinux.org/)**
 
 ```bash
-apk add cmake ninja gcc tree libc-dev curl-dev openssl-dev libgit2-dev libarchive-dev yaml-dev xz-dev bzip2-dev zlib-dev
+apk add cmake ninja gcc libc-dev curl-dev openssl-dev libgit2-dev libarchive-dev yaml-dev xz-dev bzip2-dev zlib-dev
 
 git clone https://github.com/leleliu008/uppm
 cd uppm
@@ -46,7 +58,7 @@ cmake --install build.d
 
 ```bash
 pacman -Syyuu --noconfirm
-pacman -S     --noconfirm git cmake ninja gcc tree curl openssl libgit2 libarchive libyaml
+pacman -S     --noconfirm git cmake ninja gcc curl openssl libgit2 libarchive libyaml
 
 git clone https://github.com/leleliu008/uppm
 cd uppm
@@ -59,7 +71,7 @@ cmake --install build.d
 **[FreeBSD](https://www.freebsd.org/)**
 
 ```bash
-pkg install -y cmake ninja gcc tree curl openssl libgit2 libarchive libyaml
+pkg install -y cmake ninja gcc curl openssl libgit2 libarchive libyaml
 
 git clone https://github.com/leleliu008/uppm
 cd uppm

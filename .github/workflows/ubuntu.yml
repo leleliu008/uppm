@@ -18,21 +18,20 @@ jobs:
     steps:
       - uses: actions/checkout@main
 
-      - run:  brew update
-      - run:  brew install cmake ninja tree
+      - run:  sudo apt -y install cmake ninja-build tree libcurl4 libcurl4-openssl-dev libyaml-dev libgit2-dev libarchive-dev liblzma-dev libbz2-dev
 
-      - run:  echo "VCPKG_ROOT=$HOME/.vcpkg/root" >> "$GITHUB_ENV"
-      - run:  install -d $VCPKG_ROOT
-      - run:  git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT
-
-      - run:  sudo apt -y install linux-headers-generic
-
-      - run:  vcpkg install curl openssl libyaml libgit2 libarchive
-
-      - run:  cmake --version
-      - run:  cmake -S . -B   build.d -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_COLOR_MAKEFILE=ON -DCMAKE_VERBOSE_MAKEFILE=ON
+      - run:  cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_COLOR_MAKEFILE=ON -DCMAKE_VERBOSE_MAKEFILE=ON
       - run:  cmake --build   build.d
       - run:  cmake --install build.d
+
       - run:  tree output
+
       - run:  ./output/bin/uppm --help
       - run:  ./output/bin/uppm --version
+      - run:  ./output/bin/uppm env
+      - run:  ./output/bin/uppm update
+      - run:  ./output/bin/uppm search    zip
+      - run:  ./output/bin/uppm info      unzip
+      - run:  ./output/bin/uppm install   unzip
+      - run:  ./output/bin/uppm tree      unzip
+      - run:  ./output/bin/uppm uninstall unzip

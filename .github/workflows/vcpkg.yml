@@ -1,0 +1,31 @@
+name: vcpkg
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  vcpkg:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@main
+
+      - run:  sudo apt -y install cmake ninja-build tree linux-headers-generic
+
+      - run:  echo "VCPKG_ROOT=$HOME/.vcpkg/root" >> "$GITHUB_ENV"
+      - run:  install -d $VCPKG_ROOT
+      - run:  git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT
+
+      - run:  vcpkg install curl openssl libyaml libgit2 libarchive
+
+      - run:  cmake --version
+      - run:  cmake -S . -B   build.d -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_COLOR_MAKEFILE=ON -DCMAKE_VERBOSE_MAKEFILE=ON
+      - run:  cmake --build   build.d
+      - run:  cmake --install build.d
+      - run:  tree output
+      - run:  ./output/bin/uppm --help
+      - run:  ./output/bin/uppm --version
