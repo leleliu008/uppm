@@ -39,6 +39,8 @@
 #define UPPM_INSTALLED_METADATA_FILE_OPEN_ERROR  30
 #define UPPM_INSTALLED_METADATA_FILE_READ_ERROR  31
 
+#define UPPM_INFO_UNRECOGNIZED_KEY  41
+
 void uppm_show_error_message(int errorCode, const char * str);
 
 typedef struct {
@@ -104,9 +106,9 @@ int uppm_update_self();
 
 int uppm_search(const char * keyword);
 
-int uppm_info_of_the_available_package(const char * packageName);
+int uppm_info_of_the_available_package(const char * packageName, const char * key);
 
-int uppm_info_of_the_installed_package(const char * packageName);
+int uppm_info_of_the_installed_package(const char * packageName, const char * key);
 
 int uppm_tree_of_the_installed_package(const char * packageName);
 

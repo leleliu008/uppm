@@ -76,7 +76,7 @@ int uppm_search(const char * keyword) {
                 }
 
                 //printf("%s\n", packageName);
-                resultCode = uppm_info_of_the_available_package(packageName);
+                resultCode = uppm_info_of_the_available_package(packageName, NULL);
 
                 if (resultCode != UPPM_OK) {
                     uppm_formula_repo_list_free(formulaRepoList);

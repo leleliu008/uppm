@@ -158,14 +158,15 @@ all relevant dirs and files are located in `~/.uppm` directory.
 *   **show infomation of the given package**
         
         uppm info curl
+        uppm info curl formula
         uppm info curl version
         uppm info curl summary
         uppm info curl webpage
         uppm info curl bin-url
         uppm info curl bin-sha
+        uppm info curl install
 
-        uppm info curl installed-dir-path
-        uppm info curl installed-dir-tree
+        uppm info curl installed-dir
         uppm info curl installed-metadata-path
         uppm info curl installed-metadata-json
         uppm info curl installed-metadata-yaml

@@ -57,12 +57,17 @@ int uppm_main(int argc, char* argv[]) {
     }
 
     if (strcmp(action, "info") == 0) {
-        if (argv[2] == NULL) {
-            fprintf(stderr, "Usage: %s info <PACKAGE-NAME>, <PACKAGE-NAME> is not given.\n", argv[0]);
-            return 1;
-        } else {
-            return uppm_info_of_the_available_package(argv[2]);
+        int resultCode = uppm_info_of_the_available_package(argv[2], argv[3]);
+
+        if (resultCode == UPPM_PACKAGE_NAME_IS_NULL) {
+            fprintf(stderr, "Usage: %s info <PACKAGE-NAME> [KEY], <PACKAGE-NAME> is not given.\n", argv[0]);
+        } else if (resultCode == UPPM_PACKAGE_NAME_IS_NULL) {
+            fprintf(stderr, "Usage: %s info <PACKAGE-NAME> [KEY], <PACKAGE-NAME> is empty string.\n", argv[0]);
+        } else if (resultCode == UPPM_INFO_UNRECOGNIZED_KEY) {
+            fprintf(stderr, "Usage: %s info <PACKAGE-NAME> [KEY], unrecognized KEY: %s\n", argv[0], argv[3]);
         }
+
+        return resultCode;
     }
 
     if (strcmp(action, "tree") == 0) {
