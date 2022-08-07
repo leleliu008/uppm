@@ -1,7 +1,0 @@
-/home/leleliu008/uppm/build.d/CMakeFiles/uppm.dir
-/home/leleliu008/uppm/build.d/CMakeFiles/edit_cache.dir
-/home/leleliu008/uppm/build.d/CMakeFiles/rebuild_cache.dir
-/home/leleliu008/uppm/build.d/CMakeFiles/list_install_components.dir
-/home/leleliu008/uppm/build.d/CMakeFiles/install.dir
-/home/leleliu008/uppm/build.d/CMakeFiles/install/local.dir
-/home/leleliu008/uppm/build.d/CMakeFiles/install/strip.dir
