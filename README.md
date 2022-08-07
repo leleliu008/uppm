@@ -31,7 +31,22 @@ ppkg install uppm
 **[Ubuntu](https://ubuntu.com/)**
 
 ```bash
-apt -y install cmake ninja-build libcurl4 libcurl4-openssl-dev libyaml-dev libgit2-dev libarchive-dev liblzma-dev libbz2-dev
+apt -y update
+apt -y install cmake ninja-build gcc libcurl4 libcurl4-openssl-dev libyaml-dev libgit2-dev libarchive-dev liblzma-dev libbz2-dev
+
+git clone https://github.com/leleliu008/uppm
+cd uppm
+
+cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=/usr/local
+cmake --build   build.d
+cmake --install build.d
+```
+
+**[Fedora](https://getfedora.org/)**
+
+```bash
+dnf -y update
+dnf -y install cmake ninja-build gcc libcurl-devel libyaml-devel libgit2-devel libarchive-devel xz-devel bzip2-devel
 
 git clone https://github.com/leleliu008/uppm
 cd uppm
