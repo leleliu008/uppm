@@ -68,6 +68,20 @@ cmake --build   build.d
 cmake --install build.d
 ```
 
+**[macOS](https://www.apple.com/macos/)**
+
+```bash
+brew update
+brew install cmake ninja curl libyaml libgit2 libarchive
+
+git clone https://github.com/leleliu008/uppm
+cd uppm
+
+cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_FIND_ROOT_PATH="$(brew --prefix openssl@1.1);$(brew --prefix libarchive)"
+cmake --build   build.d
+cmake --install build.d
+```
+
 **[FreeBSD](https://www.freebsd.org/)**
 
 ```bash

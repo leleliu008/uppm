@@ -79,14 +79,9 @@ if (DEFINED VCPKG_INSTALLED_DIR)
     target_link_libraries(uppm -lhttp_parser)
 endif()
 
-target_include_directories(uppm PRIVATE "${CMAKE_BINARY_DIR}")
-target_include_directories(uppm PRIVATE "${LIBGIT2_INCLUDE_DIR}")
-target_include_directories(uppm PRIVATE "${LIBYAML_INCLUDE_DIR}")
-
-#if ("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL FreeBSD)
-#    target_include_directories(uppm PRIVATE /usr/local/include)
-#    target_link_directories   (uppm PRIVATE /usr/local/lib)
-#endif()
+include_directories("${CMAKE_BINARY_DIR}")
+include_directories("${LIBGIT2_INCLUDE_DIR}")
+include_directories("${LIBYAML_INCLUDE_DIR}")
 
 ########################################################################################
 
