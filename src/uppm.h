@@ -124,6 +124,10 @@ int uppm_uninstall(const char * packageName);
 
 int uppm_upgrade(const char * packageName);
 
+int uppm_integrate_zsh_completion(const char * outputDir);
+int uppm_integrate_bash_completion(const char * outputDir);
+int uppm_integrate_fish_completion(const char * outputDir);
+
 int uppm_cleanup();
 
 int uppm_is_package_name(const char * packageName);

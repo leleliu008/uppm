@@ -163,8 +163,6 @@ all relevant dirs and files are located in `~/.uppm` directory.
 
         uppm update
         
-    **Note:** this software supports multi formula repositories. Offical formula repository is [uppm-formula-repository](https://github.com/leleliu008/uppm-formula-repository)
-
 *   **search packages**
         
         uppm search curl
@@ -251,7 +249,6 @@ all relevant dirs and files are located in `~/.uppm` directory.
         uppm upgrade @self --china
         uppm upgrade @self --china -d
         
-
 *   **list the avaliable formula repositories**
 
         uppm formula-repo list
@@ -259,6 +256,15 @@ all relevant dirs and files are located in `~/.uppm` directory.
 *   **add a new formula repository**
 
         uppm formula-repo add my_repo https://github.com/leleliu008/uppm-formula-repository-linux-x86_64.git
+        
+    **Note:**
+    - this software supports multi formula repositories.
+    - offical formula repository are as follows:
+        - https://github.com/leleliu008/uppm-formula-repository-linux-x86_64
+        - https://github.com/leleliu008/uppm-formula-repository-linux-arm64
+        - https://github.com/leleliu008/uppm-formula-repository-macos-x86_64
+        - https://github.com/leleliu008/uppm-formula-repository-macos-arm64
+        - https://github.com/leleliu008/uppm-formula-repository-android-aarch64
 
 *   **delete a existing formula repository**
 

@@ -178,6 +178,23 @@ int uppm_main(int argc, char* argv[]) {
         }
     }
 
+    if (strcmp(action, "integrate") == 0) {
+        if (argv[2] == NULL) {
+            fprintf(stderr, "Usage: %s integrate <zsh|bash|fish>\n", argv[0]);
+            return UPPM_ARG_IS_NULL;
+        } else if (strcmp(argv[2], "zsh") == 0) {
+            return uppm_integrate_zsh_completion(NULL);
+        } else if (strcmp(argv[2], "bash") == 0) {
+            return uppm_integrate_bash_completion(NULL);
+        } else if (strcmp(argv[2], "fish") == 0) {
+            return uppm_integrate_fish_completion(NULL);
+        } else {
+            fprintf(stderr, "%sunrecognized argument: %s%s\n", COLOR_RED, argv[2], COLOR_OFF);
+            return 1;
+        }
+    }
+
+
     fprintf(stderr, "%sunrecognized action: %s%s\n", COLOR_RED, action, COLOR_OFF);
     return 1;
 }
