@@ -19,7 +19,8 @@ ppkg install uppm
 |[ninja](https://ninja-build.org/)|required |for doing jobs that read from `build.ninja`|
 |[pkg-config>=0.18](https://www.freedesktop.org/wiki/Software/pkg-config/)|recommended|for finding libraries|
 ||||
-|[libyaml](https://github.com/yaml/libyaml/)|required|for parsing formula files.|
+|[jansson](https://github.com/akheron/jansson)|required|for parsing and creating JSON.|
+|[libyaml](https://github.com/yaml/libyaml/)|required|for parsing formula files whose format is YAML.|
 |[libgit2](https://libgit2.org/)|required|for updating formula repositories.|
 |[libcurl](https://curl.se/)|required|for http requesting support.|
 |[openssl](https://www.openssl.org/)|required|for https requesting support and SHA-256 sum checking support.|
@@ -32,7 +33,7 @@ ppkg install uppm
 
 ```bash
 apt -y update
-apt -y install cmake ninja-build gcc libcurl4 libcurl4-openssl-dev libyaml-dev libgit2-dev libarchive-dev liblzma-dev libbz2-dev
+apt -y install cmake ninja-build gcc libcurl4 libcurl4-openssl-dev libyaml-dev libjansson-dev libgit2-dev libarchive-dev liblzma-dev libbz2-dev
 
 git clone https://github.com/leleliu008/uppm
 cd uppm
@@ -46,7 +47,7 @@ cmake --install build.d
 
 ```bash
 dnf -y update
-dnf -y install cmake ninja-build gcc libcurl-devel libyaml-devel libgit2-devel libarchive-devel xz-devel bzip2-devel
+dnf -y install cmake ninja-build gcc libcurl-devel libyaml-devel jansson-devel libgit2-devel libarchive-devel xz-devel bzip2-devel
 
 git clone https://github.com/leleliu008/uppm
 cd uppm
@@ -59,7 +60,7 @@ cmake --install build.d
 **[AlpineLinux](https://www.alpinelinux.org/)**
 
 ```bash
-apk add cmake ninja gcc libc-dev curl-dev openssl-dev libgit2-dev libarchive-dev yaml-dev xz-dev bzip2-dev zlib-dev
+apk add cmake ninja gcc libc-dev curl-dev openssl-dev libgit2-dev libarchive-dev yaml-dev jansson-dev xz-dev bzip2-dev zlib-dev
 
 git clone https://github.com/leleliu008/uppm
 cd uppm
@@ -73,7 +74,7 @@ cmake --install build.d
 
 ```bash
 pacman -Syyuu --noconfirm
-pacman -S     --noconfirm git cmake ninja gcc curl openssl libgit2 libarchive libyaml
+pacman -S     --noconfirm git cmake ninja gcc curl openssl libgit2 libarchive libyaml jansson
 
 git clone https://github.com/leleliu008/uppm
 cd uppm
@@ -87,7 +88,7 @@ cmake --install build.d
 
 ```bash
 brew update
-brew install cmake ninja curl libyaml libgit2 libarchive
+brew install cmake ninja curl jansson libyaml libgit2 libarchive
 
 git clone https://github.com/leleliu008/uppm
 cd uppm
@@ -100,7 +101,7 @@ cmake --install build.d
 **[FreeBSD](https://www.freebsd.org/)**
 
 ```bash
-pkg install -y cmake ninja gcc curl openssl libgit2 libarchive libyaml
+pkg install -y cmake ninja gcc curl openssl libgit2 libarchive libyaml jansson
 
 git clone https://github.com/leleliu008/uppm
 cd uppm
@@ -118,7 +119,7 @@ cd vcpkg
 export VCPKG_ROOT="$PWD/vcpkg"
 export PATH="$VCPKG_ROOT:$PATH"
 
-vcpkg install libyaml libgit2 libarchive curl openssl
+vcpkg install jansson libyaml libgit2 libarchive curl openssl
 
 git clone https://github.com/leleliu008/uppm
 cd uppm

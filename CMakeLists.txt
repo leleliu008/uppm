@@ -55,6 +55,8 @@ find_package(BZip2 REQUIRED)
 
 find_package(LibYAML REQUIRED)
 
+find_package(JANSSON REQUIRED)
+
 ########################################################################################
 
 aux_source_directory(src/core CORE_SRCS)
@@ -73,6 +75,7 @@ target_link_libraries(uppm ${ZLIB_LIBRARIES})
 target_link_libraries(uppm ${BZIP2_LIBRARIES})
 target_link_libraries(uppm ${LIBGIT2_LIBRARY})
 target_link_libraries(uppm ${LIBYAML_LIBRARY})
+target_link_libraries(uppm ${JANSSON_LIBRARY})
 
 if (DEFINED VCPKG_INSTALLED_DIR)
     target_link_libraries(uppm -lpcre)
@@ -82,6 +85,7 @@ endif()
 include_directories("${CMAKE_BINARY_DIR}")
 include_directories("${LIBGIT2_INCLUDE_DIR}")
 include_directories("${LIBYAML_INCLUDE_DIR}")
+include_directories("${JANSSON_INCLUDE_DIR}")
 
 ########################################################################################
 

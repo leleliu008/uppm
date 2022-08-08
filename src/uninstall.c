@@ -15,32 +15,28 @@ int uppm_uninstall(const char * packageName) {
     char * userHomeDir = getenv("HOME");
 
     if (userHomeDir == NULL || strcmp(userHomeDir, "") == 0) {
-        fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
         return UPPM_ENV_HOME_NOT_SET;
     }
 
     size_t userHomeDirLength = strlen(userHomeDir);
 
-    size_t  installDirLength = userHomeDirLength + strlen(packageName) + 20;
-    char    installDir[installDirLength];
-    memset (installDir, 0, installDirLength);
-    sprintf(installDir, "%s/.uppm/installed/%s", userHomeDir, packageName);
+    size_t  installedDirLength = userHomeDirLength + strlen(packageName) + 20;
+    char    installedDir[installedDirLength];
+    memset (installedDir, 0, installedDirLength);
+    sprintf(installedDir, "%s/.uppm/installed/%s", userHomeDir, packageName);
 
-    size_t  installedMetadataFilePathLength = installDirLength + 26;
+    size_t  installedMetadataFilePathLength = installedDirLength + 26;
     char    installedMetadataFilePath[installedMetadataFilePathLength];
     memset (installedMetadataFilePath, 0, installedMetadataFilePathLength);
-    sprintf(installedMetadataFilePath, "%s/uppm-installed-metadata", installDir);
+    sprintf(installedMetadataFilePath, "%s/uppm-installed-metadata", installedDir);
 
-    if (exists_and_is_a_directory(installDir)) {
-        if (exists_and_is_a_regular_file(installedMetadataFilePath)) {
-            if (rm_r(installDir) == 0) {
-                return UPPM_OK;
-            } else {
-                return UPPM_ERROR;
-            }
+    if (exists_and_is_a_regular_file(installedMetadataFilePath)) {
+        if (rm_r(installedDir) == 0) {
+            return UPPM_OK;
+        } else {
+            return UPPM_ERROR;
         }
     }
 
-    fprintf(stderr, "package [%s] is not installed.\n", packageName);
     return UPPM_PACKAGE_IS_NOT_INSTALLED;
 }

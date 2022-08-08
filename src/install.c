@@ -35,7 +35,6 @@ int uppm_install(const char * packageName) {
     char * userHomeDir = getenv("HOME");
 
     if (userHomeDir == NULL || strcmp(userHomeDir, "") == 0) {
-        fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
         return UPPM_ENV_HOME_NOT_SET;
     }
 

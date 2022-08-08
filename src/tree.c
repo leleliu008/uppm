@@ -5,7 +5,7 @@
 #include "core/fs.h"
 #include "uppm.h"
 
-int uppm_tree_of_the_installed_package(const char * packageName) {
+int uppm_tree(const char * packageName) {
     int resultCode = uppm_is_package_name(packageName);
 
     if (resultCode != UPPM_OK) {
@@ -15,7 +15,6 @@ int uppm_tree_of_the_installed_package(const char * packageName) {
     char * userHomeDir = getenv("HOME");
 
     if (userHomeDir == NULL || strcmp(userHomeDir, "") == 0) {
-        fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
         return UPPM_ENV_HOME_NOT_SET;
     }
 
@@ -39,7 +38,6 @@ int uppm_tree_of_the_installed_package(const char * packageName) {
             return UPPM_OK;
         }
     } else {
-        fprintf(stderr, "package [%s] is not installed.\n", packageName);
         return UPPM_PACKAGE_IS_NOT_INSTALLED;
     }
 }

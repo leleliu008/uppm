@@ -20,7 +20,7 @@ jobs:
 
       - run:  sudo apt -y update
       - run:  sudo apt -y upgrade
-      - run:  sudo apt -y install cmake ninja-build gcc tree libcurl4-openssl-dev libyaml-dev libgit2-dev libarchive-dev liblzma-dev libbz2-dev
+      - run:  sudo apt -y install cmake ninja-build gcc tree libcurl4-openssl-dev libyaml-dev libjansson-dev libgit2-dev libarchive-dev liblzma-dev libbz2-dev
 
       - run:  cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_COLOR_MAKEFILE=ON -DCMAKE_VERBOSE_MAKEFILE=ON
       - run:  cmake --build   build.d

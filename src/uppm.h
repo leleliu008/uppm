@@ -96,6 +96,26 @@ int  uppm_formula_repo_list_update();
 
 //////////////////////////////////////////////////////////////////////
 
+typedef struct {
+    char * summary;
+    char * webpage;
+    char * version;
+    char * license;
+    char * bin_url;
+    char * bin_sha;
+    char * dep_pkg;
+    char * install;
+
+    char * datatime;
+    char * uppmvers;
+} UPPMInstalledMetadata;
+
+int  uppm_installed_metadata_parse(const char * packageName, UPPMInstalledMetadata * * metadata);
+void uppm_installed_metadata_free(UPPMInstalledMetadata * metadata);
+void uppm_installed_metadata_dump(UPPMInstalledMetadata * metadata);
+
+//////////////////////////////////////////////////////////////////////
+
 int uppm_main(int argc, char* argv[]);
 
 int uppm_init();
@@ -106,11 +126,9 @@ int uppm_update_self();
 
 int uppm_search(const char * keyword);
 
-int uppm_info_of_the_available_package(const char * packageName, const char * key);
+int uppm_info(const char * packageName, const char * key);
 
-int uppm_info_of_the_installed_package(const char * packageName, const char * key);
-
-int uppm_tree_of_the_installed_package(const char * packageName);
+int uppm_tree(const char * packageName);
 
 int uppm_depends(const char * packageName);
 

@@ -18,11 +18,11 @@ jobs:
     container: alpine:${{ matrix.tag }}
 
     steps:
-      - run: apk add cmake ninja gcc tree libc-dev curl-dev openssl-dev libgit2-dev libarchive-dev yaml-dev xz-dev bzip2-dev zlib-dev
+      - run: apk add cmake ninja gcc tree libc-dev curl-dev openssl-dev libgit2-dev libarchive-dev yaml-dev jansson-dev xz-dev bzip2-dev zlib-dev
 
       - uses: actions/checkout@main
 
-      - run:  cmake -S . -B   build.d -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_COLOR_MAKEFILE=ON -DCMAKE_VERBOSE_MAKEFILE=ON -G Ninja
+      - run:  cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_COLOR_MAKEFILE=ON -DCMAKE_VERBOSE_MAKEFILE=ON
       - run:  cmake --build   build.d
       - run:  cmake --install build.d
 

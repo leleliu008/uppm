@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@main
 
       - run:  brew update
-      - run:  brew install cmake ninja tree curl libyaml libgit2 libarchive
+      - run:  brew install cmake ninja tree curl jansson libyaml libgit2 libarchive
 
       - run:  cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_COLOR_MAKEFILE=ON -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_FIND_ROOT_PATH="$(brew --prefix openssl@1.1);$(brew --prefix libarchive)"
       - run:  cmake --build   build.d

@@ -11,7 +11,6 @@ int uppm_formula_cat(const char * packageName) {
     int resultCode = uppm_formula_path(packageName, &formulaFilePath);
 
     if (resultCode != UPPM_OK) {
-        fprintf(stderr, "package [%s] is not avaiable.\n", packageName);
         return resultCode;
     }
 
