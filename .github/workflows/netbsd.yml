@@ -38,6 +38,7 @@ jobs:
             run ./output/bin/uppm env
 
             export SSL_CERT_FILE=/etc/openssl/certs/ca-certificates.crt
+            run ls /etc/openssl/certs/
 
             run ./output/bin/uppm update
             run ./output/bin/uppm search    zip
