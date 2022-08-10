@@ -23,7 +23,7 @@ jobs:
           mem: 2048
           box: generic/netbsd${{ matrix.version }}
           run: |
-            run sudo pkgin -y install mozilla-rootcerts cmake ninja-build clang tree curl libgit2 libarchive libyaml jansson
+            run sudo pkgin -y install cmake ninja-build clang tree curl libgit2 libarchive libyaml jansson
 
             run cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_COLOR_MAKEFILE=ON -DCMAKE_VERBOSE_MAKEFILE=ON
             run cmake --build   build.d
@@ -37,11 +37,7 @@ jobs:
             run ./output/bin/uppm --version
             run ./output/bin/uppm env
 
-            sudo mozilla-rootcerts install || true
-            run ls /etc/openssl/certs/
-            run ls /usr/pkg/etc/openssl/certs
-
-            export SSL_CERT_FILE=/etc/openssl/certs/ca-certificates.crt
+            export SSL_CERT_FILE=/usr/pkg/etc/openssl/certs/ca-certificates.crt
 
             run ./output/bin/uppm update
             run ./output/bin/uppm search    zip
