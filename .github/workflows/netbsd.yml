@@ -39,6 +39,7 @@ jobs:
 
             sudo mozilla-rootcerts install || true
             run ls /etc/openssl/certs/
+            run ls /usr/pkg/etc/openssl/certs
 
             export SSL_CERT_FILE=/etc/openssl/certs/ca-certificates.crt
 
