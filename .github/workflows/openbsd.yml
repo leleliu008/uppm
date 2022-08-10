@@ -18,7 +18,7 @@ jobs:
           mem: 2048
           box: generic/openbsd6
           run: |
-            run sudo pkg_add cmake ninja gcc-11.2.0p0 tree curl openssl-1.1.1n libgit2 libarchive libyaml jansson
+            run sudo pkg_add cmake ninja llvm tree curl libgit2 libarchive libyaml jansson
 
             run cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_COLOR_MAKEFILE=ON -DCMAKE_VERBOSE_MAKEFILE=ON
             run cmake --build   build.d
