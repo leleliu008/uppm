@@ -33,7 +33,7 @@ ppkg install uppm
 
 ```bash
 apt -y update
-apt -y install cmake ninja-build gcc libcurl4 libcurl4-openssl-dev libyaml-dev libjansson-dev libgit2-dev libarchive-dev liblzma-dev libbz2-dev
+apt -y install git cmake ninja-build gcc libcurl4 libcurl4-openssl-dev libyaml-dev libjansson-dev libgit2-dev libarchive-dev liblzma-dev libbz2-dev
 
 git clone https://github.com/leleliu008/uppm
 cd uppm
@@ -47,7 +47,7 @@ cmake --install build.d
 
 ```bash
 dnf -y update
-dnf -y install cmake ninja-build gcc libcurl-devel libyaml-devel jansson-devel libgit2-devel libarchive-devel xz-devel bzip2-devel
+dnf -y install git cmake ninja-build gcc libcurl-devel libyaml-devel jansson-devel libgit2-devel libarchive-devel xz-devel bzip2-devel
 
 git clone https://github.com/leleliu008/uppm
 cd uppm
@@ -60,7 +60,7 @@ cmake --install build.d
 **[AlpineLinux](https://www.alpinelinux.org/)**
 
 ```bash
-apk add cmake ninja gcc libc-dev curl-dev openssl-dev libgit2-dev libarchive-dev yaml-dev jansson-dev xz-dev bzip2-dev zlib-dev
+apk add git cmake ninja gcc libc-dev curl-dev openssl-dev libgit2-dev libarchive-dev yaml-dev jansson-dev xz-dev bzip2-dev zlib-dev
 
 git clone https://github.com/leleliu008/uppm
 cd uppm
@@ -88,7 +88,7 @@ cmake --install build.d
 
 ```bash
 brew update
-brew install cmake ninja curl jansson libyaml libgit2 libarchive
+brew install git cmake ninja curl jansson libyaml libgit2 libarchive
 
 git clone https://github.com/leleliu008/uppm
 cd uppm
@@ -101,7 +101,7 @@ cmake --install build.d
 **[FreeBSD](https://www.freebsd.org/)**
 
 ```bash
-pkg install -y cmake ninja gcc curl openssl libgit2 libarchive libyaml jansson
+pkg install -y git cmake ninja gcc curl openssl libgit2 libarchive libyaml jansson
 
 git clone https://github.com/leleliu008/uppm
 cd uppm
@@ -110,6 +110,22 @@ cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=/usr/local
 cmake --build   build.d
 cmake --install build.d
 ```
+
+**[NetBSD](https://www.netbsd.org/)**
+
+```bash
+pkgin -y install git mozilla-rootcerts cmake ninja-build clang curl openssl libgit2 libarchive libyaml jansson
+
+mozilla-rootcerts install
+
+git clone https://github.com/leleliu008/uppm
+cd uppm
+
+cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=/usr/local
+cmake --build   build.d
+cmake --install build.d
+```
+
 
 **[vcpkg](https://github.com/microsoft/vcpkg)**
 ```bash
