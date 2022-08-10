@@ -1,4 +1,4 @@
-name: NetBSD
+name: OpenBSD
 
 on:
   push:
@@ -10,20 +10,15 @@ jobs:
   test:
     runs-on: macos-12
     
-    strategy:
-      fail-fast: false
-      matrix:
-        version: [8, 9]
-
     steps:
       - uses: actions/checkout@v3
 
       - uses: leleliu008/github-actions-vagrant@v1
         with:
           mem: 2048
-          box: generic/netbsd${{ matrix.version }}
+          box: generic/openbsd6
           run: |
-            run sudo pkgin -y install cmake ninja-build clang tree curl openssl libgit2 libarchive libyaml jansson
+            run sudo pkg_add cmake ninja gcc-11.2.0p0 tree curl openssl-1.1.1n libgit2 libarchive libyaml jansson
 
             run cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_COLOR_MAKEFILE=ON -DCMAKE_VERBOSE_MAKEFILE=ON
             run cmake --build   build.d
@@ -31,15 +26,9 @@ jobs:
 
             run tree output
 
-            export LD_LIBRARY_PATH=/usr/pkg/lib
-
             run ./output/bin/uppm --help
             run ./output/bin/uppm --version
             run ./output/bin/uppm env
-
-            run sudo pkgin -y install mozilla-rootcerts
-            run sudo mozilla-rootcerts install
-
             run ./output/bin/uppm update
             run ./output/bin/uppm search    zip
             run ./output/bin/uppm info      unzip
