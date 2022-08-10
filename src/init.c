@@ -53,39 +53,44 @@ int uppm_init() {
         return UPPM_ERROR;
     } else {
         while ((dir_entry = readdir(dir))) {
-            size_t  installedMetadataFilePathLength = installedDirLength + strlen(dir_entry->d_name) + 26;
+            size_t  packageInstalledDirLength = installedDirLength + strlen(dir_entry->d_name) + 2;
+            char    packageInstalledDir[packageInstalledDirLength];
+            memset (packageInstalledDir, 0, packageInstalledDirLength);
+            sprintf(packageInstalledDir, "%s/%s", installedDir, dir_entry->d_name);
+
+            size_t  installedMetadataFilePathLength = packageInstalledDirLength + 25;
             char    installedMetadataFilePath[installedMetadataFilePathLength];
             memset (installedMetadataFilePath, 0, installedMetadataFilePathLength);
-            sprintf(installedMetadataFilePath, "%s/%s/uppm-installed-metadata", installedDir, dir_entry->d_name);
+            sprintf(installedMetadataFilePath, "%s/uppm-installed-metadata", packageInstalledDir);
 
             if (exists_and_is_a_regular_file(installedMetadataFilePath)) {
                 const char * PATH = getenv("PATH");
 
-                size_t  binDirLength = installedDirLength + 5;
+                size_t  binDirLength = packageInstalledDirLength + 5;
                 char    binDir[binDirLength];
                 memset (binDir, 0, binDirLength);
-                sprintf(binDir, "%s/bin", installedDir);
+                sprintf(binDir, "%s/bin", packageInstalledDir);
 
                 if (exists_and_is_a_directory(binDir)) {
-                    size_t  newPATHLength = installedDirLength + binDirLength + strlen(PATH);
+                    size_t  newPATHLength = packageInstalledDirLength + binDirLength + strlen(PATH) + 3;
                     char    newPATH[newPATHLength];
                     memset (newPATH, 0, newPATHLength);
-                    sprintf(newPATH, "%s:%s:%s", installedDir, binDir, PATH);
+                    sprintf(newPATH, "%s:%s:%s", packageInstalledDir, binDir, PATH);
 
                     setenv("PATH", newPATH, 1);
                 } else {
-                    size_t  newPATHLength = installedDirLength + strlen(PATH);
+                    size_t  newPATHLength = packageInstalledDirLength + strlen(PATH) + 2;
                     char    newPATH[newPATHLength];
                     memset (newPATH, 0, newPATHLength);
-                    sprintf(newPATH, "%s:%s", installedDir, PATH);
+                    sprintf(newPATH, "%s:%s", packageInstalledDir, PATH);
 
                     setenv("PATH", newPATH, 1);
                 }
 
-                size_t  aclocalDirLength = installedDirLength + 15;
+                size_t  aclocalDirLength = packageInstalledDirLength + 15;
                 char    aclocalDir[aclocalDirLength];
                 memset (aclocalDir, 0, aclocalDirLength);
-                sprintf(aclocalDir, "%s/share/aclocal", installedDir);
+                sprintf(aclocalDir, "%s/share/aclocal", packageInstalledDir);
 
                 if (exists_and_is_a_directory(aclocalDir)) {
                     const char * ACLOCAL_PATH = getenv("ACLOCAL_PATH");

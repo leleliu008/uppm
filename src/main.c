@@ -88,7 +88,7 @@ int uppm_main(int argc, char* argv[]) {
         } else if (resultCode == UPPM_PACKAGE_NAME_IS_EMPTY) {
             fprintf(stderr, "Usage: %s info <PACKAGE-NAME> [KEY], <PACKAGE-NAME> is empty string.\n", argv[0]);
         } else if (resultCode == UPPM_PACKAGE_NAME_IS_INVALID) {
-            fprintf(stderr, "Usage: %s info <PACKAGE-NAME> [KEY], <PACKAGE-NAME> is invalid.\n", argv[0]);
+            fprintf(stderr, "Usage: %s info <PACKAGE-NAME> [KEY], <PACKAGE-NAME> is not match pattern ^[A-Za-z0-9+-._]+$\n", argv[0]);
         } else if (resultCode == UPPM_INFO_UNRECOGNIZED_KEY) {
             fprintf(stderr, "Usage: %s info <PACKAGE-NAME> [KEY], unrecognized KEY: %s\n", argv[0], argv[3]);
         } else if (resultCode == UPPM_PACKAGE_IS_NOT_AVAILABLE) {
@@ -114,7 +114,7 @@ int uppm_main(int argc, char* argv[]) {
         } else if (resultCode == UPPM_PACKAGE_NAME_IS_EMPTY) {
             fprintf(stderr, "Usage: %s tree <PACKAGE-NAME> [KEY], <PACKAGE-NAME> is empty string.\n", argv[0]);
         } else if (resultCode == UPPM_PACKAGE_NAME_IS_INVALID) {
-            fprintf(stderr, "Usage: %s tree <PACKAGE-NAME> [KEY], <PACKAGE-NAME> is invalid.\n", argv[0]);
+            fprintf(stderr, "Usage: %s tree <PACKAGE-NAME> [KEY], <PACKAGE-NAME> is not match pattern ^[A-Za-z0-9+-._]+$\n", argv[0]);
         } else if (resultCode == UPPM_PACKAGE_IS_NOT_AVAILABLE) {
             fprintf(stderr, "package [%s] is not available.\n", argv[2]);
         } else if (resultCode == UPPM_PACKAGE_IS_NOT_INSTALLED) {
@@ -138,7 +138,7 @@ int uppm_main(int argc, char* argv[]) {
         } else if (resultCode == UPPM_PACKAGE_NAME_IS_EMPTY) {
             fprintf(stderr, "Usage: %s depends <PACKAGE-NAME>, <PACKAGE-NAME> is empty string.\n", argv[0]);
         } else if (resultCode == UPPM_PACKAGE_NAME_IS_INVALID) {
-            fprintf(stderr, "Usage: %s depends <PACKAGE-NAME>, <PACKAGE-NAME> is invalid.\n", argv[0]);
+            fprintf(stderr, "Usage: %s depends <PACKAGE-NAME>, <PACKAGE-NAME> is not match pattern ^[A-Za-z0-9+-._]+$\n", argv[0]);
         } else if (resultCode == UPPM_PACKAGE_IS_NOT_AVAILABLE) {
             fprintf(stderr, "package [%s] is not available.\n", argv[2]);
         } else if (resultCode == UPPM_PACKAGE_IS_NOT_INSTALLED) {
@@ -162,7 +162,7 @@ int uppm_main(int argc, char* argv[]) {
         } else if (resultCode == UPPM_PACKAGE_NAME_IS_EMPTY) {
             fprintf(stderr, "Usage: %s fetch <PACKAGE-NAME>, <PACKAGE-NAME> is empty string.\n", argv[0]);
         } else if (resultCode == UPPM_PACKAGE_NAME_IS_INVALID) {
-            fprintf(stderr, "Usage: %s fetch <PACKAGE-NAME>, <PACKAGE-NAME> is invalid.\n", argv[0]);
+            fprintf(stderr, "Usage: %s fetch <PACKAGE-NAME>, <PACKAGE-NAME> is not match pattern ^[A-Za-z0-9+-._]+$\n", argv[0]);
         } else if (resultCode == UPPM_PACKAGE_IS_NOT_AVAILABLE) {
             fprintf(stderr, "package [%s] is not available.\n", argv[2]);
         } else if (resultCode == UPPM_PACKAGE_IS_NOT_INSTALLED) {
@@ -186,7 +186,7 @@ int uppm_main(int argc, char* argv[]) {
         } else if (resultCode == UPPM_PACKAGE_NAME_IS_EMPTY) {
             fprintf(stderr, "Usage: %s install <PACKAGE-NAME>, <PACKAGE-NAME> is empty string.\n", argv[0]);
         } else if (resultCode == UPPM_PACKAGE_NAME_IS_INVALID) {
-            fprintf(stderr, "Usage: %s install <PACKAGE-NAME>, <PACKAGE-NAME> is invalid.\n", argv[0]);
+            fprintf(stderr, "Usage: %s install <PACKAGE-NAME>, <PACKAGE-NAME> is not match pattern ^[A-Za-z0-9+-._]+$\n", argv[0]);
         } else if (resultCode == UPPM_PACKAGE_IS_NOT_AVAILABLE) {
             fprintf(stderr, "package [%s] is not available.\n", argv[2]);
         } else if (resultCode == UPPM_PACKAGE_IS_NOT_INSTALLED) {
@@ -210,7 +210,7 @@ int uppm_main(int argc, char* argv[]) {
         } else if (resultCode == UPPM_PACKAGE_NAME_IS_EMPTY) {
             fprintf(stderr, "Usage: %s uninstall <PACKAGE-NAME>, <PACKAGE-NAME> is empty string.\n", argv[0]);
         } else if (resultCode == UPPM_PACKAGE_NAME_IS_INVALID) {
-            fprintf(stderr, "Usage: %s uninstall <PACKAGE-NAME>, <PACKAGE-NAME> is invalid.\n", argv[0]);
+            fprintf(stderr, "Usage: %s uninstall <PACKAGE-NAME>, <PACKAGE-NAME> is not match pattern ^[A-Za-z0-9+-._]+$\n", argv[0]);
         } else if (resultCode == UPPM_PACKAGE_IS_NOT_AVAILABLE) {
             fprintf(stderr, "package [%s] is not available.\n", argv[2]);
         } else if (resultCode == UPPM_PACKAGE_IS_NOT_INSTALLED) {
@@ -276,7 +276,7 @@ int uppm_main(int argc, char* argv[]) {
         } else if (resultCode == UPPM_PACKAGE_NAME_IS_EMPTY) {
             fprintf(stderr, "Usage: %s is-package-available <PACKAGE-NAME>, <PACKAGE-NAME> is empty string.\n", argv[0]);
         } else if (resultCode == UPPM_PACKAGE_NAME_IS_INVALID) {
-            fprintf(stderr, "Usage: %s is-package-available <PACKAGE-NAME>, <PACKAGE-NAME> is invalid.\n", argv[0]);
+            fprintf(stderr, "Usage: %s is-package-available <PACKAGE-NAME>, <PACKAGE-NAME> is not match pattern ^[A-Za-z0-9+-._]+$\n", argv[0]);
         } else if (resultCode == UPPM_PACKAGE_IS_NOT_AVAILABLE) {
             fprintf(stderr, "package [%s] is not available.\n", argv[2]);
         } else if (resultCode == UPPM_PACKAGE_IS_NOT_INSTALLED) {
@@ -300,7 +300,7 @@ int uppm_main(int argc, char* argv[]) {
         } else if (resultCode == UPPM_PACKAGE_NAME_IS_EMPTY) {
             fprintf(stderr, "Usage: %s is-package-installed <PACKAGE-NAME>, <PACKAGE-NAME> is empty string.\n", argv[0]);
         } else if (resultCode == UPPM_PACKAGE_NAME_IS_INVALID) {
-            fprintf(stderr, "Usage: %s is-package-installed <PACKAGE-NAME>, <PACKAGE-NAME> is invalid.\n", argv[0]);
+            fprintf(stderr, "Usage: %s is-package-installed <PACKAGE-NAME>, <PACKAGE-NAME> is not match pattern ^[A-Za-z0-9+-._]+$\n", argv[0]);
         } else if (resultCode == UPPM_PACKAGE_IS_NOT_AVAILABLE) {
             fprintf(stderr, "package [%s] is not available.\n", argv[2]);
         } else if (resultCode == UPPM_PACKAGE_IS_NOT_INSTALLED) {
@@ -324,7 +324,7 @@ int uppm_main(int argc, char* argv[]) {
         } else if (resultCode == UPPM_PACKAGE_NAME_IS_EMPTY) {
             fprintf(stderr, "Usage: %s is-package-outdated <PACKAGE-NAME>, <PACKAGE-NAME> is empty string.\n", argv[0]);
         } else if (resultCode == UPPM_PACKAGE_NAME_IS_INVALID) {
-            fprintf(stderr, "Usage: %s is-package-outdated <PACKAGE-NAME>, <PACKAGE-NAME> is invalid.\n", argv[0]);
+            fprintf(stderr, "Usage: %s is-package-outdated <PACKAGE-NAME>, <PACKAGE-NAME> is not match pattern ^[A-Za-z0-9+-._]+$\n", argv[0]);
         } else if (resultCode == UPPM_PACKAGE_IS_NOT_AVAILABLE) {
             fprintf(stderr, "package [%s] is not available.\n", argv[2]);
         } else if (resultCode == UPPM_PACKAGE_IS_NOT_INSTALLED) {
