@@ -111,6 +111,19 @@ cmake --build   build.d
 cmake --install build.d
 ```
 
+**[OpenBSD](https://www.openbsd.org/)**
+
+```bash
+pkg_add git cmake ninja llvm curl libgit2 libarchive libyaml jansson
+
+git clone https://github.com/leleliu008/uppm
+cd uppm
+
+cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=/usr/local
+cmake --build   build.d
+cmake --install build.d
+```
+
 **[NetBSD](https://www.netbsd.org/)**
 
 ```bash

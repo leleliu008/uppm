@@ -37,8 +37,7 @@ jobs:
             run ./output/bin/uppm --version
             run ./output/bin/uppm env
 
-            run sudo pkgin -y install mozilla-rootcerts
-            run sudo mozilla-rootcerts install
+            export SSL_CERT_FILE=/etc/openssl/certs/ca-certificates.crt
 
             run ./output/bin/uppm update
             run ./output/bin/uppm search    zip
