@@ -54,6 +54,9 @@ int http_fetch_to_stream(const char * url, FILE * outputFile, bool verbose, bool
         curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);
     }
 
+    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
+    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 2L);
+
     CURLcode curlcode = curl_easy_perform(curl);
     
     if (curlcode != CURLE_OK) {
