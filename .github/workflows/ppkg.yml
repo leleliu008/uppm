@@ -25,12 +25,12 @@ jobs:
       - run:  ppkg install uppm
       - run:  ppkg tree    uppm
 
-      - run:  ~/.uppm/installed/uppm/bin/uppm --help
-      - run:  ~/.uppm/installed/uppm/bin/uppm --version
-      - run:  ~/.uppm/installed/uppm/bin/uppm env
-      - run:  ~/.uppm/installed/uppm/bin/uppm update
-      - run:  ~/.uppm/installed/uppm/bin/uppm search    zip
-      - run:  ~/.uppm/installed/uppm/bin/uppm info      unzip
-      - run:  ~/.uppm/installed/uppm/bin/uppm install   unzip
-      - run:  ~/.uppm/installed/uppm/bin/uppm tree      unzip
-      - run:  ~/.uppm/installed/uppm/bin/uppm uninstall unzip
+      - run:  /opt/ppkg/install.1.d/uppm/bin/uppm --help
+      - run:  /opt/ppkg/install.1.d/uppm/bin/uppm --version
+      - run:  /opt/ppkg/install.1.d/uppm/bin/uppm env
+      - run:  /opt/ppkg/install.1.d/uppm/bin/uppm update
+      - run:  /opt/ppkg/install.1.d/uppm/bin/uppm search    zip
+      - run:  /opt/ppkg/install.1.d/uppm/bin/uppm info      unzip
+      - run:  /opt/ppkg/install.1.d/uppm/bin/uppm install   unzip
+      - run:  /opt/ppkg/install.1.d/uppm/bin/uppm tree      unzip
+      - run:  /opt/ppkg/install.1.d/uppm/bin/uppm uninstall unzip
