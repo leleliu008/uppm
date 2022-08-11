@@ -92,7 +92,7 @@ int uppm_depends(const char * packageName) {
 
     char * dataUrlEncoded = curl_easy_escape(curl, buff, strlen(buff));
 
-    size_t  urlLength = strlen(buff) + 1;
+    size_t  urlLength = strlen(dataUrlEncoded) + 66;
     char    url[urlLength];
     memset (url, 0, urlLength);
     sprintf(url, "https://dot-to-ascii.ggerganov.com/dot-to-ascii.php?boxart=1&src=%s", dataUrlEncoded);

@@ -29,6 +29,8 @@ int uppm_install_the_given_packages(const char * packageNames[], size_t size) {
     }
 }
 
+extern int record_installed_files(const char * installedDirPath);
+
 int uppm_install(const char * packageName) {
     fprintf(stderr, "prepare to install package [%s].\n", packageName);
 
@@ -97,15 +99,15 @@ int uppm_install(const char * packageName) {
     memset (urlCopy, 0, urlCopyLength);
     strcpy(urlCopy, formula->bin_url);
 
-    const char * binFileName = basename(urlCopy);
+    const char * archiveFileName = basename(urlCopy);
 
-    size_t  binDirLength = userHomeDirLength + 18;
-    char    binDir[binDirLength];
-    memset (binDir, 0, binDirLength);
-    sprintf(binDir, "%s/.uppm/downloads", userHomeDir);
+    size_t  downloadDirLength = userHomeDirLength + 18;
+    char    downloadDir[downloadDirLength];
+    memset (downloadDir, 0, downloadDirLength);
+    sprintf(downloadDir, "%s/.uppm/downloads", userHomeDir);
 
-    if (!exists_and_is_a_directory(binDir)) {
-        resultCode = mkdir(binDir, S_IRWXU);
+    if (!exists_and_is_a_directory(downloadDir)) {
+        resultCode = mkdir(downloadDir, S_IRWXU);
 
         if (resultCode != UPPM_OK) {
             uppm_formula_free(formula);
@@ -113,15 +115,15 @@ int uppm_install(const char * packageName) {
         }
     }
 
-    size_t  binFilePathLength = binDirLength + strlen(binFileName) + 2;
-    char    binFilePath[binFilePathLength];
-    memset (binFilePath, 0, binFilePathLength);
-    sprintf(binFilePath, "%s/%s", binDir, binFileName);
+    size_t  archiveFilePathLength = downloadDirLength + strlen(archiveFileName) + 2;
+    char    archiveFilePath[archiveFilePathLength];
+    memset (archiveFilePath, 0, archiveFilePathLength);
+    sprintf(archiveFilePath, "%s/%s", downloadDir, archiveFileName);
 
     bool needFetch = true;
 
-    if (exists_and_is_a_regular_file(binFilePath)) {
-        char * actualSHA256SUM = sha256sum_of_file(binFilePath);
+    if (exists_and_is_a_regular_file(archiveFilePath)) {
+        char * actualSHA256SUM = sha256sum_of_file(archiveFilePath);
 
         if (strcmp(actualSHA256SUM, formula->bin_sha) == 0) {
             needFetch = false;
@@ -131,17 +133,17 @@ int uppm_install(const char * packageName) {
     }
 
     if (needFetch) {
-        resultCode = http_fetch_to_file(formula->bin_url, binFilePath, true, true);
+        resultCode = http_fetch_to_file(formula->bin_url, archiveFilePath, true, true);
 
         if (resultCode != UPPM_OK) {
             uppm_formula_free(formula);
             return resultCode;
         }
 
-        char * actualSHA256SUM = sha256sum_of_file(binFilePath);
+        char * actualSHA256SUM = sha256sum_of_file(archiveFilePath);
 
         if (strcmp(actualSHA256SUM, formula->bin_sha) == 0) {
-            fprintf(stderr, "%s already have been fetched.\n", binFilePath);
+            fprintf(stderr, "%s already have been fetched.\n", archiveFilePath);
             free(actualSHA256SUM);
         } else {
             fprintf(stderr, "sha256sum mismatch.\n    expect : %s\n    actual : %s\n", formula->bin_sha, actualSHA256SUM);
@@ -150,7 +152,7 @@ int uppm_install(const char * packageName) {
             return UPPM_SHA256_MISMATCH;
         }
     } else {
-        fprintf(stderr, "%s already have been fetched.\n", binFilePath);
+        fprintf(stderr, "%s already have been fetched.\n", archiveFilePath);
     }
 
     if (exists_and_is_a_directory(installDir)) {
@@ -160,7 +162,7 @@ int uppm_install(const char * packageName) {
     }
 
     if (formula->install == NULL) {
-        resultCode = untar_extract(installDir, binFilePath, ARCHIVE_EXTRACT_TIME, true, 1);
+        resultCode = untar_extract(installDir, archiveFilePath, ARCHIVE_EXTRACT_TIME, true, 1);
 
         if (resultCode != UPPM_OK) {
             uppm_formula_free(formula);
@@ -197,7 +199,7 @@ int uppm_install(const char * packageName) {
                 formula->bin_url == NULL ? "" : formula->bin_url,
                 formula->bin_sha == NULL ? "" : formula->bin_sha,
                 formula->dep_pkg == NULL ? "" : formula->dep_pkg,
-                binFilePath,
+                archiveFilePath,
                 installDir,
                 formula->install);
 
@@ -210,6 +212,17 @@ int uppm_install(const char * packageName) {
             return resultCode;
         }
     }
+
+    //////////////////////////////////////////////////////////////////////
+
+    resultCode = record_installed_files(installDir);
+
+    if (resultCode != UPPM_OK) {
+        uppm_formula_free(formula);
+        return UPPM_ERROR;
+    }
+
+    //////////////////////////////////////////////////////////////////////
 
     FILE * installedMetadataFile = fopen(installedMetadataFilePath, "w");
 
@@ -230,8 +243,8 @@ int uppm_install(const char * packageName) {
     uppm_formula_free(formula);
     formula = NULL;
 
-    char buff[1024];
-    int  size = 0;
+    char   buff[1024];
+    size_t size = 0;
     while((size = fread(buff, 1, 1024, formulaFile)) != 0) {
         fwrite(buff, 1, size, installedMetadataFile);
     }

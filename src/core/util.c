@@ -17,13 +17,13 @@ bool regex_match(const char * contentStr, const char * regexStr) {
             //printf("regmatch[0].rm_so=%d\n", regmatch[0].rm_so);
             //printf("regmatch[0].rm_eo=%d\n", regmatch[0].rm_eo);
             if (regmatch[0].rm_so >= 0 && regmatch[0].rm_eo > regmatch[0].rm_so) {
+                regfree(&regex);
                 return true;
             }
         }
     }
 
     regfree(&regex);
-
     return false;
 }
 

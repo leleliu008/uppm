@@ -31,55 +31,57 @@ void uppm_formula_dump(UPPMFormula * formula) {
 }
 
 void uppm_formula_free(UPPMFormula * formula) {
-    if (formula != NULL) {
-        if (formula->summary != NULL) {
-            free(formula->summary);
-            formula->summary = NULL;
-        }
-
-        if (formula->webpage != NULL) {
-            free(formula->webpage);
-            formula->webpage = NULL;
-        }
-
-        if (formula->version != NULL) {
-            free(formula->version);
-            formula->version = NULL;
-        }
-
-        if (formula->license != NULL) {
-            free(formula->license);
-            formula->license = NULL;
-        }
-
-        if (formula->bin_url != NULL) {
-            free(formula->bin_url);
-            formula->bin_url = NULL;
-        }
-
-        if (formula->bin_sha != NULL) {
-            free(formula->bin_sha);
-            formula->bin_sha = NULL;
-        }
-
-        if (formula->dep_pkg != NULL) {
-            free(formula->dep_pkg);
-            formula->dep_pkg = NULL;
-        }
-
-        if (formula->install != NULL) {
-            free(formula->install);
-            formula->install = NULL;
-        }
-
-        if (formula->path != NULL) {
-            free(formula->path);
-            formula->path = NULL;
-        }
-
-        free(formula);
-        formula = NULL;
+    if (formula == NULL) {
+        return;
     }
+
+    if (formula->summary != NULL) {
+        free(formula->summary);
+        formula->summary = NULL;
+    }
+
+    if (formula->webpage != NULL) {
+        free(formula->webpage);
+        formula->webpage = NULL;
+    }
+
+    if (formula->version != NULL) {
+        free(formula->version);
+        formula->version = NULL;
+    }
+
+    if (formula->license != NULL) {
+        free(formula->license);
+        formula->license = NULL;
+    }
+
+    if (formula->bin_url != NULL) {
+        free(formula->bin_url);
+        formula->bin_url = NULL;
+    }
+
+    if (formula->bin_sha != NULL) {
+        free(formula->bin_sha);
+        formula->bin_sha = NULL;
+    }
+
+    if (formula->dep_pkg != NULL) {
+        free(formula->dep_pkg);
+        formula->dep_pkg = NULL;
+    }
+
+    if (formula->install != NULL) {
+        free(formula->install);
+        formula->install = NULL;
+    }
+
+    if (formula->path != NULL) {
+        free(formula->path);
+        formula->path = NULL;
+    }
+
+    free(formula);
+    formula = NULL;
 }
 
 static UPPMFormulaKeyCode uppm_formula_key_code_from_key_name(char * key) {
@@ -105,16 +107,15 @@ static UPPMFormulaKeyCode uppm_formula_key_code_from_key_name(char * key) {
 }
 
 void uppm_formula_set_value(UPPMFormulaKeyCode keyCode, char * value, UPPMFormula * formula) {
-    value = strdup(value);
     switch (keyCode) {
-        case FORMULA_KEY_CODE_summary:  formula->summary = value; break;
-        case FORMULA_KEY_CODE_webpage:  formula->webpage = value; break;
-        case FORMULA_KEY_CODE_version:  formula->version = value; break;
-        case FORMULA_KEY_CODE_license:  formula->license = value; break;
-        case FORMULA_KEY_CODE_bin_url:  formula->bin_url = value; break;
-        case FORMULA_KEY_CODE_bin_sha:  formula->bin_sha = value; break;
-        case FORMULA_KEY_CODE_dep_pkg:  formula->dep_pkg = value; break;
-        case FORMULA_KEY_CODE_install:  formula->install = value; break;
+        case FORMULA_KEY_CODE_summary:  formula->summary = strdup(value); break;
+        case FORMULA_KEY_CODE_webpage:  formula->webpage = strdup(value); break;
+        case FORMULA_KEY_CODE_version:  formula->version = strdup(value); break;
+        case FORMULA_KEY_CODE_license:  formula->license = strdup(value); break;
+        case FORMULA_KEY_CODE_bin_url:  formula->bin_url = strdup(value); break;
+        case FORMULA_KEY_CODE_bin_sha:  formula->bin_sha = strdup(value); break;
+        case FORMULA_KEY_CODE_dep_pkg:  formula->dep_pkg = strdup(value); break;
+        case FORMULA_KEY_CODE_install:  formula->install = strdup(value); break;
         default: break;
     }
 }
