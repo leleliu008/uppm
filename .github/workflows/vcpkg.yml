@@ -14,6 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@main
 
+      - run:  sudo apt -y update
       - run:  sudo apt -y install cmake ninja-build tree linux-headers-generic
 
       - run:  echo "VCPKG_ROOT=$HOME/.vcpkg/root" >> "$GITHUB_ENV"
