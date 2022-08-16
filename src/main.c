@@ -179,7 +179,7 @@ int uppm_main(int argc, char* argv[]) {
     }
 
     if (strcmp(action, "install") == 0) {
-        int resultCode = uppm_install(argv[2]);
+        int resultCode = uppm_install(argv[2], false);
 
         if (resultCode == UPPM_PACKAGE_NAME_IS_NULL) {
             fprintf(stderr, "Usage: %s install <PACKAGE-NAME>, <PACKAGE-NAME> is not given.\n", argv[0]);

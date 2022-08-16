@@ -53,8 +53,12 @@ int rm_r(const char * dirPath) {
                 }
             }
         } else {
-            perror(filePath);
-            break;
+            r = unlink(filePath);
+
+            if (r != 0) {
+                perror(filePath);
+                break;
+            }
         }
     }
 

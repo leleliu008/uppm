@@ -31,7 +31,7 @@ int uppm_install_the_given_packages(const char * packageNames[], size_t size) {
 
 extern int record_installed_files(const char * installedDirPath);
 
-int uppm_install(const char * packageName) {
+int uppm_install(const char * packageName, bool verbose) {
     fprintf(stderr, "prepare to install package [%s].\n", packageName);
 
     char * userHomeDir = getenv("HOME");
@@ -42,15 +42,15 @@ int uppm_install(const char * packageName) {
 
     size_t userHomeDirLength = strlen(userHomeDir);
 
-    size_t  installDirLength = userHomeDirLength + strlen(packageName) + 20;
-    char    installDir[installDirLength];
-    memset (installDir, 0, installDirLength);
-    sprintf(installDir, "%s/.uppm/installed/%s", userHomeDir, packageName);
+    size_t  packageInstallDirLength = userHomeDirLength + strlen(packageName) + 20;
+    char    packageInstallDir[packageInstallDirLength];
+    memset (packageInstallDir, 0, packageInstallDirLength);
+    sprintf(packageInstallDir, "%s/.uppm/installed/%s", userHomeDir, packageName);
 
-    size_t  installedMetadataFilePathLength = installDirLength + 26;
+    size_t  installedMetadataFilePathLength = packageInstallDirLength + 26;
     char    installedMetadataFilePath[installedMetadataFilePathLength];
     memset (installedMetadataFilePath, 0, installedMetadataFilePathLength);
-    sprintf(installedMetadataFilePath, "%s/uppm-installed-metadata", installDir);
+    sprintf(installedMetadataFilePath, "%s/installed-metadata-uppm", packageInstallDir);
 
     if (exists_and_is_a_regular_file(installedMetadataFilePath)) {
         fprintf(stderr, "package [%s] already has been installed.\n", packageName);
@@ -84,7 +84,7 @@ int uppm_install(const char * packageName) {
         }
 
         for (size_t i = 0; i < index; i++) {
-            resultCode = uppm_install(depPackageNameList[i]);
+            resultCode = uppm_install(depPackageNameList[i], verbose);
 
             if (resultCode != UPPM_OK) {
                 uppm_formula_free(formula);
@@ -107,11 +107,9 @@ int uppm_install(const char * packageName) {
     sprintf(downloadDir, "%s/.uppm/downloads", userHomeDir);
 
     if (!exists_and_is_a_directory(downloadDir)) {
-        resultCode = mkdir(downloadDir, S_IRWXU);
-
-        if (resultCode != UPPM_OK) {
+        if (mkdir(downloadDir, S_IRWXU) != 0) {
             uppm_formula_free(formula);
-            return resultCode;
+            return UPPM_ERROR;
         }
     }
 
@@ -155,14 +153,32 @@ int uppm_install(const char * packageName) {
         fprintf(stderr, "%s already have been fetched.\n", archiveFilePath);
     }
 
-    if (exists_and_is_a_directory(installDir)) {
-        if (rm_r(installDir) != 0) {
+    if (exists_and_is_a_directory(packageInstallDir)) {
+        if (rm_r(packageInstallDir) != 0) {
+            uppm_formula_free(formula);
             return UPPM_ERROR;
+        }
+    } else {
+        size_t  installedDirLength = userHomeDirLength + 20;
+        char    installedDir[installedDirLength];
+        memset (installedDir, 0, installedDirLength);
+        sprintf(installedDir, "%s/.uppm/installed", userHomeDir);
+
+        if (!exists_and_is_a_directory(installedDir)) {
+            if (mkdir(installedDir, S_IRWXU) != 0) {
+                uppm_formula_free(formula);
+                return UPPM_ERROR;
+            }
         }
     }
 
+    if (mkdir(packageInstallDir, S_IRWXU) != 0) {
+        uppm_formula_free(formula);
+        return UPPM_ERROR;
+    }
+
     if (formula->install == NULL) {
-        resultCode = untar_extract(installDir, archiveFilePath, ARCHIVE_EXTRACT_TIME, true, 1);
+        resultCode = untar_extract(packageInstallDir, archiveFilePath, ARCHIVE_EXTRACT_TIME, verbose, 1);
 
         if (resultCode != UPPM_OK) {
             uppm_formula_free(formula);
@@ -200,7 +216,7 @@ int uppm_install(const char * packageName) {
                 formula->bin_sha == NULL ? "" : formula->bin_sha,
                 formula->dep_pkg == NULL ? "" : formula->dep_pkg,
                 archiveFilePath,
-                installDir,
+                packageInstallDir,
                 formula->install);
 
         printf("run shell code:\n%s\n", shellCode);
@@ -215,7 +231,7 @@ int uppm_install(const char * packageName) {
 
     //////////////////////////////////////////////////////////////////////
 
-    resultCode = record_installed_files(installDir);
+    resultCode = record_installed_files(packageInstallDir);
 
     if (resultCode != UPPM_OK) {
         uppm_formula_free(formula);

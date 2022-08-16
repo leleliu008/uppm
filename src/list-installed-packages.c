@@ -38,7 +38,7 @@ int uppm_list_the_installed_packages() {
             size_t  installedMetadataFilePathLength = installedDirLength + strlen(dir_entry->d_name) + 26;
             char    installedMetadataFilePath[installedMetadataFilePathLength];
             memset (installedMetadataFilePath, 0, installedMetadataFilePathLength);
-            sprintf(installedMetadataFilePath, "%s/%s/uppm-installed-metadata", installedDir, dir_entry->d_name);
+            sprintf(installedMetadataFilePath, "%s/%s/installed-metadata-uppm", installedDir, dir_entry->d_name);
 
             if (exists_and_is_a_regular_file(installedMetadataFilePath)) {
                 printf("%s\n", dir_entry->d_name);

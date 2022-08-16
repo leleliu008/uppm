@@ -59,6 +59,17 @@ find_package(JANSSON REQUIRED)
 
 ########################################################################################
 
+if (OPENSSL_VERSION)
+    message(STATUS "OPENSSL_VERSION = ${OPENSSL_VERSION}")
+
+    string(REPLACE "." ";" OPENSSL_VERSION_PART_LIST ${OPENSSL_VERSION})
+    list(GET OPENSSL_VERSION_PART_LIST 0 OPENSSL_VERSION_MAJOR)
+
+    message(STATUS "OPENSSL_VERSION_MAJOR = ${OPENSSL_VERSION_MAJOR}")
+else()
+    message(FATAL "no OPENSSL_VERSION set.")
+endif()
+
 aux_source_directory(src/core CORE_SRCS)
 aux_source_directory(src           SRCS)
 

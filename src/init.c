@@ -61,7 +61,7 @@ int uppm_init() {
             size_t  installedMetadataFilePathLength = packageInstalledDirLength + 25;
             char    installedMetadataFilePath[installedMetadataFilePathLength];
             memset (installedMetadataFilePath, 0, installedMetadataFilePathLength);
-            sprintf(installedMetadataFilePath, "%s/uppm-installed-metadata", packageInstalledDir);
+            sprintf(installedMetadataFilePath, "%s/installed-metadata-uppm", packageInstalledDir);
 
             if (exists_and_is_a_regular_file(installedMetadataFilePath)) {
                 const char * PATH = getenv("PATH");

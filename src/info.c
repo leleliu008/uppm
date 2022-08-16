@@ -227,7 +227,7 @@ int uppm_info(const char * packageName, const char * key) {
         size_t  installedMetadataFilePathLength = installedDirLength + 25;
         char    installedMetadataFilePath[installedMetadataFilePathLength];
         memset (installedMetadataFilePath, 0, installedMetadataFilePathLength);
-        sprintf(installedMetadataFilePath, "%s/uppm-installed-metadata", installedDir);
+        sprintf(installedMetadataFilePath, "%s/installed-metadata-uppm", installedDir);
 
         if (exists_and_is_a_regular_file(installedMetadataFilePath)) {
             printf("%s\n", installedDir);
@@ -251,7 +251,7 @@ int uppm_info(const char * packageName, const char * key) {
         size_t  installedMetadataFilePathLength = installedDirLength + 25;
         char    installedMetadataFilePath[installedMetadataFilePathLength];
         memset (installedMetadataFilePath, 0, installedMetadataFilePathLength);
-        sprintf(installedMetadataFilePath, "%s/uppm-installed-metadata", installedDir);
+        sprintf(installedMetadataFilePath, "%s/installed-metadata-uppm", installedDir);
 
         if (exists_and_is_a_regular_file(installedMetadataFilePath)) {
             printf("%s\n", installedMetadataFilePath);
@@ -275,7 +275,7 @@ int uppm_info(const char * packageName, const char * key) {
         size_t  installedMetadataFilePathLength = installedDirLength + 25;
         char    installedMetadataFilePath[installedMetadataFilePathLength];
         memset (installedMetadataFilePath, 0, installedMetadataFilePathLength);
-        sprintf(installedMetadataFilePath, "%s/uppm-installed-metadata", installedDir);
+        sprintf(installedMetadataFilePath, "%s/installed-metadata-uppm", installedDir);
 
         if (!exists_and_is_a_regular_file(installedMetadataFilePath)) {
             return UPPM_PACKAGE_IS_NOT_INSTALLED;

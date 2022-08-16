@@ -116,7 +116,7 @@ int uppm_is_package_installed(const char * packageName) {
     size_t  installedMetadataFilePathLength = userHomeDirLength + 45;
     char    installedMetadataFilePath[installedMetadataFilePathLength];
     memset (installedMetadataFilePath, 0, installedMetadataFilePathLength);
-    sprintf(installedMetadataFilePath, "%s/.uppm/installed/%s/uppm-installed-metadata", userHomeDir, packageName);
+    sprintf(installedMetadataFilePath, "%s/.uppm/installed/%s/installed-metadata-uppm", userHomeDir, packageName);
 
     if (exists_and_is_a_regular_file(installedMetadataFilePath)) {
         return UPPM_OK;

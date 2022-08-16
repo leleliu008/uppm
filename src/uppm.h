@@ -3,6 +3,7 @@
 
 #include <config.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 #ifndef UPPM_VERSION
 #define UPPM_VERSION "0.0.0"
@@ -134,7 +135,7 @@ int uppm_depends(const char * packageName);
 
 int uppm_fetch(const char * packageName);
 
-int uppm_install(const char * packageName);
+int uppm_install(const char * packageName, bool verbose);
 
 int uppm_reinstall(const char * packageName);
 

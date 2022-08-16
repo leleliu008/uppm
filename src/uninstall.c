@@ -28,7 +28,7 @@ int uppm_uninstall(const char * packageName) {
     size_t  installedMetadataFilePathLength = installedDirLength + 26;
     char    installedMetadataFilePath[installedMetadataFilePathLength];
     memset (installedMetadataFilePath, 0, installedMetadataFilePathLength);
-    sprintf(installedMetadataFilePath, "%s/uppm-installed-metadata", installedDir);
+    sprintf(installedMetadataFilePath, "%s/installed-metadata-uppm", installedDir);
 
     if (exists_and_is_a_regular_file(installedMetadataFilePath)) {
         if (rm_r(installedDir) == 0) {

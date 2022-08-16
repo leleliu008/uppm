@@ -155,7 +155,7 @@ int uppm_installed_metadata_parse(const char * packageName, UPPMInstalledMetadat
     size_t  installedMetadataFilePathLength = installedDirLength + 26;
     char    installedMetadataFilePath[installedMetadataFilePathLength];
     memset (installedMetadataFilePath, 0, installedMetadataFilePathLength);
-    sprintf(installedMetadataFilePath, "%s/uppm-installed-metadata", installedDir);
+    sprintf(installedMetadataFilePath, "%s/installed-metadata-uppm", installedDir);
 
     FILE * file = fopen(installedMetadataFilePath, "r");
 

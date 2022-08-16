@@ -7,6 +7,11 @@ bool exists_and_is_a_directory(const char* dirpath) {
     return (stat(dirpath, &sb) == 0) && S_ISDIR(sb.st_mode);
 }
 
+bool exists_and_is_a_symbolic_link(const char* filepath) {
+    struct stat sb;
+    return (stat(filepath, &sb) == 0) && S_ISLNK(sb.st_mode);
+}
+
 bool exists_and_is_a_regular_file(const char* filepath) {
     struct stat sb;
     return (stat(filepath, &sb) == 0) && S_ISREG(sb.st_mode);

@@ -28,7 +28,7 @@ int uppm_tree(const char * packageName) {
     size_t  installedMetadataFilePathLength = installDirLength + 25;
     char    installedMetadataFilePath[installedMetadataFilePathLength];
     memset (installedMetadataFilePath, 0, installedMetadataFilePathLength);
-    sprintf(installedMetadataFilePath, "%s/uppm-installed-metadata", installDir);
+    sprintf(installedMetadataFilePath, "%s/installed-metadata-uppm", installDir);
 
     if (exists_and_is_a_regular_file(installedMetadataFilePath)) {
         if (execlp("tree", "tree", "--dirsfirst", installDir, NULL) == -1) {
