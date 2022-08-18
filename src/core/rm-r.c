@@ -1,10 +1,11 @@
 #include <stdio.h>
+#include <stdbool.h>
 #include <string.h>
 #include <unistd.h>
 #include <dirent.h>
 #include <sys/stat.h>
 
-int rm_r(const char * dirPath) {
+int rm_r(const char * dirPath, bool verbose) {
     if ((dirPath == NULL) || (strcmp(dirPath, "") == 0)) {
         return 1;
     }
@@ -31,7 +32,7 @@ int rm_r(const char * dirPath) {
         memset(filePath, 0, filePathLength);
         sprintf(filePath, "%s/%s", dirPath, dir_entry->d_name);
 
-        printf("rm %s\n", filePath);
+        if (verbose) printf("rm %s\n", filePath);
 
         struct stat st;
 
@@ -39,7 +40,7 @@ int rm_r(const char * dirPath) {
 
         if (r == 0) {
             if (S_ISDIR(st.st_mode)) {
-                r = rm_r(filePath);
+                r = rm_r(filePath, verbose);
 
                 if (r != 0) {
                     break;

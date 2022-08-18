@@ -203,7 +203,7 @@ int uppm_main(int argc, char* argv[]) {
     }
 
     if (strcmp(action, "uninstall") == 0) {
-        int resultCode = uppm_uninstall(argv[2]);
+        int resultCode = uppm_uninstall(argv[2], false);
 
         if (resultCode == UPPM_PACKAGE_NAME_IS_NULL) {
             fprintf(stderr, "Usage: %s uninstall <PACKAGE-NAME>, <PACKAGE-NAME> is not given.\n", argv[0]);

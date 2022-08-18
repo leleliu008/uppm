@@ -234,6 +234,52 @@ int uppm_info(const char * packageName, const char * key) {
         } else {
             return UPPM_PACKAGE_IS_NOT_INSTALLED;
         }
+    } else if (strcmp(key, "installed-files") == 0) {
+        char * userHomeDir = getenv("HOME");
+
+        if (userHomeDir == NULL || strcmp(userHomeDir, "") == 0) {
+            return UPPM_ENV_HOME_NOT_SET;
+        }
+
+        size_t userHomeDirLength = strlen(userHomeDir);
+
+        size_t  installedDirLength = userHomeDirLength + strlen(packageName) + 20;
+        char    installedDir[installedDirLength];
+        memset (installedDir, 0, installedDirLength);
+        sprintf(installedDir, "%s/.uppm/installed/%s", userHomeDir, packageName);
+
+        size_t  installedMetadataFilePathLength = installedDirLength + 25;
+        char    installedMetadataFilePath[installedMetadataFilePathLength];
+        memset (installedMetadataFilePath, 0, installedMetadataFilePathLength);
+        sprintf(installedMetadataFilePath, "%s/installed-metadata-uppm", installedDir);
+
+        if (!exists_and_is_a_regular_file(installedMetadataFilePath)) {
+            return UPPM_PACKAGE_IS_NOT_INSTALLED;
+        }
+
+        size_t  installedFilesConfigFilePathLength = installedDirLength + 25;
+        char    installedFilesConfigFilePath[installedFilesConfigFilePathLength];
+        memset (installedFilesConfigFilePath, 0, installedFilesConfigFilePathLength);
+        sprintf(installedFilesConfigFilePath, "%s/installed-files", installedDir);
+
+        if (!exists_and_is_a_regular_file(installedFilesConfigFilePath)) {
+            return UPPM_INSTALLED_FILES_CONFIG_FILE_NOT_EXISTS;
+        }
+
+        FILE * installedFilesConfigFile = fopen(installedFilesConfigFilePath, "r");
+
+        if (installedFilesConfigFile == NULL) {
+            perror(installedFilesConfigFilePath);
+            return UPPM_INSTALLED_FILES_CONFIG_FILE_OPEN_ERROR;
+        }
+
+        char buff[1024];
+        int  size = 0;
+        while((size = fread(buff, 1, 1024, installedFilesConfigFile)) != 0) {
+            fwrite(buff, 1, size, stdout);
+        }
+
+        fclose(installedFilesConfigFile);
     } else if (strcmp(key, "installed-metadata-path") == 0) {
         char * userHomeDir = getenv("HOME");
 

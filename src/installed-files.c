@@ -4,7 +4,10 @@
 #include <dirent.h>
 #include <sys/stat.h>
 
-static int record_installed_files_r(const char * dirPath, size_t offset) {
+#include "core/fs.h"
+#include "uppm.h"
+
+static int record_installed_files_r(const char * dirPath, size_t offset, FILE * installedFilesConfigFile) {
     if ((dirPath == NULL) || (strcmp(dirPath, "") == 0)) {
         return 1;
     }
@@ -37,15 +40,15 @@ static int record_installed_files_r(const char * dirPath, size_t offset) {
 
         if (r == 0) {
             if (S_ISDIR(st.st_mode)) {
-                printf("d %s\n", &filePath[offset]);
+                fprintf(installedFilesConfigFile, "d %s/\n", &filePath[offset]);
 
-                r = record_installed_files_r(filePath, offset);
+                r = record_installed_files_r(filePath, offset, installedFilesConfigFile);
 
                 if (r != 0) {
                     break;
                 }
             } else {
-                printf("f %s\n", &filePath[offset]);
+                fprintf(installedFilesConfigFile, "f %s\n", &filePath[offset]);
             }
         } else {
             perror(filePath);
@@ -59,6 +62,27 @@ static int record_installed_files_r(const char * dirPath, size_t offset) {
 }
 
 int record_installed_files(const char * installedDirPath) {
-    int resultCode = record_installed_files_r(installedDirPath, strlen(installedDirPath) + 1);
+    size_t installedDirLength = strlen(installedDirPath);
+
+    size_t  installedFilesConfigFilePathLength = installedDirLength + 25;
+    char    installedFilesConfigFilePath[installedFilesConfigFilePathLength];
+    memset (installedFilesConfigFilePath, 0, installedFilesConfigFilePathLength);
+    sprintf(installedFilesConfigFilePath, "%s/installed-files", installedDirPath);
+
+    if (exists_and_is_a_regular_file(installedFilesConfigFilePath)) {
+        return UPPM_OK;
+    }
+
+    FILE * installedFilesConfigFile = fopen(installedFilesConfigFilePath, "w");
+
+    if (installedFilesConfigFile == NULL) {
+        perror(installedFilesConfigFilePath);
+        return UPPM_INSTALLED_FILES_CONFIG_FILE_OPEN_ERROR;
+    }
+
+    int resultCode = record_installed_files_r(installedDirPath, installedDirLength + 1, installedFilesConfigFile);
+
+    fclose(installedFilesConfigFile);
+
     return resultCode;
 }

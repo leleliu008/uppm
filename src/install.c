@@ -154,7 +154,7 @@ int uppm_install(const char * packageName, bool verbose) {
     }
 
     if (exists_and_is_a_directory(packageInstallDir)) {
-        if (rm_r(packageInstallDir) != 0) {
+        if (rm_r(packageInstallDir, verbose) != 0) {
             uppm_formula_free(formula);
             return UPPM_ERROR;
         }

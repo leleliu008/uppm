@@ -5,7 +5,7 @@
 #include "core/rm-r.h"
 #include "uppm.h"
 
-int uppm_uninstall(const char * packageName) {
+int uppm_uninstall(const char * packageName, bool verbose) {
     int resultCode = uppm_is_package_name(packageName);
 
     if (resultCode != UPPM_OK) {
@@ -31,7 +31,7 @@ int uppm_uninstall(const char * packageName) {
     sprintf(installedMetadataFilePath, "%s/installed-metadata-uppm", installedDir);
 
     if (exists_and_is_a_regular_file(installedMetadataFilePath)) {
-        if (rm_r(installedDir) == 0) {
+        if (rm_r(installedDir, verbose) == 0) {
             return UPPM_OK;
         } else {
             return UPPM_ERROR;

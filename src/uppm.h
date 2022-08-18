@@ -40,6 +40,9 @@
 #define UPPM_INSTALLED_METADATA_FILE_OPEN_ERROR  30
 #define UPPM_INSTALLED_METADATA_FILE_READ_ERROR  31
 
+#define UPPM_INSTALLED_FILES_CONFIG_FILE_NOT_EXISTS  35
+#define UPPM_INSTALLED_FILES_CONFIG_FILE_OPEN_ERROR  36
+
 #define UPPM_INFO_UNRECOGNIZED_KEY  41
 
 void uppm_show_error_message(int errorCode, const char * str);
@@ -139,7 +142,7 @@ int uppm_install(const char * packageName, bool verbose);
 
 int uppm_reinstall(const char * packageName);
 
-int uppm_uninstall(const char * packageName);
+int uppm_uninstall(const char * packageName, bool verbose);
 
 int uppm_upgrade(const char * packageName);
 
