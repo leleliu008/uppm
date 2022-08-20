@@ -15,6 +15,7 @@ if (NOT CMAKE_BUILD_TYPE)
 endif()
 
 if (DEFINED VCPKG_INSTALLED_DIR)
+    set(ENV{PKG_CONFIG_PATH} "$ENV{PKG_CONFIG_PATH}:${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/pkgconfig")
     set(CMAKE_C_FLAGS              "-L${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib ${CMAKE_C_FLAGS}")
     list(INSERT CMAKE_INCLUDE_PATH 0 "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include")
     list(INSERT CMAKE_LIBRARY_PATH 0 "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib")
@@ -34,20 +35,10 @@ set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
 find_package(PkgConfig)
 
 # https://cmake.org/cmake/help/latest/module/FindOpenSSL.html
-set(OPENSSL_USE_STATIC_LIBS, TRUE)
 find_package(OpenSSL REQUIRED)
 
 # https://cmake.org/cmake/help/latest/module/FindCURL.html
 find_package(CURL REQUIRED)
-
-# https://cmake.org/cmake/help/latest/module/FindLibLZMA.html
-find_package(LibLZMA REQUIRED)
-
-# https://cmake.org/cmake/help/latest/module/FindZLIB.html
-find_package(ZLIB REQUIRED)
-
-# https://cmake.org/cmake/help/v3.0/module/FindBZip2.html
-find_package(BZip2 REQUIRED)
 
 # https://cmake.org/cmake/help/latest/module/FindLibArchive.html
 find_package(LibArchive REQUIRED)
@@ -78,23 +69,26 @@ add_executable(uppm "${CORE_SRCS};${SRCS}")
 
 ########################################################################################
 
-target_link_libraries(uppm ${CURL_LIBRARIES})
-target_link_libraries(uppm ${OPENSSL_LIBRARIES})
-target_link_libraries(uppm ${LIBLZMA_LIBRARIES})
-target_link_libraries(uppm ${ZLIB_LIBRARIES})
-target_link_libraries(uppm ${BZIP2_LIBRARIES})
-target_link_libraries(uppm ${LibArchive_LIBRARIES})
-target_link_libraries(uppm ${LIBGIT2_LIBRARY})
-target_link_libraries(uppm ${LIBYAML_LIBRARY})
-target_link_libraries(uppm ${JANSSON_LIBRARY})
+message(STATUS "CURL_LIBRARIES=${CURL_LIBRARIES}")
+message(STATUS "OPENSSL_LIBRARIES=${OPENSSL_LIBRARIES}")
+message(STATUS "LIBLZMA_LIBRARIES=${LIBLZMA_LIBRARIES}")
+message(STATUS "ZLIB_LIBRARIES=${ZLIB_LIBRARIES}")
+message(STATUS "BZIP2_LIBRARIES=${BZIP2_LIBRARIES}")
+message(STATUS "LibArchive_LIBRARIES=${LibArchive_LIBRARIES}")
+message(STATUS "LIBGIT2_LIBRARIES=${LIBGIT2_LIBRARIES}")
+message(STATUS "LIBYAML_LIBRARY=${LIBYAML_LIBRARY}")
+message(STATUS "JANSSON_LIBRARY=${JANSSON_LIBRARY}")
 
-if (DEFINED VCPKG_INSTALLED_DIR)
-    target_link_libraries(uppm -lpcre)
-    target_link_libraries(uppm -lhttp_parser)
-endif()
+target_link_libraries(uppm CURL::libcurl)
+target_link_libraries(uppm OpenSSL::SSL)
+target_link_libraries(uppm OpenSSL::Crypto)
+target_link_libraries(uppm LibArchive::LibArchive)
+target_link_libraries(uppm "${LIBGIT2_LIBRARIES}")
+target_link_libraries(uppm "${LIBYAML_LIBRARY}")
+target_link_libraries(uppm "${JANSSON_LIBRARY}")
 
 include_directories("${CMAKE_BINARY_DIR}")
-include_directories("${LIBGIT2_INCLUDE_DIR}")
+include_directories("${LIBGIT2_INCLUDE_DIRS}")
 include_directories("${LIBYAML_INCLUDE_DIR}")
 include_directories("${JANSSON_INCLUDE_DIR}")
 
