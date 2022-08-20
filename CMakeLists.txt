@@ -29,6 +29,7 @@ message(STATUS "CMAKE_FIND_ROOT_PATH = ${CMAKE_FIND_ROOT_PATH}")
 ########################################################################################
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_MODULE_PATH})
+set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
 
 find_package(PkgConfig)
 
