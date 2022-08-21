@@ -77,9 +77,6 @@ add_executable(uppm "${CORE_SRCS};${SRCS}")
 
 message(STATUS "CURL_LIBRARIES=${CURL_LIBRARIES}")
 message(STATUS "OPENSSL_LIBRARIES=${OPENSSL_LIBRARIES}")
-message(STATUS "LIBLZMA_LIBRARIES=${LIBLZMA_LIBRARIES}")
-message(STATUS "ZLIB_LIBRARIES=${ZLIB_LIBRARIES}")
-message(STATUS "BZIP2_LIBRARIES=${BZIP2_LIBRARIES}")
 message(STATUS "LibArchive_LIBRARIES=${LibArchive_LIBRARIES}")
 message(STATUS "LIBGIT2_LIBRARIES=${LIBGIT2_LIBRARIES}")
 message(STATUS "LIBYAML_LIBRARY=${LIBYAML_LIBRARY}")
@@ -94,7 +91,7 @@ target_link_libraries(uppm "${LIBYAML_LIBRARY}")
 target_link_libraries(uppm "${JANSSON_LIBRARY}")
 
 if (BUILD_STATICALLY_LINKED_EXECUTABLE)
-    target_link_libraries(uppm -l:libc.a)
+    target_link_options(uppm PRIVATE -static)
 endif()
 
 include_directories("${CMAKE_BINARY_DIR}")

@@ -25,9 +25,25 @@ ppkg install uppm
 |[libcurl](https://curl.se/)|required|for http requesting support.|
 |[openssl](https://www.openssl.org/)|required|for https requesting support and SHA-256 sum checking support.|
 |[libarchive](https://www.libarchive.org/)|required|for uncompressing .zip and .tar.* files.|
-|[liblzma](https://tukaani.org/xz/)|required|for uncompressing .tar.xz files.|
-|[bzip2](https://sourceware.org/bzip2/)|required|for uncompressing .tar.bz2 files.|
-|[zlib](https://zlib.net/)|required|for uncompressing .tar.gz and .zip files.|
+
+
+**[vcpkg](https://github.com/microsoft/vcpkg)**
+```bash
+git clone https://github.com/microsoft/vcpkg.git
+cd vcpkg
+./bootstrap-vcpkg.sh
+export VCPKG_ROOT="$PWD/vcpkg"
+export PATH="$VCPKG_ROOT:$PATH"
+
+vcpkg install curl openssl libgit2 libarchive libyaml jansson
+
+git clone https://github.com/leleliu008/uppm
+cd uppm
+
+cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake
+cmake --build   build.d
+cmake --install build.d
+```
 
 **[Ubuntu](https://ubuntu.com/)**
 
@@ -139,24 +155,6 @@ cmake --build   build.d
 cmake --install build.d
 ```
 
-
-**[vcpkg](https://github.com/microsoft/vcpkg)**
-```bash
-git clone https://github.com/microsoft/vcpkg.git
-cd vcpkg
-./bootstrap-vcpkg.sh
-export VCPKG_ROOT="$PWD/vcpkg"
-export PATH="$VCPKG_ROOT:$PATH"
-
-vcpkg install jansson libyaml libgit2 libarchive curl openssl
-
-git clone https://github.com/leleliu008/uppm
-cd uppm
-
-cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake
-cmake --build   build.d
-cmake --install build.d
-```
 
 ## ~/.uppm
 all relevant dirs and files are located in `~/.uppm` directory.

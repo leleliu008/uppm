@@ -20,6 +20,22 @@ else()
     message("PKG_CONFIG_LIBGIT2_LIBRARIES=${PKG_CONFIG_LIBGIT2_LIBRARIES}")
     message("PKG_CONFIG_LIBGIT2_LINK_LIBRARIES=${PKG_CONFIG_LIBGIT2_LINK_LIBRARIES}")
 
+    # https://sourceware.org/bugzilla/show_bug.cgi?id=21264
+    #if (NOT CMAKE_C_FLAGS MATCHES ".* -static.*")
+        set(PKG_CONFIG_LIBGIT2_LINK_LIBRARIES2 ${PKG_CONFIG_LIBGIT2_LINK_LIBRARIES})
+        set(PKG_CONFIG_LIBGIT2_LINK_LIBRARIES )
+
+        foreach(item ${PKG_CONFIG_LIBGIT2_LINK_LIBRARIES2})
+            if ((item MATCHES ".*libm\\.a") OR (item MATCHES ".*libdl\\.a") OR (item MATCHES ".*librt\\.a") OR (item MATCHES ".*libpthread\\.a"))
+            else()
+                list(APPEND PKG_CONFIG_LIBGIT2_LINK_LIBRARIES "${item}")
+            endif()
+        endforeach()
+
+        unset(PKG_CONFIG_LIBGIT2_LINK_LIBRARIES2)
+        #message("----PKG_CONFIG_LIBGIT2_LINK_LIBRARIES=${PKG_CONFIG_LIBGIT2_LINK_LIBRARIES}")
+        #endif()
+
     if (PKG_CONFIG_LIBGIT2_FOUND)
         set(LIBGIT2_INCLUDE_DIRS ${PKG_CONFIG_LIBGIT2_INCLUDE_DIRS})
         set(LIBGIT2_LIBRARIES     ${PKG_CONFIG_LIBGIT2_LINK_LIBRARIES})
