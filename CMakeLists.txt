@@ -14,6 +14,12 @@ if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
 
+########################################################################################
+
+option(BUILD_STATICALLY_LINKED_EXECUTABLE "if build statically linked executable" OFF)
+
+########################################################################################
+
 if (DEFINED VCPKG_INSTALLED_DIR)
     set(ENV{PKG_CONFIG_PATH} "$ENV{PKG_CONFIG_PATH}:${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/pkgconfig")
     set(CMAKE_C_FLAGS              "-L${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib ${CMAKE_C_FLAGS}")
@@ -86,6 +92,10 @@ target_link_libraries(uppm "${LibArchive_LIBRARIES}")
 target_link_libraries(uppm "${LIBGIT2_LIBRARIES}")
 target_link_libraries(uppm "${LIBYAML_LIBRARY}")
 target_link_libraries(uppm "${JANSSON_LIBRARY}")
+
+if (BUILD_STATICALLY_LINKED_EXECUTABLE)
+    target_link_libraries(uppm -l:libc.a)
+endif()
 
 include_directories("${CMAKE_BINARY_DIR}")
 include_directories("${LibArchive_INCLUDE_DIRS}")
