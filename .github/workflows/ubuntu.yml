@@ -19,14 +19,11 @@ jobs:
       - uses: actions/checkout@main
 
       - run:  sudo apt -y update
-      - run:  sudo apt -y upgrade
-      - run:  sudo apt -y install cmake ninja-build gcc tree libcurl4-openssl-dev libyaml-dev libjansson-dev libgit2-dev libarchive-dev liblzma-dev libbz2-dev
+      - run:  sudo apt -y install cmake ninja-build gcc libcurl4-openssl-dev libgit2-dev libarchive-dev libyaml-dev libjansson-dev
 
       - run:  cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_COLOR_MAKEFILE=ON -DCMAKE_VERBOSE_MAKEFILE=ON
       - run:  cmake --build   build.d
       - run:  cmake --install build.d
-
-      - run:  tree output
 
       - run:  ./output/bin/uppm --help
       - run:  ./output/bin/uppm --version

@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@main
 
       - run:  sudo apt -y update
-      - run:  sudo apt -y install cmake ninja-build tree linux-headers-generic
+      - run:  sudo apt -y install cmake ninja-build linux-headers-generic
 
       - run:  echo "VCPKG_ROOT=$HOME/.vcpkg/root" >> "$GITHUB_ENV"
       - run:  install -d $VCPKG_ROOT
@@ -26,8 +26,6 @@ jobs:
       - run:  cmake -S . -B   build.d -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_COLOR_MAKEFILE=ON -DCMAKE_VERBOSE_MAKEFILE=ON
       - run:  cmake --build   build.d
       - run:  cmake --install build.d
-
-      - run:  tree output
 
       - run:  ./output/bin/uppm --help
       - run:  ./output/bin/uppm --version

@@ -49,7 +49,7 @@ cmake --install build.d
 
 ```bash
 apt -y update
-apt -y install git cmake ninja-build gcc libcurl4 libcurl4-openssl-dev libyaml-dev libjansson-dev libgit2-dev libarchive-dev liblzma-dev libbz2-dev
+apt -y install git cmake ninja-build gcc libcurl4 libcurl4-openssl-dev libgit2-dev libarchive-dev ibyaml-dev libjansson-dev
 
 git clone https://github.com/leleliu008/uppm
 cd uppm
@@ -63,20 +63,7 @@ cmake --install build.d
 
 ```bash
 dnf -y update
-dnf -y install git cmake ninja-build gcc libcurl-devel libyaml-devel jansson-devel libgit2-devel libarchive-devel xz-devel bzip2-devel
-
-git clone https://github.com/leleliu008/uppm
-cd uppm
-
-cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=/usr/local
-cmake --build   build.d
-cmake --install build.d
-```
-
-**[AlpineLinux](https://www.alpinelinux.org/)**
-
-```bash
-apk add git cmake ninja gcc libc-dev curl-dev openssl-dev libgit2-dev libarchive-dev yaml-dev jansson-dev
+dnf -y install git cmake ninja-build gcc libcurl-devel libgit2-devel libarchive-devel libyaml-devel jansson-devel
 
 git clone https://github.com/leleliu008/uppm
 cd uppm
@@ -100,6 +87,19 @@ cmake --build   build.d
 cmake --install build.d
 ```
 
+**[AlpineLinux](https://www.alpinelinux.org/)**
+
+```bash
+apk add git cmake ninja gcc libc-dev curl-dev openssl-dev libgit2-dev libarchive-dev yaml-dev jansson-dev
+
+git clone https://github.com/leleliu008/uppm
+cd uppm
+
+cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=/usr/local
+cmake --build   build.d
+cmake --install build.d
+```
+
 **[macOS](https://www.apple.com/macos/)**
 
 ```bash
@@ -109,7 +109,19 @@ brew install git cmake ninja curl jansson libyaml libgit2 libarchive
 git clone https://github.com/leleliu008/uppm
 cd uppm
 
-cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_FIND_ROOT_PATH="$(brew --prefix openssl@1.1);$(brew --prefix libarchive)"
+CMAKE_C_FLAGS='-L/usr/local/lib -L/usr/local/opt/openssl@1.1/lib -lssl -liconv -framework CoreFoundation -framework Security'
+CMAKE_FIND_ROOT_PATH="$(brew --prefix openssl@1.1);$(brew --prefix curl);$(brew --prefix libarchive)"
+
+cmake \
+    -S . \
+    -B build.d \
+    -G Ninja \
+    -DCMAKE_INSTALL_PREFIX=./output \
+    -DCMAKE_COLOR_MAKEFILE=ON \
+    -DCMAKE_VERBOSE_MAKEFILE=ON \
+    -DCMAKE_C_FLAGS="$CMAKE_C_FLAGS" \
+    -DCMAKE_FIND_ROOT_PATH="$CMAKE_FIND_ROOT_PATH"
+
 cmake --build   build.d
 cmake --install build.d
 ```
