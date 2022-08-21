@@ -29,7 +29,7 @@ message(STATUS "CMAKE_FIND_ROOT_PATH = ${CMAKE_FIND_ROOT_PATH}")
 
 ########################################################################################
 
-set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${CMAKE_MODULE_PATH}")
 set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
 
 find_package(PkgConfig)
@@ -82,12 +82,13 @@ message(STATUS "JANSSON_LIBRARY=${JANSSON_LIBRARY}")
 target_link_libraries(uppm CURL::libcurl)
 target_link_libraries(uppm OpenSSL::SSL)
 target_link_libraries(uppm OpenSSL::Crypto)
-target_link_libraries(uppm LibArchive::LibArchive)
+target_link_libraries(uppm "${LibArchive_LIBRARIES}")
 target_link_libraries(uppm "${LIBGIT2_LIBRARIES}")
 target_link_libraries(uppm "${LIBYAML_LIBRARY}")
 target_link_libraries(uppm "${JANSSON_LIBRARY}")
 
 include_directories("${CMAKE_BINARY_DIR}")
+include_directories("${LibArchive_INCLUDE_DIRS}")
 include_directories("${LIBGIT2_INCLUDE_DIRS}")
 include_directories("${LIBYAML_INCLUDE_DIR}")
 include_directories("${JANSSON_INCLUDE_DIR}")

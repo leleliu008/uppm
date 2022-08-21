@@ -3,7 +3,6 @@
 # LIBGIT2_FOUND         - libgit2.a|so|dylib have been found
 # LIBGIT2_VERSION       - the version of libgit2
 # LIBGIT2_INCLUDE_DIRS  - the libgit2 and dependencies include directory
-# LIBGIT2_LIBRARY_DIRS  - the libgit2 and dependencies lib     directory
 # LIBGIT2_LIBRARIES     - the filepath of libgit2.a|so|dylib and it's dependencies
 
 
@@ -27,7 +26,6 @@ else()
     else()
         find_path   (LIBGIT2_INCLUDE_DIRS git2.h)
         find_library(LIBGIT2_LIBRARIES    git2)
-        get_filename_component(LIBGIT2_LIBRARY_DIRS ${LIBGIT2_LIBRARIES} DIRECTORY)
     endif()
     
     if (PKG_CONFIG_LIBGIT2_VERSION)
