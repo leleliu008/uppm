@@ -21,7 +21,7 @@ jobs:
       - run:  install -d $VCPKG_ROOT
       - run:  git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT
 
-      - run:  vcpkg install curl openssl libgit2 libarchive jansson libyaml
+      - run:  vcpkg install curl openssl libgit2 libarchive libyaml jansson
 
       - run:  cmake -S . -B   build.d -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_COLOR_MAKEFILE=ON -DCMAKE_VERBOSE_MAKEFILE=ON
       - run:  cmake --build   build.d

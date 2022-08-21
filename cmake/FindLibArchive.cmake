@@ -20,8 +20,16 @@ else()
     message("PKG_CONFIG_LIBARCHIVE_LIBRARIES=${PKG_CONFIG_LIBARCHIVE_LIBRARIES}")
     message("PKG_CONFIG_LIBARCHIVE_LINK_LIBRARIES=${PKG_CONFIG_LIBARCHIVE_LINK_LIBRARIES}")
 
-    # https://sourceware.org/bugzilla/show_bug.cgi?id=21264
-    #if (NOT CMAKE_C_FLAGS MATCHES ".* -static.*")
+    if (PKG_CONFIG_LIBARCHIVE_FOUND)
+        if (PKG_CONFIG_LIBARCHIVE_INCLUDE_DIRS)
+        	set(LibArchive_INCLUDE_DIRS "${PKG_CONFIG_LIBARCHIVE_INCLUDE_DIRS}")
+	    elseif (PKG_CONFIG_LIBARCHIVE_INCLUDEDIR)
+        	set(LibArchive_INCLUDE_DIRS "${PKG_CONFIG_LIBARCHIVE_INCLUDEDIR}")
+	    else()
+		    find_path(LibArchive_INCLUDE_DIRS archive.h)
+	    endif()
+
+        # https://sourceware.org/bugzilla/show_bug.cgi?id=21264
         set(PKG_CONFIG_LIBARCHIVE_LINK_LIBRARIES2 ${PKG_CONFIG_LIBARCHIVE_LINK_LIBRARIES})
         set(PKG_CONFIG_LIBARCHIVE_LINK_LIBRARIES )
 
@@ -34,10 +42,7 @@ else()
 
         unset(PKG_CONFIG_LIBARCHIVE_LINK_LIBRARIES2)
         #message("----PKG_CONFIG_LIBARCHIVE_LINK_LIBRARIES=${PKG_CONFIG_LIBARCHIVE_LINK_LIBRARIES}")
-        #endif()
 
-    if (PKG_CONFIG_LIBARCHIVE_FOUND)
-        set(LibArchive_INCLUDE_DIRS "${PKG_CONFIG_LIBARCHIVE_INCLUDE_DIRS}")
         set(LibArchive_LIBRARIES    "${PKG_CONFIG_LIBARCHIVE_LINK_LIBRARIES}")
     else()
         find_path   (LibArchive_INCLUDE_DIRS archive.h)

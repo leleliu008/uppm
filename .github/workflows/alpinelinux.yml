@@ -18,7 +18,7 @@ jobs:
     container: alpine:${{ matrix.tag }}
 
     steps:
-      - run: apk add cmake ninja gcc tree libc-dev curl-dev openssl-dev libgit2-dev libarchive-dev yaml-dev jansson-dev xz-dev bzip2-dev zlib-dev
+      - run: apk add cmake ninja gcc tree libc-dev curl-static openssl-libs-static libgit2-static libarchive-static yaml-static jansson-dev xz-dev bzip2-dev zlib-dev
 
       - uses: actions/checkout@main
 
