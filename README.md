@@ -76,7 +76,7 @@ cmake --install build.d
 **[AlpineLinux](https://www.alpinelinux.org/)**
 
 ```bash
-apk add git cmake ninja gcc libc-dev curl-dev openssl-dev libgit2-dev libarchive-dev yaml-dev jansson-dev xz-dev bzip2-dev zlib-dev
+apk add git cmake ninja gcc libc-dev curl-dev openssl-dev libgit2-dev libarchive-dev yaml-dev jansson-dev
 
 git clone https://github.com/leleliu008/uppm
 cd uppm

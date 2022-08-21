@@ -27,6 +27,9 @@ if (DEFINED VCPKG_INSTALLED_DIR)
     list(INSERT CMAKE_LIBRARY_PATH 0 "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib")
 endif()
 
+message(STATUS "CMAKE_HOST_SYSTEM_NAME = ${CMAKE_HOST_SYSTEM_NAME}")
+message(STATUS "CMAKE_SYSTEM_NAME      = ${CMAKE_SYSTEM_NAME}")
+
 message(STATUS "CMAKE_VERSION        = ${CMAKE_VERSION}")
 message(STATUS "CMAKE_PREFIX_PATH    = ${CMAKE_PREFIX_PATH}")
 message(STATUS "CMAKE_INCLUDE_PATH   = ${CMAKE_INCLUDE_PATH}")
@@ -36,7 +39,14 @@ message(STATUS "CMAKE_FIND_ROOT_PATH = ${CMAKE_FIND_ROOT_PATH}")
 ########################################################################################
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${CMAKE_MODULE_PATH}")
-set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
+
+if (BUILD_STATICALLY_LINKED_EXECUTABLE)
+    if ("${CMAKE_SYSTEM_NAME}" STREQUAL Darwin)
+        message(WARNING "macOS DO NOT support static link the c runtime.")
+    else()
+        set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
+    endif()
+endif()
 
 find_package(PkgConfig)
 
