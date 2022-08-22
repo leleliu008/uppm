@@ -49,7 +49,7 @@ cmake --install build.d
 
 ```bash
 apt -y update
-apt -y install git cmake ninja-build gcc libcurl4 libcurl4-openssl-dev libgit2-dev libarchive-dev libyaml-dev libjansson-dev
+apt -y install git cmake ninja-build pkg-config gcc libcurl4 libcurl4-openssl-dev libgit2-dev libarchive-dev libyaml-dev libjansson-dev
 
 git clone https://github.com/leleliu008/uppm
 cd uppm
@@ -63,7 +63,7 @@ cmake --install build.d
 
 ```bash
 dnf -y update
-dnf -y install git cmake ninja-build gcc libcurl-devel libgit2-devel libarchive-devel libyaml-devel jansson-devel
+dnf -y install git cmake ninja-build pkg-config gcc libcurl-devel libgit2-devel libarchive-devel libyaml-devel jansson-devel
 
 git clone https://github.com/leleliu008/uppm
 cd uppm
@@ -77,7 +77,7 @@ cmake --install build.d
 
 ```bash
 pacman -Syyuu --noconfirm
-pacman -S     --noconfirm git cmake ninja gcc curl openssl libgit2 libarchive libyaml jansson
+pacman -S     --noconfirm git cmake ninja pkg-config gcc curl openssl libgit2 libarchive libyaml jansson
 
 git clone https://github.com/leleliu008/uppm
 cd uppm
@@ -90,7 +90,7 @@ cmake --install build.d
 **[AlpineLinux](https://www.alpinelinux.org/)**
 
 ```bash
-apk add git cmake ninja gcc libc-dev curl-dev openssl-dev libgit2-dev libarchive-dev yaml-dev jansson-dev
+apk add git cmake ninja pkgconf gcc libc-dev curl-dev openssl-dev libgit2-dev libarchive-dev yaml-dev jansson-dev
 
 git clone https://github.com/leleliu008/uppm
 cd uppm
@@ -104,10 +104,12 @@ cmake --install build.d
 
 ```bash
 brew update
-brew install git cmake ninja curl jansson libyaml libgit2 libarchive
+brew install git cmake pkg-config ninja curl jansson libyaml libgit2 libarchive
 
 git clone https://github.com/leleliu008/uppm
 cd uppm
+
+export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:/usr/local/opt/openssl@1.1/lib/pkgconfig:/usr/local/opt/curl/lib/pkgconfig:/usr/local/opt/libarchive/lib/pkgconfig"
 
 CMAKE_C_FLAGS='-L/usr/local/lib -L/usr/local/opt/openssl@1.1/lib -lssl -liconv -framework CoreFoundation -framework Security'
 CMAKE_FIND_ROOT_PATH="$(brew --prefix openssl@1.1);$(brew --prefix curl);$(brew --prefix libarchive)"
@@ -129,7 +131,7 @@ cmake --install build.d
 **[FreeBSD](https://www.freebsd.org/)**
 
 ```bash
-pkg install -y git cmake ninja gcc curl openssl libgit2 libarchive libyaml jansson
+pkg install -y git cmake ninja pkgconf gcc curl openssl libgit2 libarchive libyaml jansson
 
 git clone https://github.com/leleliu008/uppm
 cd uppm
@@ -142,7 +144,7 @@ cmake --install build.d
 **[OpenBSD](https://www.openbsd.org/)**
 
 ```bash
-pkg_add git cmake ninja llvm curl libgit2 libarchive libyaml jansson
+pkg_add git cmake ninja pkg-config llvm curl libgit2 libarchive libyaml jansson
 
 git clone https://github.com/leleliu008/uppm
 cd uppm
@@ -155,7 +157,7 @@ cmake --install build.d
 **[NetBSD](https://www.netbsd.org/)**
 
 ```bash
-pkgin -y install git mozilla-rootcerts cmake ninja-build clang curl openssl libgit2 libarchive libyaml jansson
+pkgin -y install git mozilla-rootcerts cmake ninja-build pkg-config clang curl openssl libgit2 libarchive libyaml jansson
 
 mozilla-rootcerts install
 
