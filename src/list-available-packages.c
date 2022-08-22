@@ -37,6 +37,10 @@ int uppm_list_the_available_packages() {
             while ((dir_entry = readdir(dir))) {
                 //puts(dir_entry->d_name);
 
+                if ((strcmp(dir_entry->d_name, ".") == 0) || (strcmp(dir_entry->d_name, "..") == 0)) {
+                    continue;
+                }
+
                 int r = fnmatch("*.yml", dir_entry->d_name, 0);
 
                 if (r == 0) {

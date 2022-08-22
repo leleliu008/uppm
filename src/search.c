@@ -57,6 +57,9 @@ int uppm_search(const char * keyword) {
 
         while ((dir_entry = readdir(dir))) {
             //puts(dir_entry->d_name);
+            if ((strcmp(dir_entry->d_name, ".") == 0) || (strcmp(dir_entry->d_name, "..") == 0)) {
+                continue;
+            }
 
             size_t  patternLength = strlen(keyword) + 7;
             char    pattern[patternLength];

@@ -53,6 +53,12 @@ int uppm_init() {
         return UPPM_ERROR;
     } else {
         while ((dir_entry = readdir(dir))) {
+            //puts(dir_entry->d_name);
+
+            if ((strcmp(dir_entry->d_name, ".") == 0) || (strcmp(dir_entry->d_name, "..") == 0)) {
+                continue;
+            }
+
             size_t  packageInstalledDirLength = installedDirLength + strlen(dir_entry->d_name) + 2;
             char    packageInstalledDir[packageInstalledDirLength];
             memset (packageInstalledDir, 0, packageInstalledDirLength);
@@ -98,10 +104,10 @@ int uppm_init() {
                     if ((ACLOCAL_PATH == NULL) || (strcmp(ACLOCAL_PATH, "") == 0)) {
                         setenv("ACLOCAL_PATH", aclocalDir, 1);
                     } else {
-                        size_t  newACLOCAL_PATHLength = aclocalDirLength + strlen(ACLOCAL_PATH);
+                        size_t  newACLOCAL_PATHLength = aclocalDirLength + strlen(ACLOCAL_PATH) + 2;
                         char    newACLOCAL_PATH[newACLOCAL_PATHLength];
                         memset (newACLOCAL_PATH, 0, newACLOCAL_PATHLength);
-                        sprintf(newACLOCAL_PATH, "%s:%s", installedDir, PATH);
+                        sprintf(newACLOCAL_PATH, "%s:%s", aclocalDir, ACLOCAL_PATH);
 
                         setenv("ACLOCAL_PATH", newACLOCAL_PATH, 1);
                     }

@@ -1,17 +1,60 @@
 #include <stdio.h>
 #include <string.h>
+#include <sys/utsname.h>
 
 #include "core/fs.h"
 #include "uppm.h"
 
+static bool check_os_kind_arch_is_supported(const char * osKind, const char * osArch) {
+    if (strcmp(osArch, "x86_64") == 0) {
+        return true;
+    } else if (strcmp(osArch, "arm64") == 0) {
+        return true;
+    } else {
+        fprintf(stderr, "%s/%s is not supported yet.", osKind, osArch);
+        return false;
+    }
+}
+
 UPPMFormulaRepo* uppm_formula_repo_default_new(char * userHomeDir, size_t userHomeDirLength) {
-    char * formulaRepoPath = (char*)calloc(userHomeDirLength + 23, sizeof(char));
+    struct utsname uts;
+
+    if (uname(&uts) < 0) {
+        perror("uname() error");
+        return NULL;
+    }
+
+    const char * osKind = uts.sysname;
+    const char * osArch = uts.machine;
+
+    if (strcmp(osKind, "Linux") == 0) {
+        osKind = "linux";
+    } else if (strcmp(osKind, "Darwin") == 0) {
+        osKind = "macos";
+    } else if (strcmp(osKind, "FreeBSD") == 0) {
+        osKind = "freebsd";
+    } else if (strcmp(osKind, "OpenBSD") == 0) {
+        osKind = "openbsd";
+    } else if (strcmp(osKind, "NetBSD") == 0) {
+        osKind = "netbsd";
+    }
+
+    if (strcmp(osArch, "amd64") == 0) {
+        osArch = "x86_64";
+    } else if (strcmp(osArch, "aarch64") == 0) {
+        osArch = "arm64";
+    }
+
+    char *  formulaRepoPath = (char*)calloc(userHomeDirLength + 23, sizeof(char));
     sprintf(formulaRepoPath, "%s/.uppm/repos.d/offical", userHomeDir);
 
+    char *  formulaRepoUrl = (char*)calloc(strlen(osKind) + strlen(osArch) + 60, sizeof(char));
+    sprintf(formulaRepoUrl, "https://github.com/leleliu008/uppm-formula-repository-%s-%s.git", osKind, osArch);
+
     UPPMFormulaRepo * formulaRepo = (UPPMFormulaRepo*)calloc(1, sizeof(UPPMFormulaRepo));
-    formulaRepo->path = formulaRepoPath;
     formulaRepo->name = strdup("offical");
-    formulaRepo->url  = strdup("https://github.com/leleliu008/uppm-formula-repository-linux-x86_64.git");
+    formulaRepo->url  = formulaRepoUrl;
+    formulaRepo->path = formulaRepoPath;
 
     return formulaRepo;
 }

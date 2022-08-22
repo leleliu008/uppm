@@ -271,5 +271,7 @@ int uppm_install(const char * packageName, bool verbose) {
 
     fclose(installedMetadataFile);
 
+    fprintf(stderr, "package [%s] successfully installed.\n", packageName);
+
     return UPPM_OK;
 }

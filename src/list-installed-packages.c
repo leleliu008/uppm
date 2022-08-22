@@ -35,6 +35,10 @@ int uppm_list_the_installed_packages() {
         return UPPM_ERROR;
     } else {
         while ((dir_entry = readdir(dir))) {
+            if ((strcmp(dir_entry->d_name, ".") == 0) || (strcmp(dir_entry->d_name, "..") == 0)) {
+                continue;
+            }
+
             size_t  installedMetadataFilePathLength = installedDirLength + strlen(dir_entry->d_name) + 26;
             char    installedMetadataFilePath[installedMetadataFilePathLength];
             memset (installedMetadataFilePath, 0, installedMetadataFilePathLength);
