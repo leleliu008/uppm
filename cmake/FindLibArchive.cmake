@@ -1,5 +1,7 @@
-# try to find git2.h and libarchive.a|so|dylib, once done following variables will be defined
 # https://cmake.org/cmake/help/latest/module/FindLibArchive.html
+#
+# try to find archive.h and libarchive.a|so|dylib, once done following variables will be defined
+#
 # LibArchive_FOUND         - libarchive.a|so|dylib have been found
 # LibArchive_VERSION       - the version of libarchive
 # LibArchive_INCLUDE_DIRS  - the libarchive and dependencies include directory
@@ -19,6 +21,8 @@ else()
     message("PKG_CONFIG_LIBARCHIVE_VERSION=${PKG_CONFIG_LIBARCHIVE_VERSION}")
     message("PKG_CONFIG_LIBARCHIVE_LIBRARIES=${PKG_CONFIG_LIBARCHIVE_LIBRARIES}")
     message("PKG_CONFIG_LIBARCHIVE_LINK_LIBRARIES=${PKG_CONFIG_LIBARCHIVE_LINK_LIBRARIES}")
+    message("PKG_CONFIG_LIBARCHIVE_STATIC_LIBRARIES=${PKG_CONFIG_LIBARCHIVE_STATIC_LIBRARIES}")
+    message("PKG_CONFIG_LIBARCHIVE_STATIC_LINK_LIBRARIES=${PKG_CONFIG_LIBARCHIVE_STATIC_LINK_LIBRARIES}")
 
     if (PKG_CONFIG_LIBARCHIVE_FOUND)
         if (PKG_CONFIG_LIBARCHIVE_INCLUDE_DIRS)
@@ -30,27 +34,39 @@ else()
 	    endif()
 
         # https://sourceware.org/bugzilla/show_bug.cgi?id=21264
-        set(PKG_CONFIG_LIBARCHIVE_LINK_LIBRARIES2 ${PKG_CONFIG_LIBARCHIVE_LINK_LIBRARIES})
-        set(PKG_CONFIG_LIBARCHIVE_LINK_LIBRARIES )
 
-        foreach(item ${PKG_CONFIG_LIBARCHIVE_LINK_LIBRARIES2})
-            if ((item MATCHES ".*libm\\.a") OR (item MATCHES ".*libdl\\.a") OR (item MATCHES ".*librt\\.a") OR (item MATCHES ".*libpthread\\.a"))
+        set(LibArchive_LIBRARIES )
+
+        foreach(item ${PKG_CONFIG_LIBARCHIVE_LINK_LIBRARIES})
+                if(item MATCHES ".*libm\\.a")
+            elseif(item MATCHES ".*libdl\\.a")
+            elseif(item MATCHES ".*librt\\.a")
+            elseif(item MATCHES ".*libpthread\\.a")
             else()
-                list(APPEND PKG_CONFIG_LIBARCHIVE_LINK_LIBRARIES "${item}")
+                get_filename_component(LIBRARIE_FILENAME ${item} NAME)
+
+                message(STATUS "${LIBRARIE_FILENAME}")
+
+                if (NOT TARGET  LibArchive::${LIBRARIE_FILENAME})
+                    add_library(LibArchive::${LIBRARIE_FILENAME} UNKNOWN IMPORTED)
+                    set_target_properties(LibArchive::${LIBRARIE_FILENAME} PROPERTIES IMPORTED_LOCATION "${item}")
+                endif()
+
+                list(APPEND LibArchive_LIBRARIES LibArchive::${LIBRARIE_FILENAME})
             endif()
         endforeach()
 
-        unset(PKG_CONFIG_LIBARCHIVE_LINK_LIBRARIES2)
-        #message("----PKG_CONFIG_LIBARCHIVE_LINK_LIBRARIES=${PKG_CONFIG_LIBARCHIVE_LINK_LIBRARIES}")
-
-        set(LibArchive_LIBRARIES    "${PKG_CONFIG_LIBARCHIVE_LINK_LIBRARIES}")
-    else()
-        find_path   (LibArchive_INCLUDE_DIRS archive.h)
-        find_library(LibArchive_LIBRARIES    archive)
-    endif()
+        if (NOT TARGET  LibArchive::LibArchive)
+            add_library(LibArchive::LibArchive INTERFACE IMPORTED)
+            set_target_properties(LibArchive::LibArchive PROPERTIES
+                INTERFACE_INCLUDE_DIRECTORIES "${LibArchive_INCLUDE_DIRS}"
+                INTERFACE_LINK_LIBRARIES      "${LibArchive_LIBRARIES}"
+            )
+        endif()
     
-    if (PKG_CONFIG_LIBARCHIVE_VERSION)
-        set(LibArchive_VERSION ${PKG_CONFIG_LIBARCHIVE_VERSION})
+        if (PKG_CONFIG_LIBARCHIVE_VERSION)
+            set(LibArchive_VERSION ${PKG_CONFIG_LIBARCHIVE_VERSION})
+        endif()
     endif()
 endif()
 

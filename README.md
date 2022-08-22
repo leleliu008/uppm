@@ -49,7 +49,7 @@ cmake --install build.d
 
 ```bash
 apt -y update
-apt -y install git cmake ninja-build gcc libcurl4 libcurl4-openssl-dev libgit2-dev libarchive-dev ibyaml-dev libjansson-dev
+apt -y install git cmake ninja-build gcc libcurl4 libcurl4-openssl-dev libgit2-dev libarchive-dev libyaml-dev libjansson-dev
 
 git clone https://github.com/leleliu008/uppm
 cd uppm

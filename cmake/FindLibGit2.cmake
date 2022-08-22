@@ -30,27 +30,39 @@ else()
 	    endif()
 
         # https://sourceware.org/bugzilla/show_bug.cgi?id=21264
-        set(PKG_CONFIG_LIBGIT2_LINK_LIBRARIES2 ${PKG_CONFIG_LIBGIT2_LINK_LIBRARIES})
-        set(PKG_CONFIG_LIBGIT2_LINK_LIBRARIES )
 
-        foreach(item ${PKG_CONFIG_LIBGIT2_LINK_LIBRARIES2})
-            if ((item MATCHES ".*libm\\.a") OR (item MATCHES ".*libdl\\.a") OR (item MATCHES ".*librt\\.a") OR (item MATCHES ".*libpthread\\.a"))
+        set(LIBGIT2_LIBRARIES )
+
+        foreach(item ${PKG_CONFIG_LIBGIT2_LINK_LIBRARIES})
+                if(item MATCHES ".*libm\\.a")
+            elseif(item MATCHES ".*libdl\\.a")
+            elseif(item MATCHES ".*librt\\.a")
+            elseif(item MATCHES ".*libpthread\\.a")
             else()
-                list(APPEND PKG_CONFIG_LIBGIT2_LINK_LIBRARIES "${item}")
+                get_filename_component(LIBRARIE_FILENAME ${item} NAME)
+
+                message(STATUS "${LIBRARIE_FILENAME}")
+
+                if (NOT TARGET  LIBGIT2::${LIBRARIE_FILENAME})
+                    add_library(LIBGIT2::${LIBRARIE_FILENAME} UNKNOWN IMPORTED)
+                    set_target_properties(LIBGIT2::${LIBRARIE_FILENAME} PROPERTIES IMPORTED_LOCATION "${item}")
+                endif()
+
+                list(APPEND LIBGIT2_LIBRARIES LIBGIT2::${LIBRARIE_FILENAME})
             endif()
         endforeach()
 
-        unset(PKG_CONFIG_LIBGIT2_LINK_LIBRARIES2)
-        #message("----PKG_CONFIG_LIBGIT2_LINK_LIBRARIES=${PKG_CONFIG_LIBGIT2_LINK_LIBRARIES}")
+        if (NOT TARGET  LIBGIT2::LIBGIT2)
+            add_library(LIBGIT2::LIBGIT2 INTERFACE IMPORTED)
+            set_target_properties(LIBGIT2::LIBGIT2 PROPERTIES
+                INTERFACE_INCLUDE_DIRECTORIES "${LIBGIT2_INCLUDE_DIRS}"
+                INTERFACE_LINK_LIBRARIES      "${LIBGIT2_LIBRARIES}"
+            )
+        endif()
 
-        set(LIBGIT2_LIBRARIES     ${PKG_CONFIG_LIBGIT2_LINK_LIBRARIES})
-    else()
-        find_path   (LIBGIT2_INCLUDE_DIRS git2.h)
-        find_library(LIBGIT2_LIBRARIES    git2)
-    endif()
-    
-    if (PKG_CONFIG_LIBGIT2_VERSION)
-        set(LIBGIT2_VERSION ${PKG_CONFIG_LIBGIT2_VERSION})
+        if (PKG_CONFIG_LIBGIT2_VERSION)
+            set(LIBGIT2_VERSION ${PKG_CONFIG_LIBGIT2_VERSION})
+        endif()
     endif()
 endif()
 

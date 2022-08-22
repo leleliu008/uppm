@@ -40,6 +40,14 @@ else()
     endif()
 endif()
 
+if (NOT TARGET  LIBYAML::LIBYAML)
+    add_library(LIBYAML::LIBYAML UNKNOWN IMPORTED)
+    set_target_properties(LIBYAML::LIBYAML PROPERTIES
+        IMPORTED_LOCATION             "${LIBYAML_LIBRARY}"
+        INTERFACE_INCLUDE_DIRECTORIES "${LIBYAML_INCLUDE_DIR}"
+    )
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(LibYAML REQUIRED_VARS LIBYAML_LIBRARY LIBYAML_INCLUDE_DIR VERSION_VAR LIBYAML_VERSION)
 
