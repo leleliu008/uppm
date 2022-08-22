@@ -56,7 +56,7 @@ int uppm_main(int argc, char* argv[]) {
         } else if (resultCode == UPPM_ENV_PATH_NOT_SET) {
             fprintf(stderr, "%s\n", "PATH environment variable is not set.\n");
         } else if (resultCode == UPPM_ERROR) {
-            fprintf(stderr, "occurs error.");
+            fprintf(stderr, "occurs error.\n");
         }
 
         return resultCode;
@@ -74,7 +74,7 @@ int uppm_main(int argc, char* argv[]) {
         } else if (resultCode == UPPM_ENV_PATH_NOT_SET) {
             fprintf(stderr, "%s\n", "PATH environment variable is not set.\n");
         } else if (resultCode == UPPM_ERROR) {
-            fprintf(stderr, "occurs error.");
+            fprintf(stderr, "occurs error.\n");
         }
 
         return resultCode;
@@ -100,7 +100,7 @@ int uppm_main(int argc, char* argv[]) {
         } else if (resultCode == UPPM_ENV_PATH_NOT_SET) {
             fprintf(stderr, "%s\n", "PATH environment variable is not set.\n");
         } else if (resultCode == UPPM_ERROR) {
-            fprintf(stderr, "occurs error.");
+            fprintf(stderr, "occurs error.\n");
         }
 
         return resultCode;
@@ -124,7 +124,7 @@ int uppm_main(int argc, char* argv[]) {
         } else if (resultCode == UPPM_ENV_PATH_NOT_SET) {
             fprintf(stderr, "%s\n", "PATH environment variable is not set.\n");
         } else if (resultCode == UPPM_ERROR) {
-            fprintf(stderr, "occurs error.");
+            fprintf(stderr, "occurs error.\n");
         }
 
         return resultCode;
@@ -148,7 +148,7 @@ int uppm_main(int argc, char* argv[]) {
         } else if (resultCode == UPPM_ENV_PATH_NOT_SET) {
             fprintf(stderr, "%s\n", "PATH environment variable is not set.\n");
         } else if (resultCode == UPPM_ERROR) {
-            fprintf(stderr, "occurs error.");
+            fprintf(stderr, "occurs error.\n");
         }
 
         return resultCode;
@@ -172,7 +172,7 @@ int uppm_main(int argc, char* argv[]) {
         } else if (resultCode == UPPM_ENV_PATH_NOT_SET) {
             fprintf(stderr, "%s\n", "PATH environment variable is not set.\n");
         } else if (resultCode == UPPM_ERROR) {
-            fprintf(stderr, "occurs error.");
+            fprintf(stderr, "occurs error.\n");
         }
 
         return resultCode;
@@ -196,7 +196,7 @@ int uppm_main(int argc, char* argv[]) {
         } else if (resultCode == UPPM_ENV_PATH_NOT_SET) {
             fprintf(stderr, "%s\n", "PATH environment variable is not set.\n");
         } else if (resultCode == UPPM_ERROR) {
-            fprintf(stderr, "occurs error.");
+            fprintf(stderr, "occurs error.\n");
         }
 
         return resultCode;
@@ -220,7 +220,7 @@ int uppm_main(int argc, char* argv[]) {
         } else if (resultCode == UPPM_ENV_PATH_NOT_SET) {
             fprintf(stderr, "%s\n", "PATH environment variable is not set.\n");
         } else if (resultCode == UPPM_ERROR) {
-            fprintf(stderr, "occurs error.");
+            fprintf(stderr, "occurs error.\n");
         }
 
         return resultCode;
@@ -234,7 +234,7 @@ int uppm_main(int argc, char* argv[]) {
         } else if (resultCode == UPPM_ENV_PATH_NOT_SET) {
             fprintf(stderr, "%s\n", "PATH environment variable is not set.\n");
         } else if (resultCode == UPPM_ERROR) {
-            fprintf(stderr, "occurs error.");
+            fprintf(stderr, "occurs error.\n");
         }
 
         return resultCode;
@@ -248,7 +248,7 @@ int uppm_main(int argc, char* argv[]) {
         } else if (resultCode == UPPM_ENV_PATH_NOT_SET) {
             fprintf(stderr, "%s\n", "PATH environment variable is not set.\n");
         } else if (resultCode == UPPM_ERROR) {
-            fprintf(stderr, "occurs error.");
+            fprintf(stderr, "occurs error.\n");
         }
 
         return resultCode;
@@ -262,7 +262,7 @@ int uppm_main(int argc, char* argv[]) {
         } else if (resultCode == UPPM_ENV_PATH_NOT_SET) {
             fprintf(stderr, "%s\n", "PATH environment variable is not set.\n");
         } else if (resultCode == UPPM_ERROR) {
-            fprintf(stderr, "occurs error.");
+            fprintf(stderr, "occurs error.\n");
         }
 
         return resultCode;
@@ -286,7 +286,7 @@ int uppm_main(int argc, char* argv[]) {
         } else if (resultCode == UPPM_ENV_PATH_NOT_SET) {
             fprintf(stderr, "%s\n", "PATH environment variable is not set.\n");
         } else if (resultCode == UPPM_ERROR) {
-            fprintf(stderr, "occurs error.");
+            fprintf(stderr, "occurs error.\n");
         }
 
         return resultCode;
@@ -310,7 +310,7 @@ int uppm_main(int argc, char* argv[]) {
         } else if (resultCode == UPPM_ENV_PATH_NOT_SET) {
             fprintf(stderr, "%s\n", "PATH environment variable is not set.\n");
         } else if (resultCode == UPPM_ERROR) {
-            fprintf(stderr, "occurs error.");
+            fprintf(stderr, "occurs error.\n");
         }
 
         return resultCode;
@@ -334,7 +334,7 @@ int uppm_main(int argc, char* argv[]) {
         } else if (resultCode == UPPM_ENV_PATH_NOT_SET) {
             fprintf(stderr, "%s\n", "PATH environment variable is not set.\n");
         } else if (resultCode == UPPM_ERROR) {
-            fprintf(stderr, "occurs error.");
+            fprintf(stderr, "occurs error.\n");
         }
 
         return resultCode;

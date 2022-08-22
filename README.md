@@ -17,7 +17,7 @@ ppkg install uppm
 |----|---------|-------|
 |[cmake](https://cmake.org/)|required |for generating `build.ninja`|
 |[ninja](https://ninja-build.org/)|required |for doing jobs that read from `build.ninja`|
-|[pkg-config>=0.18](https://www.freedesktop.org/wiki/Software/pkg-config/)|recommended|for finding libraries|
+|[pkg-config>=0.18](https://www.freedesktop.org/wiki/Software/pkg-config/)|required|for finding libraries|
 ||||
 |[jansson](https://github.com/akheron/jansson)|required|for parsing and creating JSON.|
 |[libyaml](https://github.com/yaml/libyaml/)|required|for parsing formula files whose format is YAML.|

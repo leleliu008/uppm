@@ -30,14 +30,31 @@ int uppm_tree(const char * packageName) {
     memset (installedMetadataFilePath, 0, installedMetadataFilePathLength);
     sprintf(installedMetadataFilePath, "%s/installed-metadata-uppm", installDir);
 
-    if (exists_and_is_a_regular_file(installedMetadataFilePath)) {
-        if (execlp("tree", "tree", "--dirsfirst", installDir, NULL) == -1) {
-            fprintf(stderr, "command not found: tree\n");
-            return UPPM_ERROR;
-        } else {
-            return UPPM_OK;
-        }
-    } else {
+    if (!exists_and_is_a_regular_file(installedMetadataFilePath)) {
         return UPPM_PACKAGE_IS_NOT_INSTALLED;
+    }
+
+    resultCode = uppm_is_package_installed("tree");
+
+    if (resultCode == UPPM_PACKAGE_IS_NOT_INSTALLED) {
+        resultCode = uppm_install("tree", false);
+
+        if (resultCode != UPPM_OK) {
+            return resultCode;
+        }
+    } else if (resultCode != UPPM_OK) {
+        return resultCode;
+    }
+
+    size_t  treeCommandPathLength = userHomeDirLength + 31;
+    char    treeCommandPath[treeCommandPathLength];
+    memset (treeCommandPath, 0, treeCommandPathLength);
+    sprintf(treeCommandPath, "%s/.uppm/installed/tree/bin/tree", userHomeDir);
+
+    if (execl(treeCommandPath, treeCommandPath, "--dirsfirst", installDir, NULL) == -1) {
+        perror(treeCommandPath);
+        return UPPM_ERROR;
+    } else {
+        return UPPM_OK;
     }
 }
