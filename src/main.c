@@ -28,24 +28,17 @@ int uppm_main(int argc, char* argv[]) {
     }
 
     if (strcmp(action, "env") == 0) {
-        printf("export NATIVE_OS_KIND='%s'\n", getenv("NATIVE_OS_KIND"));
-        printf("export NATIVE_OS_NAME='%s'\n", getenv("NATIVE_OS_NAME"));
-        printf("export NATIVE_OS_ARCH='%s'\n", getenv("NATIVE_OS_ARCH"));
-        printf("\n");
-        printf("export UPPM_HOME='%s'\n",    getenv("UPPM_HOME"));
-        printf("export UPPM_VERSION='%s'\n", getenv("UPPM_VERSION"));
-        printf("\n");
-        printf("export HOME='%s'\n",    getenv("HOME"));
-        printf("export PATH='%s'\n",    getenv("PATH"));
+        int resultCode = uppm_env();
 
-        const char * ACLOCAL_PATH = getenv("ACLOCAL_PATH");
-
-        if (ACLOCAL_PATH != NULL) {
-            printf("\n");
-            printf("export ACLOCALPATH='%s'\n", ACLOCAL_PATH);
+        if (resultCode == UPPM_ENV_HOME_NOT_SET) {
+            fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
+        } else if (resultCode == UPPM_ENV_PATH_NOT_SET) {
+            fprintf(stderr, "%s\n", "PATH environment variable is not set.\n");
+        } else if (resultCode == UPPM_ERROR) {
+            fprintf(stderr, "occurs error.\n");
         }
 
-        return 0;
+        return resultCode;
     }
 
     if (strcmp(action, "update") == 0) {

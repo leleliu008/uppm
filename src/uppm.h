@@ -126,6 +126,8 @@ int uppm_init();
 
 int uppm_help();
 
+int uppm_env();
+
 int uppm_update_self();
 
 int uppm_search(const char * keyword);
