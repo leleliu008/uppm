@@ -131,11 +131,9 @@ int uppm_install(const char * packageName, bool verbose) {
     }
 
     if (needFetch) {
-        resultCode = http_fetch_to_file(formula->bin_url, archiveFilePath, verbose, verbose);
-
-        if (resultCode != UPPM_OK) {
+        if (http_fetch_to_file(formula->bin_url, archiveFilePath, verbose, verbose) != 0) {
             uppm_formula_free(formula);
-            return resultCode;
+            return UPPM_NETWORK_ERROR;
         }
 
         char * actualSHA256SUM = sha256sum_of_file(archiveFilePath);

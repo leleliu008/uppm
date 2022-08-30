@@ -3,6 +3,7 @@
 #include <dirent.h>
 #include <sys/utsname.h>
 
+#include "core/util.h"
 #include "core/fs.h"
 #include "uppm.h"
 
@@ -61,12 +62,24 @@ int uppm_env() {
     if (uname(&uts) < 0) {
         perror("uname() error");
         return UPPM_ERROR;
-    } 
+    }
 
     printf("NATIVE_OS_KIND = %s\n", uts.sysname);
     printf("NATIVE_OS_NAME = %s\n", uts.nodename);
     printf("NATIVE_OS_ARCH = %s\n", uts.machine);
+
+    if (strcmp(uts.sysname, "Linux") == 0) {
+        int libcType = get_linux_libc_type2(uts.sysname, uts.machine);
+
+        switch(libcType) {
+            case 1:  printf("NATIVE_OS_LIBC = glibc\n"); break;
+            case 2:  printf("NATIVE_OS_LIBC = musl\n");  break;
+            default: return UPPM_ERROR;
+        }
+    }
+
     printf("\n");
+
     char * userHomeDir = getenv("HOME");
 
     if ((userHomeDir == NULL) || (strcmp(userHomeDir, "") == 0)) {

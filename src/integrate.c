@@ -33,9 +33,7 @@ int uppm_integrate_zsh_completion(const char * outputDir) {
     memset (zshCompletionFilePath, 0, zshCompletionFilePathLength);
     sprintf(zshCompletionFilePath, "%s/_uppm", zshCompletionDir);
 
-    int resultCode = http_fetch_to_file(url, zshCompletionFilePath, false, false);
-
-    if (resultCode != 0) {
+    if (http_fetch_to_file(url, zshCompletionFilePath, false, false) != 0) {
         return UPPM_NETWORK_ERROR;
     }
 

@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <yaml.h>
+#include "core/util.h"
 #include "uppm.h"
 
 typedef enum {
@@ -12,6 +13,8 @@ typedef enum {
     FORMULA_KEY_CODE_license,
     FORMULA_KEY_CODE_bin_url,
     FORMULA_KEY_CODE_bin_sha,
+    FORMULA_KEY_CODE_res_url,
+    FORMULA_KEY_CODE_res_sha,
     FORMULA_KEY_CODE_dep_pkg,
     FORMULA_KEY_CODE_install,
 } UPPMFormulaKeyCode;
@@ -97,6 +100,10 @@ static UPPMFormulaKeyCode uppm_formula_key_code_from_key_name(char * key) {
         return FORMULA_KEY_CODE_bin_url;
     } else if (strcmp(key, "bin-sha") == 0) {
         return FORMULA_KEY_CODE_bin_sha;
+    } else if (strcmp(key, "res-url") == 0) {
+        return FORMULA_KEY_CODE_res_url;
+    } else if (strcmp(key, "res-sha") == 0) {
+        return FORMULA_KEY_CODE_res_sha;
     } else if (strcmp(key, "dep-pkg") == 0) {
         return FORMULA_KEY_CODE_dep_pkg;
     } else if (strcmp(key, "install") == 0) {
@@ -106,16 +113,32 @@ static UPPMFormulaKeyCode uppm_formula_key_code_from_key_name(char * key) {
     }
 }
 
-void uppm_formula_set_value(UPPMFormulaKeyCode keyCode, char * value, UPPMFormula * formula) {
+static void uppm_formula_set_value(UPPMFormulaKeyCode keyCode, char * value, UPPMFormula * formula, bool isLinuxMuslLibc) {
     switch (keyCode) {
-        case FORMULA_KEY_CODE_summary:  formula->summary = strdup(value); break;
-        case FORMULA_KEY_CODE_webpage:  formula->webpage = strdup(value); break;
-        case FORMULA_KEY_CODE_version:  formula->version = strdup(value); break;
-        case FORMULA_KEY_CODE_license:  formula->license = strdup(value); break;
-        case FORMULA_KEY_CODE_bin_url:  formula->bin_url = strdup(value); break;
-        case FORMULA_KEY_CODE_bin_sha:  formula->bin_sha = strdup(value); break;
-        case FORMULA_KEY_CODE_dep_pkg:  formula->dep_pkg = strdup(value); break;
-        case FORMULA_KEY_CODE_install:  formula->install = strdup(value); break;
+        case FORMULA_KEY_CODE_summary: if (formula->summary != NULL) free(formula->summary); formula->summary = strdup(value); break;
+        case FORMULA_KEY_CODE_webpage: if (formula->webpage != NULL) free(formula->webpage); formula->webpage = strdup(value); break;
+        case FORMULA_KEY_CODE_version: if (formula->version != NULL) free(formula->version); formula->version = strdup(value); break;
+        case FORMULA_KEY_CODE_license: if (formula->license != NULL) free(formula->license); formula->license = strdup(value); break;
+        case FORMULA_KEY_CODE_bin_url: if (formula->bin_url != NULL) free(formula->bin_url); formula->bin_url = strdup(value); break;
+        case FORMULA_KEY_CODE_bin_sha: if (formula->bin_sha != NULL) free(formula->bin_sha); formula->bin_sha = strdup(value); break;
+        case FORMULA_KEY_CODE_dep_pkg: if (formula->dep_pkg != NULL) free(formula->dep_pkg); formula->dep_pkg = strdup(value); break;
+        case FORMULA_KEY_CODE_install: if (formula->install != NULL) free(formula->install); formula->install = strdup(value); break;
+        case FORMULA_KEY_CODE_res_url:
+            if (isLinuxMuslLibc) {
+                if (formula->bin_url != NULL) {
+                    free(formula->bin_url);
+                }
+                formula->bin_url = strdup(value);
+            }
+            break;
+        case FORMULA_KEY_CODE_res_sha:
+            if (isLinuxMuslLibc) {
+                if (formula->bin_sha != NULL) {
+                    free(formula->bin_sha);
+                }
+                formula->bin_sha = strdup(value);
+            }
+            break;
         default: break;
     }
 }
@@ -161,6 +184,8 @@ int uppm_formula_parse(const char * packageName, UPPMFormula * * out) {
 
     int lastTokenType = 0;
 
+    bool isLinuxMuslLibc = get_linux_libc_type();
+
     bool success = true;
 
     do {
@@ -186,7 +211,7 @@ int uppm_formula_parse(const char * packageName, UPPMFormula * * out) {
                         formula = (UPPMFormula*)calloc(1, sizeof(UPPMFormula));
                         formula->path = formulaFilePath;
                     }
-                    uppm_formula_set_value(formulaKeyCode, (char*)token.data.scalar.value, formula);
+                    uppm_formula_set_value(formulaKeyCode, (char*)token.data.scalar.value, formula, isLinuxMuslLibc);
                 }
                 break;
             default: 

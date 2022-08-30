@@ -74,6 +74,7 @@ int http_fetch_to_stream(const char * url, FILE * outputFile, bool verbose, bool
 
     CURLcode curlcode = curl_easy_perform(curl);
     
+    // https://curl.se/libcurl/c/libcurl-errors.html
     if (curlcode != CURLE_OK) {
         fprintf(stderr, "%s\n", curl_easy_strerror(curlcode));
     }

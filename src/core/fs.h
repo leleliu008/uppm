@@ -4,6 +4,7 @@
 
 bool exists_and_is_a_directory(const char* dirpath);
 bool exists_and_is_a_regular_file(const char* filepath);
+bool exists_and_is_a_symbolic_link(const char* filepath);
 bool exists_and_is_readable(const char* filepath);
 bool exists_and_is_writable(const char* filepath);
 bool exists_and_is_executable(const char* filepath);

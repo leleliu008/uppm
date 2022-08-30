@@ -68,11 +68,9 @@ int uppm_fetch(const char * packageName) {
         }
     }
 
-    resultCode = http_fetch_to_file(formula->bin_url, archiveFilePath, true, true);
-
-    if (resultCode != UPPM_OK) {
+    if (http_fetch_to_file(formula->bin_url, archiveFilePath, true, true) != 0) {
         uppm_formula_free(formula);
-        return resultCode;
+        return UPPM_NETWORK_ERROR;
     }
 
     char * actualSHA256SUM = sha256sum_of_file(archiveFilePath);
