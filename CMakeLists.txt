@@ -27,6 +27,8 @@ if (DEFINED VCPKG_INSTALLED_DIR)
     list(INSERT CMAKE_LIBRARY_PATH 0 "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib")
 endif()
 
+########################################################################################
+
 message(STATUS "CMAKE_HOST_SYSTEM_NAME = ${CMAKE_HOST_SYSTEM_NAME}")
 message(STATUS "CMAKE_SYSTEM_NAME      = ${CMAKE_SYSTEM_NAME}")
 
@@ -78,6 +80,8 @@ else()
     message(FATAL "no OPENSSL_VERSION set.")
 endif()
 
+########################################################################################
+
 aux_source_directory(src/core CORE_SRCS)
 aux_source_directory(src           SRCS)
 
@@ -95,10 +99,6 @@ message(STATUS "JANSSON_LIBRARY=${JANSSON_LIBRARY}")
 target_link_libraries(uppm CURL::libcurl)
 target_link_libraries(uppm OpenSSL::SSL)
 target_link_libraries(uppm OpenSSL::Crypto)
-#target_link_libraries(uppm "${LibArchive_LIBRARIES}")
-#target_link_libraries(uppm "${LIBGIT2_LIBRARIES}")
-#target_link_libraries(uppm "${LIBYAML_LIBRARY}")
-#target_link_libraries(uppm "${JANSSON_LIBRARY}")
 target_link_libraries(uppm LibArchive::LibArchive)
 target_link_libraries(uppm LIBGIT2::LIBGIT2)
 target_link_libraries(uppm LIBYAML::LIBYAML)
@@ -108,15 +108,11 @@ if (BUILD_STATICALLY_LINKED_EXECUTABLE)
     target_link_options(uppm PRIVATE -static)
 endif()
 
-include_directories("${CMAKE_BINARY_DIR}")
-#include_directories("${LibArchive_INCLUDE_DIRS}")
-#include_directories("${LIBGIT2_INCLUDE_DIRS}")
-#include_directories("${LIBYAML_INCLUDE_DIR}")
-#include_directories("${JANSSON_INCLUDE_DIR}")
-
 ########################################################################################
 
 configure_file(src/config.h.in config.h @ONLY)
+
+include_directories("${CMAKE_BINARY_DIR}")
 
 ########################################################################################
 
