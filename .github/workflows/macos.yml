@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-10.15, macos-11, macos-12]
+        os: [macos-11, macos-12]
 
     runs-on: ${{ matrix.os }}
 
@@ -26,7 +26,7 @@ jobs:
           CMAKE_C_FLAGS='-L/usr/local/lib -L/usr/local/opt/openssl@1.1/lib -lssl -liconv -framework CoreFoundation -framework Security'
           CMAKE_FIND_ROOT_PATH="$(brew --prefix openssl@1.1);$(brew --prefix curl);$(brew --prefix libarchive)"
 
-          cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_COLOR_MAKEFILE=ON -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_C_FLAGS="$CMAKE_C_FLAGS" -DCMAKE_FIND_ROOT_PATH="$CMAKE_FIND_ROOT_PATH"
+          cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_C_FLAGS="$CMAKE_C_FLAGS" -DCMAKE_FIND_ROOT_PATH="$CMAKE_FIND_ROOT_PATH"
       - run:  cmake --build   build.d
       - run:  cmake --install build.d
 

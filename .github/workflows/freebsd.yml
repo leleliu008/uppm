@@ -25,7 +25,7 @@ jobs:
           run: |
             run pkg install -y cmake ninja gcc pkgconf curl openssl libgit2 libarchive libyaml jansson
 
-            run cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_COLOR_MAKEFILE=ON -DCMAKE_VERBOSE_MAKEFILE=ON
+            run cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_VERBOSE_MAKEFILE=ON
             run cmake --build   build.d
             run cmake --install build.d
 

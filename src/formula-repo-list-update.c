@@ -7,9 +7,7 @@
 int uppm_formula_repo_list_update() {
     UPPMFormulaRepoList * formulaRepoList = NULL;
 
-    int resultCode = 0;
-
-    resultCode = uppm_formula_repo_list_new(&formulaRepoList);
+    int resultCode = uppm_formula_repo_list_new(&formulaRepoList);
 
     if (resultCode == 0) {
         for (size_t i = 0; i < formulaRepoList->size; i++) {

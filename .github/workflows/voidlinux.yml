@@ -1,4 +1,4 @@
-name: ubuntu
+name: voidlinux
 
 on:
   push:
@@ -7,19 +7,21 @@ on:
     branches: [ master ]
 
 jobs:
-  ubuntu:
+  voidlinux:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04]
+        variant: ['voidlinux', 'voidlinux-musl']
 
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
+
+    container: voidlinux/${{ matrix.variant }}
 
     steps:
-      - uses: actions/checkout@main
+      - run: xbps-install -Suy xbps
+      - run: xbps-install -Suy cmake ninja gcc pkg-config libcurl-devel libgit2-devel libarchive-devel libyaml-devel jansson-devel
 
-      - run:  sudo apt -y update
-      - run:  sudo apt -y install cmake ninja-build gcc pkg-config libcurl4-openssl-dev libgit2-dev libarchive-dev libyaml-dev libjansson-dev
+      - uses: actions/checkout@main
 
       - run:  cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_VERBOSE_MAKEFILE=ON
       - run:  cmake --build   build.d
