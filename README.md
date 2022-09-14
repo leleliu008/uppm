@@ -100,6 +100,20 @@ cmake --build   build.d
 cmake --install build.d
 ```
 
+**[VoidLinux](https://voidlinux.org/)**
+
+```bash
+xbps-install -Suy xbps
+xbps-install -Suy cmake ninja gcc pkg-config libcurl-devel libgit2-devel libarchive-devel libyaml-devel jansson-devel
+
+git clone https://github.com/leleliu008/uppm
+cd uppm
+
+cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=/usr/local
+cmake --build   build.d
+cmake --install build.d
+```
+
 **[macOS](https://www.apple.com/macos/)**
 
 ```bash
@@ -364,3 +378,14 @@ all relevant dirs and files are located in `~/.uppm` directory.
         
         uppm cleanup
         
+
+## Note
+```
+the SSL certificate is invalid
+```
+if you encounter above problem, you would do following:
+
+```
+curl -LO https://curl.se/ca/cacert.pem
+export SSL_CERT_FILE="$PWD/cacert.pem"
+```
