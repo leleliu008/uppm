@@ -35,11 +35,11 @@ jobs:
             run ./output/bin/uppm --version
             run ./output/bin/uppm env
 
-            if [ ${{matrix.version}} -eq 8 ] ; then
+            #if [ ${{matrix.version}} -eq 8 ] ; then
                 sudo rm -rf /usr/pkg/etc/openssl
                 sudo pkgin -y install mozilla-rootcerts
                 sudo mozilla-rootcerts install
-            fi
+                #fi
 
             export SSL_CERT_FILE=/usr/pkg/etc/openssl/certs/ca-certificates.crt
 
