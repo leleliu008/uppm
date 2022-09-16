@@ -1,0 +1,38 @@
+name: openSUSE
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  leap:
+    strategy:
+      fail-fast: false
+      matrix:
+        tag: ['15.1','15.2','15.3','15.4']
+
+    runs-on: ubuntu-latest
+
+    container: opensuse/leap:${{ matrix.tag }}
+
+    steps:
+      - run: zypper update
+      - run: zypper install -y cmake ninja gcc-c++ pkg-config libcurl-devel libgit2-devel libarchive-devel libyaml-devel libjansson-devel
+
+      - uses: actions/checkout@main
+
+      - run:  cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_VERBOSE_MAKEFILE=ON
+      - run:  cmake --build   build.d
+      - run:  cmake --install build.d
+
+      - run:  ./output/bin/uppm --help
+      - run:  ./output/bin/uppm --version
+      - run:  ./output/bin/uppm env
+      - run:  ./output/bin/uppm update
+      - run:  ./output/bin/uppm search    zip
+      - run:  ./output/bin/uppm info      unzip
+      - run:  ./output/bin/uppm install   unzip
+      - run:  ./output/bin/uppm tree      unzip
+      - run:  ./output/bin/uppm uninstall unzip
