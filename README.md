@@ -117,7 +117,21 @@ cmake --install build.d
 **[Gentoo Linux](https://www.gentoo.org/)**
 
 ```bash
-emerge cmake dev-util/ninja gcc pkg-config dev-vcs/git net-misc/curl dev-libs/libgit2 libarchive dev-libs/libyaml dev-libs/jansson
+emerge dev-vcs/git cmake dev-util/ninja gcc pkg-config net-misc/curl dev-libs/libgit2 libarchive dev-libs/libyaml dev-libs/jansson
+
+git clone https://github.com/leleliu008/uppm
+cd uppm
+
+cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=/usr/local
+cmake --build   build.d
+cmake --install build.d
+```
+
+**[openSUSE](https://www.opensuse.org/)**
+
+```bash
+zypper update  -y  
+zypper install -y git cmake ninja gcc pkg-config libcurl-devel libgit2-devel libarchive-devel libyaml-devel libjansson-devel
 
 git clone https://github.com/leleliu008/uppm
 cd uppm

@@ -7,19 +7,19 @@ on:
     branches: [ master ]
 
 jobs:
-  leap:
+  opensuse:
     strategy:
       fail-fast: false
       matrix:
-        tag: ['15.1','15.2','15.3','15.4']
+        flavor: ['tumbleweed', 'leap:15.4']
 
     runs-on: ubuntu-latest
 
-    container: opensuse/leap:${{ matrix.tag }}
+    container: opensuse/${{ matrix.flavor }}
 
     steps:
       - run: zypper update  -y
-      - run: zypper install -y git cmake ninja gcc-c++ pkg-config libcurl-devel libgit2-devel libarchive-devel libyaml-devel libjansson-devel
+      - run: zypper install -y git cmake ninja gcc pkg-config libcurl-devel libgit2-devel libarchive-devel libyaml-devel libjansson-devel
 
       - uses: actions/checkout@main
 
