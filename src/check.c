@@ -5,6 +5,7 @@
 
 #include "core/fs.h"
 #include "core/util.h"
+#include "core/regex/regex.h"
 #include "uppm.h"
 
 int uppm_is_package_name(const char * packageName) {

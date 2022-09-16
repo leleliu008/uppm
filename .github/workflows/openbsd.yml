@@ -18,7 +18,7 @@ jobs:
           mem: 2048
           box: generic/openbsd6
           run: |
-            run sudo pkg_add cmake ninja llvm pkg-config curl libgit2 libarchive libyaml jansson
+            run sudo pkg_add cmake ninja llvm pkgconf curl libgit2 libarchive libyaml jansson
 
             run cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_VERBOSE_MAKEFILE=ON
             run cmake --build   build.d

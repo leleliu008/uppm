@@ -158,7 +158,7 @@ cmake --install build.d
 **[OpenBSD](https://www.openbsd.org/)**
 
 ```bash
-pkg_add git cmake ninja pkg-config llvm curl libgit2 libarchive libyaml jansson
+pkg_add git cmake ninja pkgconf llvm curl libgit2 libarchive libyaml jansson
 
 git clone https://github.com/leleliu008/uppm
 cd uppm

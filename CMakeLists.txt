@@ -85,7 +85,7 @@ endif()
 aux_source_directory(src/core CORE_SRCS)
 aux_source_directory(src           SRCS)
 
-add_executable(uppm "${CORE_SRCS};${SRCS}")
+add_executable(uppm "${CORE_SRCS};${SRCS};src/core/regex/posix.c")
 
 ########################################################################################
 
