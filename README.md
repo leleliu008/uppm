@@ -114,6 +114,19 @@ cmake --build   build.d
 cmake --install build.d
 ```
 
+**[Gentoo Linux](https://www.gentoo.org/)**
+
+```bash
+emerge cmake dev-util/ninja gcc pkg-config dev-vcs/git net-misc/curl dev-libs/libgit2 libarchive dev-libs/libyaml dev-libs/jansson
+
+git clone https://github.com/leleliu008/uppm
+cd uppm
+
+cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=/usr/local
+cmake --build   build.d
+cmake --install build.d
+```
+
 **[macOS](https://www.apple.com/macos/)**
 
 ```bash

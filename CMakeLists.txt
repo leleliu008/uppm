@@ -43,11 +43,7 @@ message(STATUS "CMAKE_FIND_ROOT_PATH = ${CMAKE_FIND_ROOT_PATH}")
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${CMAKE_MODULE_PATH}")
 
 if (BUILD_STATICALLY_LINKED_EXECUTABLE)
-    if ("${CMAKE_SYSTEM_NAME}" STREQUAL Darwin)
-        message(WARNING "macOS DO NOT support static link the c runtime.")
-    else()
-        set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
-    endif()
+    set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
 endif()
 
 find_package(PkgConfig)
@@ -67,6 +63,10 @@ find_package(LibYAML REQUIRED)
 
 find_package(JANSSON REQUIRED)
 
+if (CMAKE_SYSTEM_NAME STREQUAL OpenBSD)
+    find_package(PCRE2 REQUIRED)
+endif()
+
 ########################################################################################
 
 if (OPENSSL_VERSION)
@@ -82,10 +82,16 @@ endif()
 
 ########################################################################################
 
+if (CMAKE_SYSTEM_NAME STREQUAL OpenBSD)
+    set(REGEX_SRC src/core/regex/pcre2.c)
+else()
+    set(REGEX_SRC src/core/regex/posix.c)
+endif()
+
 aux_source_directory(src/core CORE_SRCS)
 aux_source_directory(src           SRCS)
 
-add_executable(uppm "${CORE_SRCS};${SRCS};src/core/regex/posix.c")
+add_executable(uppm "${CORE_SRCS};${REGEX_SRC};${SRCS}")
 
 ########################################################################################
 
@@ -104,8 +110,16 @@ target_link_libraries(uppm LIBGIT2::LIBGIT2)
 target_link_libraries(uppm LIBYAML::LIBYAML)
 target_link_libraries(uppm JANSSON::JANSSON)
 
+if (CMAKE_SYSTEM_NAME STREQUAL OpenBSD)
+    target_link_libraries(uppm PCRE2::PCRE2)
+endif()
+
 if (BUILD_STATICALLY_LINKED_EXECUTABLE)
-    target_link_options(uppm PRIVATE -static)
+    if ("${CMAKE_SYSTEM_NAME}" STREQUAL Darwin)
+        message(WARNING "macOS DO NOT support static link the c runtime.")
+    else()
+        target_link_options(uppm PRIVATE -static)
+    endif()
 endif()
 
 ########################################################################################
