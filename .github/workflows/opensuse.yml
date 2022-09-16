@@ -19,7 +19,7 @@ jobs:
 
     steps:
       - run: zypper update  -y
-      - run: zypper install -y cmake ninja gcc-c++ pkg-config libcurl-devel libgit2-devel libarchive-devel libyaml-devel libjansson-devel
+      - run: zypper install -y git cmake ninja gcc-c++ pkg-config libcurl-devel libgit2-devel libarchive-devel libyaml-devel libjansson-devel
 
       - uses: actions/checkout@main
 
