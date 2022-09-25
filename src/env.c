@@ -112,4 +112,6 @@ int uppm_env() {
 
     printf("\naclocalDirs:\n");
     uppm_list_dirs(installedDir, installedDirLength, "share/aclocal");
+    
+    return UPPM_OK;
 }
