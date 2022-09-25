@@ -24,9 +24,8 @@ int uppm_install_the_given_packages(const char * packageNames[], size_t size) {
         if (resultCode != UPPM_OK) {
             return resultCode;
         }
-
-
     }
+    return 0;
 }
 
 extern int record_installed_files(const char * installedDirPath);

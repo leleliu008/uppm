@@ -46,7 +46,7 @@ int uppm_formula_path(const char * packageName, char ** out) {
     sprintf(reposConfigFilePath, "%s/.uppm/repos", userHomeDir);
 
     if (!exists_and_is_a_regular_file(reposConfigFilePath)) {
-        return UPPM_FORMULA_REPO_NOT_EXIST;
+        return UPPM_PACKAGE_IS_NOT_AVAILABLE;
     }
 
     FILE * reposConfigFile = fopen(reposConfigFilePath, "r");
