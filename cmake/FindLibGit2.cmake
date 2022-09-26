@@ -39,16 +39,16 @@ else()
             elseif(item MATCHES ".*librt\\.a")
             elseif(item MATCHES ".*libpthread\\.a")
             else()
-                get_filename_component(LIBRARIE_FILENAME ${item} NAME)
+                get_filename_component(LIBRARY_FILENAME ${item} NAME)
 
-                message(STATUS "${LIBRARIE_FILENAME}")
+                message(STATUS "${LIBRARY_FILENAME}")
 
-                if (NOT TARGET  LIBGIT2::${LIBRARIE_FILENAME})
-                    add_library(LIBGIT2::${LIBRARIE_FILENAME} UNKNOWN IMPORTED)
-                    set_target_properties(LIBGIT2::${LIBRARIE_FILENAME} PROPERTIES IMPORTED_LOCATION "${item}")
+                if (NOT TARGET  LIBGIT2::${LIBRARY_FILENAME})
+                    add_library(LIBGIT2::${LIBRARY_FILENAME} UNKNOWN IMPORTED)
+                    set_target_properties(LIBGIT2::${LIBRARY_FILENAME} PROPERTIES IMPORTED_LOCATION "${item}")
                 endif()
 
-                list(APPEND LIBGIT2_LIBRARIES LIBGIT2::${LIBRARIE_FILENAME})
+                list(APPEND LIBGIT2_LIBRARIES LIBGIT2::${LIBRARY_FILENAME})
             endif()
         endforeach()
 

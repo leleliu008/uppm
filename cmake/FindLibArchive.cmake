@@ -43,16 +43,16 @@ else()
             elseif(item MATCHES ".*librt\\.a")
             elseif(item MATCHES ".*libpthread\\.a")
             else()
-                get_filename_component(LIBRARIE_FILENAME ${item} NAME)
+                get_filename_component(LIBRARY_FILENAME ${item} NAME)
 
-                message(STATUS "${LIBRARIE_FILENAME}")
+                message(STATUS "${LIBRARY_FILENAME}")
 
-                if (NOT TARGET  LibArchive::${LIBRARIE_FILENAME})
-                    add_library(LibArchive::${LIBRARIE_FILENAME} UNKNOWN IMPORTED)
-                    set_target_properties(LibArchive::${LIBRARIE_FILENAME} PROPERTIES IMPORTED_LOCATION "${item}")
+                if (NOT TARGET  LibArchive::${LIBRARY_FILENAME})
+                    add_library(LibArchive::${LIBRARY_FILENAME} UNKNOWN IMPORTED)
+                    set_target_properties(LibArchive::${LIBRARY_FILENAME} PROPERTIES IMPORTED_LOCATION "${item}")
                 endif()
 
-                list(APPEND LibArchive_LIBRARIES LibArchive::${LIBRARIE_FILENAME})
+                list(APPEND LibArchive_LIBRARIES LibArchive::${LIBRARY_FILENAME})
             endif()
         endforeach()
 
