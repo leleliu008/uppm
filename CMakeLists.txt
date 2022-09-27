@@ -46,6 +46,7 @@ if (BUILD_STATICALLY_LINKED_EXECUTABLE)
     set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
 endif()
 
+# https://cmake.org/cmake/help/latest/module/FindPkgConfig.html
 find_package(PkgConfig)
 
 # https://cmake.org/cmake/help/latest/module/FindOpenSSL.html

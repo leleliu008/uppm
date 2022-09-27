@@ -25,6 +25,7 @@ ppkg install uppm
 |[libcurl](https://curl.se/)|required|for http requesting support.|
 |[openssl](https://www.openssl.org/)|required|for https requesting support and SHA-256 sum checking support.|
 |[libarchive](https://www.libarchive.org/)|required|for uncompressing .zip and .tar.* files.|
+|[pcre2](https://www.pcre.org/)||for Regular Expressions support. only required on OpenBSD.|
 
 
 **[vcpkg](https://github.com/microsoft/vcpkg)**
