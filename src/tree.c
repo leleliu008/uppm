@@ -20,17 +20,17 @@ int uppm_tree(const char * packageName) {
 
     size_t userHomeDirLength = strlen(userHomeDir);
 
-    size_t  installDirLength = userHomeDirLength + strlen(packageName) + 20;
-    char    installDir[installDirLength];
-    memset (installDir, 0, installDirLength);
-    sprintf(installDir, "%s/.uppm/installed/%s", userHomeDir, packageName);
+    size_t  packageInstalledDirLength = userHomeDirLength + strlen(packageName) + 20;
+    char    packageInstalledDir[packageInstalledDirLength];
+    memset (packageInstalledDir, 0, packageInstalledDirLength);
+    sprintf(packageInstalledDir, "%s/.uppm/installed/%s", userHomeDir, packageName);
 
-    size_t  installedMetadataFilePathLength = installDirLength + 25;
-    char    installedMetadataFilePath[installedMetadataFilePathLength];
-    memset (installedMetadataFilePath, 0, installedMetadataFilePathLength);
-    sprintf(installedMetadataFilePath, "%s/installed-metadata-uppm", installDir);
+    size_t  receiptFilePathLength = packageInstalledDirLength + 20;
+    char    receiptFilePath[receiptFilePathLength];
+    memset (receiptFilePath, 0, receiptFilePathLength);
+    sprintf(receiptFilePath, "%s/.uppm/receipt.yml", packageInstalledDir);
 
-    if (!exists_and_is_a_regular_file(installedMetadataFilePath)) {
+    if (!exists_and_is_a_regular_file(receiptFilePath)) {
         return UPPM_PACKAGE_IS_NOT_INSTALLED;
     }
 
@@ -51,7 +51,7 @@ int uppm_tree(const char * packageName) {
     memset (treeCommandPath, 0, treeCommandPathLength);
     sprintf(treeCommandPath, "%s/.uppm/installed/tree/bin/tree", userHomeDir);
 
-    if (execl(treeCommandPath, treeCommandPath, "--dirsfirst", installDir, NULL) == -1) {
+    if (execl(treeCommandPath, treeCommandPath, "--dirsfirst", "-a", packageInstalledDir, NULL) == -1) {
         perror(treeCommandPath);
         return UPPM_ERROR;
     } else {

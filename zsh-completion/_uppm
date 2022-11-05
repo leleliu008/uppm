@@ -111,11 +111,11 @@ function _uppm() {
                             installed-*)
                                 _arguments \
                                     '1:package-name:()' \
-                                    '2:key:(installed-dir installed-metadata-path installed-metadata-json installed-metadata-yaml installed-datetime-unix installed-datetime-formatted installed-package-version installed-files)'
+                                    '2:key:(installed-dir installed-receipt-path installed-receipt-json installed-receipt-yaml installed-timestamp-unix installed-timestamp-rfc-3339 installed-timestamp-iso-8601 installed-version installed-files)'
                                 ;;
                             *)  _arguments \
                                     '1:package-name:(@all $(uppm ls-available-packages 2>/dev/null))' \
-                                    '2:key:(formula summary webpage version bin-url bin-sha dep-pkg installed-dir installed-metadata-path installed-metadata-json installed-metadata-yaml installed-datetime-unix installed-datetime-formatted installed-package-version installed-files --json --yaml --shell)'
+                                    '2:key:(formula summary webpage version bin-url bin-sha dep-pkg installed-dir installed-receipt-path installed-receipt-json installed-receipt-yaml installed-timestamp-unix installed-timestamp-rfc-3339 installed-timestamp-iso-8601 installed-version installed-files --json --yaml --shell)'
                         esac
                     fi
                     ;;

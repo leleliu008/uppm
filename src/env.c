@@ -29,12 +29,12 @@ static int uppm_list_dirs(const char * installedDir, size_t installedDirLength, 
             memset (packageInstalledDir, 0, packageInstalledDirLength);
             sprintf(packageInstalledDir, "%s/%s", installedDir, dir_entry->d_name);
 
-            size_t  installedMetadataFilePathLength = packageInstalledDirLength + 25;
-            char    installedMetadataFilePath[installedMetadataFilePathLength];
-            memset (installedMetadataFilePath, 0, installedMetadataFilePathLength);
-            sprintf(installedMetadataFilePath, "%s/installed-metadata-uppm", packageInstalledDir);
+            size_t  receiptFilePathLength = packageInstalledDirLength + 20;
+            char    receiptFilePath[receiptFilePathLength];
+            memset (receiptFilePath, 0, receiptFilePathLength);
+            sprintf(receiptFilePath, "%s/.uppm/receipt.yml", packageInstalledDir);
 
-            if (exists_and_is_a_regular_file(installedMetadataFilePath)) {
+            if (exists_and_is_a_regular_file(receiptFilePath)) {
                 if ((sub == NULL) || (strcmp(sub, "") == 0)) {
                     puts(packageInstalledDir);
                 } else {
@@ -67,6 +67,7 @@ int uppm_env() {
     printf("NATIVE_OS_KIND = %s\n", uts.sysname);
     printf("NATIVE_OS_NAME = %s\n", uts.nodename);
     printf("NATIVE_OS_ARCH = %s\n", uts.machine);
+    printf("NATIVE_OS_KERNEL_VERSION = %s\n", uts.release);
 
     if (strcmp(uts.sysname, "Linux") == 0) {
         int libcType = get_linux_libc_type2(uts.sysname, uts.machine);

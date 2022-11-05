@@ -37,6 +37,8 @@ else()
                 get_filename_component(LIBRARY_FILENAME_PREFIX ${item} NAME_WLE)
                 message(STATUS "${LIBRARY_FILENAME_PREFIX}")
                 list(APPEND CURL_LIBRARIES "-framework ${LIBRARY_FILENAME_PREFIX}")
+            elseif(item MATCHES "-framework .*")
+                list(APPEND CURL_LIBRARIES "${item}")
             elseif(item MATCHES "/.*")
                 get_filename_component(LIBRARY_FILENAME ${item} NAME)
 

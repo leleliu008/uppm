@@ -41,17 +41,22 @@ int uppm_install(const char * packageName, bool verbose) {
 
     size_t userHomeDirLength = strlen(userHomeDir);
 
-    size_t  packageInstallDirLength = userHomeDirLength + strlen(packageName) + 20;
-    char    packageInstallDir[packageInstallDirLength];
-    memset (packageInstallDir, 0, packageInstallDirLength);
-    sprintf(packageInstallDir, "%s/.uppm/installed/%s", userHomeDir, packageName);
+    size_t  packageInstalledDirLength = userHomeDirLength + strlen(packageName) + 20;
+    char    packageInstalledDir[packageInstalledDirLength];
+    memset (packageInstalledDir, 0, packageInstalledDirLength);
+    sprintf(packageInstalledDir, "%s/.uppm/installed/%s", userHomeDir, packageName);
 
-    size_t  installedMetadataFilePathLength = packageInstallDirLength + 26;
-    char    installedMetadataFilePath[installedMetadataFilePathLength];
-    memset (installedMetadataFilePath, 0, installedMetadataFilePathLength);
-    sprintf(installedMetadataFilePath, "%s/installed-metadata-uppm", packageInstallDir);
+    size_t  packageInstalledMetaInfoDirLength = packageInstalledDirLength + 6;
+    char    packageInstalledMetaInfoDir[packageInstalledMetaInfoDirLength];
+    memset (packageInstalledMetaInfoDir, 0, packageInstalledMetaInfoDirLength);
+    sprintf(packageInstalledMetaInfoDir, "%s/.uppm", packageInstalledDir);
 
-    if (exists_and_is_a_regular_file(installedMetadataFilePath)) {
+    size_t  receiptFilePathLength = packageInstalledMetaInfoDirLength + 12;
+    char    receiptFilePath[receiptFilePathLength];
+    memset (receiptFilePath, 0, receiptFilePathLength);
+    sprintf(receiptFilePath, "%s/receipt.yml", packageInstalledMetaInfoDir);
+
+    if (exists_and_is_a_regular_file(receiptFilePath)) {
         fprintf(stderr, "package [%s] already has been installed.\n", packageName);
         return UPPM_OK;
     }
@@ -150,8 +155,8 @@ int uppm_install(const char * packageName, bool verbose) {
         fprintf(stderr, "%s already have been fetched.\n", archiveFilePath);
     }
 
-    if (exists_and_is_a_directory(packageInstallDir)) {
-        if (rm_r(packageInstallDir, verbose) != 0) {
+    if (exists_and_is_a_directory(packageInstalledDir)) {
+        if (rm_r(packageInstalledDir, verbose) != 0) {
             uppm_formula_free(formula);
             return UPPM_ERROR;
         }
@@ -169,13 +174,13 @@ int uppm_install(const char * packageName, bool verbose) {
         }
     }
 
-    if (mkdir(packageInstallDir, S_IRWXU) != 0) {
+    if (mkdir(packageInstalledDir, S_IRWXU) != 0) {
         uppm_formula_free(formula);
         return UPPM_ERROR;
     }
 
     if (formula->install == NULL) {
-        resultCode = untar_extract(packageInstallDir, archiveFilePath, ARCHIVE_EXTRACT_TIME, verbose, 1);
+        resultCode = untar_extract(packageInstalledDir, archiveFilePath, ARCHIVE_EXTRACT_TIME, verbose, 1);
 
         if (resultCode != UPPM_OK) {
             uppm_formula_free(formula);
@@ -213,7 +218,7 @@ int uppm_install(const char * packageName, bool verbose) {
                 formula->bin_sha == NULL ? "" : formula->bin_sha,
                 formula->dep_pkg == NULL ? "" : formula->dep_pkg,
                 archiveFilePath,
-                packageInstallDir,
+                packageInstalledDir,
                 formula->install);
 
         printf("run shell code:\n%s\n", shellCode);
@@ -228,7 +233,14 @@ int uppm_install(const char * packageName, bool verbose) {
 
     //////////////////////////////////////////////////////////////////////
 
-    resultCode = record_installed_files(packageInstallDir);
+    if (mkdir(packageInstalledMetaInfoDir, S_IRWXU) != 0) {
+        uppm_formula_free(formula);
+        return UPPM_ERROR;
+    }
+
+    //////////////////////////////////////////////////////////////////////
+
+    resultCode = record_installed_files(packageInstalledDir);
 
     if (resultCode != UPPM_OK) {
         uppm_formula_free(formula);
@@ -237,10 +249,10 @@ int uppm_install(const char * packageName, bool verbose) {
 
     //////////////////////////////////////////////////////////////////////
 
-    FILE * installedMetadataFile = fopen(installedMetadataFilePath, "w");
+    FILE * receiptFile = fopen(receiptFilePath, "w");
 
-    if (installedMetadataFile == NULL) {
-        perror(installedMetadataFilePath);
+    if (receiptFile == NULL) {
+        perror(receiptFilePath);
         uppm_formula_free(formula);
         return UPPM_ERROR;
     }
@@ -256,17 +268,19 @@ int uppm_install(const char * packageName, bool verbose) {
     uppm_formula_free(formula);
     formula = NULL;
 
+    fprintf(receiptFile, "pkgname: %s\n", packageName);
+
     char   buff[1024];
     size_t size = 0;
     while((size = fread(buff, 1, 1024, formulaFile)) != 0) {
-        fwrite(buff, 1, size, installedMetadataFile);
+        fwrite(buff, 1, size, receiptFile);
     }
 
     fclose(formulaFile);
 
-    fprintf(installedMetadataFile, "pkgname: %s\ndatatime: %lu\nuppmvers: %s\n", packageName, time(NULL), UPPM_VERSION);
+    fprintf(receiptFile, "\nsignature: %s\ntimestamp: %lu\n", UPPM_VERSION, time(NULL));
 
-    fclose(installedMetadataFile);
+    fclose(receiptFile);
 
     fprintf(stderr, "package [%s] successfully installed.\n", packageName);
 

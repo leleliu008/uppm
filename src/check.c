@@ -114,12 +114,12 @@ int uppm_is_package_installed(const char * packageName) {
         return UPPM_PACKAGE_IS_NOT_INSTALLED;
     }
 
-    size_t  installedMetadataFilePathLength = userHomeDirLength + 45;
-    char    installedMetadataFilePath[installedMetadataFilePathLength];
-    memset (installedMetadataFilePath, 0, installedMetadataFilePathLength);
-    sprintf(installedMetadataFilePath, "%s/.uppm/installed/%s/installed-metadata-uppm", userHomeDir, packageName);
+    size_t  receiptFilePathLength = uppmHomeDirLength + strlen(packageName) + 30;
+    char    receiptFilePath[receiptFilePathLength];
+    memset (receiptFilePath, 0, receiptFilePathLength);
+    sprintf(receiptFilePath, "%s/installed/%s/.uppm/receipt.yml", uppmHomeDir, packageName);
 
-    if (exists_and_is_a_regular_file(installedMetadataFilePath)) {
+    if (exists_and_is_a_regular_file(receiptFilePath)) {
         return UPPM_OK;
     } else {
         return UPPM_PACKAGE_IS_NOT_INSTALLED;

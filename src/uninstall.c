@@ -25,12 +25,12 @@ int uppm_uninstall(const char * packageName, bool verbose) {
     memset (installedDir, 0, installedDirLength);
     sprintf(installedDir, "%s/.uppm/installed/%s", userHomeDir, packageName);
 
-    size_t  installedMetadataFilePathLength = installedDirLength + 26;
-    char    installedMetadataFilePath[installedMetadataFilePathLength];
-    memset (installedMetadataFilePath, 0, installedMetadataFilePathLength);
-    sprintf(installedMetadataFilePath, "%s/installed-metadata-uppm", installedDir);
+    size_t  receiptFilePathLength = installedDirLength + 20;
+    char    receiptFilePath[receiptFilePathLength];
+    memset (receiptFilePath, 0, receiptFilePathLength);
+    sprintf(receiptFilePath, "%s/.uppm/receipt.yml", installedDir);
 
-    if (exists_and_is_a_regular_file(installedMetadataFilePath)) {
+    if (exists_and_is_a_regular_file(receiptFilePath)) {
         if (rm_r(installedDir, verbose) == 0) {
             return UPPM_OK;
         } else {

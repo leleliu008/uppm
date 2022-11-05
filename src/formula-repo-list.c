@@ -39,12 +39,6 @@ UPPMFormulaRepo* uppm_formula_repo_default_new(char * userHomeDir, size_t userHo
         osKind = "netbsd";
     }
 
-    if (strcmp(osArch, "amd64") == 0) {
-        osArch = "x86_64";
-    } else if (strcmp(osArch, "aarch64") == 0) {
-        osArch = "arm64";
-    }
-
     char *  formulaRepoPath = (char*)calloc(userHomeDirLength + 23, sizeof(char));
     sprintf(formulaRepoPath, "%s/.uppm/repos.d/offical", userHomeDir);
 

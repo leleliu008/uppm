@@ -39,12 +39,12 @@ int uppm_list_the_installed_packages() {
                 continue;
             }
 
-            size_t  installedMetadataFilePathLength = installedDirLength + strlen(dir_entry->d_name) + 26;
-            char    installedMetadataFilePath[installedMetadataFilePathLength];
-            memset (installedMetadataFilePath, 0, installedMetadataFilePathLength);
-            sprintf(installedMetadataFilePath, "%s/%s/installed-metadata-uppm", installedDir, dir_entry->d_name);
+            size_t  receiptFilePathLength = installedDirLength + strlen(dir_entry->d_name) + 20;
+            char    receiptFilePath[receiptFilePathLength];
+            memset (receiptFilePath, 0, receiptFilePathLength);
+            sprintf(receiptFilePath, "%s/%s/.uppm/receipt.yml", installedDir, dir_entry->d_name);
 
-            if (exists_and_is_a_regular_file(installedMetadataFilePath)) {
+            if (exists_and_is_a_regular_file(receiptFilePath)) {
                 printf("%s\n", dir_entry->d_name);
             }
         }

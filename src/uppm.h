@@ -110,13 +110,13 @@ typedef struct {
     char * dep_pkg;
     char * install;
 
-    char * datatime;
-    char * uppmvers;
-} UPPMInstalledMetadata;
+    char * signature;
+    char * timestamp;
+} UPPMReceipt;
 
-int  uppm_installed_metadata_parse(const char * packageName, UPPMInstalledMetadata * * metadata);
-void uppm_installed_metadata_free(UPPMInstalledMetadata * metadata);
-void uppm_installed_metadata_dump(UPPMInstalledMetadata * metadata);
+int  uppm_receipt_parse(const char * packageName, UPPMReceipt * * receipt);
+void uppm_receipt_free(UPPMReceipt * receipt);
+void uppm_receipt_dump(UPPMReceipt * receipt);
 
 //////////////////////////////////////////////////////////////////////
 

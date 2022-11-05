@@ -153,7 +153,7 @@ cd uppm
 
 export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:/usr/local/opt/openssl@1.1/lib/pkgconfig:/usr/local/opt/curl/lib/pkgconfig:/usr/local/opt/libarchive/lib/pkgconfig"
 
-CMAKE_C_FLAGS='-L/usr/local/lib -L/usr/local/opt/openssl@1.1/lib -lssl -liconv -framework CoreFoundation -framework Security'
+CMAKE_EXE_LINKER_FLAGS='-L/usr/local/lib -L/usr/local/opt/openssl@1.1/lib -lssl -liconv -framework CoreFoundation -framework Security'
 CMAKE_FIND_ROOT_PATH="$(brew --prefix openssl@1.1);$(brew --prefix curl);$(brew --prefix libarchive)"
 
 cmake \
@@ -163,7 +163,7 @@ cmake \
     -DCMAKE_INSTALL_PREFIX=./output \
     -DCMAKE_COLOR_MAKEFILE=ON \
     -DCMAKE_VERBOSE_MAKEFILE=ON \
-    -DCMAKE_C_FLAGS="$CMAKE_C_FLAGS" \
+    -DCMAKE_EXE_LINKER_FLAGS="$CMAKE_EXE_LINKER_FLAGS" \
     -DCMAKE_FIND_ROOT_PATH="$CMAKE_FIND_ROOT_PATH"
 
 cmake --build   build.d
@@ -345,7 +345,7 @@ all relevant dirs and files are located in `~/.uppm` directory.
     - this software supports multi formula repositories.
     - offical formula repository are as follows:
         - https://github.com/leleliu008/uppm-formula-repository-linux-x86_64
-        - https://github.com/leleliu008/uppm-formula-repository-linux-arm64
+        - https://github.com/leleliu008/uppm-formula-repository-linux-aarch64
         - https://github.com/leleliu008/uppm-formula-repository-macos-x86_64
         - https://github.com/leleliu008/uppm-formula-repository-macos-arm64
         - https://github.com/leleliu008/uppm-formula-repository-android-aarch64
@@ -411,7 +411,7 @@ all relevant dirs and files are located in `~/.uppm` directory.
 ```
 the SSL certificate is invalid
 ```
-if you encounter above problem, you would do following:
+if you encounter above problem, try to run following commands in your terminal will do the trick:
 
 ```
 curl -LO https://curl.se/ca/cacert.pem

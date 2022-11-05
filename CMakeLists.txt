@@ -16,7 +16,17 @@ endif()
 
 ########################################################################################
 
-option(BUILD_STATICALLY_LINKED_EXECUTABLE "if build statically linked executable" OFF)
+option(FIND_STATIC_LIBS "if prefer to use static libraries over dynamic libraries." OFF)
+
+########################################################################################
+
+if ("${CMAKE_EXE_LINKER_FLAGS}" MATCHES ".*-static.*")
+    set(FIND_STATIC_LIBS ON)
+
+    if ("${CMAKE_SYSTEM_NAME}" STREQUAL Darwin)
+        message(FATAL "macOS DO NOT support static link the c runtime.")
+    endif()
+endif()
 
 ########################################################################################
 
@@ -42,12 +52,12 @@ message(STATUS "CMAKE_FIND_ROOT_PATH = ${CMAKE_FIND_ROOT_PATH}")
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${CMAKE_MODULE_PATH}")
 
-if (BUILD_STATICALLY_LINKED_EXECUTABLE)
+if (FIND_STATIC_LIBS)
     set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
 endif()
 
 # https://cmake.org/cmake/help/latest/module/FindPkgConfig.html
-find_package(PkgConfig)
+find_package(PkgConfig REQUIRED)
 
 # https://cmake.org/cmake/help/latest/module/FindOpenSSL.html
 find_package(OpenSSL REQUIRED)
@@ -113,14 +123,6 @@ target_link_libraries(uppm JANSSON::JANSSON)
 
 if (CMAKE_SYSTEM_NAME STREQUAL OpenBSD)
     target_link_libraries(uppm PCRE2::PCRE2)
-endif()
-
-if (BUILD_STATICALLY_LINKED_EXECUTABLE)
-    if ("${CMAKE_SYSTEM_NAME}" STREQUAL Darwin)
-        message(WARNING "macOS DO NOT support static link the c runtime.")
-    else()
-        target_link_options(uppm PRIVATE -static)
-    endif()
 endif()
 
 ########################################################################################

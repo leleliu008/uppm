@@ -14,82 +14,82 @@ typedef enum {
     INSTALLED_METADATA_KEY_CODE_bin_sha,
     INSTALLED_METADATA_KEY_CODE_dep_pkg,
     INSTALLED_METADATA_KEY_CODE_install,
-    INSTALLED_METADATA_KEY_CODE_datetime,
-    INSTALLED_METADATA_KEY_CODE_uppmvers,
-} UPPMInstalledMetadataKeyCode;
+    INSTALLED_METADATA_KEY_CODE_timestamp,
+    INSTALLED_METADATA_KEY_CODE_signature,
+} UPPMReceiptKeyCode;
 
-void uppm_installed_metadata_dump(UPPMInstalledMetadata * metadata) {
-    if (metadata != NULL) {
-        printf("summary: %s\n", metadata->summary);
-        printf("webpage: %s\n", metadata->webpage);
-        printf("version: %s\n", metadata->version);
-        printf("license: %s\n", metadata->license);
-        printf("bin_url: %s\n", metadata->bin_url);
-        printf("bin_sha: %s\n", metadata->bin_sha);
-        printf("dep_pkg: %s\n", metadata->dep_pkg);
-        printf("install: %s\n", metadata->install);
-        printf("datetime: %s\n", metadata->datatime);
-        printf("uppmvers: %s\n", metadata->uppmvers);
+void uppm_receipt_dump(UPPMReceipt * receipt) {
+    if (receipt != NULL) {
+        printf("summary: %s\n", receipt->summary);
+        printf("webpage: %s\n", receipt->webpage);
+        printf("version: %s\n", receipt->version);
+        printf("license: %s\n", receipt->license);
+        printf("bin_url: %s\n", receipt->bin_url);
+        printf("bin_sha: %s\n", receipt->bin_sha);
+        printf("dep_pkg: %s\n", receipt->dep_pkg);
+        printf("install: %s\n", receipt->install);
+        printf("signature: %s\n", receipt->signature);
+        printf("timestamp: %s\n", receipt->timestamp);
     }
 }
 
-void uppm_installed_metadata_free(UPPMInstalledMetadata * metadata) {
-    if (metadata != NULL) {
-        if (metadata->summary != NULL) {
-            free(metadata->summary);
-            metadata->summary = NULL;
+void uppm_receipt_free(UPPMReceipt * receipt) {
+    if (receipt != NULL) {
+        if (receipt->summary != NULL) {
+            free(receipt->summary);
+            receipt->summary = NULL;
         }
 
-        if (metadata->webpage != NULL) {
-            free(metadata->webpage);
-            metadata->webpage = NULL;
+        if (receipt->webpage != NULL) {
+            free(receipt->webpage);
+            receipt->webpage = NULL;
         }
 
-        if (metadata->version != NULL) {
-            free(metadata->version);
-            metadata->version = NULL;
+        if (receipt->version != NULL) {
+            free(receipt->version);
+            receipt->version = NULL;
         }
 
-        if (metadata->license != NULL) {
-            free(metadata->license);
-            metadata->license = NULL;
+        if (receipt->license != NULL) {
+            free(receipt->license);
+            receipt->license = NULL;
         }
 
-        if (metadata->bin_url != NULL) {
-            free(metadata->bin_url);
-            metadata->bin_url = NULL;
+        if (receipt->bin_url != NULL) {
+            free(receipt->bin_url);
+            receipt->bin_url = NULL;
         }
 
-        if (metadata->bin_sha != NULL) {
-            free(metadata->bin_sha);
-            metadata->bin_sha = NULL;
+        if (receipt->bin_sha != NULL) {
+            free(receipt->bin_sha);
+            receipt->bin_sha = NULL;
         }
 
-        if (metadata->dep_pkg != NULL) {
-            free(metadata->dep_pkg);
-            metadata->dep_pkg = NULL;
+        if (receipt->dep_pkg != NULL) {
+            free(receipt->dep_pkg);
+            receipt->dep_pkg = NULL;
         }
 
-        if (metadata->install != NULL) {
-            free(metadata->install);
-            metadata->install = NULL;
+        if (receipt->install != NULL) {
+            free(receipt->install);
+            receipt->install = NULL;
         }
 
-        if (metadata->datatime != NULL) {
-            free(metadata->datatime);
-            metadata->datatime = NULL;
+        if (receipt->timestamp != NULL) {
+            free(receipt->timestamp);
+            receipt->timestamp = NULL;
         }
 
-        if (metadata->uppmvers != NULL) {
-            free(metadata->uppmvers);
-            metadata->uppmvers = NULL;
+        if (receipt->signature != NULL) {
+            free(receipt->signature);
+            receipt->signature = NULL;
         }
 
-        free(metadata);
+        free(receipt);
     }
 }
 
-static UPPMInstalledMetadataKeyCode uppm_installed_metadata_key_code_from_key_name(char * key) {
+static UPPMReceiptKeyCode uppm_receipt_key_code_from_key_name(char * key) {
            if (strcmp(key, "summary") == 0) {
         return INSTALLED_METADATA_KEY_CODE_summary;
     } else if (strcmp(key, "webpage") == 0) {
@@ -106,33 +106,33 @@ static UPPMInstalledMetadataKeyCode uppm_installed_metadata_key_code_from_key_na
         return INSTALLED_METADATA_KEY_CODE_dep_pkg;
     } else if (strcmp(key, "install") == 0) {
         return INSTALLED_METADATA_KEY_CODE_install;
-    } else if (strcmp(key, "datatime") == 0) {
-        return INSTALLED_METADATA_KEY_CODE_datetime;
-    } else if (strcmp(key, "uppmvers") == 0) {
-        return INSTALLED_METADATA_KEY_CODE_uppmvers;
+    } else if (strcmp(key, "timestamp") == 0) {
+        return INSTALLED_METADATA_KEY_CODE_timestamp;
+    } else if (strcmp(key, "signature") == 0) {
+        return INSTALLED_METADATA_KEY_CODE_signature;
     } else {
         return INSTALLED_METADATA_KEY_CODE_unknown;
     }
 }
 
-void uppm_installed_metadata_set_value(UPPMInstalledMetadataKeyCode keyCode, char * value, UPPMInstalledMetadata * metadata) {
+void uppm_receipt_set_value(UPPMReceiptKeyCode keyCode, char * value, UPPMReceipt * receipt) {
     value = strdup(value);
     switch (keyCode) {
-        case INSTALLED_METADATA_KEY_CODE_summary:  metadata->summary = value; break;
-        case INSTALLED_METADATA_KEY_CODE_webpage:  metadata->webpage = value; break;
-        case INSTALLED_METADATA_KEY_CODE_version:  metadata->version = value; break;
-        case INSTALLED_METADATA_KEY_CODE_license:  metadata->license = value; break;
-        case INSTALLED_METADATA_KEY_CODE_bin_url:  metadata->bin_url = value; break;
-        case INSTALLED_METADATA_KEY_CODE_bin_sha:  metadata->bin_sha = value; break;
-        case INSTALLED_METADATA_KEY_CODE_dep_pkg:  metadata->dep_pkg = value; break;
-        case INSTALLED_METADATA_KEY_CODE_install:  metadata->install = value; break;
-        case INSTALLED_METADATA_KEY_CODE_datetime:  metadata->datatime = value; break;
-        case INSTALLED_METADATA_KEY_CODE_uppmvers:  metadata->uppmvers = value; break;
+        case INSTALLED_METADATA_KEY_CODE_summary:  receipt->summary = value; break;
+        case INSTALLED_METADATA_KEY_CODE_webpage:  receipt->webpage = value; break;
+        case INSTALLED_METADATA_KEY_CODE_version:  receipt->version = value; break;
+        case INSTALLED_METADATA_KEY_CODE_license:  receipt->license = value; break;
+        case INSTALLED_METADATA_KEY_CODE_bin_url:  receipt->bin_url = value; break;
+        case INSTALLED_METADATA_KEY_CODE_bin_sha:  receipt->bin_sha = value; break;
+        case INSTALLED_METADATA_KEY_CODE_dep_pkg:  receipt->dep_pkg = value; break;
+        case INSTALLED_METADATA_KEY_CODE_install:  receipt->install = value; break;
+        case INSTALLED_METADATA_KEY_CODE_timestamp:  receipt->timestamp = value; break;
+        case INSTALLED_METADATA_KEY_CODE_signature:  receipt->signature = value; break;
         default: break;
     }
 }
 
-int uppm_installed_metadata_parse(const char * packageName, UPPMInstalledMetadata * * out) {
+int uppm_receipt_parse(const char * packageName, UPPMReceipt * * out) {
     int resultCode = uppm_is_package_name(packageName);
 
     if (resultCode != UPPM_OK) {
@@ -152,15 +152,15 @@ int uppm_installed_metadata_parse(const char * packageName, UPPMInstalledMetadat
     memset (installedDir, 0, installedDirLength);
     sprintf(installedDir, "%s/.uppm/installed/%s", userHomeDir, packageName);
 
-    size_t  installedMetadataFilePathLength = installedDirLength + 26;
-    char    installedMetadataFilePath[installedMetadataFilePathLength];
-    memset (installedMetadataFilePath, 0, installedMetadataFilePathLength);
-    sprintf(installedMetadataFilePath, "%s/installed-metadata-uppm", installedDir);
+    size_t  receiptFilePathLength = installedDirLength + 20;
+    char    receiptFilePath[receiptFilePathLength];
+    memset (receiptFilePath, 0, receiptFilePathLength);
+    sprintf(receiptFilePath, "%s/.uppm/receipt.yml", installedDir);
 
-    FILE * file = fopen(installedMetadataFilePath, "r");
+    FILE * file = fopen(receiptFilePath, "r");
 
     if (file == NULL) {
-        perror(installedMetadataFilePath);
+        perror(receiptFilePath);
         return UPPM_ERROR;
     }
 
@@ -175,9 +175,9 @@ int uppm_installed_metadata_parse(const char * packageName, UPPMInstalledMetadat
 
     yaml_parser_set_input_file(&parser, file);
 
-    UPPMInstalledMetadataKeyCode metadataKeyCode = INSTALLED_METADATA_KEY_CODE_unknown;
+    UPPMReceiptKeyCode receiptKeyCode = INSTALLED_METADATA_KEY_CODE_unknown;
 
-    UPPMInstalledMetadata * metadata = NULL;
+    UPPMReceipt * receipt = NULL;
 
     int lastTokenType = 0;
 
@@ -186,7 +186,7 @@ int uppm_installed_metadata_parse(const char * packageName, UPPMInstalledMetadat
     do {
         // https://libyaml.docsforge.com/master/api/yaml_parser_scan/
         if (yaml_parser_scan(&parser, &token) == 0) {
-            fprintf(stderr, "syntax error: %s\n", installedMetadataFilePath);
+            fprintf(stderr, "syntax error: %s\n", receiptFilePath);
             success = false;
             goto clean;
         }
@@ -200,12 +200,12 @@ int uppm_installed_metadata_parse(const char * packageName, UPPMInstalledMetadat
                 break;
             case YAML_SCALAR_TOKEN:
                 if (lastTokenType == 1) {
-                    metadataKeyCode = uppm_installed_metadata_key_code_from_key_name((char*)token.data.scalar.value);
+                    receiptKeyCode = uppm_receipt_key_code_from_key_name((char*)token.data.scalar.value);
                 } else if (lastTokenType == 2) {
-                    if (metadata == NULL) {
-                        metadata = (UPPMInstalledMetadata*)calloc(1, sizeof(UPPMInstalledMetadata));
+                    if (receipt == NULL) {
+                        receipt = (UPPMReceipt*)calloc(1, sizeof(UPPMReceipt));
                     }
-                    uppm_installed_metadata_set_value(metadataKeyCode, (char*)token.data.scalar.value, metadata);
+                    uppm_receipt_set_value(receiptKeyCode, (char*)token.data.scalar.value, receipt);
                 }
                 break;
             default: 
@@ -226,59 +226,59 @@ clean:
     fclose(file);
 
     if (success) {
-        if ((metadata->datatime == NULL) || (strcmp(metadata->datatime, "") == 0)) {
-            fprintf(stderr, "datatime not configed in %s\n", installedMetadataFilePath);
-            uppm_installed_metadata_free(metadata);
+        if ((receipt->timestamp == NULL) || (strcmp(receipt->timestamp, "") == 0)) {
+            fprintf(stderr, "timestamp not configed in %s\n", receiptFilePath);
+            uppm_receipt_free(receipt);
             return UPPM_ERROR;
         }
 
-        size_t datatimeLength = strlen(metadata->datatime);
+        size_t timestampLength = strlen(receipt->timestamp);
 
-        if (datatimeLength != 10) {
-            fprintf(stderr, "value of datatime length must be 64\n");
-            uppm_installed_metadata_free(metadata);
+        if (timestampLength != 10) {
+            fprintf(stderr, "value of timestamp length must be 64\n");
+            uppm_receipt_free(receipt);
             return UPPM_ERROR;
         }
 
         for (size_t i = 0; i < 10; i++) {
-            if ((metadata->datatime[i] < '0') || (metadata->datatime[i] > '9')) {
-                fprintf(stderr, "datatime contains non-numeric character.\n");
-                uppm_installed_metadata_free(metadata);
+            if ((receipt->timestamp[i] < '0') || (receipt->timestamp[i] > '9')) {
+                fprintf(stderr, "timestamp contains non-numeric character.\n");
+                uppm_receipt_free(receipt);
                 return UPPM_ERROR;
             }
         }
 
-        if ((metadata->uppmvers == NULL) || (strcmp(metadata->uppmvers, "") == 0)) {
-            fprintf(stderr, "uppmvers not configed in %s\n", installedMetadataFilePath);
-            uppm_installed_metadata_free(metadata);
+        if ((receipt->signature == NULL) || (strcmp(receipt->signature, "") == 0)) {
+            fprintf(stderr, "signature not configed in %s\n", receiptFilePath);
+            uppm_receipt_free(receipt);
             return UPPM_ERROR;
         }
 
-        if ((metadata->bin_url == NULL) || (strcmp(metadata->bin_url, "") == 0)) {
-            fprintf(stderr, "bin-url not configed in %s\n", installedMetadataFilePath);
-            uppm_installed_metadata_free(metadata);
+        if ((receipt->bin_url == NULL) || (strcmp(receipt->bin_url, "") == 0)) {
+            fprintf(stderr, "bin-url not configed in %s\n", receiptFilePath);
+            uppm_receipt_free(receipt);
             return UPPM_ERROR;
         }
 
-        if ((metadata->bin_sha == NULL) || (strcmp(metadata->bin_url, "") == 0)) {
-            fprintf(stderr, "bin-sha not configed in %s\n", installedMetadataFilePath);
-            uppm_installed_metadata_free(metadata);
+        if ((receipt->bin_sha == NULL) || (strcmp(receipt->bin_url, "") == 0)) {
+            fprintf(stderr, "bin-sha not configed in %s\n", receiptFilePath);
+            uppm_receipt_free(receipt);
             return UPPM_ERROR;
         }
 
-        if (strlen(metadata->bin_sha) != 64) {
+        if (strlen(receipt->bin_sha) != 64) {
             fprintf(stderr, "value of bin-sha length must be 64\n");
-            uppm_installed_metadata_free(metadata);
+            uppm_receipt_free(receipt);
             return UPPM_ERROR;
         }
 
-        (*out) = metadata;
+        (*out) = receipt;
         return UPPM_OK;
     } else {
-        if (metadata != NULL) {
-            uppm_installed_metadata_free(metadata);
+        if (receipt != NULL) {
+            uppm_receipt_free(receipt);
         } else {
-            //free(installedMetadataFilePath);
+            //free(receiptFilePath);
         }
         return UPPM_ERROR;
     }
