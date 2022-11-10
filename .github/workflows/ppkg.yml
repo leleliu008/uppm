@@ -9,7 +9,12 @@ on:
 jobs:
   ppkg:
 
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, ubuntu-20.04, macos-12, macos-11]
+
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@main
@@ -18,12 +23,11 @@ jobs:
         run: |
           curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/bin/ppkg
           chmod a+x ppkg
-          sudo mv ppkg /usr/local/bin/
-          ppkg setup
+          ./ppkg setup
 
-      - run:  ppkg update
-      - run:  ppkg install uppm
-      - run:  ppkg tree    uppm
+      - run:  ./ppkg update
+      - run:  ./ppkg install uppm
+      - run:  ./ppkg tree    uppm
 
       - run:  /opt/ppkg/installed/uppm/bin/uppm --help
       - run:  /opt/ppkg/installed/uppm/bin/uppm --version

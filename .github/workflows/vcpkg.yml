@@ -12,18 +12,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@main
-
       - run:  sudo apt -y update
       - run:  sudo apt -y install cmake ninja-build pkg-config linux-headers-generic
 
-      - run:  echo "VCPKG_ROOT=$HOME/.vcpkg/root" >> "$GITHUB_ENV"
-      - run:  install -d $VCPKG_ROOT
-      - run:  git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT
-      - run:  cd "$VCPKG_ROOT" && ./bootstrap-vcpkg.sh
-      - run:  vcpkg install curl openssl libgit2 libarchive libyaml jansson
+      - uses: actions/checkout@v3
 
-      - run:  cmake -S . -B   build.d -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_VERBOSE_MAKEFILE=ON
+      - uses: actions/checkout@v3
+        with:
+          repository: microsoft/vcpkg
+          path: vcpkg
+
+      - run:  cd vcpkg && ./bootstrap-vcpkg.sh
+
+      - run:  cd vcpkg && ./vcpkg install curl openssl libgit2 libarchive libyaml jansson
+
+      - run:  cmake -S . -B   build.d -DCMAKE_TOOLCHAIN_FILE=$PWD/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_VERBOSE_MAKEFILE=ON
       - run:  cmake --build   build.d
       - run:  cmake --install build.d
 
