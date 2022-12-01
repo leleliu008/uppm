@@ -28,50 +28,24 @@ int uppm_formula_path(const char * packageName, char ** out) {
         return UPPM_FORMULA_REPO_NOT_EXIST;
     }
 
-    size_t  formulaFilePathLength = userHomeDirLength + 36 + strlen(packageName);
-    char *  formulaFilePath = (char*)calloc(formulaFilePathLength, sizeof(char));
-    sprintf(formulaFilePath, "%s/.uppm/repos.d/offical/formula/%s.yml", userHomeDir, packageName);
+    UPPMFormulaRepoList * formulaRepoList = NULL;
 
-    if (exists_and_is_a_regular_file(formulaFilePath)) {
-        (*out) = formulaFilePath;
-        return UPPM_OK;
-    } else {
-        free(formulaFilePath);
-        formulaFilePath = NULL;
+    resultCode = uppm_formula_repo_list_new(&formulaRepoList);
+
+    if (resultCode != UPPM_OK) {
+        uppm_formula_repo_list_free(formulaRepoList);
+        return resultCode;
     }
 
-    size_t  reposConfigFilePathLength = userHomeDirLength + 13;
-    char    reposConfigFilePath[reposConfigFilePathLength];
-    memset (reposConfigFilePath, 0, reposConfigFilePathLength);
-    sprintf(reposConfigFilePath, "%s/.uppm/repos", userHomeDir);
-
-    if (!exists_and_is_a_regular_file(reposConfigFilePath)) {
-        return UPPM_PACKAGE_IS_NOT_AVAILABLE;
-    }
-
-    FILE * reposConfigFile = fopen(reposConfigFilePath, "r");
-
-    if (reposConfigFile == NULL) {
-        perror(reposConfigFilePath);
-        return UPPM_REPOS_CONFIG_READ_ERROR;
-    }
-
-    char line[300];
-    while(fgets(line, 300, reposConfigFile)) {
-        char * formulaRepoName = strtok(line, "=");
-
-        if (formulaRepoName == NULL) {
-            fprintf(stderr, "~/.uppm/repos config file syntax error.\n");
-            fclose(reposConfigFile);
-            return UPPM_REPOS_CONFIG_READ_ERROR;
-        }
-
-        size_t  formulaFilePathLength = userHomeDirLength + 30 + strlen(formulaRepoName) + strlen(packageName);
+    for (size_t i = 0; i < formulaRepoList->size; i++) {
+        char *  formulaRepoPath = formulaRepoList->repos[i]->path;
+        size_t  formulaFilePathLength =  strlen(formulaRepoPath) + strlen(packageName) + 15;
         char *  formulaFilePath = (char*)calloc(formulaFilePathLength, sizeof(char));
-        sprintf(formulaFilePath, "%s/.uppm/repos.d/%s/formula/%s.yml", userHomeDir, formulaRepoName, packageName);
+        sprintf(formulaFilePath, "%s/formula/%s.yml", formulaRepoPath, packageName);
 
         if (exists_and_is_a_regular_file(formulaFilePath)) {
             (*out) = formulaFilePath;
+            uppm_formula_repo_list_free(formulaRepoList);
             return UPPM_OK;
         } else {
             free(formulaFilePath);
@@ -79,5 +53,6 @@ int uppm_formula_path(const char * packageName, char ** out) {
         }
     }
 
+    uppm_formula_repo_list_free(formulaRepoList);
     return UPPM_PACKAGE_IS_NOT_AVAILABLE;
 }

@@ -37,12 +37,12 @@ int uppm_search(const char * keyword) {
     for (size_t i = 0; i < formulaRepoList->size; i++) {
         UPPMFormulaRepo* formulaRepo = formulaRepoList->repos[i];
 
-        char * formulaRepoName = formulaRepo->name;
+        char * formulaRepoId = formulaRepo->id;
 
-        size_t  formulaDirLength = userHomeDirLength + strlen(formulaRepoName) + 30;
+        size_t  formulaDirLength = userHomeDirLength + strlen(formulaRepoId) + 30;
         char    formulaDir[formulaDirLength];
         memset (formulaDir, 0, formulaDirLength);
-        sprintf(formulaDir, "%s/.uppm/repos.d/%s/formula", userHomeDir, formulaRepoName);
+        sprintf(formulaDir, "%s/.uppm/repos.d/%s/formula", userHomeDir, formulaRepoId);
 
         DIR * dir;
         struct dirent * dir_entry;

@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - run: pacman -Syyuu --noconfirm
-      - run: pacman -S     --noconfirm git cmake ninja gcc pkg-config curl openssl libgit2 libarchive libyaml jansson
+      - run: pacman -S     --noconfirm git cmake ninja gcc pkg-config curl openssl libgit2 libarchive libyaml jansson sqlite
 
       - uses: actions/checkout@main
 

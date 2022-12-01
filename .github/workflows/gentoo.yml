@@ -13,7 +13,7 @@ jobs:
     container: madhacking/gentoo
 
     steps:
-      - run:  emerge cmake dev-util/ninja gcc pkg-config dev-vcs/git net-misc/curl dev-libs/libgit2 libarchive dev-libs/libyaml dev-libs/jansson
+      - run:  emerge cmake dev-util/ninja gcc pkg-config dev-vcs/git net-misc/curl dev-libs/libgit2 libarchive dev-libs/libyaml dev-libs/jansson sqlite
 
       - uses: actions/checkout@v3
 

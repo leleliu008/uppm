@@ -12,7 +12,7 @@ int uppm_formula_repo_list_update() {
     if (resultCode == 0) {
         for (size_t i = 0; i < formulaRepoList->size; i++) {
             UPPMFormulaRepo * formulaRepo = formulaRepoList->repos[i];
-            printf("updating formula repo : %s => %s\n", formulaRepo->name, formulaRepo->url);
+            printf("updating formula repo : %s => %s\n", formulaRepo->id, formulaRepo->url);
 
             if (exists_and_is_a_directory(formulaRepo->path)) {
                 resultCode = do_git_pull(formulaRepo->path, NULL, NULL);

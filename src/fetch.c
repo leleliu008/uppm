@@ -11,7 +11,7 @@
 
 #include "uppm.h"
 
-int uppm_fetch(const char * packageName) {
+int uppm_fetch(const char * packageName, bool verbose) {
     UPPMFormula * formula = NULL;
 
     int resultCode = uppm_formula_parse(packageName, &formula);
@@ -68,7 +68,7 @@ int uppm_fetch(const char * packageName) {
         }
     }
 
-    if (http_fetch_to_file(formula->bin_url, archiveFilePath, true, true) != 0) {
+    if (http_fetch_to_file(formula->bin_url, archiveFilePath, verbose, verbose) != 0) {
         uppm_formula_free(formula);
         return UPPM_NETWORK_ERROR;
     }

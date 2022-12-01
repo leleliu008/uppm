@@ -32,7 +32,6 @@
 #define UPPM_PACKAGE_IS_NOT_OUTDATED  17
 
 #define UPPM_FORMULA_REPO_NOT_EXIST  20
-#define UPPM_REPOS_CONFIG_READ_ERROR 21
 
 #define UPPM_FORMULA_FILE_OPEN_ERROR  25
 #define UPPM_FORMULA_FILE_READ_ERROR  26
@@ -63,10 +62,6 @@ int  uppm_formula_parse (const char * packageName, UPPMFormula * * formula);
 int  uppm_formula_path  (const char * packageName, char * * out);
 int  uppm_formula_cat   (const char * packageName);
 int  uppm_formula_bat   (const char * packageName);
-int  uppm_formula_edit  (const char * packageName);
-int  uppm_formula_create(const char * packageName);
-int  uppm_formula_delete(const char * packageName);
-int  uppm_formula_rename(const char * packageName, char * newPkgName);
 
 void uppm_formula_free(UPPMFormula * formula);
 void uppm_formula_dump(UPPMFormula * formula);
@@ -74,8 +69,9 @@ void uppm_formula_dump(UPPMFormula * formula);
 //////////////////////////////////////////////////////////////////////
 
 typedef struct {
-    char * name;
+    char * id;
     char * url;
+    char * branch;
     char * path;
 } UPPMFormulaRepo ;
 
@@ -84,19 +80,15 @@ typedef struct {
     size_t size;
 } UPPMFormulaRepoList ;
 
-typedef struct {
-    char * * repoNames;
-    size_t size;
-} UPPMFormulaRepoNameList;
-
 int  uppm_formula_repo_list_new (UPPMFormulaRepoList * * p);
 void uppm_formula_repo_list_free(UPPMFormulaRepoList   * p);
 
-int  uppm_formula_repo_name_list_new (UPPMFormulaRepoNameList * * p);
-void uppm_formula_repo_name_list_free(UPPMFormulaRepoNameList   * p);
-
 int  uppm_formula_repo_list_printf();
 int  uppm_formula_repo_list_update();
+
+char* uppm_formula_repo_id (const char * formulaRepoUrl, const char * branchName);
+int   uppm_formula_repo_add(const char * formulaRepoUrl, const char * branchName);
+int   uppm_formula_repo_del(const char * id);
 
 //////////////////////////////////////////////////////////////////////
 
@@ -138,21 +130,21 @@ int uppm_tree(const char * packageName);
 
 int uppm_depends(const char * packageName);
 
-int uppm_fetch(const char * packageName);
+int uppm_fetch(const char * packageName, bool verbose);
 
 int uppm_install(const char * packageName, bool verbose);
 
-int uppm_reinstall(const char * packageName);
+int uppm_reinstall(const char * packageName, bool verbose);
 
 int uppm_uninstall(const char * packageName, bool verbose);
 
-int uppm_upgrade(const char * packageName);
+int uppm_upgrade(const char * packageName, bool verbose);
 
 int uppm_integrate_zsh_completion(const char * outputDir);
 int uppm_integrate_bash_completion(const char * outputDir);
 int uppm_integrate_fish_completion(const char * outputDir);
 
-int uppm_cleanup();
+int uppm_cleanup(bool verbose);
 
 int uppm_is_package_name(const char * packageName);
 

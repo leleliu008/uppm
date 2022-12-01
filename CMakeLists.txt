@@ -74,6 +74,8 @@ find_package(LibYAML REQUIRED)
 
 find_package(JANSSON REQUIRED)
 
+find_package(SQLite3 REQUIRED)
+
 if (CMAKE_SYSTEM_NAME STREQUAL OpenBSD)
     find_package(PCRE2 REQUIRED)
 endif()
@@ -120,6 +122,7 @@ target_link_libraries(uppm LibArchive::LibArchive)
 target_link_libraries(uppm LIBGIT2::LIBGIT2)
 target_link_libraries(uppm LIBYAML::LIBYAML)
 target_link_libraries(uppm JANSSON::JANSSON)
+target_link_libraries(uppm SQLite::SQLite3)
 
 if (CMAKE_SYSTEM_NAME STREQUAL OpenBSD)
     target_link_libraries(uppm PCRE2::PCRE2)

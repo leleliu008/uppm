@@ -16,92 +16,67 @@ int uppm_list_the_outdated__packages() {
 
     size_t userHomeDirLength = strlen(userHomeDir);
 
-    size_t  uppmHomeDirLength = userHomeDirLength + 7; 
-    char    uppmHomeDir[uppmHomeDirLength];
-    memset (uppmHomeDir, 0, uppmHomeDirLength);
-    sprintf(uppmHomeDir, "%s/.uppm", userHomeDir);
+    size_t  installedDirLength = userHomeDirLength + 17; 
+    char    installedDir[installedDirLength];
+    memset (installedDir, 0, installedDirLength);
+    sprintf(installedDir, "%s/.uppm/installed", userHomeDir);
 
-    if (!exists_and_is_a_directory(uppmHomeDir)) {
-        return UPPM_FORMULA_REPO_NOT_EXIST;
+    if (!exists_and_is_a_directory(installedDir)) {
+        return UPPM_OK;
     }
 
-    size_t  reposConfigFilePathLength = userHomeDirLength + 13;
-    char    reposConfigFilePath[reposConfigFilePathLength];
-    memset (reposConfigFilePath, 0, reposConfigFilePathLength);
-    sprintf(reposConfigFilePath, "%s/.uppm/repos", userHomeDir);
+    DIR *dir;
+    struct dirent *dir_entry;
 
-    if (exists_and_is_a_regular_file(reposConfigFilePath)) {
-        FILE * reposConfigFile = fopen(reposConfigFilePath, "r");
+    dir = opendir(installedDir);
 
-        if (reposConfigFile == NULL) {
-            perror(reposConfigFilePath);
-            return UPPM_REPOS_CONFIG_READ_ERROR;
+    if (dir == NULL) {
+        perror(installedDir);
+        return UPPM_ERROR;
+    }
+
+    while ((dir_entry = readdir(dir))) {
+        if ((strcmp(dir_entry->d_name, ".") == 0) || (strcmp(dir_entry->d_name, "..") == 0)) {
+            continue;
         }
 
-        char*  formulaRepoNameList[10] = {0};
-        size_t formulaRepoNameListSize = 0;
+        size_t  receiptFilePathLength = installedDirLength + strlen(dir_entry->d_name) + 20;
+        char    receiptFilePath[receiptFilePathLength];
+        memset (receiptFilePath, 0, receiptFilePathLength);
+        sprintf(receiptFilePath, "%s/%s/.uppm/receipt.yml", installedDir, dir_entry->d_name);
 
-        char line[30];
-        while(fgets(line, 30, reposConfigFile)) {
-            char * formulaRepoName = strtok(line, "=");
+        if (exists_and_is_a_regular_file(receiptFilePath)) {
+            //printf("%s\n", dir_entry->d_name);
 
-            if (formulaRepoName == NULL) {
-                fprintf(stderr, "~/.uppm/repos config file syntax error.\n");
-                fclose(reposConfigFile);
-                return UPPM_REPOS_CONFIG_READ_ERROR;
-            }
+            UPPMReceipt * receipt = NULL;
 
-            formulaRepoNameList[formulaRepoNameListSize] = formulaRepoName;
-            formulaRepoNameListSize++;
-        }
+            int resultCode = uppm_receipt_parse(dir_entry->d_name, &receipt);
 
-        if (formulaRepoNameListSize == 0) {
-            fprintf(stderr, "~/.uppm/repos config file no repos.\n");
-            fclose(reposConfigFile);
-            return UPPM_REPOS_CONFIG_READ_ERROR;
-        }
-
-        for (size_t i = 0; i < formulaRepoNameListSize; i++) {
-            char *  formulaRepoName = formulaRepoNameList[i];
-            size_t  formulaDirLength = userHomeDirLength + strlen(formulaRepoName) + 30;
-            char    formulaDir[formulaDirLength];
-            memset (formulaDir, 0, formulaDirLength);
-            sprintf(formulaDir, "%s/.uppm/repos.d/%s/formula", userHomeDir, formulaRepoName);
-
-            DIR *dir;
-            struct dirent *dir_entry;
-
-            dir = opendir(formulaDir);
-            if (dir == NULL) {
-                perror(formulaDir);
-                return UPPM_ERROR;
-            } else {
-                while ((dir_entry = readdir(dir))) {
-                    //puts(dir_entry->d_name);
-
-                    if ((strcmp(dir_entry->d_name, ".") == 0) || (strcmp(dir_entry->d_name, "..") == 0)) {
-                        continue;
-                    }
-
-                    int r = fnmatch("*.yml", dir_entry->d_name, 0);
-
-                    if (r == 0) {
-                        int fileNameLength = strlen(dir_entry->d_name);
-                        char packageName[fileNameLength];
-                        memset(packageName, 0, fileNameLength);
-                        strncpy(packageName, dir_entry->d_name, fileNameLength - 4);
-                        printf("%s\n", packageName);
-                    } else if(r == FNM_NOMATCH) {
-                        ;
-                    } else {
-                        fprintf(stderr, "fnmatch() error\n");
-                        return UPPM_ERROR;
-                    }
-                }
+            if (resultCode != UPPM_OK) {
                 closedir(dir);
+                uppm_receipt_free(receipt);
+                return resultCode;
             }
+
+            UPPMFormula * formula = NULL;
+
+            resultCode = uppm_formula_parse(dir_entry->d_name, &formula);
+
+            if (resultCode == UPPM_OK) {
+                if (strcmp(receipt->version, formula->version) != 0) {
+                    printf("%s %s => %s\n", dir_entry->d_name, receipt->version, formula->version);
+                }
+            }
+
+            uppm_formula_free(formula);
+            uppm_receipt_free(receipt);
+
+            formula = NULL;
+            receipt = NULL;
         }
     }
+
+    closedir(dir);
 
     return UPPM_OK;
 }
