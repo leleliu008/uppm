@@ -24,7 +24,7 @@ jobs:
 
       - run:  cd vcpkg && ./bootstrap-vcpkg.sh
 
-      - run:  cd vcpkg && ./vcpkg install curl openssl libgit2 libarchive libyaml jansson sqlite
+      - run:  cd vcpkg && ./vcpkg install curl openssl libgit2 libarchive libyaml jansson sqlite3
 
       - run:  cmake -S . -B   build.d -DCMAKE_TOOLCHAIN_FILE=$PWD/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_VERBOSE_MAKEFILE=ON
       - run:  cmake --build   build.d
