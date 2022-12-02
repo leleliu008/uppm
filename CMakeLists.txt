@@ -16,12 +16,12 @@ endif()
 
 ########################################################################################
 
-option(FIND_STATIC_LIBS "if prefer to use static libraries over dynamic libraries." OFF)
+option(LINK_STATIC_LIBS "if prefer to use static libraries over dynamic libraries." OFF)
 
 ########################################################################################
 
 if ("${CMAKE_EXE_LINKER_FLAGS}" MATCHES ".*-static.*")
-    set(FIND_STATIC_LIBS ON)
+    set(LINK_STATIC_LIBS ON)
 
     if ("${CMAKE_SYSTEM_NAME}" STREQUAL Darwin)
         message(FATAL "macOS DO NOT support static link the c runtime.")
@@ -52,7 +52,7 @@ message(STATUS "CMAKE_FIND_ROOT_PATH = ${CMAKE_FIND_ROOT_PATH}")
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${CMAKE_MODULE_PATH}")
 
-if (FIND_STATIC_LIBS)
+if (LINK_STATIC_LIBS)
     set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
 endif()
 

@@ -119,7 +119,7 @@ cmake --install build.d
 **[Gentoo Linux](https://www.gentoo.org/)**
 
 ```bash
-emerge dev-vcs/git cmake dev-util/ninja gcc pkg-config net-misc/curl dev-libs/libgit2 libarchive dev-libs/libyaml dev-libs/jansson dev-libs/sqlite
+emerge dev-vcs/git cmake dev-util/ninja gcc pkg-config net-misc/curl dev-libs/libgit2 libarchive dev-libs/libyaml dev-libs/jansson dev-db/sqlite
 
 git clone https://github.com/leleliu008/uppm
 cd uppm
@@ -133,7 +133,7 @@ cmake --install build.d
 
 ```bash
 zypper update  -y  
-zypper install -y git cmake ninja gcc pkg-config libcurl-devel libgit2-devel libarchive-devel libyaml-devel libjansson-devel sqlite-devel
+zypper install -y git cmake ninja gcc pkg-config libcurl-devel libgit2-devel libarchive-devel libyaml-devel libjansson-devel sqlite3-devel
 
 git clone https://github.com/leleliu008/uppm
 cd uppm
@@ -172,7 +172,7 @@ cmake --install build.d
 **[FreeBSD](https://www.freebsd.org/)**
 
 ```bash
-pkg install -y git cmake ninja pkgconf gcc curl openssl libgit2 libarchive libyaml jansson sqlite
+pkg install -y git cmake ninja pkgconf gcc curl openssl libgit2 libarchive libyaml jansson sqlite3
 
 git clone https://github.com/leleliu008/uppm
 cd uppm
