@@ -39,33 +39,33 @@ jobs:
 
       - run:  $VALGRIND ./output/bin/uppm search    and
 
-      - run:  $VALGRIND ./output/bin/uppm info      unzip
-      - run:  $VALGRIND ./output/bin/uppm info      unzip --shell
-      - run:  $VALGRIND ./output/bin/uppm info      unzip --json
-      - run:  $VALGRIND ./output/bin/uppm info      unzip --yaml
+      - run:  $VALGRIND ./output/bin/uppm info      tree
+      - run:  $VALGRIND ./output/bin/uppm info      tree --shell
+      - run:  $VALGRIND ./output/bin/uppm info      tree --json
+      - run:  $VALGRIND ./output/bin/uppm info      tree --yaml
 
-      - run:  $VALGRIND ./output/bin/uppm info      unzip summary
-      - run:  $VALGRIND ./output/bin/uppm info      unzip version
-      - run:  $VALGRIND ./output/bin/uppm info      unzip license
-      - run:  $VALGRIND ./output/bin/uppm info      unzip bin-url
-      - run:  $VALGRIND ./output/bin/uppm info      unzip bin-sha
-      - run:  $VALGRIND ./output/bin/uppm info      unzip dep-pkg
-      - run:  $VALGRIND ./output/bin/uppm info      unzip install
-      - run:  $VALGRIND ./output/bin/uppm info      unzip formula
+      - run:  $VALGRIND ./output/bin/uppm info      tree summary
+      - run:  $VALGRIND ./output/bin/uppm info      tree version
+      - run:  $VALGRIND ./output/bin/uppm info      tree license
+      - run:  $VALGRIND ./output/bin/uppm info      tree bin-url
+      - run:  $VALGRIND ./output/bin/uppm info      tree bin-sha
+      - run:  $VALGRIND ./output/bin/uppm info      tree dep-pkg
+      - run:  $VALGRIND ./output/bin/uppm info      tree install
+      - run:  $VALGRIND ./output/bin/uppm info      tree formula
 
       - run:  $VALGRIND ./output/bin/uppm depends   android-sdk
 
-      - run:  $VALGRIND ./output/bin/uppm install   unzip
+      - run:  $VALGRIND ./output/bin/uppm install   tree
 
-      - run:  $VALGRIND ./output/bin/uppm info      unzip installed-dir
-      - run:  $VALGRIND ./output/bin/uppm info      unzip installed-files
-      - run:  $VALGRIND ./output/bin/uppm info      unzip installed-receipt-path
-      - run:  $VALGRIND ./output/bin/uppm info      unzip installed-receipt-json
-      - run:  $VALGRIND ./output/bin/uppm info      unzip installed-receipt-yaml
-      - run:  $VALGRIND ./output/bin/uppm info      unzip installed-timestamp-iso-8601
-      - run:  $VALGRIND ./output/bin/uppm info      unzip installed-timestamp-rfc-3339
-      - run:  $VALGRIND ./output/bin/uppm info      unzip installed-timestamp-unix
-      - run:  $VALGRIND ./output/bin/uppm info      unzip installed-version
+      - run:  $VALGRIND ./output/bin/uppm info      tree installed-dir
+      - run:  $VALGRIND ./output/bin/uppm info      tree installed-files
+      - run:  $VALGRIND ./output/bin/uppm info      tree installed-receipt-path
+      - run:  $VALGRIND ./output/bin/uppm info      tree installed-receipt-json
+      - run:  $VALGRIND ./output/bin/uppm info      tree installed-receipt-yaml
+      - run:  $VALGRIND ./output/bin/uppm info      tree installed-timestamp-iso-8601
+      - run:  $VALGRIND ./output/bin/uppm info      tree installed-timestamp-rfc-3339
+      - run:  $VALGRIND ./output/bin/uppm info      tree installed-timestamp-unix
+      - run:  $VALGRIND ./output/bin/uppm info      tree installed-version
 
       - run:  $VALGRIND ./output/bin/uppm ls-available
       - run:  $VALGRIND ./output/bin/uppm ls-installed
@@ -75,5 +75,5 @@ jobs:
       - run:  $VALGRIND ./output/bin/uppm is-installed tree
       - run:  $VALGRIND ./output/bin/uppm is-outdated  tree
 
-      - run:  $VALGRIND ./output/bin/uppm tree      unzip
-      - run:  $VALGRIND ./output/bin/uppm uninstall unzip
+      - run:  $VALGRIND ./output/bin/uppm tree      tree
+      - run:  $VALGRIND ./output/bin/uppm uninstall tree
