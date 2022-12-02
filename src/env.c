@@ -7,6 +7,17 @@
 #include "core/fs.h"
 #include "uppm.h"
 
+#include <git2.h>
+#include <yaml.h>
+#include <sqlite3.h>
+#include <jansson.h>
+#include <archive.h>
+#include <curl/curlver.h>
+#include <openssl/opensslv.h>
+
+#define PCRE2_CODE_UNIT_WIDTH 8
+#include <pcre2.h>
+
 static int uppm_list_dirs(const char * installedDir, size_t installedDirLength, const char * sub) {
     DIR           * dir;
     struct dirent * dir_entry;
@@ -63,6 +74,17 @@ int uppm_env() {
         perror("uname() error");
         return UPPM_ERROR;
     }
+
+    printf("uppm    : %s\n", UPPM_VERSION);
+    printf("pcre2   : %d.%d\n", PCRE2_MAJOR, PCRE2_MINOR);
+    printf("libyaml : %s\n", yaml_get_version_string());
+    printf("libcurl : %s\n", LIBCURL_VERSION);
+    printf("libgit2 : %s\n", LIBGIT2_VERSION);
+    printf("openssl : %s\n", OPENSSL_VERSION_STR);
+    printf("sqlite3 : %s\n", SQLITE_VERSION);
+    printf("jansson : %s\n", JANSSON_VERSION);
+    printf("archive : %s\n\n", ARCHIVE_VERSION_ONLY_STRING);
+
 
     printf("NATIVE_OS_KIND = %s\n", uts.sysname);
     printf("NATIVE_OS_NAME = %s\n", uts.nodename);

@@ -19,7 +19,7 @@ ppkg install uppm
 |[ninja](https://ninja-build.org/)|required |for doing jobs that read from `build.ninja`|
 |[pkg-config>=0.18](https://www.freedesktop.org/wiki/Software/pkg-config/)|required|for finding libraries|
 ||||
-|[sqlite](https://www.sqlite.org/)|required|for storing data.|
+|[sqlite3](https://www.sqlite.org/)|required|for storing data.|
 |[jansson](https://github.com/akheron/jansson)|required|for parsing and creating JSON.|
 |[libyaml](https://github.com/yaml/libyaml/)|required|for parsing formula files whose format is YAML.|
 |[libgit2](https://libgit2.org/)|required|for updating formula repositories.|

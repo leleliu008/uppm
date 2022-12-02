@@ -1,0 +1,74 @@
+name: ubuntu
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  ubuntu:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04]
+
+    runs-on: ${{ matrix.os }}
+
+    env:
+      VALGRIND: valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --error-exitcode=1
+
+    steps:
+      - uses: actions/checkout@main
+
+      - run:  sudo apt -y update
+      - run:  sudo apt -y install valgrind cmake ninja-build gcc pkg-config libcurl4-openssl-dev libgit2-dev libarchive-dev libyaml-dev libjansson-dev libsqlite3-dev
+
+      - run:  cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_VERBOSE_MAKEFILE=ON
+      - run:  cmake --build   build.d
+      - run:  cmake --install build.d
+
+      - run:  $VALGRIND ./output/bin/uppm --help
+      - run:  $VALGRIND ./output/bin/uppm --version
+      - run:  $VALGRIND ./output/bin/uppm env
+        #- run:  $VALGRIND ./output/bin/uppm update
+
+      - run:  $VALGRIND ./output/bin/uppm ls-available
+      - run:  $VALGRIND ./output/bin/uppm ls-installed
+      - run:  $VALGRIND ./output/bin/uppm ls-outdated
+
+      - run:  $VALGRIND ./output/bin/uppm search    and
+
+      - run:  $VALGRIND ./output/bin/uppm info      unzip
+      - run:  $VALGRIND ./output/bin/uppm info      unzip --shell
+      - run:  $VALGRIND ./output/bin/uppm info      unzip --json
+      - run:  $VALGRIND ./output/bin/uppm info      unzip --yaml
+      - run:  $VALGRIND ./output/bin/uppm info      unzip summary
+      - run:  $VALGRIND ./output/bin/uppm info      unzip version
+      - run:  $VALGRIND ./output/bin/uppm info      unzip license
+      - run:  $VALGRIND ./output/bin/uppm info      unzip bin-url
+      - run:  $VALGRIND ./output/bin/uppm info      unzip bin-sha
+      - run:  $VALGRIND ./output/bin/uppm info      unzip dep-pkg
+      - run:  $VALGRIND ./output/bin/uppm info      unzip formula
+      - run:  $VALGRIND ./output/bin/uppm info      unzip installed-dir
+      - run:  $VALGRIND ./output/bin/uppm info      unzip installed-files
+      - run:  $VALGRIND ./output/bin/uppm info      unzip installed-receipt-path
+      - run:  $VALGRIND ./output/bin/uppm info      unzip installed-receipt-json
+      - run:  $VALGRIND ./output/bin/uppm info      unzip installed-receipt-yaml
+      - run:  $VALGRIND ./output/bin/uppm info      unzip installed-timestamp-iso-8601
+      - run:  $VALGRIND ./output/bin/uppm info      unzip installed-timestamp-rfc-3339
+      - run:  $VALGRIND ./output/bin/uppm info      unzip installed-timestamp-unix
+      - run:  $VALGRIND ./output/bin/uppm info      unzip installed-version
+
+      - run:  $VALGRIND ./output/bin/uppm install   unzip
+      - run:  $VALGRIND ./output/bin/uppm pack      unzip
+      - run:  $VALGRIND ./output/bin/uppm tree      unzip
+      - run:  $VALGRIND ./output/bin/uppm uninstall unzip
+
+      - run:  $VALGRIND ./output/bin/uppm ls-available
+      - run:  $VALGRIND ./output/bin/uppm ls-installed
+      - run:  $VALGRIND ./output/bin/uppm ls-outdated
+
+      - run:  $VALGRIND ./output/bin/uppm is-available tree
+      - run:  $VALGRIND ./output/bin/uppm is-installed tree
+      - run:  $VALGRIND ./output/bin/uppm is-outdated  tree

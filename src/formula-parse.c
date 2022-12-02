@@ -20,17 +20,19 @@ typedef enum {
 } UPPMFormulaKeyCode;
 
 void uppm_formula_dump(UPPMFormula * formula) {
-    if (formula != NULL) {
-        printf("summary: %s\n", formula->summary);
-        printf("webpage: %s\n", formula->webpage);
-        printf("version: %s\n", formula->version);
-        printf("license: %s\n", formula->license);
-        printf("bin_url: %s\n", formula->bin_url);
-        printf("bin_sha: %s\n", formula->bin_sha);
-        printf("dep_pkg: %s\n", formula->dep_pkg);
-        printf("install: %s\n", formula->install);
-        printf("git_url: %s\n", formula->path);
+    if (formula == NULL) {
+        return;
     }
+
+    printf("summary: %s\n", formula->summary);
+    printf("webpage: %s\n", formula->webpage);
+    printf("version: %s\n", formula->version);
+    printf("license: %s\n", formula->license);
+    printf("bin_url: %s\n", formula->bin_url);
+    printf("bin_sha: %s\n", formula->bin_sha);
+    printf("dep_pkg: %s\n", formula->dep_pkg);
+    printf("install: %s\n", formula->install);
+    printf("path:    %s\n", formula->path);
 }
 
 void uppm_formula_free(UPPMFormula * formula) {
@@ -84,7 +86,6 @@ void uppm_formula_free(UPPMFormula * formula) {
     }
 
     free(formula);
-    formula = NULL;
 }
 
 static UPPMFormulaKeyCode uppm_formula_key_code_from_key_name(char * key) {

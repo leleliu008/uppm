@@ -19,74 +19,78 @@ typedef enum {
 } UPPMReceiptKeyCode;
 
 void uppm_receipt_dump(UPPMReceipt * receipt) {
-    if (receipt != NULL) {
-        printf("summary: %s\n", receipt->summary);
-        printf("webpage: %s\n", receipt->webpage);
-        printf("version: %s\n", receipt->version);
-        printf("license: %s\n", receipt->license);
-        printf("bin_url: %s\n", receipt->bin_url);
-        printf("bin_sha: %s\n", receipt->bin_sha);
-        printf("dep_pkg: %s\n", receipt->dep_pkg);
-        printf("install: %s\n", receipt->install);
-        printf("signature: %s\n", receipt->signature);
-        printf("timestamp: %s\n", receipt->timestamp);
+    if (receipt == NULL) {
+        return;
     }
+
+    printf("summary: %s\n", receipt->summary);
+    printf("webpage: %s\n", receipt->webpage);
+    printf("version: %s\n", receipt->version);
+    printf("license: %s\n", receipt->license);
+    printf("bin_url: %s\n", receipt->bin_url);
+    printf("bin_sha: %s\n", receipt->bin_sha);
+    printf("dep_pkg: %s\n", receipt->dep_pkg);
+    printf("install: %s\n", receipt->install);
+    printf("signature: %s\n", receipt->signature);
+    printf("timestamp: %s\n", receipt->timestamp);
 }
 
 void uppm_receipt_free(UPPMReceipt * receipt) {
-    if (receipt != NULL) {
-        if (receipt->summary != NULL) {
-            free(receipt->summary);
-            receipt->summary = NULL;
-        }
-
-        if (receipt->webpage != NULL) {
-            free(receipt->webpage);
-            receipt->webpage = NULL;
-        }
-
-        if (receipt->version != NULL) {
-            free(receipt->version);
-            receipt->version = NULL;
-        }
-
-        if (receipt->license != NULL) {
-            free(receipt->license);
-            receipt->license = NULL;
-        }
-
-        if (receipt->bin_url != NULL) {
-            free(receipt->bin_url);
-            receipt->bin_url = NULL;
-        }
-
-        if (receipt->bin_sha != NULL) {
-            free(receipt->bin_sha);
-            receipt->bin_sha = NULL;
-        }
-
-        if (receipt->dep_pkg != NULL) {
-            free(receipt->dep_pkg);
-            receipt->dep_pkg = NULL;
-        }
-
-        if (receipt->install != NULL) {
-            free(receipt->install);
-            receipt->install = NULL;
-        }
-
-        if (receipt->timestamp != NULL) {
-            free(receipt->timestamp);
-            receipt->timestamp = NULL;
-        }
-
-        if (receipt->signature != NULL) {
-            free(receipt->signature);
-            receipt->signature = NULL;
-        }
-
-        free(receipt);
+    if (receipt == NULL) {
+        return;
     }
+
+    if (receipt->summary != NULL) {
+        free(receipt->summary);
+        receipt->summary = NULL;
+    }
+
+    if (receipt->webpage != NULL) {
+        free(receipt->webpage);
+        receipt->webpage = NULL;
+    }
+
+    if (receipt->version != NULL) {
+        free(receipt->version);
+        receipt->version = NULL;
+    }
+
+    if (receipt->license != NULL) {
+        free(receipt->license);
+        receipt->license = NULL;
+    }
+
+    if (receipt->bin_url != NULL) {
+        free(receipt->bin_url);
+        receipt->bin_url = NULL;
+    }
+
+    if (receipt->bin_sha != NULL) {
+        free(receipt->bin_sha);
+        receipt->bin_sha = NULL;
+    }
+
+    if (receipt->dep_pkg != NULL) {
+        free(receipt->dep_pkg);
+        receipt->dep_pkg = NULL;
+    }
+
+    if (receipt->install != NULL) {
+        free(receipt->install);
+        receipt->install = NULL;
+    }
+
+    if (receipt->timestamp != NULL) {
+        free(receipt->timestamp);
+        receipt->timestamp = NULL;
+    }
+
+    if (receipt->signature != NULL) {
+        free(receipt->signature);
+        receipt->signature = NULL;
+    }
+
+    free(receipt);
 }
 
 static UPPMReceiptKeyCode uppm_receipt_key_code_from_key_name(char * key) {
@@ -116,18 +120,17 @@ static UPPMReceiptKeyCode uppm_receipt_key_code_from_key_name(char * key) {
 }
 
 void uppm_receipt_set_value(UPPMReceiptKeyCode keyCode, char * value, UPPMReceipt * receipt) {
-    value = strdup(value);
     switch (keyCode) {
-        case INSTALLED_METADATA_KEY_CODE_summary:  receipt->summary = value; break;
-        case INSTALLED_METADATA_KEY_CODE_webpage:  receipt->webpage = value; break;
-        case INSTALLED_METADATA_KEY_CODE_version:  receipt->version = value; break;
-        case INSTALLED_METADATA_KEY_CODE_license:  receipt->license = value; break;
-        case INSTALLED_METADATA_KEY_CODE_bin_url:  receipt->bin_url = value; break;
-        case INSTALLED_METADATA_KEY_CODE_bin_sha:  receipt->bin_sha = value; break;
-        case INSTALLED_METADATA_KEY_CODE_dep_pkg:  receipt->dep_pkg = value; break;
-        case INSTALLED_METADATA_KEY_CODE_install:  receipt->install = value; break;
-        case INSTALLED_METADATA_KEY_CODE_timestamp:  receipt->timestamp = value; break;
-        case INSTALLED_METADATA_KEY_CODE_signature:  receipt->signature = value; break;
+        case INSTALLED_METADATA_KEY_CODE_summary:  if (receipt->summary != NULL)   free(receipt->summary);   receipt->summary = strdup(value); break;
+        case INSTALLED_METADATA_KEY_CODE_webpage:  if (receipt->webpage != NULL)   free(receipt->webpage);   receipt->webpage = strdup(value); break;
+        case INSTALLED_METADATA_KEY_CODE_version:  if (receipt->version != NULL)   free(receipt->version);   receipt->version = strdup(value); break;
+        case INSTALLED_METADATA_KEY_CODE_license:  if (receipt->license != NULL)   free(receipt->license);   receipt->license = strdup(value); break;
+        case INSTALLED_METADATA_KEY_CODE_bin_url:  if (receipt->bin_url != NULL)   free(receipt->bin_url);   receipt->bin_url = strdup(value); break;
+        case INSTALLED_METADATA_KEY_CODE_bin_sha:  if (receipt->bin_sha != NULL)   free(receipt->bin_sha);   receipt->bin_sha = strdup(value); break;
+        case INSTALLED_METADATA_KEY_CODE_dep_pkg:  if (receipt->dep_pkg != NULL)   free(receipt->dep_pkg);   receipt->dep_pkg = strdup(value); break;
+        case INSTALLED_METADATA_KEY_CODE_install:  if (receipt->install != NULL)   free(receipt->install);   receipt->install = strdup(value); break;
+        case INSTALLED_METADATA_KEY_CODE_timestamp:if (receipt->timestamp != NULL) free(receipt->timestamp); receipt->timestamp = strdup(value); break;
+        case INSTALLED_METADATA_KEY_CODE_signature:if (receipt->signature != NULL) free(receipt->signature); receipt->signature = strdup(value); break;
         default: break;
     }
 }
@@ -235,7 +238,7 @@ clean:
         size_t timestampLength = strlen(receipt->timestamp);
 
         if (timestampLength != 10) {
-            fprintf(stderr, "value of timestamp length must be 64\n");
+            fprintf(stderr, "value of timestamp length must be 10\n");
             uppm_receipt_free(receipt);
             return UPPM_ERROR;
         }

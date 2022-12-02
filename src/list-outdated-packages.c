@@ -55,6 +55,7 @@ int uppm_list_the_outdated__packages() {
             if (resultCode != UPPM_OK) {
                 closedir(dir);
                 uppm_receipt_free(receipt);
+                receipt = NULL;
                 return resultCode;
             }
 
