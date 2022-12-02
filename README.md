@@ -234,9 +234,7 @@ all relevant dirs and files are located in `~/.uppm` directory.
 
         uppm integrate zsh
         uppm integrate zsh --output-dir=/usr/local/share/zsh/site-functions
-        uppm integrate zsh -d
-        uppm integrate zsh --china
-        uppm integrate zsh --china -d
+        uppm integrate zsh -v
         
     I have provide a zsh-completion script for `uppm`. when you've typed `uppm` then type `TAB` key, it will auto complete the rest for you.
 
@@ -307,8 +305,7 @@ all relevant dirs and files are located in `~/.uppm` directory.
 *   **install packages**
         
         uppm install curl
-        uppm install curl bzip2  -v
-        uppm install curl bzip2  -v -d
+        uppm install curl bzip2 -v
         
 *   **reinstall packages**
         
@@ -329,9 +326,7 @@ all relevant dirs and files are located in `~/.uppm` directory.
 *   **upgrade this software**
 
         uppm upgrade @self
-        uppm upgrade @self -d
-        uppm upgrade @self --china
-        uppm upgrade @self --china -d
+        uppm upgrade @self -v
         
 *   **list the avaliable formula repositories**
 
@@ -358,7 +353,7 @@ all relevant dirs and files are located in `~/.uppm` directory.
 
 *   **view the formula of the given package**
         
-        uppm formula view curl
+        uppm formula-view curl
         
 *   **list the available packages**
         

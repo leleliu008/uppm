@@ -163,6 +163,20 @@ int uppm_info(const char * packageName, const char * key) {
         }
 
         uppm_formula_free(formula);
+    } else if (strcmp(key, "license") == 0) {
+        UPPMFormula * formula = NULL;
+
+        resultCode = uppm_formula_parse(packageName, &formula);
+
+        if (resultCode != UPPM_OK) {
+            return resultCode;
+        }
+
+        if (formula->license != NULL) {
+            printf("%s\n", formula->license);
+        }
+
+        uppm_formula_free(formula);
     } else if (strcmp(key, "bin-url") == 0) {
         UPPMFormula * formula = NULL;
 
