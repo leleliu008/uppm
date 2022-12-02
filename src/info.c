@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <unistd.h>
 #include <jansson.h>
 
 #include "core/fs.h"
@@ -32,7 +33,15 @@ int uppm_info(const char * packageName, const char * key) {
             return UPPM_FORMULA_FILE_OPEN_ERROR;
         }
 
-        printf("pkgname: %s\n", packageName);
+        if (isatty(fileno(stdout))) {
+            if (uppm_is_package_installed(packageName) == UPPM_OK) {
+                printf("pkgname: %s%s%s %s[ %s ]%s\n", COLOR_GREEN, packageName, COLOR_OFF, COLOR_GREEN,   "Installed", COLOR_OFF);
+            } else {
+                printf("pkgname: %s%s%s %s[ %s ]%s\n", COLOR_GREEN, packageName, COLOR_OFF, COLOR_RED, "Not Installed", COLOR_OFF);
+            }
+        } else {
+            printf("pkgname: %s%s%s [ %s ]\n", COLOR_GREEN, packageName, COLOR_OFF, uppm_is_package_installed(packageName) == UPPM_OK ? "Installed" : "Not Installed");
+        }
 
         char buff[1024];
         int  size = 0;

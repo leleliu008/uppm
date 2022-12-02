@@ -25,8 +25,8 @@ int uppm_list_the_outdated__packages() {
         return UPPM_OK;
     }
 
-    DIR *dir;
-    struct dirent *dir_entry;
+    DIR           * dir;
+    struct dirent * dir_entry;
 
     dir = opendir(installedDir);
 

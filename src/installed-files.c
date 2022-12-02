@@ -12,7 +12,7 @@ static int record_installed_files_r(const char * dirPath, size_t offset, FILE * 
         return 1;
     }
 
-    DIR * dir;
+    DIR           * dir;
     struct dirent * dir_entry;
 
     dir = opendir(dirPath);
@@ -29,9 +29,9 @@ static int record_installed_files_r(const char * dirPath, size_t offset, FILE * 
             continue;
         }
 
-        size_t filePathLength = strlen(dirPath) + strlen(dir_entry->d_name) + 2;
-        char   filePath[filePathLength];
-        memset(filePath, 0, filePathLength);
+        size_t  filePathLength = strlen(dirPath) + strlen(dir_entry->d_name) + 2;
+        char    filePath[filePathLength];
+        memset( filePath, 0, filePathLength);
         sprintf(filePath, "%s/%s", dirPath, dir_entry->d_name);
 
         struct stat st;

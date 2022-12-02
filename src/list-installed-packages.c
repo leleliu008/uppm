@@ -25,31 +25,32 @@ int uppm_list_the_installed_packages() {
         return UPPM_OK;
     }
 
-    DIR *dir;
-    struct dirent *dir_entry;
+    DIR           * dir;
+    struct dirent * dir_entry;
 
     dir = opendir(installedDir);
 
     if (dir == NULL) {
         perror(installedDir);
         return UPPM_ERROR;
-    } else {
-        while ((dir_entry = readdir(dir))) {
-            if ((strcmp(dir_entry->d_name, ".") == 0) || (strcmp(dir_entry->d_name, "..") == 0)) {
-                continue;
-            }
-
-            size_t  receiptFilePathLength = installedDirLength + strlen(dir_entry->d_name) + 20;
-            char    receiptFilePath[receiptFilePathLength];
-            memset (receiptFilePath, 0, receiptFilePathLength);
-            sprintf(receiptFilePath, "%s/%s/.uppm/receipt.yml", installedDir, dir_entry->d_name);
-
-            if (exists_and_is_a_regular_file(receiptFilePath)) {
-                printf("%s\n", dir_entry->d_name);
-            }
-        }
-        closedir(dir);
     }
+
+    while ((dir_entry = readdir(dir))) {
+        if ((strcmp(dir_entry->d_name, ".") == 0) || (strcmp(dir_entry->d_name, "..") == 0)) {
+            continue;
+        }
+
+        size_t  receiptFilePathLength = installedDirLength + strlen(dir_entry->d_name) + 20;
+        char    receiptFilePath[receiptFilePathLength];
+        memset (receiptFilePath, 0, receiptFilePathLength);
+        sprintf(receiptFilePath, "%s/%s/.uppm/receipt.yml", installedDir, dir_entry->d_name);
+
+        if (exists_and_is_a_regular_file(receiptFilePath)) {
+            printf("%s\n", dir_entry->d_name);
+        }
+    }
+
+    closedir(dir);
 
     return UPPM_OK;
 }

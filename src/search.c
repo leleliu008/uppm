@@ -16,35 +16,24 @@ int uppm_search(const char * keyword) {
         return UPPM_ARG_IS_EMPTY;
     }
 
-    char * userHomeDir = getenv("HOME");
-
-    if (userHomeDir == NULL || strcmp(userHomeDir, "") == 0) {
-        return UPPM_ENV_HOME_NOT_SET;
-    }
-
-    size_t userHomeDirLength = strlen(userHomeDir);
-
     UPPMFormulaRepoList * formulaRepoList = NULL;
 
     int resultCode = uppm_formula_repo_list_new(&formulaRepoList);
 
-    if (resultCode != 0) {
+    if (resultCode != UPPM_OK) {
         return resultCode;
     }
 
     bool isFirst = true;
 
     for (size_t i = 0; i < formulaRepoList->size; i++) {
-        UPPMFormulaRepo* formulaRepo = formulaRepoList->repos[i];
-
-        char * formulaRepoId = formulaRepo->id;
-
-        size_t  formulaDirLength = userHomeDirLength + strlen(formulaRepoId) + 30;
+        char *  formulaRepoPath  = formulaRepoList->repos[i]->path;
+        size_t  formulaDirLength = strlen(formulaRepoPath) + 10;
         char    formulaDir[formulaDirLength];
         memset (formulaDir, 0, formulaDirLength);
-        sprintf(formulaDir, "%s/.uppm/repos.d/%s/formula", userHomeDir, formulaRepoId);
+        sprintf(formulaDir, "%s/formula", formulaRepoPath);
 
-        DIR * dir;
+        DIR           * dir;
         struct dirent * dir_entry;
 
         dir = opendir(formulaDir);
@@ -75,7 +64,7 @@ int uppm_search(const char * keyword) {
                 strncpy(packageName, dir_entry->d_name, fileNameLength - 4);
 
                 if (!isFirst) {
-                    printf("-------\n");
+                    printf("\n");
                 }
 
                 //printf("%s\n", packageName);
@@ -83,6 +72,7 @@ int uppm_search(const char * keyword) {
 
                 if (resultCode != UPPM_OK) {
                     uppm_formula_repo_list_free(formulaRepoList);
+                    closedir(dir);
                     return resultCode;
                 }
 
@@ -94,6 +84,7 @@ int uppm_search(const char * keyword) {
             } else {
                 uppm_formula_repo_list_free(formulaRepoList);
                 fprintf(stderr, "fnmatch() error\n");
+                closedir(dir);
                 return UPPM_ERROR;
             }
         }
