@@ -67,10 +67,6 @@ jobs:
       - run:  $VALGRIND ./output/bin/uppm info      unzip installed-timestamp-unix
       - run:  $VALGRIND ./output/bin/uppm info      unzip installed-version
 
-      - run:  $VALGRIND ./output/bin/uppm pack      unzip
-      - run:  $VALGRIND ./output/bin/uppm tree      unzip
-      - run:  $VALGRIND ./output/bin/uppm uninstall unzip
-
       - run:  $VALGRIND ./output/bin/uppm ls-available
       - run:  $VALGRIND ./output/bin/uppm ls-installed
       - run:  $VALGRIND ./output/bin/uppm ls-outdated
@@ -78,3 +74,6 @@ jobs:
       - run:  $VALGRIND ./output/bin/uppm is-available tree
       - run:  $VALGRIND ./output/bin/uppm is-installed tree
       - run:  $VALGRIND ./output/bin/uppm is-outdated  tree
+
+      - run:  $VALGRIND ./output/bin/uppm tree      unzip
+      - run:  $VALGRIND ./output/bin/uppm uninstall unzip
