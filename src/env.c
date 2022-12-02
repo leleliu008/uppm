@@ -15,8 +15,8 @@
 #include <curl/curlver.h>
 #include <openssl/opensslv.h>
 
-#define PCRE2_CODE_UNIT_WIDTH 8
-#include <pcre2.h>
+//#define PCRE2_CODE_UNIT_WIDTH 8
+//#include <pcre2.h>
 
 static int uppm_list_dirs(const char * installedDir, size_t installedDirLength, const char * sub) {
     DIR           * dir;
@@ -76,11 +76,19 @@ int uppm_env() {
     }
 
     printf("uppm    : %s\n", UPPM_VERSION);
-    printf("pcre2   : %d.%d\n", PCRE2_MAJOR, PCRE2_MINOR);
+    //printf("pcre2   : %d.%d\n", PCRE2_MAJOR, PCRE2_MINOR);
     printf("libyaml : %s\n", yaml_get_version_string());
     printf("libcurl : %s\n", LIBCURL_VERSION);
     printf("libgit2 : %s\n", LIBGIT2_VERSION);
+
+//https://www.openssl.org/docs/man3.0/man3/OPENSSL_VERSION_BUILD_METADATA.html
+//https://www.openssl.org/docs/man1.1.1/man3/OPENSSL_VERSION_TEXT.html
+#ifdef OPENSSL_VERSION_STR
     printf("openssl : %s\n", OPENSSL_VERSION_STR);
+#else
+    printf("openssl : %s\n", OPENSSL_VERSION_TEXT);
+#endif
+
     printf("sqlite3 : %s\n", SQLITE_VERSION);
     printf("jansson : %s\n", JANSSON_VERSION);
     printf("archive : %s\n\n", ARCHIVE_VERSION_ONLY_STRING);

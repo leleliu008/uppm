@@ -1,4 +1,4 @@
-name: ubuntu
+name: valgrind
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ master ]
 
 jobs:
-  ubuntu:
+  valgrind:
     strategy:
       fail-fast: false
       matrix:
