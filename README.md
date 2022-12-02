@@ -254,22 +254,23 @@ all relevant dirs and files are located in `~/.uppm` directory.
 *   **show infomation of the given package**
         
         uppm info curl
-        uppm info curl formula
         uppm info curl version
         uppm info curl summary
         uppm info curl webpage
         uppm info curl bin-url
         uppm info curl bin-sha
         uppm info curl install
+        uppm info curl formula
 
         uppm info curl installed-dir
-        uppm info curl installed-metadata-path
-        uppm info curl installed-metadata-json
-        uppm info curl installed-metadata-yaml
-        uppm info curl installed-datetime-unix
-        uppm info curl installed-datetime-formatted
-        uppm info curl installed-package-version
         uppm info curl installed-files
+        uppm info curl installed-receipt-path
+        uppm info curl installed-receipt-json
+        uppm info curl installed-receipt-yaml
+        uppm info curl installed-timestamp-unix
+        uppm info curl installed-timestamp-iso-8601
+        uppm info curl installed-timestamp-rfc-3339
+        uppm info curl installed-version
 
         uppm info curl --json
         uppm info curl --json | jq .
@@ -334,11 +335,13 @@ all relevant dirs and files are located in `~/.uppm` directory.
         
 *   **list the avaliable formula repositories**
 
-        uppm formula-repo list
+        uppm formula-repo-list
 
 *   **add a new formula repository**
 
-        uppm formula-repo add my_repo https://github.com/leleliu008/uppm-formula-repository-linux-x86_64.git
+        uppm formula-repo-add https://github.com/leleliu008/uppm-formula-repository-linux-x86_64
+        uppm formula-repo-add https://github.com/leleliu008/uppm-formula-repository-linux-x86_64 master
+        uppm formula-repo-add https://github.com/leleliu008/uppm-formula-repository-linux-x86_64 main
         
     **Note:**
     - this software supports multi formula repositories.
@@ -351,51 +354,35 @@ all relevant dirs and files are located in `~/.uppm` directory.
 
 *   **delete a existing formula repository**
 
-        uppm formula-repo del my_repo
+        uppm formula-repo-del my_repo
 
 *   **view the formula of the given package**
         
         uppm formula view curl
         
-*   **edit the formula of the given package**
-        
-        uppm formula edit curl
-        
-*   **create the formula of the given package**
-        
-        uppm formula create curl
-        
-*   **delete the formula of the given package**
-        
-        uppm formula delete curl
-        
-*   **rename the formula of the given package to new name**
-        
-        uppm formula rename curl curl7
-        
 *   **list the available packages**
         
-        uppm ls-available-packages
+        uppm ls-available
         
 *   **list the installed packages**
         
-        uppm ls-installed-packages
+        uppm ls-installed
         
 *   **list the outdated packages**
         
-        uppm ls-outdated-packages
+        uppm ls-outdated
         
 *   **is the given package available ?**
         
-        uppm is-package-available curl
+        uppm is-available curl
         
 *   **is the given package installed ?**
         
-        uppm is-package-installed curl
+        uppm is-installed curl
         
 *   **is the given package outdated ?**
         
-        uppm is-package-outdated  curl
+        uppm is-outdated  curl
         
 *   **list files of the given installed package in a tree-like format**
         

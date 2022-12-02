@@ -31,7 +31,7 @@ jobs:
       - run:  $VALGRIND ./output/bin/uppm --help
       - run:  $VALGRIND ./output/bin/uppm --version
       - run:  $VALGRIND ./output/bin/uppm env
-        #- run:  $VALGRIND ./output/bin/uppm update
+      - run:            ./output/bin/uppm update
 
       - run:  $VALGRIND ./output/bin/uppm ls-available
       - run:  $VALGRIND ./output/bin/uppm ls-installed
@@ -43,13 +43,16 @@ jobs:
       - run:  $VALGRIND ./output/bin/uppm info      unzip --shell
       - run:  $VALGRIND ./output/bin/uppm info      unzip --json
       - run:  $VALGRIND ./output/bin/uppm info      unzip --yaml
+
       - run:  $VALGRIND ./output/bin/uppm info      unzip summary
       - run:  $VALGRIND ./output/bin/uppm info      unzip version
       - run:  $VALGRIND ./output/bin/uppm info      unzip license
       - run:  $VALGRIND ./output/bin/uppm info      unzip bin-url
       - run:  $VALGRIND ./output/bin/uppm info      unzip bin-sha
       - run:  $VALGRIND ./output/bin/uppm info      unzip dep-pkg
+      - run:  $VALGRIND ./output/bin/uppm info      unzip install
       - run:  $VALGRIND ./output/bin/uppm info      unzip formula
+
       - run:  $VALGRIND ./output/bin/uppm info      unzip installed-dir
       - run:  $VALGRIND ./output/bin/uppm info      unzip installed-files
       - run:  $VALGRIND ./output/bin/uppm info      unzip installed-receipt-path
@@ -60,6 +63,7 @@ jobs:
       - run:  $VALGRIND ./output/bin/uppm info      unzip installed-timestamp-unix
       - run:  $VALGRIND ./output/bin/uppm info      unzip installed-version
 
+      - run:  $VALGRIND ./output/bin/uppm depends   android-sdk
       - run:  $VALGRIND ./output/bin/uppm install   unzip
       - run:  $VALGRIND ./output/bin/uppm pack      unzip
       - run:  $VALGRIND ./output/bin/uppm tree      unzip
