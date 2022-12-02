@@ -53,6 +53,10 @@ jobs:
       - run:  $VALGRIND ./output/bin/uppm info      unzip install
       - run:  $VALGRIND ./output/bin/uppm info      unzip formula
 
+      - run:  $VALGRIND ./output/bin/uppm depends   android-sdk
+
+      - run:  $VALGRIND ./output/bin/uppm install   unzip
+
       - run:  $VALGRIND ./output/bin/uppm info      unzip installed-dir
       - run:  $VALGRIND ./output/bin/uppm info      unzip installed-files
       - run:  $VALGRIND ./output/bin/uppm info      unzip installed-receipt-path
@@ -63,8 +67,6 @@ jobs:
       - run:  $VALGRIND ./output/bin/uppm info      unzip installed-timestamp-unix
       - run:  $VALGRIND ./output/bin/uppm info      unzip installed-version
 
-      - run:  $VALGRIND ./output/bin/uppm depends   android-sdk
-      - run:  $VALGRIND ./output/bin/uppm install   unzip
       - run:  $VALGRIND ./output/bin/uppm pack      unzip
       - run:  $VALGRIND ./output/bin/uppm tree      unzip
       - run:  $VALGRIND ./output/bin/uppm uninstall unzip
