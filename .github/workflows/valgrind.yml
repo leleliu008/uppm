@@ -76,4 +76,7 @@ jobs:
       - run:  $VALGRIND ./output/bin/uppm is-outdated  tree
 
       - run:  $VALGRIND ./output/bin/uppm tree      tree
+
       - run:  $VALGRIND ./output/bin/uppm uninstall tree
+
+      - run:  $VALGRIND ./output/bin/uppm cleanup

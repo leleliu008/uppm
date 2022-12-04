@@ -342,51 +342,6 @@ int uppm_main(int argc, char* argv[]) {
         return resultCode;
     }
 
-    if (strcmp(argv[1], "formula-create") == 0) {
-        if (argv[2] == NULL) {
-            fprintf(stderr, "Usage: %s formula-create <FORMULA-REPO-NAME> <FORMULA-NAME>\n", argv[0]);
-            return UPPM_ARG_IS_NULL;
-        } else {
-            return UPPM_OK;
-        }
-    }
-
-    if (strcmp(argv[1], "formula-delete") == 0) {
-        if (argv[2] == NULL) {
-            fprintf(stderr, "Usage: %s formula-delete <FORMULA-REPO-NAME> <FORMULA-NAME>\n", argv[0]);
-            return UPPM_ARG_IS_NULL;
-        } else {
-            return UPPM_OK;
-        }
-    }
-
-    if (strcmp(argv[1], "formula-rename") == 0) {
-        if (argv[2] == NULL) {
-            fprintf(stderr, "Usage: %s formula-rename <FORMULA-REPO-NAME> <FORMULA-NAME>\n", argv[0]);
-            return UPPM_ARG_IS_NULL;
-        } else {
-            return UPPM_OK;
-        }
-    }
-
-    if (strcmp(argv[1], "formula-view") == 0) {
-        if (argv[2] == NULL) {
-            fprintf(stderr, "Usage: %s formula-view <[FORMULA-REPO-NAME/]FORMULA-NAME>\n", argv[0]);
-            return UPPM_ARG_IS_NULL;
-        } else {
-            return uppm_formula_cat(argv[2]);
-        }
-    }
-
-    if (strcmp(argv[1], "formula-edit") == 0) {
-        if (argv[2] == NULL) {
-            fprintf(stderr, "Usage: %s formula-edit <[FORMULA-REPO-NAME/]FORMULA-NAME>\n", argv[0]);
-            return UPPM_ARG_IS_NULL;
-        } else {
-            return UPPM_OK;
-        }
-    }
-
     if (strcmp(argv[1], "formula-repo-list") == 0) {
         return uppm_formula_repo_list_printf();
     }
@@ -431,7 +386,7 @@ int uppm_main(int argc, char* argv[]) {
     }
 
     if (strcmp(argv[1], "cleanup") == 0) {
-        return 0;
+        return UPPM_OK;
     }
 
     fprintf(stderr, "%sunrecognized action: %s%s\n", COLOR_RED, argv[1], COLOR_OFF);

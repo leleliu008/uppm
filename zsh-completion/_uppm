@@ -19,7 +19,6 @@ _commands=(
     'env:show current machine os info.'
     'integrate:integrate zsh completions and cmake support.'
     'compare-versions:compare package versions with brew.'
-    'formula-view:view the formula of the given package.'
     'formula-repo-add:add a new formula-repo.'
     'formula-repo-del:delete a formula-repo.'
     'formula-repo-list:list the formula-repos.'
@@ -74,11 +73,6 @@ function _uppm() {
                     ;;
                 formula-repo-del)
                     _arguments '1:name:(uppm formula-repo-list | cut -d ' ' -f1)'
-                    ;;
-                formula-view)
-                    _arguments \
-                        '1:package-name:_uppm_available_packages' \
-                        '--paging=-[when use pager]:paging:(auto always never)'
                     ;;
                 integrate)
                     _arguments \

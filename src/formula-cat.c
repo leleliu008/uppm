@@ -22,6 +22,8 @@ int uppm_formula_cat(const char * packageName) {
         return UPPM_FORMULA_FILE_OPEN_ERROR;
     }
 
+    printf("formula: %s\n", formulaFilePath);
+
     free(formulaFilePath);
     formulaFilePath = NULL;
 

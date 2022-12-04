@@ -33,7 +33,7 @@ int uppm_info(const char * packageName, const char * key) {
             return UPPM_FORMULA_FILE_OPEN_ERROR;
         }
 
-        if (isatty(fileno(stdout))) {
+        if (isatty(STDOUT_FILENO)) {
             if (uppm_is_package_installed(packageName) == UPPM_OK) {
                 printf("pkgname: %s%s%s %s[ %s ]%s\n", COLOR_GREEN, packageName, COLOR_OFF, COLOR_GREEN,   "Installed", COLOR_OFF);
             } else {
@@ -114,13 +114,30 @@ int uppm_info(const char * packageName, const char * key) {
 
         resultCode = uppm_formula_path(packageName, &formulaFilePath);
 
-        if (resultCode == UPPM_OK) {
-            printf("%s\n", formulaFilePath);
+        if (resultCode != UPPM_OK) {
+            return resultCode;
         }
 
-        free(formulaFilePath);
+        FILE * file = fopen(formulaFilePath, "r");
 
-        return resultCode;
+        if (file == NULL) {
+            perror(formulaFilePath);
+            free(formulaFilePath);
+            return UPPM_FORMULA_FILE_OPEN_ERROR;
+        }
+
+        printf("formula: %s\n", formulaFilePath);
+
+        free(formulaFilePath);
+        formulaFilePath = NULL;
+
+        char buff[1024];
+        int  size = 0;
+        while((size = fread(buff, 1, 1024, file)) != 0) {
+            fwrite(buff, 1, size, stdout);
+        }
+
+        fclose(file);
     } else if (strcmp(key, "summary") == 0) {
         UPPMFormula * formula = NULL;
 

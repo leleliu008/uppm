@@ -351,10 +351,6 @@ all relevant dirs and files are located in `~/.uppm` directory.
 
         uppm formula-repo-del my_repo
 
-*   **view the formula of the given package**
-        
-        uppm formula-view curl
-        
 *   **list the available packages**
         
         uppm ls-available
