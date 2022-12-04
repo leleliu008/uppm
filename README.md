@@ -302,6 +302,9 @@ all relevant dirs and files are located in `~/.uppm` directory.
         uppm fetch curl
         uppm fetch @all
 
+        uppm fetch curl -v
+        uppm fetch @all -v
+
 *   **install packages**
         
         uppm install curl
@@ -315,13 +318,13 @@ all relevant dirs and files are located in `~/.uppm` directory.
 *   **uninstall packages**
 
         uppm uninstall curl
-        uppm uninstall curl bzip2
+        uppm uninstall curl bzip2 -v
         
 *   **upgrade the outdated packages**
 
         uppm upgrade
         uppm upgrade curl
-        uppm upgrade curl bzip2
+        uppm upgrade curl bzip2 -v
         
 *   **upgrade this software**
 

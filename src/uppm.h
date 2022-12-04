@@ -126,7 +126,7 @@ int uppm_search(const char * keyword);
 
 int uppm_info(const char * packageName, const char * key);
 
-int uppm_tree(const char * packageName);
+int uppm_tree(const char * packageName, size_t argc, char* argv[]);
 
 int uppm_depends(const char * packageName);
 

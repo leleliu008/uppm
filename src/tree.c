@@ -5,7 +5,7 @@
 #include "core/fs.h"
 #include "uppm.h"
 
-int uppm_tree(const char * packageName) {
+int uppm_tree(const char * packageName, size_t argc, char* argv[]) {
     int resultCode = uppm_is_package_name(packageName);
 
     if (resultCode != UPPM_OK) {
@@ -51,7 +51,21 @@ int uppm_tree(const char * packageName) {
     memset (treeCommandPath, 0, treeCommandPathLength);
     sprintf(treeCommandPath, "%s/.uppm/installed/tree/bin/tree", userHomeDir);
 
-    if (execl(treeCommandPath, treeCommandPath, "--dirsfirst", "-a", packageInstalledDir, NULL) == -1) {
+    size_t n = argc + 5;
+    char*  p[n];
+
+    p[0] = treeCommandPath;
+    p[1] = (char*)"--dirsfirst";
+    p[2] = (char*)"-a";
+
+    for (size_t i = 0; i < argc; i++) {
+        p[3+i] = argv[i];
+    }
+
+    p[n-2] = packageInstalledDir;
+    p[n-1]   = NULL;
+
+    if (execv(treeCommandPath, p) == -1) {
         perror(treeCommandPath);
         return UPPM_ERROR;
     } else {

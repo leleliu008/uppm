@@ -109,7 +109,7 @@ int uppm_main(int argc, char* argv[]) {
     }
 
     if (strcmp(argv[1], "tree") == 0) {
-        int resultCode = uppm_tree(argv[2]);
+        int resultCode = uppm_tree(argv[2], argc - 3, &argv[3]);
 
         if (resultCode == UPPM_PACKAGE_NAME_IS_NULL) {
             fprintf(stderr, "Usage: %s tree <PACKAGE-NAME> [KEY], <PACKAGE-NAME> is not given.\n", argv[0]);

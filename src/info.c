@@ -9,7 +9,99 @@
 #include "core/log.h"
 #include "uppm.h"
 
+#include <dirent.h>
+#include <fnmatch.h>
+
+int uppm_info_all_available_packages(const char * key) {
+    UPPMFormulaRepoList * formulaRepoList = NULL;
+
+    int resultCode = uppm_formula_repo_list_new(&formulaRepoList);
+
+    if (resultCode != UPPM_OK) {
+        return resultCode;
+    }
+
+    bool isFirst = true;
+
+    for (size_t i = 0; i < formulaRepoList->size; i++) {
+        char *  formulaRepoPath  = formulaRepoList->repos[i]->path;
+        size_t  formulaDirLength = strlen(formulaRepoPath) + 10;
+        char    formulaDir[formulaDirLength];
+        memset (formulaDir, 0, formulaDirLength);
+        sprintf(formulaDir, "%s/formula", formulaRepoPath);
+
+        DIR           * dir;
+        struct dirent * dir_entry;
+
+        dir = opendir(formulaDir);
+
+        if (dir == NULL) {
+            uppm_formula_repo_list_free(formulaRepoList);
+            perror(formulaDir);
+            return UPPM_ERROR;
+        }
+
+        while ((dir_entry = readdir(dir))) {
+            //puts(dir_entry->d_name);
+            if ((strcmp(dir_entry->d_name, ".") == 0) || (strcmp(dir_entry->d_name, "..") == 0)) {
+                continue;
+            }
+
+            int r = fnmatch("*.yml", dir_entry->d_name, 0);
+
+            if (r == 0) {
+                size_t  fileNameLength = strlen(dir_entry->d_name);
+                char    packageName[fileNameLength];
+                memset (packageName, 0, fileNameLength);
+                strncpy(packageName, dir_entry->d_name, fileNameLength - 4);
+
+                if (!isFirst) {
+                    printf("\n");
+                }
+
+                //printf("%s\n", packageName);
+                resultCode = uppm_info(packageName, key);
+
+                if (resultCode != UPPM_OK) {
+                    uppm_formula_repo_list_free(formulaRepoList);
+                    closedir(dir);
+                    return resultCode;
+                }
+
+                if (isFirst) {
+                    isFirst = false;
+                }
+            } else if(r == FNM_NOMATCH) {
+                ;
+            } else {
+                uppm_formula_repo_list_free(formulaRepoList);
+                fprintf(stderr, "fnmatch() error\n");
+                closedir(dir);
+                return UPPM_ERROR;
+            }
+        }
+
+        closedir(dir);
+    }
+
+    uppm_formula_repo_list_free(formulaRepoList);
+
+    return UPPM_OK;
+}
+
 int uppm_info(const char * packageName, const char * key) {
+    if (packageName == NULL) {
+        return UPPM_ARG_IS_NULL;
+    }
+
+    if (strcmp(packageName, "") == 0) {
+        return UPPM_ARG_IS_EMPTY;
+    }
+
+    if (strcmp(packageName, "@all") == 0) {
+        return uppm_info_all_available_packages(key);
+    }
+
     int resultCode = uppm_is_package_name(packageName);
 
     if (resultCode != UPPM_OK) {
