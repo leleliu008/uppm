@@ -5,7 +5,7 @@
 #include "core/fs.h"
 #include "uppm.h"
 
-int uppm_integrate_zsh_completion(const char * outputDir) {
+int uppm_integrate_zsh_completion(const char * outputDir, bool verbose) {
     const char * url = "https://raw.githubusercontent.com/leleliu008/uppm/master/zsh-completion/_uppm";
 
     char * userHomeDir = getenv("HOME");
@@ -33,7 +33,7 @@ int uppm_integrate_zsh_completion(const char * outputDir) {
     memset (zshCompletionFilePath, 0, zshCompletionFilePathLength);
     sprintf(zshCompletionFilePath, "%s/_uppm", zshCompletionDir);
 
-    if (http_fetch_to_file(url, zshCompletionFilePath, false, false) != 0) {
+    if (http_fetch_to_file(url, zshCompletionFilePath, verbose, verbose) != 0) {
         return UPPM_NETWORK_ERROR;
     }
 
@@ -41,12 +41,14 @@ int uppm_integrate_zsh_completion(const char * outputDir) {
     return UPPM_OK;
 }
 
-int uppm_integrate_bash_completion(const char * outputDir) {
+int uppm_integrate_bash_completion(const char * outputDir, bool verbose) {
     (void)outputDir;
+    (void)verbose;
     return UPPM_OK;
 }
 
-int uppm_integrate_fish_completion(const char * outputDir) {
+int uppm_integrate_fish_completion(const char * outputDir, bool verbose) {
     (void)outputDir;
+    (void)verbose;
     return UPPM_OK;
 }

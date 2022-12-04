@@ -90,11 +90,27 @@ int uppm_is_package_installed(const char * packageName) {
 }
 
 int uppm_is_package_outdated(const char * packageName) {
-    int resultCode = uppm_is_package_name(packageName);
+    UPPMFormula * formula = NULL;
+    UPPMReceipt * receipt = NULL;
+
+    int resultCode = uppm_formula_parse(packageName, &formula);
 
     if (resultCode != UPPM_OK) {
-        return resultCode;
+        goto clean;
     }
 
-    return 0;
+    resultCode = uppm_receipt_parse(packageName, &receipt);
+
+    if (resultCode != UPPM_OK) {
+        goto clean;
+    }
+
+    if (strcmp(receipt->version, formula->version) == 0) {
+        resultCode = UPPM_PACKAGE_IS_NOT_OUTDATED;
+    }
+
+clean:
+    uppm_formula_free(formula);
+    uppm_receipt_free(receipt);
+    return resultCode;
 }

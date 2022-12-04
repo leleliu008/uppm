@@ -140,9 +140,11 @@ int uppm_uninstall(const char * packageName, bool verbose);
 
 int uppm_upgrade(const char * packageName, bool verbose);
 
-int uppm_integrate_zsh_completion(const char * outputDir);
-int uppm_integrate_bash_completion(const char * outputDir);
-int uppm_integrate_fish_completion(const char * outputDir);
+int uppm_upgrade_self(bool verbose);
+
+int uppm_integrate_zsh_completion (const char * outputDir, bool verbose);
+int uppm_integrate_bash_completion(const char * outputDir, bool verbose);
+int uppm_integrate_fish_completion(const char * outputDir, bool verbose);
 
 int uppm_cleanup(bool verbose);
 

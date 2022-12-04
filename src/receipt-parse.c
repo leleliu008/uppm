@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <yaml.h>
 #include "uppm.h"
+#include "core/fs.h"
 
 typedef enum {
     INSTALLED_METADATA_KEY_CODE_unknown,
@@ -159,6 +160,10 @@ int uppm_receipt_parse(const char * packageName, UPPMReceipt * * out) {
     char    receiptFilePath[receiptFilePathLength];
     memset (receiptFilePath, 0, receiptFilePathLength);
     sprintf(receiptFilePath, "%s/.uppm/receipt.yml", installedDir);
+
+    if (!exists_and_is_a_regular_file(receiptFilePath)) {
+        return UPPM_PACKAGE_IS_NOT_INSTALLED;
+    }
 
     FILE * file = fopen(receiptFilePath, "r");
 

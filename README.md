@@ -325,8 +325,8 @@ all relevant dirs and files are located in `~/.uppm` directory.
         
 *   **upgrade this software**
 
-        uppm upgrade @self
-        uppm upgrade @self -v
+        uppm upgrade-self
+        uppm upgrade-self -v
         
 *   **list the avaliable formula repositories**
 
@@ -339,7 +339,7 @@ all relevant dirs and files are located in `~/.uppm` directory.
         uppm formula-repo-add https://github.com/leleliu008/uppm-formula-repository-linux-x86_64 main
         
     **Note:**
-    - this software supports multi formula repositories.
+    - this software supports multiple formula repositories.
     - offical formula repository are as follows:
         - https://github.com/leleliu008/uppm-formula-repository-linux-x86_64
         - https://github.com/leleliu008/uppm-formula-repository-linux-aarch64

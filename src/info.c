@@ -35,9 +35,9 @@ int uppm_info(const char * packageName, const char * key) {
 
         if (isatty(STDOUT_FILENO)) {
             if (uppm_is_package_installed(packageName) == UPPM_OK) {
-                printf("pkgname: %s%s%s %s[ %s ]%s\n", COLOR_GREEN, packageName, COLOR_OFF, COLOR_GREEN,   "Installed", COLOR_OFF);
+                printf("pkgname: %s%s%s\n", COLOR_GREEN, packageName, COLOR_OFF);
             } else {
-                printf("pkgname: %s%s%s %s[ %s ]%s\n", COLOR_GREEN, packageName, COLOR_OFF, COLOR_RED, "Not Installed", COLOR_OFF);
+                printf("pkgname: %s%s%s\n", COLOR_RED,   packageName, COLOR_OFF);
             }
         } else {
             printf("pkgname: %s%s%s [ %s ]\n", COLOR_GREEN, packageName, COLOR_OFF, uppm_is_package_installed(packageName) == UPPM_OK ? "Installed" : "Not Installed");

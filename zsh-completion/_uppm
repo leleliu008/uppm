@@ -15,9 +15,10 @@ _commands=(
     'uninstall:uninstall packages.'
     'cleanup:cleanup the unused cache.'
     'update:update the formula repositories.'
-    'upgrade:upgrade the outdated packages or this software.'
+    'upgrade:upgrade the outdated packages.'
+    'upgrade-self:upgrade this software.'
     'env:show current machine os info.'
-    'integrate:integrate zsh completions and cmake support.'
+    'integrate:integrate zsh completions.'
     'compare-versions:compare package versions with brew.'
     'formula-repo-add:add a new formula-repo.'
     'formula-repo-del:delete a formula-repo.'
@@ -42,13 +43,13 @@ function _uppm_available_packages() {
 
 function _uppm_installed_packages() {
     local -a _installed_packages
-    _installed_packages=($(uppm ls-installed 2>/dev/null | cut -d/ -f3))
+    _installed_packages=($(uppm ls-installed 2>/dev/null))
     _describe 'installed-packages' _installed_packages
 }
 
 function _uppm_outdated_packages() {
     local -a _outdated_packages
-    _outdated_packages=($(uppm ls-outdated 2>/dev/null | cut -d/ -f3))
+    _outdated_packages=($(uppm ls-outdated 2>/dev/null | cut -d ' ' -f1))
     _describe 'outdated-packages' _outdated_packages
 }
 
@@ -63,9 +64,6 @@ function _uppm() {
     case $state in
         option)
             case $words[1] in
-                compare-versions)
-                    _arguments ':which:(brew)'
-                    ;;
                 formula-repo-add)
                     _arguments \
                         '1:name:()' \
@@ -78,8 +76,7 @@ function _uppm() {
                     _arguments \
                         '1:what:(zsh)' \
                         '--output-dir=-[set the output dir]:output-dir:{_files -/}' \
-                        '-x[trace execution of commands]' \
-                        '--china[use china mirror url]'
+                        '-v[verbose mode]'
                     ;;
                 info)
                     if [ "$words[2]" = '@all' ] ; then
@@ -117,61 +114,37 @@ function _uppm() {
                     ;;
                 install)
                     _arguments \
-                        ':package-name:(@all $(uppm ls-available 2>/dev/null))' \
-                        '(--xtrace -x)'{--xtrace,-x}'[trace execution of commands]' \
-                        '(--debug -d)'{--debug,-d}'[debug output]' \
+                        ':package-name:_uppm_available_packages' \
                         '(--verbose -v)'{--verbose,-v}'[verbose mode. many messages will be output to terminal]' \
                         '(--quiet -q)'{--quiet,-q}'[silent mode. no any messages will be output to terminal]'
                     ;;
                 reinstall)
                     _arguments \
                         ':package-name:_uppm_installed_packages' \
-                        '(--xtrace -x)'{--xtrace,-x}'[trace execution of commands]' \
-                        '(--debug -d)'{--debug,-d}'[debug output]' \
-                        '(--verbose -v)'{--verbose,-v}'[verbose mode. many messages will be output to terminal]' \
-                        '(--quiet -q)'{--quiet,-q}'[silent mode. no any messages will be output to terminal]'
+                        '-v[verbose mode.  many messages will be output to terminal]' \
+                        '-q[silent mode. no any messages will be output to terminal]'
                     ;;
                 upgrade)
                     _arguments \
-                        '1:package-name:(@self $(uppm ls-outdated))' \
-                        '*:: :->upgrade-subcommand'
-                    case $state in
-                        upgrade-subcommand)
-                            case $words[1] in
-                                @self)
-                                    _arguments \
-                                        '-x[trace execution of commands]' \
-                                        '--china[use china mirror url]'
-                                    ;;
-                                *)  _arguments \
-                                        ':package-name:_uppm_outdated_packages'
-                                    ;;
-                            esac
-                        esac
+                        '*:package-name:_uppm_outdated_packages'
                     ;;
                 uninstall)
                     _arguments \
                         '*:package-name:_uppm_installed_packages'
-                        ;;
+                    ;;
                 is-available)
                     _arguments \
-                        '1:package-name:_uppm_available_packages' \
-                        '2:condition-operator:(eq ne ge gt le lt)'
+                        '1:package-name:_uppm_available_packages'
                     ;;
                 is-installed)
                     _arguments \
                         '1:package-name:_uppm_installed_packages'
-                        ;;
+                    ;;
                 is-outdated)
                     _arguments \
                         '1:package-name:_uppm_outdated_packages'
-                        ;;
-                gen-github-workflows)
-                    _arguments \
-                        '--group-size=-[set the group size]:group-size:(50 40 30 20)' \
-                        '--output-dir=-[set the output dir]:output-dir:{_files -/}'
                     ;;
-                *);;
+                *)  ;;
             esac
             ;;
         *);;
