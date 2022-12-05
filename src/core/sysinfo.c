@@ -10,6 +10,41 @@
 #include <unistd.h>
 
 int sysinfo_kind(char * * out) {
+#if defined (_WIN32)
+    (*out) = (char*)"windows";
+    return 0;
+#endif
+
+#if defined (__APPLE__)
+    (*out) = (char*)"darwin";
+    return 0;
+#endif
+
+#if defined (__FreeBSD__)
+    (*out) = (char*)"freebsd";
+    return 0;
+#endif
+
+#if defined (__OpenBSD__)
+    (*out) = (char*)"openbsd";
+    return 0;
+#endif
+
+#if defined (__NetBSD__)
+    (*out) = (char*)"netbsd";
+    return 0;
+#endif
+
+#if defined (__ANDROID__)
+    (*out) = (char*)"android";
+    return 0;
+#endif
+
+#if defined (__linux__)
+    (*out) = (char*)"linux";
+    return 0;
+#endif
+
     struct utsname uts;
 
     if (uname(&uts) < 0) {
@@ -29,6 +64,41 @@ int sysinfo_kind(char * * out) {
 }
 
 int sysinfo_type(char * * out) {
+#if defined (_WIN32)
+    (*out) = (char*)"windows";
+    return 0;
+#endif
+
+#if defined (__APPLE__)
+    (*out) = (char*)"macos";
+    return 0;
+#endif
+
+#if defined (__FreeBSD__)
+    (*out) = (char*)"freebsd";
+    return 0;
+#endif
+
+#if defined (__OpenBSD__)
+    (*out) = (char*)"openbsd";
+    return 0;
+#endif
+
+#if defined (__NetBSD__)
+    (*out) = (char*)"netbsd";
+    return 0;
+#endif
+
+#if defined (__ANDROID__)
+    (*out) = (char*)"android";
+    return 0;
+#endif
+
+#if defined (__linux__)
+    (*out) = (char*)"linux";
+    return 0;
+#endif
+
     struct utsname uts;
 
     if (uname(&uts) < 0) {
@@ -61,6 +131,36 @@ int sysinfo_arch(char * * out) {
 }
 
 int sysinfo_name(char * * out) {
+#if defined (_WIN32)
+    (*out) = (char*)"windows";
+    return 0;
+#endif
+
+#if defined (__APPLE__)
+    (*out) = (char*)"macos";
+    return 0;
+#endif
+
+#if defined (__FreeBSD__)
+    (*out) = (char*)"freebsd";
+    return 0;
+#endif
+
+#if defined (__OpenBSD__)
+    (*out) = (char*)"openbsd";
+    return 0;
+#endif
+
+#if defined (__NetBSD__)
+    (*out) = (char*)"netbsd";
+    return 0;
+#endif
+
+#if defined (__ANDROID__)
+    (*out) = (char*)"android";
+    return 0;
+#endif
+
     struct stat sb;
 
     if ((stat("/etc/os-release", &sb) == 0) && (S_ISREG(sb.st_mode) || S_ISLNK(sb.st_mode))) {
@@ -75,17 +175,31 @@ int sysinfo_name(char * * out) {
 
         while (fgets(line, 50, file) != NULL) {
             if (regex_matched(line, "^ID=.*")) {
-                line[strlen(line) - 1] = '\0';
-                (*out) = strdup(&line[3]);
-                fclose(file);
-                return 0;
+                size_t n = strlen(line);
+
+                line[n - 1] = '\0';
+
+                if (line[n - 2] == '"') {
+                    line[n - 2] = '\0';
+                }
+
+                if (line[3] == '"') {
+                    (*out) = strdup(&line[4]);
+                    fclose(file);
+                    return 0;
+                } else {
+                    (*out) = strdup(&line[3]);
+                    fclose(file);
+                    return 0;
+                }
+
             }
         }
 
         fclose(file);
     }
 
-    (*out) = NULL;
+    (*out) = (char*)"unknown";
 
     return 0;
 }
@@ -128,7 +242,7 @@ int sysinfo_vers(char * * out) {
         fclose(file);
     }
 
-    (*out) = NULL;
+    (*out) = (char*)"rolling";
 
     return 0;
 }

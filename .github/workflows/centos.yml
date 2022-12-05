@@ -1,0 +1,118 @@
+name: CentOS Linux
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  centos8:
+    runs-on: ubuntu-latest
+
+    container: centos:8
+
+    steps:
+      - run: |
+          sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-Linux-*
+          sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-Linux-*
+
+      - uses: actions/checkout@main
+
+      - run:  dnf -y update
+      - run:  dnf -y install cmake ninja-build gcc pkg-config libcurl-devel libgit2-devel libarchive-devel libyaml-devel jansson-devel sqlite-devel
+
+      - run:  cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_VERBOSE_MAKEFILE=ON
+      - run:  cmake --build   build.d
+      - run:  cmake --install build.d
+
+      - run:  ./output/bin/uppm --help
+      - run:  ./output/bin/uppm --version
+      - run:  ./output/bin/uppm env
+      - run:  ./output/bin/uppm update
+      - run:  ./output/bin/uppm search    zip
+      - run:  ./output/bin/uppm info      unzip
+      - run:  ./output/bin/uppm install   unzip
+      - run:  ./output/bin/uppm tree      unzip
+      - run:  ./output/bin/uppm uninstall unzip
+
+
+  centos7:
+    runs-on: ubuntu-latest
+
+    container: centos:7
+
+    steps:
+      - uses: actions/checkout@main
+
+      - run:  yum -y update
+      - run:  yum -y install cmake ninja-build gcc pkg-config libcurl-devel libgit2-devel libarchive-devel libyaml-devel jansson-devel sqlite-devel
+
+      - run:  cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_VERBOSE_MAKEFILE=ON
+      - run:  cmake --build   build.d
+      - run:  cmake --install build.d
+
+      - run:  ./output/bin/uppm --help
+      - run:  ./output/bin/uppm --version
+      - run:  ./output/bin/uppm env
+      - run:  ./output/bin/uppm update
+      - run:  ./output/bin/uppm search    zip
+      - run:  ./output/bin/uppm info      unzip
+      - run:  ./output/bin/uppm install   unzip
+      - run:  ./output/bin/uppm tree      unzip
+      - run:  ./output/bin/uppm uninstall unzip
+
+  centos_6_10:
+    runs-on: ubuntu-latest
+
+    container: centos:6.10
+
+    steps:
+      - uses: actions/cache@v2
+        with:
+          path: /opt/ppkg/installed/git
+          id:   restore-cache
+          key: git-centos-6.10-x86_64
+          restore-keys: git-centos-6.10-x86_64
+
+      - if: ${{ steps.restore-cache.outputs.cache-hit != 'true' }}
+        run: |
+          sed -i 's|#baseurl=|baseurl=|g'       /etc/yum.repos.d/CentOS-Base.repo
+          sed -i 's|mirrorlist=|#mirrorlist=|g' /etc/yum.repos.d/CentOS-Base.repo
+          sed -i 's|mirror|vault|g'             /etc/yum.repos.d/CentOS-Base.repo
+          sed -i 's|http:|https:|g'             /etc/yum.repos.d/CentOS-Base.repo
+
+          yum -y update
+          yum -y install curl xz
+
+      - if: ${{ steps.restore-cache.outputs.cache-hit != 'true' }}
+        run: |
+          curl -LO https://github.com/leleliu008/uppm-package-repository-linux-x86_64/releases/download/2022.10.23/git-2.37.3-linux-x86_64.tar.xz
+          install -d /opt/ppkg/installed/git
+          tar xf git-2.37.3-linux-x86_64.tar.xz -C /opt/ppkg/installed/git --strip-components=1
+          printf '%s\n' /opt/ppkg/installed/git/bin/git >> "$GITHUB_PATH"
+
+      - run: git --version
+
+      - run: git init
+      - run: git remote add origin https://github.com/${{github.repository}}
+      - run: git config --global gc.auto 0
+      - run: git fetch --no-tags --prune --depth=1 origin +${{github.sha}}:refs/remotes/origin/master
+      - run: git checkout --force -B master refs/remotes/origin/master
+
+      - run: yum -y update
+      - run: yum -y install cmake ninja-build gcc pkg-config libcurl-devel libgit2-devel libarchive-devel libyaml-devel jansson-devel sqlite-devel
+
+      - run: cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_VERBOSE_MAKEFILE=ON
+      - run: cmake --build   build.d
+      - run: cmake --install build.d
+
+      - run: ./output/bin/uppm --help
+      - run: ./output/bin/uppm --version
+      - run: ./output/bin/uppm env
+      - run: ./output/bin/uppm update
+      - run: ./output/bin/uppm search    zip
+      - run: ./output/bin/uppm info      unzip
+      - run: ./output/bin/uppm install   unzip
+      - run: ./output/bin/uppm tree      unzip
+      - run: ./output/bin/uppm uninstall unzip

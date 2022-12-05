@@ -1,4 +1,4 @@
-name: archlinux
+name: Manjaro Linux
 
 on:
   push:
@@ -7,11 +7,10 @@ on:
     branches: [ master ]
 
 jobs:
-  archlinux:
-
+  test:
     runs-on: ubuntu-latest
 
-    container: archlinux
+    container: zelec/manjarolinux
 
     steps:
       - run: pacman -Syyuu --noconfirm

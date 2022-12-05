@@ -1,4 +1,4 @@
-name: archlinux
+name: LinuxMint
 
 on:
   push:
@@ -7,19 +7,22 @@ on:
     branches: [ master ]
 
 jobs:
-  archlinux:
-
+  test:
     runs-on: ubuntu-latest
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        tag: [19.3, 20.1]
 
-    container: archlinux
+    container: linuxmintd/mint${{ matrix.tag }}-amd64
 
     steps:
-      - run: pacman -Syyuu --noconfirm
-      - run: pacman -S     --noconfirm git cmake ninja gcc pkg-config curl openssl libgit2 libarchive libyaml jansson sqlite
-
       - uses: actions/checkout@main
 
-      - run:  cmake --version
+      - run:  sudo apt -y update
+      - run:  sudo apt -y install cmake ninja-build gcc pkg-config libcurl4-openssl-dev libgit2-dev libarchive-dev libyaml-dev libjansson-dev libsqlite3-dev
+
       - run:  cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_VERBOSE_MAKEFILE=ON
       - run:  cmake --build   build.d
       - run:  cmake --install build.d
