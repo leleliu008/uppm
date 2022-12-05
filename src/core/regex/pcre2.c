@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include <pcre2.h>
 
-bool regex_match(const char * content, const char * pattern) {
+bool regex_matched(const char * content, const char * pattern) {
     if (content == NULL || pattern == NULL) {
         return false;
     }

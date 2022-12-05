@@ -13,7 +13,7 @@ int uppm_is_package_name(const char * packageName) {
         return UPPM_PACKAGE_NAME_IS_NULL;
     } else if (strcmp(packageName, "") == 0) {
         return UPPM_PACKAGE_NAME_IS_EMPTY;
-    } else if (regex_match(packageName, "^[A-Za-z0-9+-._]{1,50}$")) {
+    } else if (regex_matched(packageName, "^[A-Za-z0-9+-._]{1,50}$")) {
         return UPPM_OK;
     } else {
         return UPPM_PACKAGE_NAME_IS_INVALID;

@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <yaml.h>
-#include "core/util.h"
+#include "core/sysinfo.h"
 #include "uppm.h"
 
 typedef enum {
@@ -145,6 +145,16 @@ static void uppm_formula_set_value(UPPMFormulaKeyCode keyCode, char * value, UPP
 }
 
 int uppm_formula_parse(const char * packageName, UPPMFormula * * out) {
+    bool isLinuxMuslLibc = false;
+
+    LIBC libc = LIBC_UNKNOWN;
+
+    if (sysinfo_libc(&libc) == 0) {
+        isLinuxMuslLibc = libc == LIBC_MUSL;
+    } else {
+        return UPPM_ERROR;
+    }
+
     int resultCode = uppm_is_package_name(packageName);
 
     if (resultCode != UPPM_OK) {
@@ -184,8 +194,6 @@ int uppm_formula_parse(const char * packageName, UPPMFormula * * out) {
     UPPMFormula * formula = NULL;
 
     int lastTokenType = 0;
-
-    bool isLinuxMuslLibc = get_linux_libc_type();
 
     bool success = true;
 

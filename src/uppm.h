@@ -114,13 +114,9 @@ void uppm_receipt_dump(UPPMReceipt * receipt);
 
 int uppm_main(int argc, char* argv[]);
 
-int uppm_init();
-
 int uppm_help();
 
-int uppm_env();
-
-int uppm_update_self();
+int uppm_env(bool verbose);
 
 int uppm_search(const char * keyword);
 

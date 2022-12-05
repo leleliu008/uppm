@@ -1,0 +1,289 @@
+#include "sysinfo.h"
+
+#include <stdio.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <sys/utsname.h>
+
+#include "regex/regex.h"
+
+#include <unistd.h>
+
+int sysinfo_kind(char * * out) {
+    struct utsname uts;
+
+    if (uname(&uts) < 0) {
+        perror("uname() error");
+        return 1;
+    }
+
+    char * kind = strdup(uts.sysname);
+
+    if ((kind[0] >= 'A') && (kind[0] <= 'Z')) {
+         kind[0] += 32;
+    }
+
+    (*out) = kind;
+
+    return 0;
+}
+
+int sysinfo_type(char * * out) {
+    struct utsname uts;
+
+    if (uname(&uts) < 0) {
+        perror("uname() error");
+        return 1;
+    }
+
+    char * kind = strdup(uts.sysname);
+
+    if ((kind[0] >= 'A') && (kind[0] <= 'Z')) {
+         kind[0] += 32;
+    }
+
+    (*out) = kind;
+
+    return 0;
+}
+
+int sysinfo_arch(char * * out) {
+    struct utsname uts;
+
+    if (uname(&uts) < 0) {
+        perror("uname() error");
+        return 1;
+    }
+
+    (*out) = strdup(uts.machine);
+
+    return 0;
+}
+
+int sysinfo_name(char * * out) {
+    struct stat sb;
+
+    if ((stat("/etc/os-release", &sb) == 0) && (S_ISREG(sb.st_mode) || S_ISLNK(sb.st_mode))) {
+        FILE * file = fopen("/etc/os-release", "r");
+
+        if (file == NULL) {
+            perror("/etc/os-release");
+            return 1;
+        }
+
+        char line[50];
+
+        while (fgets(line, 50, file) != NULL) {
+            if (regex_matched(line, "^ID=.*")) {
+                line[strlen(line) - 1] = '\0';
+                (*out) = strdup(&line[3]);
+                fclose(file);
+                return 0;
+            }
+        }
+
+        fclose(file);
+    }
+
+    (*out) = NULL;
+
+    return 0;
+}
+
+int sysinfo_vers(char * * out) {
+    struct stat sb;
+
+    if ((stat("/etc/os-release", &sb) == 0) && (S_ISREG(sb.st_mode) || S_ISLNK(sb.st_mode))) {
+        FILE * file = fopen("/etc/os-release", "r");
+
+        if (file == NULL) {
+            perror("/etc/os-release");
+            return 1;
+        }
+
+        char line[50];
+
+        while (fgets(line, 50, file) != NULL) {
+            if (regex_matched(line, "^VERSION_ID=.*")) {
+                size_t n = strlen(line);
+
+                line[n - 1] = '\0';
+
+                if (line[n - 2] == '"') {
+                    line[n - 2] = '\0';
+                }
+
+                if (line[11] == '"') {
+                    (*out) = strdup(&line[12]);
+                    fclose(file);
+                    return 0;
+                } else {
+                    (*out) = strdup(&line[11]);
+                    fclose(file);
+                    return 0;
+                }
+            }
+        }
+
+        fclose(file);
+    }
+
+    (*out) = NULL;
+
+    return 0;
+}
+
+int sysinfo_libc(LIBC * out) {
+    struct utsname uts;
+
+    if (uname(&uts) < 0) {
+        perror("uname() error");
+        return 1;
+    }
+
+    if (strcmp(uts.sysname, "Linux") == 0) {
+        char dynamicLoaderPath[40] = {0};
+        sprintf(dynamicLoaderPath, "/lib/ld-musl-%s.so.1", uts.machine);
+
+        struct stat sb;
+
+        if ((stat(dynamicLoaderPath, &sb) == 0) && (S_ISREG(sb.st_mode) || S_ISLNK(sb.st_mode))) {
+            (*out) = LIBC_MUSL;
+        } else {
+            memset(dynamicLoaderPath, 0, 40);
+
+            if (strcmp(uts.machine, "x86_64") == 0) {
+                strcpy(dynamicLoaderPath, "/lib64/ld-linux-x86-64.so.2");
+            } else {
+                sprintf(dynamicLoaderPath, "/lib64/ld-linux-%s.so.2", uts.machine);
+            }
+
+            if ((stat(dynamicLoaderPath, &sb) == 0) && (S_ISREG(sb.st_mode) || S_ISLNK(sb.st_mode))) {
+                (*out) = LIBC_GLIBC;
+            } else {
+                (*out) = LIBC_UNKNOWN;
+            }
+        }
+    }
+
+    return 0;
+}
+
+int sysinfo_ncpu(size_t * out) {
+    long nprocs = 1;
+
+#if defined (_SC_NPROCESSORS_ONLN)
+    nprocs = sysconf(_SC_NPROCESSORS_ONLN);
+
+    if (nprocs > 0) {
+        (*out) = nprocs;
+        return 0;
+    }
+#endif
+
+#if defined (_SC_NPROCESSORS_CONF)
+    nprocs = sysconf(_SC_NPROCESSORS_CONF);
+
+    if (nprocs > 0) {
+        (*out) = nprocs;
+        return 0;
+    }
+#endif
+
+    (*out) = 1;
+    return 0;
+}
+
+int sysinfo_make(SysInfo * * out) {
+    struct utsname uts;
+
+    if (uname(&uts) < 0) {
+        perror("uname() error");
+        return 1;
+    }
+
+    SysInfo * sysinfo = (SysInfo*)calloc(1, sizeof(SysInfo));
+
+    sysinfo->arch = strdup(uts.machine);
+
+    char * kind = strdup(uts.sysname);
+
+    if ((kind[0] >= 'A') && (kind[0] <= 'Z')) {
+         kind[0] += 32;
+    }
+
+    sysinfo->kind = kind;
+    sysinfo->type = strdup(kind);
+
+    char * name = NULL;
+    sysinfo_name(&name);
+    sysinfo->name = name;
+
+    char * vers = NULL;
+    sysinfo_vers(&vers);
+    sysinfo->vers = vers;
+
+    LIBC libc = LIBC_UNKNOWN;
+    sysinfo_libc(&libc);
+    sysinfo->libc = libc;
+
+    size_t ncpu = 0;
+    sysinfo_ncpu(&ncpu);
+    sysinfo->ncpu = ncpu;
+
+    (*out) = sysinfo;
+
+    return 0;
+}
+
+void sysinfo_dump(SysInfo * sysinfo) {
+    if (sysinfo == NULL) {
+        return;
+    }
+
+    printf("sysinfo.kind: %s\n",  sysinfo->kind == NULL ? "" : sysinfo->kind);
+    printf("sysinfo.type: %s\n",  sysinfo->type == NULL ? "" : sysinfo->type);
+    printf("sysinfo.arch: %s\n",  sysinfo->arch == NULL ? "" : sysinfo->arch);
+    printf("sysinfo.name: %s\n",  sysinfo->name == NULL ? "" : sysinfo->name);
+    printf("sysinfo.vers: %s\n",  sysinfo->vers == NULL ? "" : sysinfo->vers);
+    printf("sysinfo.ncpu: %lu\n", sysinfo->ncpu);
+
+    switch(sysinfo->libc) {
+        case LIBC_GLIBC: printf("sysinfo.libc: glibc\n"); break;
+        case LIBC_MUSL:  printf("sysinfo.libc: musl\n");  break;
+        default:         printf("sysinfo.libc: unknown\n");
+    }
+}
+
+void sysinfo_free(SysInfo * sysinfo) {
+    if (sysinfo == NULL) {
+        return;
+    }
+
+    if (sysinfo->arch != NULL) {
+        free(sysinfo->arch);
+        sysinfo->arch = NULL;
+    }
+
+    if (sysinfo->kind != NULL) {
+        free(sysinfo->kind);
+        sysinfo->kind = NULL;
+    }
+
+    if (sysinfo->type != NULL) {
+        free(sysinfo->type);
+        sysinfo->type = NULL;
+    }
+
+    if (sysinfo->name != NULL) {
+        free(sysinfo->name);
+        sysinfo->name = NULL;
+    }
+
+    if (sysinfo->vers != NULL) {
+        free(sysinfo->vers);
+        sysinfo->vers = NULL;
+    }
+
+    free(sysinfo);
+}

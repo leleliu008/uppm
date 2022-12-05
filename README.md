@@ -381,6 +381,7 @@ all relevant dirs and files are located in `~/.uppm` directory.
 *   **list files of the given installed package in a tree-like format**
         
         uppm tree curl
+        uppm tree curl -L 3
         
 *   **cleanup the unused cached files**
         

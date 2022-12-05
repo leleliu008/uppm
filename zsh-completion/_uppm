@@ -114,23 +114,27 @@ function _uppm() {
                     ;;
                 install)
                     _arguments \
-                        ':package-name:_uppm_available_packages' \
-                        '(--verbose -v)'{--verbose,-v}'[verbose mode. many messages will be output to terminal]' \
-                        '(--quiet -q)'{--quiet,-q}'[silent mode. no any messages will be output to terminal]'
+                        '*:package-name:_uppm_available_packages' \
+                        '-v[verbose mode. many messages will be output to terminal]' \
+                        '-q[silent mode. no any messages will be output to terminal]'
                     ;;
                 reinstall)
                     _arguments \
-                        ':package-name:_uppm_installed_packages' \
+                        '*:package-name:_uppm_installed_packages' \
+                        '-v[verbose mode.  many messages will be output to terminal]' \
+                        '-q[silent mode. no any messages will be output to terminal]'
+                    ;;
+                uninstall)
+                    _arguments \
+                        '*:package-name:_uppm_installed_packages' \
                         '-v[verbose mode.  many messages will be output to terminal]' \
                         '-q[silent mode. no any messages will be output to terminal]'
                     ;;
                 upgrade)
                     _arguments \
-                        '*:package-name:_uppm_outdated_packages'
-                    ;;
-                uninstall)
-                    _arguments \
-                        '*:package-name:_uppm_installed_packages'
+                        '*:package-name:_uppm_outdated_packages' \
+                        '-v[verbose mode.  many messages will be output to terminal]' \
+                        '-q[silent mode. no any messages will be output to terminal]'
                     ;;
                 is-available)
                     _arguments \

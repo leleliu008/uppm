@@ -3,6 +3,7 @@
 #include <dirent.h>
 #include <sys/utsname.h>
 
+#include "core/sysinfo.h"
 #include "core/util.h"
 #include "core/fs.h"
 #include "uppm.h"
@@ -67,14 +68,7 @@ static int uppm_list_dirs(const char * installedDir, size_t installedDirLength, 
     return UPPM_OK;
 }
 
-int uppm_env() {
-    struct utsname uts;
-
-    if (uname(&uts) < 0) {
-        perror("uname() error");
-        return UPPM_ERROR;
-    }
-
+int uppm_env(bool verbose) {
     printf("uppm    : %s\n", UPPM_VERSION);
     //printf("pcre2   : %d.%d\n", PCRE2_MAJOR, PCRE2_MINOR);
     printf("libyaml : %s\n", yaml_get_version_string());
@@ -93,21 +87,14 @@ int uppm_env() {
     printf("jansson : %s\n", JANSSON_VERSION);
     printf("archive : %s\n\n", ARCHIVE_VERSION_ONLY_STRING);
 
+    SysInfo * sysinfo = NULL;
 
-    printf("NATIVE_OS_KIND = %s\n", uts.sysname);
-    printf("NATIVE_OS_NAME = %s\n", uts.nodename);
-    printf("NATIVE_OS_ARCH = %s\n", uts.machine);
-    printf("NATIVE_OS_KERNEL_VERSION = %s\n", uts.release);
-
-    if (strcmp(uts.sysname, "Linux") == 0) {
-        int libcType = get_linux_libc_type2(uts.sysname, uts.machine);
-
-        switch(libcType) {
-            case 1:  printf("NATIVE_OS_LIBC = glibc\n"); break;
-            case 2:  printf("NATIVE_OS_LIBC = musl\n");  break;
-            default: return UPPM_ERROR;
-        }
+    if (sysinfo_make(&sysinfo) != 0) {
+        return UPPM_ERROR;
     }
+
+    sysinfo_dump(sysinfo);
+    sysinfo_free(sysinfo);
 
     printf("\n");
 
@@ -125,6 +112,10 @@ int uppm_env() {
 
     printf("UPPM_HOME    = %s\n", uppmHomeDir);
     printf("UPPM_VERSION = %s\n", UPPM_VERSION);
+
+    if (!verbose) {
+        return UPPM_OK;
+    }
 
     size_t  installedDirLength = uppmHomeDirLength + 11;
     char    installedDir[installedDirLength];

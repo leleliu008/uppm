@@ -5,6 +5,7 @@
 #include <time.h>
 #include <libgen.h>
 #include <sys/stat.h>
+#include <sys/utsname.h>
 
 #include "core/fs.h"
 #include "core/http.h"
@@ -187,16 +188,29 @@ int uppm_install(const char * packageName, bool verbose) {
             return resultCode;
         }
     } else {
+        struct utsname uts;
+
+        if (uname(&uts) < 0) {
+            perror("uname() error");
+            uppm_formula_free(formula);
+            return UPPM_ERROR;
+        }
+
+        size_t  uppmHomeDirLength = strlen(userHomeDir) + 7;
+        char    uppmHomeDir[uppmHomeDirLength];
+        memset (uppmHomeDir, 0, uppmHomeDirLength);
+        sprintf(uppmHomeDir, "%s/.uppm", userHomeDir);
+
         size_t  shellCodeLength = strlen(formula->install) + 512;
         char    shellCode[shellCodeLength];
         memset (shellCode, 0, shellCodeLength);
         sprintf(shellCode,
-                "set -ex\n"
+                "set -ex\n\n"
                 "NATIVE_OS_KIND='%s'\n"
                 "NATIVE_OS_NAME='%s'\n"
-                "NATIVE_OS_ARCH='%s'\n"
+                "NATIVE_OS_ARCH='%s'\n\n"
                 "UPPM_VERSION='%s'\n"
-                "UPPM_HOME='%s'\n"
+                "UPPM_HOME='%s'\n\n"
                 "PKG_SUMMARY='%s'\n"
                 "PKG_WEBPAGE='%s'\n"
                 "PKG_VERSION='%s'\n"
@@ -204,13 +218,13 @@ int uppm_install(const char * packageName, bool verbose) {
                 "PKG_BIN_SHA='%s'\n"
                 "PKG_DEP_PKG='%s'\n"
                 "PKG_BIN_FILEPATH='%s'\n"
-                "PKG_INSTALL_DIR='%s'\n"
+                "PKG_INSTALL_DIR='%s'\n\n"
                 "%s",
-                getenv("NATIVE_OS_KIND"),
-                getenv("NATIVE_OS_NAME"),
-                getenv("NATIVE_OS_ARCH"),
-                getenv("UPPM_VERSION"),
-                getenv("UPPM_HOME"),
+                uts.sysname,
+                uts.nodename,
+                uts.machine,
+                UPPM_VERSION,
+                uppmHomeDir,
                 formula->summary == NULL ? "" : formula->summary,
                 formula->webpage == NULL ? "" : formula->webpage,
                 formula->version == NULL ? "" : formula->version,
