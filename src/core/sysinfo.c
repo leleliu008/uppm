@@ -54,8 +54,12 @@ int sysinfo_kind(char * * out) {
 
     char * kind = strdup(uts.sysname);
 
-    if ((kind[0] >= 'A') && (kind[0] <= 'Z')) {
-         kind[0] += 32;
+    size_t kindLength = strlen(kind);
+
+    for (size_t i = 0; i < kindLength; i++) {
+        if ((kind[i] >= 'A') && (kind[i] <= 'Z')) {
+             kind[i] += 32;
+        }
     }
 
     (*out) = kind;
@@ -309,25 +313,19 @@ int sysinfo_ncpu(size_t * out) {
 }
 
 int sysinfo_make(SysInfo * * out) {
-    struct utsname uts;
-
-    if (uname(&uts) < 0) {
-        perror("uname() error");
-        return -1;
-    }
-
     SysInfo * sysinfo = (SysInfo*)calloc(1, sizeof(SysInfo));
 
-    sysinfo->arch = strdup(uts.machine);
+    char * arch = NULL;
+    sysinfo_arch(&arch);
+    sysinfo->arch = arch;
 
-    char * kind = strdup(uts.sysname);
-
-    if ((kind[0] >= 'A') && (kind[0] <= 'Z')) {
-         kind[0] += 32;
-    }
-
+    char * kind = NULL;
+    sysinfo_kind(&kind);
     sysinfo->kind = kind;
-    sysinfo->type = strdup(kind);
+
+    char * type = NULL;
+    sysinfo_type(&type);
+    sysinfo->type = type;
 
     char * name = NULL;
     sysinfo_name(&name);

@@ -132,7 +132,7 @@ int uppm_info(const char * packageName, const char * key) {
                 printf("pkgname: %s%s%s\n", COLOR_RED,   packageName, COLOR_OFF);
             }
         } else {
-            printf("pkgname: %s%s%s [ %s ]\n", COLOR_GREEN, packageName, COLOR_OFF, uppm_is_package_installed(packageName) == UPPM_OK ? "Installed" : "Not Installed");
+            printf("pkgname: %s\n", packageName);
         }
 
         char buff[1024];
