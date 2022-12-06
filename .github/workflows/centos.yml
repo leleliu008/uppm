@@ -13,24 +13,30 @@ jobs:
     container: centos:8
 
     steps:
+      - run:  dnf -y update
+      - run:  dnf -y install curl gcc
+
       - uses: actions/checkout@main
 
-      - run:  dnf -y update
-      - run:  dnf -y --enablerepo=powertools install cmake ninja-build gcc pkg-config libcurl-devel libgit2-devel libarchive-devel libyaml-devel jansson-devel sqlite-devel
+      - name: install ppkg
+        run: |
+          curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/bin/ppkg
+          chmod a+x ppkg
+          ./ppkg setup
 
-      - run:  cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_VERBOSE_MAKEFILE=ON
-      - run:  cmake --build   build.d
-      - run:  cmake --install build.d
+      - run:  ./ppkg update
+      - run:  ./ppkg install uppm
+      - run:  ./ppkg tree    uppm
 
-      - run:  ./output/bin/uppm --help
-      - run:  ./output/bin/uppm --version
-      - run:  ./output/bin/uppm env
-      - run:  ./output/bin/uppm update
-      - run:  ./output/bin/uppm search    zip
-      - run:  ./output/bin/uppm info      unzip
-      - run:  ./output/bin/uppm install   unzip
-      - run:  ./output/bin/uppm tree      unzip
-      - run:  ./output/bin/uppm uninstall unzip
+      - run:  /opt/ppkg/installed/uppm/bin/uppm --help
+      - run:  /opt/ppkg/installed/uppm/bin/uppm --version
+      - run:  /opt/ppkg/installed/uppm/bin/uppm env
+      - run:  /opt/ppkg/installed/uppm/bin/uppm update
+      - run:  /opt/ppkg/installed/uppm/bin/uppm search    zip
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info      unzip
+      - run:  /opt/ppkg/installed/uppm/bin/uppm install   unzip
+      - run:  /opt/ppkg/installed/uppm/bin/uppm tree      unzip
+      - run:  /opt/ppkg/installed/uppm/bin/uppm uninstall unzip
 
 
   centos7:
@@ -39,25 +45,30 @@ jobs:
     container: centos:7
 
     steps:
+      - run:  yum -y update
+      - run:  yum -y install curl gcc
+
       - uses: actions/checkout@main
 
-      - run:  yum -y update
-      - run:  yum -y install cmake ninja-build gcc pkg-config libcurl-devel libgit2-devel libarchive-devel libyaml-devel jansson-devel sqlite-devel
+      - name: install ppkg
+        run: |
+          curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/bin/ppkg
+          chmod a+x ppkg
+          ./ppkg setup
 
-      - run:  mkdir build.d
-      - run:  cmake -S.     -Hbuild.d -G Ninja -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_VERBOSE_MAKEFILE=ON
-      - run:  cmake --build   build.d
-      - run:  cmake --install build.d
+      - run:  ./ppkg update
+      - run:  ./ppkg install uppm
+      - run:  ./ppkg tree    uppm
 
-      - run:  ./output/bin/uppm --help
-      - run:  ./output/bin/uppm --version
-      - run:  ./output/bin/uppm env
-      - run:  ./output/bin/uppm update
-      - run:  ./output/bin/uppm search    zip
-      - run:  ./output/bin/uppm info      unzip
-      - run:  ./output/bin/uppm install   unzip
-      - run:  ./output/bin/uppm tree      unzip
-      - run:  ./output/bin/uppm uninstall unzip
+      - run:  /opt/ppkg/installed/uppm/bin/uppm --help
+      - run:  /opt/ppkg/installed/uppm/bin/uppm --version
+      - run:  /opt/ppkg/installed/uppm/bin/uppm env
+      - run:  /opt/ppkg/installed/uppm/bin/uppm update
+      - run:  /opt/ppkg/installed/uppm/bin/uppm search    zip
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info      unzip
+      - run:  /opt/ppkg/installed/uppm/bin/uppm install   unzip
+      - run:  /opt/ppkg/installed/uppm/bin/uppm tree      unzip
+      - run:  /opt/ppkg/installed/uppm/bin/uppm uninstall unzip
 
   centos_6_10:
     runs-on: ubuntu-latest
@@ -78,6 +89,8 @@ jobs:
           curl -LO https://github.com/leleliu008/uppm-package-repository-linux-x86_64/releases/download/2022.11.10/git-2.37.3-linux-x86_64.tar.xz
           install -d /opt/ppkg/installed/git
           tar xf git-2.37.3-linux-x86_64.tar.xz -C /opt/ppkg/installed/git --strip-components=1
+
+      - run: /opt/ppkg/installed/git/bin/git config --global --add safe.directory /__w/uppm/uppm
 
       - run: /opt/ppkg/installed/git/bin/git --version
 

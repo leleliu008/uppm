@@ -18,23 +18,29 @@ jobs:
     container: linuxmintd/mint${{ matrix.tag }}-amd64
 
     steps:
+      - run:  id
+      - run:  sudo apt -y update
+      - run:  sudo apt -y install curl gcc
+
       - uses: actions/checkout@main
 
-      - run:  id
-      - run:  sudo add-apt-repository ppa:cran/libgit2
-      - run:  sudo apt -y update
-      - run:  sudo apt -y install cmake ninja-build gcc pkg-config libcurl4-openssl-dev libgit2 libarchive-dev libyaml-dev libjansson-dev libsqlite3-dev
+      - name: install ppkg
+        run: |
+          curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/bin/ppkg
+          chmod a+x ppkg
+          ./ppkg setup
 
-      - run:  cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_VERBOSE_MAKEFILE=ON
-      - run:  cmake --build   build.d
-      - run:  cmake --install build.d
+      - run:  ./ppkg update
+      - run:  ./ppkg install uppm
+      - run:  ./ppkg tree    uppm
 
-      - run:  ./output/bin/uppm --help
-      - run:  ./output/bin/uppm --version
-      - run:  ./output/bin/uppm env
-      - run:  ./output/bin/uppm update
-      - run:  ./output/bin/uppm search    zip
-      - run:  ./output/bin/uppm info      unzip
-      - run:  ./output/bin/uppm install   unzip
-      - run:  ./output/bin/uppm tree      unzip
-      - run:  ./output/bin/uppm uninstall unzip
+      - run:  /opt/ppkg/installed/uppm/bin/uppm --help
+      - run:  /opt/ppkg/installed/uppm/bin/uppm --version
+      - run:  /opt/ppkg/installed/uppm/bin/uppm env
+      - run:  /opt/ppkg/installed/uppm/bin/uppm update
+      - run:  /opt/ppkg/installed/uppm/bin/uppm search    zip
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info      unzip
+      - run:  /opt/ppkg/installed/uppm/bin/uppm install   unzip
+      - run:  /opt/ppkg/installed/uppm/bin/uppm tree      unzip
+      - run:  /opt/ppkg/installed/uppm/bin/uppm uninstall unzip
+
