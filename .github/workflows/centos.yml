@@ -13,14 +13,10 @@ jobs:
     container: centos:8
 
     steps:
-      - run: |
-          sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-Linux-*
-          sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-Linux-*
-
       - uses: actions/checkout@main
 
-      - run:  dnf -y update
-      - run:  dnf -y install cmake ninja-build gcc pkg-config libcurl-devel libgit2-devel libarchive-devel libyaml-devel jansson-devel sqlite-devel
+      - run:  dnf -y --enablerepo=powertools update
+      - run:  dnf -y --enablerepo=powertools install cmake ninja-build gcc pkg-config libcurl-devel libgit2-devel libarchive-devel libyaml-devel jansson-devel sqlite-devel
 
       - run:  cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_VERBOSE_MAKEFILE=ON
       - run:  cmake --build   build.d
@@ -48,6 +44,7 @@ jobs:
       - run:  yum -y update
       - run:  yum -y install cmake ninja-build gcc pkg-config libcurl-devel libgit2-devel libarchive-devel libyaml-devel jansson-devel sqlite-devel
 
+      - run:  mkdir build.d
       - run:  cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_VERBOSE_MAKEFILE=ON
       - run:  cmake --build   build.d
       - run:  cmake --install build.d
@@ -68,15 +65,7 @@ jobs:
     container: centos:6.10
 
     steps:
-      - uses: actions/cache@v2
-        with:
-          path: /opt/ppkg/installed/git
-          id:   restore-cache
-          key: git-centos-6.10-x86_64
-          restore-keys: git-centos-6.10-x86_64
-
-      - if: ${{ steps.restore-cache.outputs.cache-hit != 'true' }}
-        run: |
+      - run: |
           sed -i 's|#baseurl=|baseurl=|g'       /etc/yum.repos.d/CentOS-Base.repo
           sed -i 's|mirrorlist=|#mirrorlist=|g' /etc/yum.repos.d/CentOS-Base.repo
           sed -i 's|mirror|vault|g'             /etc/yum.repos.d/CentOS-Base.repo
@@ -85,8 +74,7 @@ jobs:
           yum -y update
           yum -y install curl xz
 
-      - if: ${{ steps.restore-cache.outputs.cache-hit != 'true' }}
-        run: |
+      - run: |
           curl -LO https://github.com/leleliu008/uppm-package-repository-linux-x86_64/releases/download/2022.10.23/git-2.37.3-linux-x86_64.tar.xz
           install -d /opt/ppkg/installed/git
           tar xf git-2.37.3-linux-x86_64.tar.xz -C /opt/ppkg/installed/git --strip-components=1
@@ -103,6 +91,7 @@ jobs:
       - run: yum -y update
       - run: yum -y install cmake ninja-build gcc pkg-config libcurl-devel libgit2-devel libarchive-devel libyaml-devel jansson-devel sqlite-devel
 
+      - run: mkdir build.d
       - run: cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_VERBOSE_MAKEFILE=ON
       - run: cmake --build   build.d
       - run: cmake --install build.d

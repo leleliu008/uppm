@@ -11,37 +11,37 @@
 
 int sysinfo_kind(char * * out) {
 #if defined (_WIN32)
-    (*out) = (char*)"windows";
+    (*out) = strdup("windows");
     return 0;
 #endif
 
 #if defined (__APPLE__)
-    (*out) = (char*)"darwin";
+    (*out) = strdup("darwin");
     return 0;
 #endif
 
 #if defined (__FreeBSD__)
-    (*out) = (char*)"freebsd";
+    (*out) = strdup("freebsd");
     return 0;
 #endif
 
 #if defined (__OpenBSD__)
-    (*out) = (char*)"openbsd";
+    (*out) = strdup("openbsd");
     return 0;
 #endif
 
 #if defined (__NetBSD__)
-    (*out) = (char*)"netbsd";
+    (*out) = strdup("netbsd");
     return 0;
 #endif
 
 #if defined (__ANDROID__)
-    (*out) = (char*)"android";
+    (*out) = strdup("android");
     return 0;
 #endif
 
 #if defined (__linux__)
-    (*out) = (char*)"linux";
+    (*out) = strdup("linux");
     return 0;
 #endif
 
@@ -49,7 +49,7 @@ int sysinfo_kind(char * * out) {
 
     if (uname(&uts) < 0) {
         perror("uname() error");
-        return 1;
+        return -1;
     }
 
     char * kind = strdup(uts.sysname);
@@ -65,37 +65,37 @@ int sysinfo_kind(char * * out) {
 
 int sysinfo_type(char * * out) {
 #if defined (_WIN32)
-    (*out) = (char*)"windows";
+    (*out) = strdup("windows");
     return 0;
 #endif
 
 #if defined (__APPLE__)
-    (*out) = (char*)"macos";
+    (*out) = strdup("macos");
     return 0;
 #endif
 
 #if defined (__FreeBSD__)
-    (*out) = (char*)"freebsd";
+    (*out) = strdup("freebsd");
     return 0;
 #endif
 
 #if defined (__OpenBSD__)
-    (*out) = (char*)"openbsd";
+    (*out) = strdup("openbsd");
     return 0;
 #endif
 
 #if defined (__NetBSD__)
-    (*out) = (char*)"netbsd";
+    (*out) = strdup("netbsd");
     return 0;
 #endif
 
 #if defined (__ANDROID__)
-    (*out) = (char*)"android";
+    (*out) = strdup("android");
     return 0;
 #endif
 
 #if defined (__linux__)
-    (*out) = (char*)"linux";
+    (*out) = strdup("linux");
     return 0;
 #endif
 
@@ -103,7 +103,7 @@ int sysinfo_type(char * * out) {
 
     if (uname(&uts) < 0) {
         perror("uname() error");
-        return 1;
+        return -1;
     }
 
     char * kind = strdup(uts.sysname);
@@ -122,7 +122,7 @@ int sysinfo_arch(char * * out) {
 
     if (uname(&uts) < 0) {
         perror("uname() error");
-        return 1;
+        return -1;
     }
 
     (*out) = strdup(uts.machine);
@@ -132,32 +132,32 @@ int sysinfo_arch(char * * out) {
 
 int sysinfo_name(char * * out) {
 #if defined (_WIN32)
-    (*out) = (char*)"windows";
+    (*out) = strdup("windows");
     return 0;
 #endif
 
 #if defined (__APPLE__)
-    (*out) = (char*)"macos";
+    (*out) = strdup("macos");
     return 0;
 #endif
 
 #if defined (__FreeBSD__)
-    (*out) = (char*)"freebsd";
+    (*out) = strdup("freebsd");
     return 0;
 #endif
 
 #if defined (__OpenBSD__)
-    (*out) = (char*)"openbsd";
+    (*out) = strdup("openbsd");
     return 0;
 #endif
 
 #if defined (__NetBSD__)
-    (*out) = (char*)"netbsd";
+    (*out) = strdup("netbsd");
     return 0;
 #endif
 
 #if defined (__ANDROID__)
-    (*out) = (char*)"android";
+    (*out) = strdup("android");
     return 0;
 #endif
 
@@ -168,7 +168,7 @@ int sysinfo_name(char * * out) {
 
         if (file == NULL) {
             perror("/etc/os-release");
-            return 1;
+            return -1;
         }
 
         char line[50];
@@ -199,7 +199,7 @@ int sysinfo_name(char * * out) {
         fclose(file);
     }
 
-    (*out) = (char*)"unknown";
+    (*out) = strdup("unknown");
 
     return 0;
 }
@@ -212,7 +212,7 @@ int sysinfo_vers(char * * out) {
 
         if (file == NULL) {
             perror("/etc/os-release");
-            return 1;
+            return -1;
         }
 
         char line[50];
@@ -242,7 +242,7 @@ int sysinfo_vers(char * * out) {
         fclose(file);
     }
 
-    (*out) = (char*)"rolling";
+    (*out) = strdup("rolling");
 
     return 0;
 }
@@ -252,7 +252,7 @@ int sysinfo_libc(LIBC * out) {
 
     if (uname(&uts) < 0) {
         perror("uname() error");
-        return 1;
+        return -1;
     }
 
     if (strcmp(uts.sysname, "Linux") == 0) {
@@ -313,7 +313,7 @@ int sysinfo_make(SysInfo * * out) {
 
     if (uname(&uts) < 0) {
         perror("uname() error");
-        return 1;
+        return -1;
     }
 
     SysInfo * sysinfo = (SysInfo*)calloc(1, sizeof(SysInfo));

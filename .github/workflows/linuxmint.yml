@@ -20,8 +20,10 @@ jobs:
     steps:
       - uses: actions/checkout@main
 
+      - run:  id
+      - run:  sudo add-apt-repository ppa:cran/libgit2
       - run:  sudo apt -y update
-      - run:  sudo apt -y install cmake ninja-build gcc pkg-config libcurl4-openssl-dev libgit2-dev libarchive-dev libyaml-dev libjansson-dev libsqlite3-dev
+      - run:  sudo apt -y install cmake ninja-build gcc pkg-config libcurl4-openssl-dev libgit2 libarchive-dev libyaml-dev libjansson-dev libsqlite3-dev
 
       - run:  cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_VERBOSE_MAKEFILE=ON
       - run:  cmake --build   build.d
