@@ -221,7 +221,7 @@ int sysinfo_vers(char * * out) {
 
     return 0;
 #elif defined (__APPLE__)
-    const char * filepath = "/System/Library/CoreService/SystemVersion.plist";
+    const char * filepath = "/System/Library/CoreServices/SystemVersion.plist";
     struct stat sb;
     if ((stat(filepath, &sb) == 0) && (S_ISREG(sb.st_mode) || S_ISLNK(sb.st_mode))) {
         FILE * file = fopen(filepath, "r");
@@ -237,6 +237,8 @@ int sysinfo_vers(char * * out) {
             if (regex_matched(line, "ProductVersion")) {
                 if (fgets(line, 512, file) != NULL) {
                     (*out) = regex_extract(line, "[1-9][0-9.]+[0-9]");
+                    fclose(file);
+                    return 0;
                 }
 
                 break;
