@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@main
 
-      - run:  dnf -y --enablerepo=powertools update
+      - run:  dnf -y update
       - run:  dnf -y --enablerepo=powertools install cmake ninja-build gcc pkg-config libcurl-devel libgit2-devel libarchive-devel libyaml-devel jansson-devel sqlite-devel
 
       - run:  cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_VERBOSE_MAKEFILE=ON
@@ -78,15 +78,14 @@ jobs:
           curl -LO https://github.com/leleliu008/uppm-package-repository-linux-x86_64/releases/download/2022.11.10/git-2.37.3-linux-x86_64.tar.xz
           install -d /opt/ppkg/installed/git
           tar xf git-2.37.3-linux-x86_64.tar.xz -C /opt/ppkg/installed/git --strip-components=1
-          printf '%s\n' /opt/ppkg/installed/git/bin/git >> "$GITHUB_PATH"
 
-      - run: git --version
+      - run: /opt/ppkg/installed/git/bin/git --version
 
-      - run: git init
-      - run: git remote add origin https://github.com/${{github.repository}}
-      - run: git config --global gc.auto 0
-      - run: git fetch --no-tags --prune --depth=1 origin +${{github.sha}}:refs/remotes/origin/master
-      - run: git checkout --force -B master refs/remotes/origin/master
+      - run: /opt/ppkg/installed/git/bin/git init
+      - run: /opt/ppkg/installed/git/bin/git remote add origin https://github.com/${{github.repository}}
+      - run: /opt/ppkg/installed/git/bin/git config --global gc.auto 0
+      - run: /opt/ppkg/installed/git/bin/git fetch --no-tags --prune --depth=1 origin +${{github.sha}}:refs/remotes/origin/master
+      - run: /opt/ppkg/installed/git/bin/git checkout --force -B master refs/remotes/origin/master
 
       - run: yum -y update
       - run: yum -y install cmake ninja-build gcc pkg-config libcurl-devel libgit2-devel libarchive-devel libyaml-devel jansson-devel sqlite-devel

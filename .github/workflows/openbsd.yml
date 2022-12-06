@@ -7,16 +7,21 @@ on:
     branches: [ master ]
 
 jobs:
-  test:
+  openbsd:
     runs-on: macos-12
     
+    strategy:
+      fail-fast: false
+      matrix:
+        version: [6, 7]
+
     steps:
       - uses: actions/checkout@v3
 
       - uses: leleliu008/github-actions-vagrant@v1
         with:
           mem: 2048
-          box: generic/openbsd6
+          box: generic/openbsd${{ matrix.version }}
           run: |
             run sudo pkg_add cmake ninja llvm pkgconf curl libgit2 libarchive libyaml jansson sqlite
 
