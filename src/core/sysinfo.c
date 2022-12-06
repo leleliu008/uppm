@@ -220,6 +220,35 @@ int sysinfo_vers(char * * out) {
     (*out) = strdup(uts.release);
 
     return 0;
+#elif defined (__APPLE__)
+    const char * filepath = "/System/Library/CoreService/SystemVersion.plist";
+    struct stat sb;
+    if ((stat(filepath, &sb) == 0) && (S_ISREG(sb.st_mode) || S_ISLNK(sb.st_mode))) {
+        FILE * file = fopen(filepath, "r");
+
+        if (file == NULL) {
+            perror(filepath);
+            return -1;
+        }
+
+        char line[512];
+
+        while (fgets(line, 512, file) != NULL) {
+            if (regex_matched(line, "ProductVersion")) {
+                if (fgets(line, 512, file) != NULL) {
+                    (*out) = regex_extract(line, "[1-9][0-9.]+[0-9]");
+                }
+
+                break;
+            }
+        }
+
+        fclose(file);
+    }
+
+    (*out) = NULL;
+
+    return 0;
 #else
     struct stat sb;
 
