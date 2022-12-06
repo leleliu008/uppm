@@ -209,6 +209,18 @@ int sysinfo_name(char * * out) {
 }
 
 int sysinfo_vers(char * * out) {
+#if defined (__NetBSD__) || defined (__OpenBSD__)
+    struct utsname uts;
+
+    if (uname(&uts) < 0) {
+        perror("uname() error");
+        return -1;
+    }
+
+    (*out) = strdup(uts.release);
+
+    return 0;
+#else
     struct stat sb;
 
     if ((stat("/etc/os-release", &sb) == 0) && (S_ISREG(sb.st_mode) || S_ISLNK(sb.st_mode))) {
@@ -249,6 +261,7 @@ int sysinfo_vers(char * * out) {
     (*out) = strdup("rolling");
 
     return 0;
+#endif
 }
 
 int sysinfo_libc(LIBC * out) {
@@ -353,12 +366,12 @@ void sysinfo_dump(SysInfo * sysinfo) {
         return;
     }
 
+    printf("sysinfo.ncpu: %lu\n", sysinfo->ncpu);
+    printf("sysinfo.arch: %s\n",  sysinfo->arch == NULL ? "" : sysinfo->arch);
     printf("sysinfo.kind: %s\n",  sysinfo->kind == NULL ? "" : sysinfo->kind);
     printf("sysinfo.type: %s\n",  sysinfo->type == NULL ? "" : sysinfo->type);
-    printf("sysinfo.arch: %s\n",  sysinfo->arch == NULL ? "" : sysinfo->arch);
     printf("sysinfo.name: %s\n",  sysinfo->name == NULL ? "" : sysinfo->name);
     printf("sysinfo.vers: %s\n",  sysinfo->vers == NULL ? "" : sysinfo->vers);
-    printf("sysinfo.ncpu: %lu\n", sysinfo->ncpu);
 
     switch(sysinfo->libc) {
         case LIBC_GLIBC: printf("sysinfo.libc: glibc\n"); break;
