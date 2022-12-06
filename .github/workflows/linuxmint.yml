@@ -20,7 +20,7 @@ jobs:
     steps:
       - run:  id
       - run:  sudo apt -y update
-      - run:  sudo apt -y install curl gcc
+      - run:  sudo apt -y install curl xz-utils g++
 
       - uses: actions/checkout@main
 

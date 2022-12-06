@@ -14,7 +14,7 @@ jobs:
 
     steps:
       - run:  dnf -y update
-      - run:  dnf -y install curl gcc
+      - run:  dnf -y install curl xz g++
 
       - uses: actions/checkout@main
 
@@ -46,7 +46,7 @@ jobs:
 
     steps:
       - run:  yum -y update
-      - run:  yum -y install curl gcc
+      - run:  yum -y install curl xz g++
 
       - uses: actions/checkout@main
 
@@ -83,37 +83,25 @@ jobs:
           sed -i 's|http:|https:|g'             /etc/yum.repos.d/CentOS-Base.repo
 
           yum -y update
-          yum -y install curl xz
+          yum -y install curl xz g++
 
-      - run: |
-          curl -LO https://github.com/leleliu008/uppm-package-repository-linux-x86_64/releases/download/2022.11.10/git-2.37.3-linux-x86_64.tar.xz
-          install -d /opt/ppkg/installed/git
-          tar xf git-2.37.3-linux-x86_64.tar.xz -C /opt/ppkg/installed/git --strip-components=1
+      - name: install ppkg
+        run: |
+          curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/bin/ppkg
+          chmod a+x ppkg
+          ./ppkg setup
 
-      - run: /opt/ppkg/installed/git/bin/git config --global --add safe.directory /__w/uppm/uppm
+      - run:  ./ppkg update
+      - run:  ./ppkg install uppm
+      - run:  ./ppkg tree    uppm
 
-      - run: /opt/ppkg/installed/git/bin/git --version
+      - run:  /opt/ppkg/installed/uppm/bin/uppm --help
+      - run:  /opt/ppkg/installed/uppm/bin/uppm --version
+      - run:  /opt/ppkg/installed/uppm/bin/uppm env
+      - run:  /opt/ppkg/installed/uppm/bin/uppm update
+      - run:  /opt/ppkg/installed/uppm/bin/uppm search    zip
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info      unzip
+      - run:  /opt/ppkg/installed/uppm/bin/uppm install   unzip
+      - run:  /opt/ppkg/installed/uppm/bin/uppm tree      unzip
+      - run:  /opt/ppkg/installed/uppm/bin/uppm uninstall unzip
 
-      - run: /opt/ppkg/installed/git/bin/git init
-      - run: /opt/ppkg/installed/git/bin/git remote add origin https://github.com/${{github.repository}}
-      - run: /opt/ppkg/installed/git/bin/git config --global gc.auto 0
-      - run: /opt/ppkg/installed/git/bin/git fetch --no-tags --prune --depth=1 origin +${{github.sha}}:refs/remotes/origin/master
-      - run: /opt/ppkg/installed/git/bin/git checkout --force -B master refs/remotes/origin/master
-
-      - run: yum -y update
-      - run: yum -y install cmake ninja-build gcc pkg-config libcurl-devel libgit2-devel libarchive-devel libyaml-devel jansson-devel sqlite-devel
-
-      - run: mkdir build.d
-      - run: cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_VERBOSE_MAKEFILE=ON
-      - run: cmake --build   build.d
-      - run: cmake --install build.d
-
-      - run: ./output/bin/uppm --help
-      - run: ./output/bin/uppm --version
-      - run: ./output/bin/uppm env
-      - run: ./output/bin/uppm update
-      - run: ./output/bin/uppm search    zip
-      - run: ./output/bin/uppm info      unzip
-      - run: ./output/bin/uppm install   unzip
-      - run: ./output/bin/uppm tree      unzip
-      - run: ./output/bin/uppm uninstall unzip
