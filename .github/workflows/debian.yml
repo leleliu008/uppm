@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        tag: ['8.11', '9.13', '10.7', '11.5']
+        tag: ['9.13', '10.7', '11.5']
 
     container: debian:${{ matrix.tag }}
 
@@ -37,7 +37,9 @@ jobs:
       - run:  /opt/ppkg/installed/uppm/bin/uppm --help
       - run:  /opt/ppkg/installed/uppm/bin/uppm --version
       - run:  /opt/ppkg/installed/uppm/bin/uppm env
-      - run:  /opt/ppkg/installed/uppm/bin/uppm update
+      - run: |
+          export SSL_CERT_FILE=/opt/ppkg/core/etc/ssl/certs/cacert.pem
+          /opt/ppkg/installed/uppm/bin/uppm update
       - run:  /opt/ppkg/installed/uppm/bin/uppm search    zip
       - run:  /opt/ppkg/installed/uppm/bin/uppm info      unzip
       - run:  /opt/ppkg/installed/uppm/bin/uppm install   unzip

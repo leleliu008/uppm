@@ -13,8 +13,14 @@ jobs:
     container: centos:8
 
     steps:
-      - run:  dnf -y update
-      - run:  dnf -y install curl xz g++
+      - run: |
+          sed -i 's|#baseurl=|baseurl=|g'       /etc/yum.repos.d/CentOS-Base.repo
+          sed -i 's|mirrorlist=|#mirrorlist=|g' /etc/yum.repos.d/CentOS-Base.repo
+          sed -i 's|mirror|vault|g'             /etc/yum.repos.d/CentOS-Base.repo
+          sed -i 's|http:|https:|g'             /etc/yum.repos.d/CentOS-Base.repo
+
+          dnf -y update
+          dnf -y install curl xz gcc-c++
 
       - uses: actions/checkout@main
 
@@ -46,7 +52,7 @@ jobs:
 
     steps:
       - run:  yum -y update
-      - run:  yum -y install curl xz g++
+      - run:  yum -y install curl xz gcc-c++
 
       - uses: actions/checkout@main
 
@@ -83,7 +89,7 @@ jobs:
           sed -i 's|http:|https:|g'             /etc/yum.repos.d/CentOS-Base.repo
 
           yum -y update
-          yum -y install curl xz g++
+          yum -y install curl xz gcc-c++
 
       - name: install ppkg
         run: |
