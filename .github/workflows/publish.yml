@@ -1,0 +1,51 @@
+name: publish
+
+on:
+  workflow_dispatch
+
+jobs:
+  macos:
+    runs-on: macos-latest
+
+    env:
+      ACLOCAL_PATH: /usr/local/share/aclocal
+      MACOSX_DEPLOYMENT_TARGET: 10.15
+
+    steps:
+      - run: curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/bin/ppkg
+      - run: chmod a+x ppkg
+      - run: ./ppkg setup --use-system-package-manager
+      - run: ./ppkg update
+      - run: ./ppkg install uppm --link-type=static-prefered --install-lib=static
+      - run: ./ppkg pack    uppm
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: uppm-macos-tar-xz
+          path: /opt/ppkg/cache.d/bin/*.tar.xz
+
+  linux:
+    needs: macos
+    runs-on: ubuntu-latest
+
+    container: alpine:3.16
+
+    env:
+      ACLOCAL_PATH: /usr/share/aclocal
+      RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+
+    steps:
+      - run: wget https://raw.githubusercontent.com/leleliu008/ppkg/master/bin/ppkg
+      - run: chmod a+x ppkg
+      - run: ./ppkg setup --use-system-package-manager
+      - run: ./ppkg update
+      - run: ./ppkg install uppm gh --link-type=static-only --install-lib=static
+      - run: ./ppkg pack    uppm
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: uppm-macos-tar-xz
+
+      - run: printf '%s\n' "$RELEASE_TOKEN" | /opt/ppkg/installed/gh/bin/gh auth login --with-token
+
+      - run: /opt/ppkg/installed/gh/bin/gh release create $(./ppkg info uppm version) /opt/ppkg/cache.d/bin/*
