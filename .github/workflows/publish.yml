@@ -40,6 +40,8 @@ jobs:
       - run: apk update
       - run: apk add git
 
+      - uses: actions/checkout@main
+
       - run: wget https://raw.githubusercontent.com/leleliu008/ppkg/master/bin/ppkg
       - run: chmod a+x ppkg
       - run: ./ppkg setup --use-system-package-manager
@@ -50,6 +52,7 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: uppm-macos-tar-xz
+          path: /opt/ppkg/cache.d/bin/
 
       - run: ls
       - run: ls /opt/ppkg/cache.d/bin
