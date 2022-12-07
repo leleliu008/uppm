@@ -6,11 +6,13 @@
 #include "uppm.h"
 
 int uppm_upgrade_self(bool verbose) {
-    const char * url = "https://raw.githubusercontent.com/leleliu008/uppm/master/zsh-completion/_uppm";
-
     char * userHomeDir = getenv("HOME");
 
-    if (userHomeDir == NULL || strcmp(userHomeDir, "") == 0) {
+    if (userHomeDir == NULL) {
+        return UPPM_ENV_HOME_NOT_SET;
+    }
+
+    if (strcmp(userHomeDir, "") == 0) {
         return UPPM_ENV_HOME_NOT_SET;
     }
 
@@ -28,12 +30,22 @@ int uppm_upgrade_self(bool verbose) {
         }
     }
 
-    size_t  uppmUpgradeTarballFilePathLength = uppmHomeDirLength + 2;
-    char    uppmUpgradeTarballFilePath[uppmUpgradeTarballFilePathLength];
-    memset (uppmUpgradeTarballFilePath, 0, uppmUpgradeTarballFilePathLength);
-    sprintf(uppmUpgradeTarballFilePath, "%s/uppm", uppmHomeDir);
+    const char * url = "https://raw.githubusercontent.com/leleliu008/uppm/master/zsh-completion/_uppm";
 
-    if (http_fetch_to_file(url, uppmUpgradeTarballFilePath, verbose, verbose) != 0) {
+    size_t  urlLength = strlen(url);
+    size_t  urlCopyLength = urlLength + 1;
+    char    urlCopy[urlCopyLength];
+    memset (urlCopy, 0, urlCopyLength);
+    strncpy(urlCopy, url, urlLength);
+
+    const char * filename = basename(urlCopy);
+
+    size_t  filepathLength = uppmHomeDirLength + 2;
+    char    filepath[filepathLength];
+    memset (filepath, 0, filepathLength);
+    sprintf(filepath, "%s/%s", uppmHomeDir, filename);
+
+    if (http_fetch_to_file(url, filepath, verbose, verbose) != 0) {
         return UPPM_NETWORK_ERROR;
     }
 

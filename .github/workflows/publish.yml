@@ -12,12 +12,22 @@ jobs:
       MACOSX_DEPLOYMENT_TARGET: 10.15
 
     steps:
+      - uses: actions/checkout@main
+
       - run: brew uninstall go@1.17
 
       - run: wget https://raw.githubusercontent.com/leleliu008/ppkg/master/bin/ppkg
       - run: chmod a+x ppkg
       - run: ./ppkg setup --use-system-package-manager
       - run: ./ppkg update
+
+      - run: |
+        V=$(sed -n '/set(PROJECT_VERSION /p' CMakeLists.txt | sed 's|set(PROJECT_VERSION[[:space:]]*\(.*\))|\1|')
+        cat >> /opt/ppkg/repos.d/offical-core/formula/uppm.yml <<EOF
+        src-url: dir://$PWD
+        version: $V
+        EOF
+
       - run: ./ppkg install uppm --link-type=static-prefered --install-lib=static
       - run: ./ppkg pack    uppm
 
@@ -46,6 +56,14 @@ jobs:
       - run: chmod a+x ppkg
       - run: ./ppkg setup --use-system-package-manager
       - run: ./ppkg update
+
+      - run: |
+        V=$(sed -n '/set(PROJECT_VERSION /p' CMakeLists.txt | sed 's|set(PROJECT_VERSION[[:space:]]*\(.*\))|\1|')
+        cat >> /opt/ppkg/repos.d/offical-core/formula/uppm.yml <<EOF
+        src-url: dir://$PWD
+        version: $V
+        EOF
+
       - run: ./ppkg install uppm gh --link-type=static-only --install-lib=static
       - run: ./ppkg pack    uppm
 
