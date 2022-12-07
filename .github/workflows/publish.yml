@@ -12,7 +12,9 @@ jobs:
       MACOSX_DEPLOYMENT_TARGET: 10.15
 
     steps:
-      - run: curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/bin/ppkg
+      - run: brew uninstall go@1.17
+
+      - run: wget https://raw.githubusercontent.com/leleliu008/ppkg/master/bin/ppkg
       - run: chmod a+x ppkg
       - run: ./ppkg setup --use-system-package-manager
       - run: ./ppkg update
