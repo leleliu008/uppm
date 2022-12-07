@@ -37,6 +37,9 @@ jobs:
       RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN }}
 
     steps:
+      - run: apk update
+      - run: apk add git
+
       - run: wget https://raw.githubusercontent.com/leleliu008/ppkg/master/bin/ppkg
       - run: chmod a+x ppkg
       - run: ./ppkg setup --use-system-package-manager
@@ -47,6 +50,9 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: uppm-macos-tar-xz
+
+      - run: ls
+      - run: ls /opt/ppkg/cache.d/bin
 
       - run: printf '%s\n' "$RELEASE_TOKEN" | /opt/ppkg/installed/gh/bin/gh auth login --with-token
 
