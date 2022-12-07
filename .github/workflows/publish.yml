@@ -59,4 +59,6 @@ jobs:
 
       - run: printf '%s\n' "$RELEASE_TOKEN" | /opt/ppkg/installed/gh/bin/gh auth login --with-token
 
+      - run: git config --global --add safe.directory /__w/uppm/uppm
+
       - run: /opt/ppkg/installed/gh/bin/gh release create $(./ppkg info uppm version) /opt/ppkg/cache.d/bin/*
