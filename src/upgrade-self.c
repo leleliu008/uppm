@@ -1,5 +1,6 @@
 #include <string.h>
 #include <sys/stat.h>
+#include <libgen.h>
 
 #include "core/http.h"
 #include "core/fs.h"
