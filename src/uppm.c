@@ -581,20 +581,20 @@ int uppm_main(int argc, char* argv[]) {
             return uppm_integrate_fish_completion(NULL, verbose);
         } else {
             LOG_ERROR2("unrecognized argument: ", argv[2]);
-            return 1;
+            return UPPM_ARG_IS_INVALID;
         }
     }
 
     if (strcmp(argv[1], "upgrade-self") == 0) {
-        return UPPM_OK;
+        return uppm_upgrade_self(verbose);
     }
 
     if (strcmp(argv[1], "cleanup") == 0) {
-        return UPPM_OK;
+        return uppm_cleanup(verbose);
     }
 
     LOG_ERROR2("unrecognized action: ", argv[1]);
-    return UPPM_ERROR;
+    return UPPM_ARG_IS_UNKNOWN;
 }
 
 int main(int argc, char* argv[]) {

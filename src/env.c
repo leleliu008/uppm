@@ -69,7 +69,6 @@ static int uppm_list_dirs(const char * installedDir, size_t installedDirLength, 
 }
 
 int uppm_env(bool verbose) {
-    printf("uppm    : %s\n", UPPM_VERSION);
     //printf("pcre2   : %d.%d\n", PCRE2_MAJOR, PCRE2_MINOR);
     printf("libyaml : %s\n", yaml_get_version_string());
     printf("libcurl : %s\n", LIBCURL_VERSION);
@@ -110,8 +109,18 @@ int uppm_env(bool verbose) {
     memset (uppmHomeDir, 0, uppmHomeDirLength);
     sprintf(uppmHomeDir, "%s/.uppm", userHomeDir);
 
-    printf("UPPM_HOME    = %s\n", uppmHomeDir);
-    printf("UPPM_VERSION = %s\n", UPPM_VERSION);
+    printf("uppm.vers : %s\n", UPPM_VERSION);
+    printf("uppm.home : %s\n", uppmHomeDir);
+
+    char * path = NULL;
+
+    get_current_executable_realpath(&path);
+
+    printf("uppm.path : %s\n", path == NULL ? "" : path);
+
+    if (path != NULL) {
+        free(path);
+    }
 
     if (!verbose) {
         return UPPM_OK;

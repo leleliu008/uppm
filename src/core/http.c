@@ -5,6 +5,7 @@
 #include <libgen.h>
 #include <stdbool.h>
 #include <curl/curl.h>
+#include <curl/curlver.h>
 #include "http.h"
 
 static size_t write_callback(void * ptr, size_t size, size_t nmemb, void * stream) {
@@ -72,12 +73,24 @@ int http_fetch_to_stream(const char * url, FILE * outputFile, bool verbose, bool
         curl_easy_setopt(curl, CURLOPT_CAPATH, SSL_CERT_DIR);
     }
 
+    char    userAgent[50];
+    sprintf(userAgent, "User-Agent: libcurl-%s", LIBCURL_VERSION);
+
+    struct curl_slist *list = NULL;
+
+    //list = curl_slist_append(list, "Accept: *");
+    list = curl_slist_append(list, userAgent);
+
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list);
+
     CURLcode curlcode = curl_easy_perform(curl);
     
     // https://curl.se/libcurl/c/libcurl-errors.html
     if (curlcode != CURLE_OK) {
         fprintf(stderr, "%s\n", curl_easy_strerror(curlcode));
     }
+
+    curl_slist_free_all(list);
 
     curl_easy_cleanup(curl);
 

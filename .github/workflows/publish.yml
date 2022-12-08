@@ -24,6 +24,7 @@ jobs:
       - run: |
           V=$(sed -n '/set(PROJECT_VERSION /p' CMakeLists.txt | sed 's|set(PROJECT_VERSION[[:space:]]*\(.*\))|\1|')
           cat >> /opt/ppkg/repos.d/offical-core/formula/uppm.yml <<EOF
+          git-sha: ${{ github.sha }}
           src-url: dir://$PWD
           version: $V
           EOF
@@ -60,6 +61,7 @@ jobs:
       - run: |
           V=$(sed -n '/set(PROJECT_VERSION /p' CMakeLists.txt | sed 's|set(PROJECT_VERSION[[:space:]]*\(.*\))|\1|')
           cat >> /opt/ppkg/repos.d/offical-core/formula/uppm.yml <<EOF
+          git-sha: ${{ github.sha }}
           src-url: dir://$PWD
           version: $V
           EOF
@@ -72,7 +74,7 @@ jobs:
           name: uppm-macos-tar-xz
           path: /opt/ppkg/cache.d/bin/
 
-      - run: ls
+      - run: ls -a
       - run: ls /opt/ppkg/cache.d/bin
 
       - run: printf '%s\n' "$RELEASE_TOKEN" | /opt/ppkg/installed/gh/bin/gh auth login --with-token

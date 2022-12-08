@@ -2,6 +2,19 @@
 #include "regex/regex.h"
 #include "util.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+#if defined (__linux__)
+#include <linux/limits.h>
+#elif defined (__APPLE__)
+#include <sys/syslimits.h>
+#else
+#include <limits.h>
+#endif
+
 int get_file_type_id_from_url(const char * url) {
     if (regex_matched(url, ".*\\.zip$")) {
         return 1;
@@ -22,4 +35,39 @@ int get_file_type_id_from_url(const char * url) {
     } else {
         return 0;
     }
+}
+
+int get_current_executable_realpath(char * * out) {
+#if defined (__linux__)
+    char buf[PATH_MAX + 1] = {0};
+
+    int ret = readlink("/proc/self/exe", buf, PATH_MAX);
+
+    if (ret == -1) {
+        perror("/proc/self/exe");
+        return -1;
+    }
+
+    (*out) = strdup(buf);
+    return 0;
+#elif defined (__APPLE__)
+    char buf[PATH_MAX + 1] = {0};
+
+    uint32_t bufSize = 0U;
+    _NSGetExecutablePath(NULL, &bufSize);
+
+    char path[bufSize];
+    _NSGetExecutablePath(path, &bufSize);
+
+    if (realpath(path, buf) == NULL) {
+        (*out) = NULL;
+        return -1;
+    }
+
+    (*out) = strdup(buf);
+    return 0;
+#else
+    (*out) = NULL;
+    return -1;
+#endif
 }
