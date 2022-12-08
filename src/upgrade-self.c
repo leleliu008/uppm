@@ -71,14 +71,27 @@ int uppm_upgrade_self(bool verbose) {
 
     char * latestVersion = NULL;
 
-    char buf[1024];
+    char buf[30];
 
-    while (fgets(buf, 1024, file) != NULL) {
-        if (latestVersion == NULL) {
-            if (regex_matched(buf, "^[[:space:]]*\"tag_name\"")) {
-                latestVersion = regex_extract(buf, "[1-9]{1,2}\\.[0-9]{1,2}\\.[0-9]{1,2}");
-                break;
+    size_t j = 0;
+
+    while ((fgets(buf, 30, file)) != NULL) {
+        if (regex_matched(buf, "^[[:space:]]*\"tag_name\"")) {
+            size_t length = strlen(buf);
+            for (size_t i = 10; i < length; i++) {
+                if (j == 0) {
+                    if (buf[i] >= '0' && buf[i] <= '9') {
+                        j = i;
+                    }
+                } else {
+                    if (buf[i] == '"') {
+                        buf[i] = '\0';
+                        latestVersion = &buf[j];
+                        break;
+                    }
+                }
             }
+            break;
         }
     }
 
@@ -90,7 +103,6 @@ int uppm_upgrade_self(bool verbose) {
     }
 
     if (strcmp(latestVersion, UPPM_VERSION) == 0) {
-        free(latestVersion);
         LOG_SUCCESS("this software is already the latest version.");
         return UPPM_OK;
     }
@@ -126,7 +138,6 @@ int uppm_upgrade_self(bool verbose) {
     memset (tarballFilePath, 0, tarballFilePathLength);
     sprintf(tarballFilePath, "%s/%s", uppmTmpDir, tarballFileName);
 
-    free(latestVersion);
     free(osType);
     free(osArch);
 

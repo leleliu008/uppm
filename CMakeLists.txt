@@ -39,6 +39,22 @@ endif()
 
 ########################################################################################
 
+include(CheckIncludeFiles)
+
+function(check_if_have_header_files)
+    foreach(item ${ARGV})
+        string(REPLACE "/" "_" item2 "${item}")
+        string(REPLACE "." "_" item2 "${item2}")
+        string(TOUPPER "${item2}" item2)
+        check_include_files(${item} HAVE_${item2})
+        #message("HAVE_${item2}=${HAVE_${item2}}")
+    endforeach()
+endfunction()
+
+check_if_have_header_files(linux/limits.h)
+
+########################################################################################
+
 message(STATUS "CMAKE_HOST_SYSTEM_NAME = ${CMAKE_HOST_SYSTEM_NAME}")
 message(STATUS "CMAKE_SYSTEM_NAME      = ${CMAKE_SYSTEM_NAME}")
 

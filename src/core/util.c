@@ -7,10 +7,10 @@
 #include <string.h>
 #include <unistd.h>
 
-#if defined (__linux__)
-#include <linux/limits.h>
-#elif defined (__APPLE__)
+#if defined (__APPLE__)
 #include <sys/syslimits.h>
+#elif defined (__linux__) && defined (HAVE_LINUX_LIMITS_H)
+#include <linux/limits.h>
 #else
 #include <limits.h>
 #endif
