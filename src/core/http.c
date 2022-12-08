@@ -7,14 +7,37 @@
 #include <curl/curl.h>
 #include <curl/curlver.h>
 #include "http.h"
+#include "url-transform.h"
 
 static size_t write_callback(void * ptr, size_t size, size_t nmemb, void * stream) {
     return fwrite(ptr, size, nmemb, (FILE *)stream);
 }
 
 int http_fetch_to_stream(const char * url, FILE * outputFile, bool verbose, bool showProgress) {
+    char * transformedUrl = NULL;
+
+    switch (url_transform(url, &transformedUrl)) {
+        case URL_TRANSFORM_OK:
+            if (verbose) {
+                printf("originUrl      : %s\n", url);
+                printf("transformedUrl : %s\n", transformedUrl);
+            }
+            break;
+        case URL_TRANSFORM_ERROR:
+            return URL_TRANSFORM_ERROR;
+        case URL_TRANSFORM_ENV_IS_NOT_SET:
+            transformedUrl = strdup(url);
+            break;
+        case URL_TRANSFORM_ENV_VALUE_IS_EMPTY:
+            return URL_TRANSFORM_ENV_VALUE_IS_EMPTY;
+        case URL_TRANSFORM_ENV_VALUE_PATH_NOT_EXIST:
+            return URL_TRANSFORM_ENV_VALUE_PATH_NOT_EXIST;
+        case URL_TRANSFORM_RUN_EMPTY_RESULT:
+            return URL_TRANSFORM_RUN_EMPTY_RESULT;
+    }
+
     if (outputFile == NULL) {
-        size_t  urlLength = strlen(url);
+        size_t  urlLength = strlen(transformedUrl);
         size_t  urlCopyLength = urlLength + 1;
         char    urlCopy[urlCopyLength];
         memset (urlCopy, 0, urlCopyLength);
@@ -34,7 +57,7 @@ int http_fetch_to_stream(const char * url, FILE * outputFile, bool verbose, bool
 
     CURL * curl = curl_easy_init();
 
-    curl_easy_setopt(curl, CURLOPT_URL, url);
+    curl_easy_setopt(curl, CURLOPT_URL, transformedUrl);
 
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, outputFile);
@@ -89,6 +112,8 @@ int http_fetch_to_stream(const char * url, FILE * outputFile, bool verbose, bool
     if (curlcode != CURLE_OK) {
         fprintf(stderr, "%s\n", curl_easy_strerror(curlcode));
     }
+
+    free(transformedUrl);
 
     curl_slist_free_all(list);
 
