@@ -389,32 +389,35 @@ all relevant dirs and files are located in `~/.uppm` directory.
         
 
 ## influential environment variables
+
 *   **HOME**
 
-    this environment variables must be set.
+    this environment variable must be set.
+
+    this environment variable already have been set on most system, if not set or set a empty string, you should set it manully.
 
 *   **SSL_CERT_FILE**
 
-    ```
+    ```bash
     curl -LO https://curl.se/ca/cacert.pem
     export SSL_CERT_FILE="$PWD/cacert.pem"
     ```
 
-    In general, you don't need to set this environment variables, but, if you encounter the reporting `the SSL certificate is invalid`, trying to run above commands in your terminal will do the trick.
+    In general, you don't need to set this environment variable, but, if you encounter the reporting `the SSL certificate is invalid`, trying to run above commands in your terminal will do the trick.
 
 *   **URL_TRANSFORM**
 
-    ```
+    ```bash
     export URL_TRANSFORM=/path/of/url-transform
     ```
 
-    `url-transform` command would be invoked as `url-transform <URL>`
+    `/path/of/url-transform` command would be invoked as `/path/of/url-transform <URL>`
 
-    `url-transform` command must output a `<URL>`
+    `/path/of/url-transform` command must output a `<URL>`
 
-    following is a example of `url-transform` command implementation:
+    following is a example of `/path/of/url-transform` command implementation:
 
-    ```
+    ```bash
     #!/bin/sh
 
     case $1 in
@@ -429,4 +432,4 @@ all relevant dirs and files are located in `~/.uppm` directory.
     esac
     ```
 
-    If you want change the request url, you can set this environment variables. It is very useful for chinese users.
+    If you want change the request url, you can set this environment variable. It is very useful for chinese users.
