@@ -388,13 +388,45 @@ all relevant dirs and files are located in `~/.uppm` directory.
         uppm cleanup
         
 
-## Note
-```
-the SSL certificate is invalid
-```
-if you encounter above problem, try to run following commands in your terminal will do the trick:
+## influential environment variables
+*   **HOME**
 
-```
-curl -LO https://curl.se/ca/cacert.pem
-export SSL_CERT_FILE="$PWD/cacert.pem"
-```
+    this environment variables must be set.
+
+*   **SSL_CERT_FILE**
+
+    ```
+    curl -LO https://curl.se/ca/cacert.pem
+    export SSL_CERT_FILE="$PWD/cacert.pem"
+    ```
+
+    In general, you don't need to set this environment variables, but, if you encounter the reporting `the SSL certificate is invalid`, trying to run above commands in your terminal will do the trick.
+
+*   **URL_TRANSFORM**
+
+    ```
+    export URL_TRANSFORM=/path/of/url-transform
+    ```
+
+    `url-transform` command would be invoked as `url-transform <URL>`
+
+    `url-transform` command must output a `<URL>`
+
+    following is a example of `url-transform` command implementation:
+
+    ```
+    #!/bin/sh
+
+    case $1 in
+        *githubusercontent.com/*)
+            printf 'https://ghproxy.com/%s\n' "$1"
+            ;;
+        https://github.com/*)
+            printf 'https://ghproxy.com/%s\n' "$1"
+            ;;
+        '') printf '%s\n' 'url-transform <URL>, <URL> is not given.' >&2 ;;
+        *)  printf '%s\n' "$1"
+    esac
+    ```
+
+    If you want change the request url, you can set this environment variables. It is very useful for chinese users.
