@@ -5,10 +5,10 @@
 #include <time.h>
 #include <libgen.h>
 #include <sys/stat.h>
-#include <sys/utsname.h>
 
 #include "core/fs.h"
 #include "core/http.h"
+#include "core/sysinfo.h"
 #include "core/sha256sum.h"
 #include "core/untar.h"
 #include "core/rm-r.h"
@@ -188,12 +188,19 @@ int uppm_install(const char * packageName, bool verbose) {
             return resultCode;
         }
     } else {
-        struct utsname uts;
+        SysInfo * sysinfo = NULL;
 
-        if (uname(&uts) < 0) {
-            perror("uname() error");
+        if (sysinfo_make(&sysinfo) != 0) {
             uppm_formula_free(formula);
             return UPPM_ERROR;
+        }
+
+        char * libcName = NULL;
+
+        switch(sysinfo->libc) {
+            case LIBC_GLIBC: libcName = (char*)"glibc"; break;
+            case LIBC_MUSL:  libcName = (char*)"musl";  break;
+            default:         libcName = (char*)"unknown";
         }
 
         size_t  uppmHomeDirLength = strlen(userHomeDir) + 7;
@@ -207,8 +214,12 @@ int uppm_install(const char * packageName, bool verbose) {
         sprintf(shellCode,
                 "set -ex\n\n"
                 "NATIVE_OS_KIND='%s'\n"
+                "NATIVE_OS_TYPE='%s'\n"
                 "NATIVE_OS_NAME='%s'\n"
-                "NATIVE_OS_ARCH='%s'\n\n"
+                "NATIVE_OS_VERS='%s'\n"
+                "NATIVE_OS_LIBC='%s'\n"
+                "NATIVE_OS_ARCH='%s'\n"
+                "NATIVE_OS_NCPU='%ld'\n\n"
                 "UPPM_VERSION='%s'\n"
                 "UPPM_HOME='%s'\n\n"
                 "PKG_SUMMARY='%s'\n"
@@ -220,9 +231,13 @@ int uppm_install(const char * packageName, bool verbose) {
                 "PKG_BIN_FILEPATH='%s'\n"
                 "PKG_INSTALL_DIR='%s'\n\n"
                 "%s",
-                uts.sysname,
-                uts.nodename,
-                uts.machine,
+                sysinfo->kind,
+                sysinfo->type,
+                sysinfo->name,
+                sysinfo->vers,
+                libcName,
+                sysinfo->arch,
+                sysinfo->ncpu,
                 UPPM_VERSION,
                 uppmHomeDir,
                 formula->summary == NULL ? "" : formula->summary,
@@ -234,6 +249,8 @@ int uppm_install(const char * packageName, bool verbose) {
                 archiveFilePath,
                 packageInstalledDir,
                 formula->install);
+
+        sysinfo_free(sysinfo);
 
         printf("run shell code:\n%s\n", shellCode);
 

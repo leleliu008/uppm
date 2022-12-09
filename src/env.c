@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <dirent.h>
-#include <sys/utsname.h>
 
 #include "core/sysinfo.h"
 #include "core/util.h"

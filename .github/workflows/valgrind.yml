@@ -8,12 +8,8 @@ on:
 
 jobs:
   valgrind:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-22.04]
 
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
 
     env:
       VALGRIND: valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --error-exitcode=1

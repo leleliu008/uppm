@@ -81,6 +81,8 @@ jobs:
       - run:  /opt/ppkg/installed/uppm/bin/uppm uninstall unzip
 
   centos_6_10:
+    if: ${{ false }}
+
     runs-on: ubuntu-latest
 
     container: centos:6.10

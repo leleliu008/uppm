@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <string.h>
-#include <sys/utsname.h>
 
 #include "core/fs.h"
+#include "core/sysinfo.h"
 #include "core/sha256sum.h"
 #include "uppm.h"
 
@@ -20,30 +20,17 @@ static bool check_os_kind_arch_is_supported(const char * osKind, const char * os
 }
 
 UPPMFormulaRepo* uppm_formula_repo_default_new(char * userHomeDir, size_t userHomeDirLength) {
-    struct utsname uts;
+    char * osType = NULL;
+    char * osArch = NULL;
 
-    if (uname(&uts) < 0) {
-        perror("uname() error");
-        return NULL;
-    }
+    sysinfo_type(&osType);
+    sysinfo_arch(&osArch);
 
-    const char * osKind = uts.sysname;
-    const char * osArch = uts.machine;
+    char *  formulaRepoUrl = (char*)calloc(strlen(osType) + strlen(osArch) + 60, sizeof(char));
+    sprintf(formulaRepoUrl, "https://github.com/leleliu008/uppm-formula-repository-%s-%s.git", osType, osArch);
 
-    if (strcmp(osKind, "Linux") == 0) {
-        osKind = "linux";
-    } else if (strcmp(osKind, "Darwin") == 0) {
-        osKind = "macos";
-    } else if (strcmp(osKind, "FreeBSD") == 0) {
-        osKind = "freebsd";
-    } else if (strcmp(osKind, "OpenBSD") == 0) {
-        osKind = "openbsd";
-    } else if (strcmp(osKind, "NetBSD") == 0) {
-        osKind = "netbsd";
-    }
-
-    char *  formulaRepoUrl = (char*)calloc(strlen(osKind) + strlen(osArch) + 60, sizeof(char));
-    sprintf(formulaRepoUrl, "https://github.com/leleliu008/uppm-formula-repository-%s-%s.git", osKind, osArch);
+    free(osType);
+    free(osArch);
 
     char *  formulaRepoId  = uppm_formula_repo_id(formulaRepoUrl, "master");
 
