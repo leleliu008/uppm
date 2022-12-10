@@ -9,7 +9,7 @@ int uppm_formula_repo_list_printf() {
     if (resultCode == 0) {
         for (size_t i = 0; i < formulaRepoList->size; i++) {
             UPPMFormulaRepo * formulaRepo = formulaRepoList->repos[i];
-            printf("%s %s %s\n", formulaRepo->id, formulaRepo->url, formulaRepo->branch);
+            printf("%s %s %s\n", formulaRepo->name, formulaRepo->url, formulaRepo->branch);
         }
     }
 

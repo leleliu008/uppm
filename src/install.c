@@ -256,7 +256,7 @@ int uppm_install(const char * packageName, bool verbose) {
 
         resultCode = system(shellCode);
 
-        if (resultCode != UPPM_OK) {
+        if (resultCode != 0) {
             uppm_formula_free(formula);
             return resultCode;
         }

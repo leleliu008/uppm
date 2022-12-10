@@ -70,7 +70,7 @@ void uppm_formula_dump(UPPMFormula * formula);
 //////////////////////////////////////////////////////////////////////
 
 typedef struct {
-    char * id;
+    char * name;
     char * url;
     char * branch;
     char * path;
@@ -87,9 +87,8 @@ void uppm_formula_repo_list_free(UPPMFormulaRepoList   * p);
 int  uppm_formula_repo_list_printf();
 int  uppm_formula_repo_list_update();
 
-char* uppm_formula_repo_id (const char * formulaRepoUrl, const char * branchName);
-int   uppm_formula_repo_add(const char * formulaRepoUrl, const char * branchName);
-int   uppm_formula_repo_del(const char * id);
+int   uppm_formula_repo_add(const char * formulaRepoName, const char * formulaRepoUrl, const char * branchName);
+int   uppm_formula_repo_del(const char * formulaRepoName);
 
 //////////////////////////////////////////////////////////////////////
 
@@ -113,6 +112,15 @@ void uppm_receipt_dump(UPPMReceipt * receipt);
 
 //////////////////////////////////////////////////////////////////////
 
+typedef enum {
+    UPPMDependsOutputFormat_DOT,
+    UPPMDependsOutputFormat_BOX,
+    UPPMDependsOutputFormat_SVG,
+    UPPMDependsOutputFormat_PNG,
+} UPPMDependsOutputFormat;
+
+//////////////////////////////////////////////////////////////////////
+
 int uppm_main(int argc, char* argv[]);
 
 int uppm_help();
@@ -125,7 +133,7 @@ int uppm_info(const char * packageName, const char * key);
 
 int uppm_tree(const char * packageName, size_t argc, char* argv[]);
 
-int uppm_depends(const char * packageName);
+int uppm_depends(const char * packageName, UPPMDependsOutputFormat outputFormat);
 
 int uppm_fetch(const char * packageName, bool verbose);
 

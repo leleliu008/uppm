@@ -291,11 +291,16 @@ all relevant dirs and files are located in `~/.uppm` directory.
 *   **show packages that are depended by the given package**
         
         uppm depends curl
-        uppm depends curl --format=list
-        uppm depends curl --format=json
+
         uppm depends curl --format=dot
-        uppm depends curl --format=txt
-        uppm depends curl --format=png -o curl-dependencies.png
+        uppm depends curl --format=box
+        uppm depends curl --format=png
+        uppm depends curl --format=svg
+
+        uppm depends curl --format=dot > xx.dot
+        uppm depends curl --format=box > xx.txt
+        uppm depends curl --format=png > xx.png
+        uppm depends curl --format=svg > xx.svg
         
 *   **download formula resources of the given package to the local cache**
         
@@ -337,9 +342,9 @@ all relevant dirs and files are located in `~/.uppm` directory.
 
 *   **add a new formula repository**
 
-        uppm formula-repo-add https://github.com/leleliu008/uppm-formula-repository-linux-x86_64
-        uppm formula-repo-add https://github.com/leleliu008/uppm-formula-repository-linux-x86_64 master
-        uppm formula-repo-add https://github.com/leleliu008/uppm-formula-repository-linux-x86_64 main
+        uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo
+        uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo master
+        uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo main
         
     **Note:**
     - this software supports multiple formula repositories.

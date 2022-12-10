@@ -127,7 +127,26 @@ int uppm_main(int argc, char* argv[]) {
     }
 
     if (strcmp(argv[1], "depends") == 0) {
-        int resultCode = uppm_depends(argv[2]);
+        UPPMDependsOutputFormat outputFormat = UPPMDependsOutputFormat_BOX;
+
+        for (int i = 3; i < argc; i++) {
+            if (strcmp(argv[i], "-v") == 0) {
+                verbose = true;
+            } else if (strcmp(argv[i], "--format=dot") == 0) {
+                outputFormat = UPPMDependsOutputFormat_DOT;
+            } else if (strcmp(argv[i], "--format=box") == 0) {
+                outputFormat = UPPMDependsOutputFormat_BOX;
+            } else if (strcmp(argv[i], "--format=png") == 0) {
+                outputFormat = UPPMDependsOutputFormat_PNG;
+            } else if (strcmp(argv[i], "--format=svg") == 0) {
+                outputFormat = UPPMDependsOutputFormat_SVG;
+            } else {
+                LOG_ERROR2("unrecognized argument: ", argv[i]);
+                return UPPM_ARG_IS_INVALID;
+            }
+        }
+
+        int resultCode = uppm_depends(argv[2], outputFormat);
 
         if (resultCode == UPPM_PACKAGE_NAME_IS_NULL) {
             fprintf(stderr, "Usage: %s depends <PACKAGE-NAME>, <PACKAGE-NAME> is not given.\n", argv[0]);
@@ -548,21 +567,21 @@ int uppm_main(int argc, char* argv[]) {
 
     if (strcmp(argv[1], "formula-repo-add") == 0) {
         if (argv[2] == NULL) {
-            fprintf(stderr, "Usage: %s %s <FORMULA-REPO-URL> <FORMULA-REPO-BRANCH>\n", argv[0], argv[1]);
+            fprintf(stderr, "Usage: %s %s <FORMULA-REPO-NAME> <FORMULA-REPO-URL> <FORMULA-REPO-BRANCH>\n", argv[0], argv[1]);
             return UPPM_ARG_IS_NULL;
         }
 
         if (argv[3] == NULL) {
-            fprintf(stderr, "Usage: %s %s <FORMULA-REPO-URL> <FORMULA-REPO-BRANCH>\n", argv[0], argv[1]);
+            fprintf(stderr, "Usage: %s %s <FORMULA-REPO-NAME> <FORMULA-REPO-URL> <FORMULA-REPO-BRANCH>\n", argv[0], argv[1]);
             return UPPM_ARG_IS_NULL;
         }
 
-        return uppm_formula_repo_add(argv[2], argv[3]);
+        return uppm_formula_repo_add(argv[2], argv[3], argv[4]);
     }
 
     if (strcmp(argv[1], "formula-repo-del") == 0) {
         if (argv[2] == NULL) {
-            fprintf(stderr, "Usage: %s %s <FORMULA-REPO-ID>\n", argv[0], argv[1]);
+            fprintf(stderr, "Usage: %s %s <FORMULA-REPO-NAME>\n", argv[0], argv[1]);
             return UPPM_ARG_IS_NULL;
         }
 

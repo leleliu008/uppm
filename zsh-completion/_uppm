@@ -64,13 +64,8 @@ function _uppm() {
     case $state in
         option)
             case $words[1] in
-                formula-repo-add)
-                    _arguments \
-                        '1:name:()' \
-                        '2:url:()'
-                    ;;
                 formula-repo-del)
-                    _arguments '1:name:(uppm formula-repo-list | cut -d ' ' -f1)'
+                    _arguments '1:formula-repo-name:($(uppm formula-repo-list | cut -d ' ' -f1))'
                     ;;
                 integrate)
                     _arguments \
@@ -102,9 +97,7 @@ function _uppm() {
                 depends)
                     _arguments \
                         '1:package-name:_uppm_available_packages' \
-                        '--format=-[set output format]:format:(list json dot txt png)' \
-                        '--brief[output breif]' \
-                        '-o[set output file path]:output-filepath:{_files -/}'
+                        '--format=-[set output format]:format:(dot box png svg)'
                     ;;
                 tree)
                     _arguments \

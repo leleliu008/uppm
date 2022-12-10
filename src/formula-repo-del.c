@@ -5,7 +5,20 @@
 
 #include "uppm.h"
 
-int uppm_formula_repo_del(const char * formulaRepoId) {
+int uppm_formula_repo_del(const char * formulaRepoName) {
+    if (formulaRepoName == NULL) {
+        return UPPM_ARG_IS_NULL;
+    }
+
+    if (strcmp(formulaRepoName, "") == 0) {
+        return UPPM_ARG_IS_EMPTY;
+    }
+
+    if (strcmp(formulaRepoName, "offical-core") == 0) {
+        fprintf(stderr, "offical-core is not allowed to delete.\n");
+        return UPPM_ERROR;
+    }
+
     char * userHomeDir = getenv("HOME");
 
     if (userHomeDir == NULL || strcmp(userHomeDir, "") == 0) {
@@ -33,10 +46,10 @@ int uppm_formula_repo_del(const char * formulaRepoId) {
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    size_t deleteSqlLength = 40 + strlen(formulaRepoId);
+    size_t deleteSqlLength = 40 + strlen(formulaRepoName);
     char   deleteSql[deleteSqlLength];
     memset(deleteSql, 0, deleteSqlLength);
-    sprintf(deleteSql, "DELETE FROM formulaRepo WHERE id='%s';", formulaRepoId);
+    sprintf(deleteSql, "DELETE FROM formulaRepo WHERE name='%s';", formulaRepoName);
 
     char * errorMsg = NULL;
 
@@ -47,5 +60,6 @@ int uppm_formula_repo_del(const char * formulaRepoId) {
     }
 
     sqlite3_close(db);
+
     return resultCode;
 }

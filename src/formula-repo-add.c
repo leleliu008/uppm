@@ -5,7 +5,32 @@
 
 #include "uppm.h"
 
-int uppm_formula_repo_add(const char * formulaRepoUrl, const char * branchName) {
+int uppm_formula_repo_add(const char * formulaRepoName, const char * formulaRepoUrl, const char * branchName) {
+    if (formulaRepoName == NULL) {
+        return UPPM_ARG_IS_NULL;
+    }
+
+    if (strcmp(formulaRepoName, "") == 0) {
+        return UPPM_ARG_IS_EMPTY;
+    }
+
+    if (strcmp(formulaRepoName, "offical-core") == 0) {
+        fprintf(stderr, "offical-core is reserved, please use other name.\n");
+        return UPPM_ERROR;
+    }
+
+    if (formulaRepoUrl == NULL) {
+        return UPPM_ARG_IS_NULL;
+    }
+
+    if (strcmp(formulaRepoUrl, "") == 0) {
+        return UPPM_ARG_IS_EMPTY;
+    }
+
+    if (branchName == NULL || strcmp(branchName, "") == 0) {
+        branchName = (char*)"master";
+    }
+
     char * userHomeDir = getenv("HOME");
 
     if (userHomeDir == NULL || strcmp(userHomeDir, "") == 0) {
@@ -33,7 +58,7 @@ int uppm_formula_repo_add(const char * formulaRepoUrl, const char * branchName) 
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const char * createTableSql = "CREATE TABLE IF NOT EXISTS formulaRepo (id TEXT PRIMARY KEY, url TEXT NOT NULL, branchName TEXT NOT NULL);";
+    const char * createTableSql = "CREATE TABLE IF NOT EXISTS formulaRepo (name TEXT PRIMARY KEY, url TEXT NOT NULL, branchName TEXT NOT NULL);";
     char * errorMsg = NULL;
 
     resultCode = sqlite3_exec(db, createTableSql, NULL, NULL, &errorMsg);
@@ -46,12 +71,10 @@ int uppm_formula_repo_add(const char * formulaRepoUrl, const char * branchName) 
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    char * formulaRepoId = uppm_formula_repo_id(formulaRepoUrl, branchName);
-
-    size_t  updateSqlLength = 80 + strlen(formulaRepoId) + strlen(formulaRepoUrl) + strlen(branchName);
+    size_t  updateSqlLength = 80 + strlen(formulaRepoName) + strlen(formulaRepoUrl) + strlen(branchName);
     char    updateSql[updateSqlLength];
     memset( updateSql, 0, updateSqlLength);
-    sprintf(updateSql, "INSERT OR REPLACE INTO formulaRepo (id,url,branchName) VALUES ('%s','%s','%s');", formulaRepoId, formulaRepoUrl, branchName);
+    sprintf(updateSql, "INSERT OR REPLACE INTO formulaRepo (name,url,branchName) VALUES ('%s','%s','%s');", formulaRepoName, formulaRepoUrl, branchName);
 
     errorMsg = NULL;
 
@@ -61,7 +84,7 @@ int uppm_formula_repo_add(const char * formulaRepoUrl, const char * branchName) 
         fprintf(stderr, "%s\n", errorMsg);
     }
 
-    free(formulaRepoId);
     sqlite3_close(db);
+
     return resultCode;
 }

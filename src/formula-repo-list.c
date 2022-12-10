@@ -26,22 +26,20 @@ UPPMFormulaRepo* uppm_formula_repo_default_new(char * userHomeDir, size_t userHo
     sysinfo_type(&osType);
     sysinfo_arch(&osArch);
 
-    char *  formulaRepoUrl = (char*)calloc(strlen(osType) + strlen(osArch) + 60, sizeof(char));
-    sprintf(formulaRepoUrl, "https://github.com/leleliu008/uppm-formula-repository-%s-%s.git", osType, osArch);
+    char *  formulaRepoUrl = (char*)calloc(strlen(osType) + strlen(osArch) + 56, sizeof(char));
+    sprintf(formulaRepoUrl, "https://github.com/leleliu008/uppm-formula-repository-%s-%s", osType, osArch);
 
     free(osType);
     free(osArch);
 
-    char *  formulaRepoId  = uppm_formula_repo_id(formulaRepoUrl, "master");
-
     char *  formulaRepoPath = (char*)calloc(userHomeDirLength + 80, sizeof(char));
-    sprintf(formulaRepoPath, "%s/.uppm/repos.d/%s", userHomeDir, formulaRepoId);
+    sprintf(formulaRepoPath, "%s/.uppm/repos.d/offical-core", userHomeDir);
 
     UPPMFormulaRepo * formulaRepo = (UPPMFormulaRepo*)calloc(1, sizeof(UPPMFormulaRepo));
     formulaRepo->branch = strdup("master");
-    formulaRepo->id =   formulaRepoId;
-    formulaRepo->url  = formulaRepoUrl;
-    formulaRepo->path = formulaRepoPath;
+    formulaRepo->name   = strdup("offical-core");
+    formulaRepo->url    = formulaRepoUrl;
+    formulaRepo->path   = formulaRepoPath;
 
     return formulaRepo;
 }
@@ -60,18 +58,15 @@ int uppm_formula_repo_list_new(UPPMFormulaRepoList * * out) {
     memset (formulaRepoDBPath, 0, formulaRepoDBPathLength);
     sprintf(formulaRepoDBPath, "%s/.uppm/repos.db", userHomeDir);
 
+    UPPMFormulaRepoList * formulaRepoList = (UPPMFormulaRepoList*)calloc(1, sizeof(UPPMFormulaRepoList));
+    formulaRepoList->repos = (UPPMFormulaRepo**)calloc(1, sizeof(UPPMFormulaRepo*));
+    formulaRepoList->repos[0] = uppm_formula_repo_default_new(userHomeDir, userHomeDirLength);
+    formulaRepoList->size     = 1;
+
     if (!exists_and_is_a_regular_file(formulaRepoDBPath)) {
-        UPPMFormulaRepoList * formulaRepoList = (UPPMFormulaRepoList*)calloc(1, sizeof(UPPMFormulaRepoList));
-        formulaRepoList->repos = (UPPMFormulaRepo**)calloc(1, sizeof(UPPMFormulaRepo*));
-        formulaRepoList->repos[0] = uppm_formula_repo_default_new(userHomeDir, userHomeDirLength);
-        formulaRepoList->size     = 1;
-
         (*out) = formulaRepoList;
-
         return UPPM_OK;
     }
-
-    UPPMFormulaRepoList * formulaRepoList = NULL;
 
     size_t capacity = 5;
 
@@ -99,29 +94,24 @@ int uppm_formula_repo_list_new(UPPMFormulaRepoList * * out) {
         if (resultCode == SQLITE_ROW) {
             resultCode =  SQLITE_OK;
 
-            char * formulaRepoId     = (char *)sqlite3_column_text(statement, 0);
+            char * formulaRepoName   = (char *)sqlite3_column_text(statement, 0);
             char * formulaRepoUrl    = (char *)sqlite3_column_text(statement, 1);
             char * formulaRepoBranch = (char *)sqlite3_column_text(statement, 2);
 
-            //printf("formulaRepoId=%s\nformulaRepoUrl=%s\nformulaRepoBranch=%s\n", formulaRepoId, formulaRepoUrl, formulaRepoBranch);
+            //printf("formulaRepoName=%s\nformulaRepoUrl=%s\nformulaRepoBranch=%s\n", formulaRepoName, formulaRepoUrl, formulaRepoBranch);
 
-            char *  formulaRepoPath = (char*)calloc(userHomeDirLength + 16 + strlen(formulaRepoId), sizeof(char));
-            sprintf(formulaRepoPath, "%s/.uppm/repos.d/%s", userHomeDir, formulaRepoId);
+            char *  formulaRepoPath = (char*)calloc(userHomeDirLength + 16 + strlen(formulaRepoName), sizeof(char));
+            sprintf(formulaRepoPath, "%s/.uppm/repos.d/%s", userHomeDir, formulaRepoName);
 
             UPPMFormulaRepo * formulaRepo = (UPPMFormulaRepo*)calloc(1, sizeof(UPPMFormulaRepo));
-            formulaRepo->id   = strdup(formulaRepoId);
+            formulaRepo->name = strdup(formulaRepoName);
             formulaRepo->url  = strdup(formulaRepoUrl);
             formulaRepo->path =        formulaRepoPath;
             formulaRepo->branch  = strdup(formulaRepoBranch);
 
-            if (formulaRepoList == NULL) {
-                formulaRepoList = (UPPMFormulaRepoList*)calloc(1, sizeof(UPPMFormulaRepoList));
-                formulaRepoList->repos = (UPPMFormulaRepo**)calloc(capacity, sizeof(UPPMFormulaRepo*));
-            } else {
-                if (formulaRepoList->size == capacity) {
-                    capacity += 5;
-                    formulaRepoList->repos = (UPPMFormulaRepo**)realloc(formulaRepoList->repos, capacity * sizeof(UPPMFormulaRepo*));
-                }
+            if (formulaRepoList->size == capacity) {
+                capacity += capacity;
+                formulaRepoList->repos = (UPPMFormulaRepo**)realloc(formulaRepoList->repos, capacity * sizeof(UPPMFormulaRepo*));
             }
 
             formulaRepoList->repos[formulaRepoList->size] = formulaRepo;
@@ -175,12 +165,12 @@ void uppm_formula_repo_list_free(UPPMFormulaRepoList * formulaRepoList) {
     for (size_t i = 0; i < formulaRepoList->size; i++) {
         UPPMFormulaRepo * formulaRepo = formulaRepoList->repos[i];
 
-        free(formulaRepo->id);
+        free(formulaRepo->name);
         free(formulaRepo->url);
         free(formulaRepo->path);
         free(formulaRepo->branch);
 
-        formulaRepo->id = NULL;
+        formulaRepo->name = NULL;
         formulaRepo->url  = NULL;
         formulaRepo->path = NULL;
         formulaRepo->branch = NULL;
