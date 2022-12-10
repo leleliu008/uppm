@@ -546,8 +546,12 @@ int uppm_info(const char * packageName, const char * key) {
         time_t tt = (time_t)atol(receipt->timestamp);
         struct tm *tms = localtime(&tt);
 
-        char buff[40] = {0};
-        strftime(buff, sizeof(buff), "%Y-%m-%d %H:%M:%S%z", tms);
+        char buff[26] = {0};
+        strftime(buff, 26, "%Y-%m-%d %H:%M:%S%z", tms);
+
+        buff[24] = buff[23];
+        buff[23] = buff[22];
+        buff[22] = ':';
 
         printf("%s\n", buff);
 
@@ -564,8 +568,12 @@ int uppm_info(const char * packageName, const char * key) {
         time_t tt = (time_t)atol(receipt->timestamp);
         struct tm *tms = localtime(&tt);
 
-        char buff[40] = {0};
-        strftime(buff, sizeof(buff), "%Y-%m-%dT%H:%M:%S%z", tms);
+        char buff[26] = {0};
+        strftime(buff, 26, "%Y-%m-%dT%H:%M:%S%z", tms);
+
+        buff[24] = buff[23];
+        buff[23] = buff[22];
+        buff[22] = ':';
 
         printf("%s\n", buff);
 
