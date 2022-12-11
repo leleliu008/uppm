@@ -399,7 +399,7 @@ all relevant dirs and files are located in `~/.uppm` directory.
 
     this environment variable must be set.
 
-    this environment variable already have been set on most system, if not set or set a empty string, you should set it manully.
+    this environment variable already have been set on most systems, if not set or set a empty string, you should set it manully.
 
 *   **SSL_CERT_FILE**
 

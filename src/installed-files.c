@@ -64,7 +64,7 @@ static int record_installed_files_r(const char * dirPath, size_t offset, FILE * 
 int record_installed_files(const char * installedDirPath) {
     size_t installedDirLength = strlen(installedDirPath);
 
-    size_t  installedManifestFilePathLength = installedDirLength + 15;
+    size_t  installedManifestFilePathLength = installedDirLength + 20;
     char    installedManifestFilePath[installedManifestFilePathLength];
     memset (installedManifestFilePath, 0, installedManifestFilePathLength);
     sprintf(installedManifestFilePath, "%s/.uppm/manifest.txt", installedDirPath);
