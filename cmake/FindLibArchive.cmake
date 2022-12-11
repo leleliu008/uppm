@@ -11,7 +11,7 @@
 if (LibArchive_INCLUDE_DIRS AND LibArchive_LIBRARIES)
     set(LibArchive_FOUND TRUE)
 else()
-    pkg_check_modules(PKG_CONFIG_LIBARCHIVE QUIET libarchive)
+    pkg_check_modules(PKG_CONFIG_LIBARCHIVE libarchive)
 
     message("PKG_CONFIG_LIBARCHIVE_FOUND=${PKG_CONFIG_LIBARCHIVE_FOUND}")
     message("PKG_CONFIG_LIBARCHIVE_INCLUDE_DIRS=${PKG_CONFIG_LIBARCHIVE_INCLUDE_DIRS}")
