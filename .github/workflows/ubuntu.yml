@@ -7,7 +7,8 @@ on:
     branches: [ master ]
 
 jobs:
-  ubuntu:
+
+  apt:
     strategy:
       fail-fast: false
       matrix:
@@ -19,9 +20,49 @@ jobs:
       - uses: actions/checkout@main
 
       - run:  sudo apt -y update
-      - run:  sudo apt -y install cmake ninja-build gcc pkg-config libcurl4-openssl-dev libgit2-dev libarchive-dev libyaml-dev libjansson-dev libsqlite3-dev
+      - run:  sudo apt -y install cmake ninja-build pkg-config gcc libcurl4-openssl-dev libgit2-dev libarchive-dev libyaml-dev libjansson-dev libsqlite3-dev
 
       - run:  cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_VERBOSE_MAKEFILE=ON
+      - run:  cmake --build   build.d
+      - run:  cmake --install build.d
+
+      - run:  ./output/bin/uppm --help
+      - run:  ./output/bin/uppm --version
+      - run:  ./output/bin/uppm env
+      - run:  ./output/bin/uppm update
+      - run:  ./output/bin/uppm search    zip
+      - run:  ./output/bin/uppm info      unzip
+      - run:  ./output/bin/uppm install   unzip
+      - run:  ./output/bin/uppm tree      unzip
+      - run:  ./output/bin/uppm uninstall unzip
+
+  vcpkg:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        version: [20.04, 22.04]
+
+    container: ubuntu:${{ matrix.version }}
+
+    steps:
+      - run:  apt -y update
+      - run:  apt -y install cmake ninja-build pkg-config gcc linux-headers-generic
+
+      - uses: actions/checkout@v3
+
+      - uses: actions/checkout@v3
+        with:
+          repository: microsoft/vcpkg
+          path: vcpkg
+
+      - run:  cd vcpkg && ./bootstrap-vcpkg.sh
+
+      - run:  cd vcpkg && ./vcpkg install curl openssl libgit2 libarchive libyaml jansson sqlite3
+
+      - run:  cmake -S . -B   build.d -DCMAKE_TOOLCHAIN_FILE=$PWD/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_VERBOSE_MAKEFILE=ON
       - run:  cmake --build   build.d
       - run:  cmake --install build.d
 

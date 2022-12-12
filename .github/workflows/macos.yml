@@ -7,7 +7,8 @@ on:
     branches: [ master ]
 
 jobs:
-  normal:
+
+  brew:
     strategy:
       fail-fast: false
       matrix:
@@ -26,7 +27,15 @@ jobs:
           CMAKE_EXE_LINKER_FLAGS='-L/usr/local/lib -L/usr/local/opt/openssl@1.1/lib -lssl -liconv -framework CoreFoundation -framework Security'
           CMAKE_FIND_ROOT_PATH="$(brew --prefix openssl@1.1);$(brew --prefix curl);$(brew --prefix sqlite);$(brew --prefix libarchive)"
 
-          cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_EXE_LINKER_FLAGS="$CMAKE_EXE_LINKER_FLAGS" -DCMAKE_FIND_ROOT_PATH="$CMAKE_FIND_ROOT_PATH"
+          cmake \
+              -S . \
+              -B build.d \
+              -G Ninja \
+              -DCMAKE_INSTALL_PREFIX=./output \
+              -DCMAKE_VERBOSE_MAKEFILE=ON \
+              -DCMAKE_EXE_LINKER_FLAGS="$CMAKE_EXE_LINKER_FLAGS" \
+              -DCMAKE_FIND_ROOT_PATH="$CMAKE_FIND_ROOT_PATH"
+
       - run:  cmake --build   build.d
       - run:  cmake --install build.d
 
@@ -40,7 +49,103 @@ jobs:
       - run:  ./output/bin/uppm tree      unzip
       - run:  ./output/bin/uppm uninstall unzip
 
-  sanitizer:
+  vcpkg:
+
+    strategy:
+      fail-fast: false
+      matrix:
+        version: [macos-11, macos-12]
+
+    runs-on: ${{ matrix.version }}
+
+    steps:
+      - run:  brew update
+      - run:  brew install cmake ninja pkg-config
+
+      - uses: actions/checkout@v3
+
+      - uses: actions/checkout@v3
+        with:
+          repository: microsoft/vcpkg
+          path: vcpkg
+
+      - run:  cd vcpkg && ./bootstrap-vcpkg.sh
+
+      - run:  cd vcpkg && ./vcpkg install curl openssl libgit2 libarchive libyaml jansson sqlite3
+
+      - run:  |
+          cmake \
+              -S . \
+              -B build.d \
+              -G Ninja \
+              -DCMAKE_TOOLCHAIN_FILE=$PWD/vcpkg/scripts/buildsystems/vcpkg.cmake \
+              -DCMAKE_INSTALL_PREFIX=./output \
+              -DCMAKE_VERBOSE_MAKEFILE=ON
+
+      - run:  cmake --build   build.d
+      - run:  cmake --install build.d
+
+      - run:  ./output/bin/uppm --help
+      - run:  ./output/bin/uppm --version
+      - run:  ./output/bin/uppm env
+      - run:  ./output/bin/uppm update
+      - run:  ./output/bin/uppm search    zip
+      - run:  ./output/bin/uppm info      unzip
+      - run:  ./output/bin/uppm install   unzip
+      - run:  ./output/bin/uppm tree      unzip
+      - run:  ./output/bin/uppm uninstall unzip
+
+  vcpkg-sanitizer:
+
+    strategy:
+      fail-fast: false
+      matrix:
+        version: [macos-11, macos-12]
+
+    runs-on: ${{ matrix.version }}
+
+    steps:
+      - run:  brew update
+      - run:  brew install cmake ninja llvm pkg-config
+
+      - uses: actions/checkout@v3
+
+      - uses: actions/checkout@v3
+        with:
+          repository: microsoft/vcpkg
+          path: vcpkg
+
+      - run:  cd vcpkg && ./bootstrap-vcpkg.sh
+
+      - run:  cd vcpkg && ./vcpkg install curl openssl libgit2 libarchive libyaml jansson sqlite3
+
+      - run:  |
+          cmake \
+              -S . \
+              -B build.d \
+              -G Ninja \
+              -DCMAKE_TOOLCHAIN_FILE=$PWD/vcpkg/scripts/buildsystems/vcpkg.cmake \
+              -DCMAKE_INSTALL_PREFIX=./output \
+              -DCMAKE_VERBOSE_MAKEFILE=ON \
+              -DCMAKE_BUILD_TYPE=Debug \
+              -DCMAKE_C_COMPILER=/usr/local/opt/llvm/bin/clang \
+              -DCMAKE_C_FLAGS="-fsanitize=undefined -fsanitize=address -fsanitize=leak"
+
+      - run:  cmake --build   build.d
+      - run:  cmake --install build.d
+
+      - run:  ./output/bin/uppm --help
+      - run:  ./output/bin/uppm --version
+      - run:  ./output/bin/uppm env
+      - run:  ./output/bin/uppm update
+      - run:  ./output/bin/uppm search    zip
+      - run:  ./output/bin/uppm info      unzip
+      - run:  ./output/bin/uppm install   unzip
+      - run:  ./output/bin/uppm tree      unzip
+      - run:  ./output/bin/uppm uninstall unzip
+
+
+  brew-sanitizer:
     strategy:
       fail-fast: false
       matrix:
@@ -52,14 +157,25 @@ jobs:
       - uses: actions/checkout@main
 
       - run:  brew update
-      - run:  brew install cmake llvm ninja pkg-config curl sqlite jansson libyaml libgit2 libarchive
+      - run:  brew install cmake ninja llvm pkg-config curl sqlite jansson libyaml libgit2 libarchive
 
       - run:  |
           export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:/usr/local/opt/openssl@1.1/lib/pkgconfig:/usr/local/opt/curl/lib/pkgconfig:/usr/local/opt/libarchive/lib/pkgconfig"
           CMAKE_EXE_LINKER_FLAGS='-L/usr/local/lib -L/usr/local/opt/openssl@1.1/lib -lssl -liconv -framework CoreFoundation -framework Security'
           CMAKE_FIND_ROOT_PATH="$(brew --prefix openssl@1.1);$(brew --prefix curl);$(brew --prefix sqlite);$(brew --prefix libarchive)"
 
-          cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_EXE_LINKER_FLAGS="$CMAKE_EXE_LINKER_FLAGS" -DCMAKE_FIND_ROOT_PATH="$CMAKE_FIND_ROOT_PATH" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=/usr/local/opt/llvm/bin/clang -DCMAKE_C_FLAGS="-fsanitize=undefined -fsanitize=address -fsanitize=leak"
+          cmake \
+              -S . \
+              -B build.d \
+              -G Ninja \
+              -DCMAKE_INSTALL_PREFIX=./output \
+              -DCMAKE_VERBOSE_MAKEFILE=ON \
+              -DCMAKE_EXE_LINKER_FLAGS="$CMAKE_EXE_LINKER_FLAGS" \
+              -DCMAKE_FIND_ROOT_PATH="$CMAKE_FIND_ROOT_PATH" \
+              -DCMAKE_BUILD_TYPE=Debug \
+              -DCMAKE_C_COMPILER=/usr/local/opt/llvm/bin/clang \
+              -DCMAKE_C_FLAGS="-fsanitize=undefined -fsanitize=address -fsanitize=leak"
+
       - run:  cmake --build   build.d
       - run:  cmake --install build.d
 
