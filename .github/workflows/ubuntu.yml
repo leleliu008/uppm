@@ -49,7 +49,7 @@ jobs:
 
     steps:
       - run:  apt -y update
-      - run:  apt -y install cmake ninja-build pkg-config gcc linux-headers-generic
+      - run:  apt -y install cmake ninja-build pkg-config gcc linux-headers-generic  curl zip unzip tar
 
       - uses: actions/checkout@v3
 
