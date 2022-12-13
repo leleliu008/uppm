@@ -8,8 +8,12 @@
 #include "uppm.h"
 
 static int record_installed_files_r(const char * dirPath, size_t offset, FILE * installedManifestFile) {
-    if ((dirPath == NULL) || (strcmp(dirPath, "") == 0)) {
-        return 1;
+    if (dirPath == NULL) {
+        return UPPM_ARG_IS_NULL;
+    }
+
+    if (strcmp(dirPath, "") == 0) {
+        return UPPM_ARG_IS_EMPTY;
     }
 
     DIR           * dir;
@@ -19,7 +23,7 @@ static int record_installed_files_r(const char * dirPath, size_t offset, FILE * 
 
     if (dir == NULL) {
         perror(dirPath);
-        return 2;
+        return UPPM_ERROR;
     }
 
     int r = 0;
