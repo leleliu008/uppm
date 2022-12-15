@@ -194,11 +194,13 @@ int uppm_main(int argc, char* argv[]) {
     }
 
     if (strcmp(argv[1], "install") == 0) {
-        int packageNameIndexes[argc];
-        packageNameIndexes[0] = 0;
-        packageNameIndexes[1] = 0;
+        if (argv[2] == NULL) {
+            LOG_ERROR1("no package name is given.");
+            return UPPM_ERROR;
+        }
 
-        int size = 2;
+        int packageNameIndexes[argc];
+        int size = 0;
 
         for (int i = 2; i < argc; i++) {
             if (strcmp(argv[i], "-v") == 0) {
@@ -221,17 +223,22 @@ int uppm_main(int argc, char* argv[]) {
             }
         }
 
-        for (int i = 2; i < size; i++) {
+        if (size == 0) {
+            LOG_ERROR1("no package name is given.");
+            return UPPM_ERROR;
+        }
+
+        for (int i = 0; i < size; i++) {
             char * packageName = argv[packageNameIndexes[i]];
 
             int resultCode = uppm_install(packageName, verbose);
 
             if (resultCode == UPPM_PACKAGE_NAME_IS_NULL) {
-                fprintf(stderr, "Usage: %s install <PACKAGE-NAME>, <PACKAGE-NAME> is not given.\n", argv[0]);
+                fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> is not given.\n", argv[0], argv[1]);
             } else if (resultCode == UPPM_PACKAGE_NAME_IS_EMPTY) {
-                fprintf(stderr, "Usage: %s install <PACKAGE-NAME>, <PACKAGE-NAME> is empty string.\n", argv[0]);
+                fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> is empty string.\n", argv[0], argv[1]);
             } else if (resultCode == UPPM_PACKAGE_NAME_IS_INVALID) {
-                fprintf(stderr, "Usage: %s install <PACKAGE-NAME>, <PACKAGE-NAME> is not match pattern ^[A-Za-z0-9+-._]+$\n", argv[0]);
+                fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> is not match pattern ^[A-Za-z0-9+-._]+$\n", argv[0], argv[1]);
             } else if (resultCode == UPPM_PACKAGE_IS_NOT_AVAILABLE) {
                 fprintf(stderr, "package [%s] is not available.\n", packageName);
             } else if (resultCode == UPPM_PACKAGE_IS_NOT_INSTALLED) {
@@ -253,11 +260,13 @@ int uppm_main(int argc, char* argv[]) {
     }
 
     if (strcmp(argv[1], "uninstall") == 0) {
-        int packageNameIndexes[argc];
-        packageNameIndexes[0] = 0;
-        packageNameIndexes[1] = 0;
+        if (argv[2] == NULL) {
+            LOG_ERROR1("no package name is given.");
+            return UPPM_ERROR;
+        }
 
-        int size = 2;
+        int packageNameIndexes[argc];
+        int size = 0;
 
         for (int i = 2; i < argc; i++) {
             if (strcmp(argv[i], "-v") == 0) {
@@ -280,17 +289,22 @@ int uppm_main(int argc, char* argv[]) {
             }
         }
 
-        for (int i = 2; i < size; i++) {
+        if (size == 0) {
+            LOG_ERROR1("no package name is given.");
+            return UPPM_ERROR;
+        }
+
+        for (int i = 0; i < size; i++) {
             char * packageName = argv[packageNameIndexes[i]];
 
             int resultCode = uppm_uninstall(packageName, verbose);
 
             if (resultCode == UPPM_PACKAGE_NAME_IS_NULL) {
-                fprintf(stderr, "Usage: %s install <PACKAGE-NAME>, <PACKAGE-NAME> is not given.\n", argv[0]);
+                fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> is not given.\n", argv[0], argv[1]);
             } else if (resultCode == UPPM_PACKAGE_NAME_IS_EMPTY) {
-                fprintf(stderr, "Usage: %s install <PACKAGE-NAME>, <PACKAGE-NAME> is empty string.\n", argv[0]);
+                fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> is empty string.\n", argv[0], argv[1]);
             } else if (resultCode == UPPM_PACKAGE_NAME_IS_INVALID) {
-                fprintf(stderr, "Usage: %s install <PACKAGE-NAME>, <PACKAGE-NAME> is not match pattern ^[A-Za-z0-9+-._]+$\n", argv[0]);
+                fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> is not match pattern ^[A-Za-z0-9+-._]+$\n", argv[0], argv[1]);
             } else if (resultCode == UPPM_PACKAGE_IS_NOT_AVAILABLE) {
                 fprintf(stderr, "package [%s] is not available.\n", packageName);
             } else if (resultCode == UPPM_PACKAGE_IS_NOT_INSTALLED) {
@@ -312,11 +326,13 @@ int uppm_main(int argc, char* argv[]) {
     }
 
     if (strcmp(argv[1], "reinstall") == 0) {
-        int packageNameIndexes[argc];
-        packageNameIndexes[0] = 0;
-        packageNameIndexes[1] = 0;
+        if (argv[2] == NULL) {
+            LOG_ERROR1("no package name is given.");
+            return UPPM_ERROR;
+        }
 
-        int size = 2;
+        int packageNameIndexes[argc];
+        int size = 0;
 
         for (int i = 2; i < argc; i++) {
             if (strcmp(argv[i], "-v") == 0) {
@@ -351,17 +367,22 @@ int uppm_main(int argc, char* argv[]) {
             }
         }
 
-        for (int i = 2; i < size; i++) {
+        if (size == 0) {
+            LOG_ERROR1("no package name is given.");
+            return UPPM_ERROR;
+        }
+
+        for (int i = 0; i < size; i++) {
             char * packageName = argv[packageNameIndexes[i]];
 
             int resultCode = uppm_reinstall(packageName, verbose);
 
             if (resultCode == UPPM_PACKAGE_NAME_IS_NULL) {
-                fprintf(stderr, "Usage: %s install <PACKAGE-NAME>, <PACKAGE-NAME> is not given.\n", argv[0]);
+                fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> is not given.\n", argv[0], argv[1]);
             } else if (resultCode == UPPM_PACKAGE_NAME_IS_EMPTY) {
-                fprintf(stderr, "Usage: %s install <PACKAGE-NAME>, <PACKAGE-NAME> is empty string.\n", argv[0]);
+                fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> is empty string.\n", argv[0], argv[1]);
             } else if (resultCode == UPPM_PACKAGE_NAME_IS_INVALID) {
-                fprintf(stderr, "Usage: %s install <PACKAGE-NAME>, <PACKAGE-NAME> is not match pattern ^[A-Za-z0-9+-._]+$\n", argv[0]);
+                fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> is not match pattern ^[A-Za-z0-9+-._]+$\n", argv[0], argv[1]);
             } else if (resultCode == UPPM_PACKAGE_IS_NOT_AVAILABLE) {
                 fprintf(stderr, "package [%s] is not available.\n", packageName);
             } else if (resultCode == UPPM_PACKAGE_IS_NOT_INSTALLED) {
@@ -384,10 +405,7 @@ int uppm_main(int argc, char* argv[]) {
 
     if (strcmp(argv[1], "upgrade") == 0) {
         int packageNameIndexes[argc];
-        packageNameIndexes[0] = 0;
-        packageNameIndexes[1] = 0;
-
-        int size = 2;
+        int size = 0;
 
         for (int i = 2; i < argc; i++) {
             if (strcmp(argv[i], "-v") == 0) {
@@ -414,17 +432,17 @@ int uppm_main(int argc, char* argv[]) {
             }
         }
 
-        for (int i = 2; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             char * packageName = argv[packageNameIndexes[i]];
 
             int resultCode = uppm_upgrade(packageName, verbose);
 
             if (resultCode == UPPM_PACKAGE_NAME_IS_NULL) {
-                fprintf(stderr, "Usage: %s install <PACKAGE-NAME>, <PACKAGE-NAME> is not given.\n", argv[0]);
+                fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> is not given.\n", argv[0], argv[1]);
             } else if (resultCode == UPPM_PACKAGE_NAME_IS_EMPTY) {
-                fprintf(stderr, "Usage: %s install <PACKAGE-NAME>, <PACKAGE-NAME> is empty string.\n", argv[0]);
+                fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> is empty string.\n", argv[0], argv[1]);
             } else if (resultCode == UPPM_PACKAGE_NAME_IS_INVALID) {
-                fprintf(stderr, "Usage: %s install <PACKAGE-NAME>, <PACKAGE-NAME> is not match pattern ^[A-Za-z0-9+-._]+$\n", argv[0]);
+                fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> is not match pattern ^[A-Za-z0-9+-._]+$\n", argv[0], argv[1]);
             } else if (resultCode == UPPM_PACKAGE_IS_NOT_AVAILABLE) {
                 fprintf(stderr, "package [%s] is not available.\n", packageName);
             } else if (resultCode == UPPM_PACKAGE_IS_NOT_INSTALLED) {
