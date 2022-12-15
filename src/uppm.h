@@ -9,6 +9,9 @@
 #define UPPM_VERSION "0.0.0"
 #endif
 
+#define UPPM_PACKAGE_NAME_PATTERN "^[A-Za-z0-9+-._]{1,50}$"
+
+
 #define UPPM_OK               0
 #define UPPM_ERROR            1
 
@@ -23,10 +26,6 @@
 #define UPPM_NETWORK_ERROR    7
 
 #define UPPM_SHA256_MISMATCH  8
-
-#define UPPM_PACKAGE_NAME_IS_NULL    20
-#define UPPM_PACKAGE_NAME_IS_EMPTY   21
-#define UPPM_PACKAGE_NAME_IS_INVALID 22
 
 #define UPPM_PACKAGE_IS_NOT_AVAILABLE 25
 #define UPPM_PACKAGE_IS_NOT_INSTALLED 26

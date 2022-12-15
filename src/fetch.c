@@ -125,11 +125,10 @@ int uppm_fetch(const char * packageName, bool verbose) {
     sprintf(downloadDir, "%s/.uppm/downloads", userHomeDir);
 
     if (!exists_and_is_a_directory(downloadDir)) {
-        resultCode = mkdir(downloadDir, S_IRWXU);
-
-        if (resultCode != UPPM_OK) {
+        if (mkdir(downloadDir, S_IRWXU) != 0) {
+            perror(downloadDir);
             uppm_formula_free(formula);
-            return resultCode;
+            return UPPM_ERROR;
         }
     }
 

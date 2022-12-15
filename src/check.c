@@ -10,13 +10,13 @@
 
 int uppm_is_package_name(const char * packageName) {
     if (packageName == NULL) {
-        return UPPM_PACKAGE_NAME_IS_NULL;
+        return UPPM_ARG_IS_NULL;
     } else if (strcmp(packageName, "") == 0) {
-        return UPPM_PACKAGE_NAME_IS_EMPTY;
-    } else if (regex_matched(packageName, "^[A-Za-z0-9+-._]{1,50}$")) {
+        return UPPM_ARG_IS_EMPTY;
+    } else if (regex_matched(packageName, UPPM_PACKAGE_NAME_PATTERN)) {
         return UPPM_OK;
     } else {
-        return UPPM_PACKAGE_NAME_IS_INVALID;
+        return UPPM_ARG_IS_INVALID;
     }
 }
 
