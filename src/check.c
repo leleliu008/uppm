@@ -8,20 +8,20 @@
 #include "core/regex/regex.h"
 #include "uppm.h"
 
-int uppm_is_package_name(const char * packageName) {
-    if (packageName == NULL) {
+int uppm_check_if_the_given_argument_matches_package_name_pattern(const char * arg) {
+    if (arg == NULL) {
         return UPPM_ARG_IS_NULL;
-    } else if (strcmp(packageName, "") == 0) {
+    } else if (strcmp(arg, "") == 0) {
         return UPPM_ARG_IS_EMPTY;
-    } else if (regex_matched(packageName, UPPM_PACKAGE_NAME_PATTERN)) {
+    } else if (regex_matched(arg, UPPM_PACKAGE_NAME_PATTERN)) {
         return UPPM_OK;
     } else {
         return UPPM_ARG_IS_INVALID;
     }
 }
 
-int uppm_is_package_available(const char * packageName) {
-    int resultCode = uppm_is_package_name(packageName);
+int uppm_check_if_the_given_package_is_available(const char * packageName) {
+    int resultCode = uppm_check_if_the_given_argument_matches_package_name_pattern(packageName);
 
     if (resultCode != UPPM_OK) {
         return resultCode;
@@ -53,8 +53,8 @@ int uppm_is_package_available(const char * packageName) {
     return UPPM_PACKAGE_IS_NOT_AVAILABLE;
 }
 
-int uppm_is_package_installed(const char * packageName) {
-    int resultCode = uppm_is_package_name(packageName);
+int uppm_check_if_the_given_package_is_installed(const char * packageName) {
+    int resultCode = uppm_check_if_the_given_argument_matches_package_name_pattern(packageName);
 
     if (resultCode != UPPM_OK) {
         return resultCode;
@@ -89,7 +89,7 @@ int uppm_is_package_installed(const char * packageName) {
     }
 }
 
-int uppm_is_package_outdated(const char * packageName) {
+int uppm_check_if_the_given_package_is_outdated(const char * packageName) {
     UPPMFormula * formula = NULL;
     UPPMReceipt * receipt = NULL;
 

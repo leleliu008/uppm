@@ -91,7 +91,15 @@ int uppm_help() {
         COLOR_GREEN
         "uppm formula-repo-list\n"
         COLOR_OFF
-        "    list formula repositories.";
+        "    list formula repositories.\n\n"
+        COLOR_GREEN
+        "ppkg formula-repo-add <FORMULA-REPO-NAME> <FORMULA-REPO-URL> <BRANCH>\n"
+        COLOR_OFF
+        "    add a new formula-repo.\n\n"
+        COLOR_GREEN
+        "ppkg formula-repo-del <FORMULA-REPO-NAME>\n"
+        COLOR_OFF
+        "    delete a existing formula-repo.\n";
 
         printf("%s\n", str);
     } else {
@@ -141,7 +149,11 @@ int uppm_help() {
         "uppm cleanup\n"
         "    cleanup the unused cache.\n\n"
         "uppm formula-repo-list\n"
-        "    list formula repositories.";
+        "    list formula repositories.\n\n"
+        "ppkg formula-repo-add <FORMULA-REPO-NAME> <FORMULA-REPO-URL> <BRANCH>\n"
+        "    add a new formula-repo.\n\n"
+        "ppkg formula-repo-del <FORMULA-REPO-NAME>\n"
+        "    delete a existing formula-repo.\n";
 
         printf("%s\n", str);
     }

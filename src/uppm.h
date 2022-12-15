@@ -152,11 +152,11 @@ int uppm_integrate_fish_completion(const char * outputDir, bool verbose);
 
 int uppm_cleanup(bool verbose);
 
-int uppm_is_package_name(const char * packageName);
+int uppm_check_if_the_given_argument_matches_package_name_pattern(const char * arg);
 
-int uppm_is_package_available(const char * packageName);
-int uppm_is_package_installed(const char * packageName);
-int uppm_is_package_outdated (const char * packageName);
+int uppm_check_if_the_given_package_is_available(const char * packageName);
+int uppm_check_if_the_given_package_is_installed(const char * packageName);
+int uppm_check_if_the_given_package_is_outdated (const char * packageName);
 
 int uppm_list_the_available_packages();
 int uppm_list_the_installed_packages();

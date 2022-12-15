@@ -1,13 +1,13 @@
 #include "uppm.h"
 
 int uppm_reinstall(const char * packageName, bool verbose) {
-    int resultCode = uppm_is_package_available(packageName);
+    int resultCode = uppm_check_if_the_given_package_is_available(packageName);
 
     if (resultCode != UPPM_OK) {
         return resultCode;
     }
 
-    resultCode = uppm_is_package_installed(packageName);
+    resultCode = uppm_check_if_the_given_package_is_installed(packageName);
 
     if (resultCode != UPPM_OK) {
         return resultCode;

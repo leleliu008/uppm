@@ -102,7 +102,7 @@ int uppm_info(const char * packageName, const char * key) {
         return uppm_info_all_available_packages(key);
     }
 
-    int resultCode = uppm_is_package_name(packageName);
+    int resultCode = uppm_check_if_the_given_argument_matches_package_name_pattern(packageName);
 
     if (resultCode != UPPM_OK) {
         return resultCode;
@@ -126,7 +126,7 @@ int uppm_info(const char * packageName, const char * key) {
         }
 
         if (isatty(STDOUT_FILENO)) {
-            if (uppm_is_package_installed(packageName) == UPPM_OK) {
+            if (uppm_check_if_the_given_package_is_installed(packageName) == UPPM_OK) {
                 printf("pkgname: %s%s%s\n", COLOR_GREEN, packageName, COLOR_OFF);
             } else {
                 printf("pkgname: %s%s%s\n", COLOR_RED,   packageName, COLOR_OFF);

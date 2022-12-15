@@ -206,7 +206,7 @@ int uppm_main(int argc, char* argv[]) {
             if (strcmp(argv[i], "-v") == 0) {
                 verbose = true;
             } else {
-                int resultCode = uppm_is_package_available(argv[i]);
+                int resultCode = uppm_check_if_the_given_package_is_available(argv[i]);
 
                 if (resultCode == UPPM_OK) {
                     packageNameIndexArray[packageNameIndexArraySize] = i;
@@ -272,7 +272,7 @@ int uppm_main(int argc, char* argv[]) {
             if (strcmp(argv[i], "-v") == 0) {
                 verbose = true;
             } else {
-                int resultCode = uppm_is_package_installed(argv[i]);
+                int resultCode = uppm_check_if_the_given_package_is_installed(argv[i]);
 
                 if (resultCode == UPPM_OK) {
                     packageNameIndexArray[packageNameIndexArraySize] = i;
@@ -338,7 +338,7 @@ int uppm_main(int argc, char* argv[]) {
             if (strcmp(argv[i], "-v") == 0) {
                 verbose = true;
             } else {
-                int resultCode = uppm_is_package_available(argv[i]);
+                int resultCode = uppm_check_if_the_given_package_is_available(argv[i]);
 
                 if (resultCode == UPPM_ARG_IS_INVALID) {
                     LOG_ERROR4("package name [", argv[i], "] is not match pattern ", UPPM_PACKAGE_NAME_PATTERN);
@@ -350,7 +350,7 @@ int uppm_main(int argc, char* argv[]) {
                     return resultCode;
                 }
 
-                resultCode = uppm_is_package_installed(argv[i]);
+                resultCode = uppm_check_if_the_given_package_is_installed(argv[i]);
 
                 if (resultCode == UPPM_OK) {
                     packageNameIndexArray[packageNameIndexArraySize] = i;
@@ -411,7 +411,7 @@ int uppm_main(int argc, char* argv[]) {
             if (strcmp(argv[i], "-v") == 0) {
                 verbose = true;
             } else {
-                int resultCode = uppm_is_package_outdated(argv[i]);
+                int resultCode = uppm_check_if_the_given_package_is_outdated(argv[i]);
 
                 if (resultCode == UPPM_OK) {
                     packageNameIndexArray[packageNameIndexArraySize] = i;
@@ -508,7 +508,7 @@ int uppm_main(int argc, char* argv[]) {
     }
 
     if (strcmp(argv[1], "is-available") == 0) {
-        int resultCode = uppm_is_package_available(argv[2]);
+        int resultCode = uppm_check_if_the_given_package_is_available(argv[2]);
 
         if (resultCode == UPPM_ARG_IS_NULL) {
             fprintf(stderr, "Usage: %s is-available <PACKAGE-NAME>, <PACKAGE-NAME> is not given.\n", argv[0]);
@@ -532,7 +532,7 @@ int uppm_main(int argc, char* argv[]) {
     }
 
     if (strcmp(argv[1], "is-installed") == 0) {
-        int resultCode = uppm_is_package_installed(argv[2]);
+        int resultCode = uppm_check_if_the_given_package_is_installed(argv[2]);
 
         if (resultCode == UPPM_ARG_IS_NULL) {
             fprintf(stderr, "Usage: %s is-installed <PACKAGE-NAME>, <PACKAGE-NAME> is not given.\n", argv[0]);
@@ -556,7 +556,7 @@ int uppm_main(int argc, char* argv[]) {
     }
 
     if (strcmp(argv[1], "is-outdated") == 0) {
-        int resultCode = uppm_is_package_outdated(argv[2]);
+        int resultCode = uppm_check_if_the_given_package_is_outdated(argv[2]);
 
         if (resultCode == UPPM_ARG_IS_NULL) {
             fprintf(stderr, "Usage: %s is-outdated <PACKAGE-NAME>, <PACKAGE-NAME> is not given.\n", argv[0]);

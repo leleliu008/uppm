@@ -137,7 +137,7 @@ void uppm_receipt_set_value(UPPMReceiptKeyCode keyCode, char * value, UPPMReceip
 }
 
 int uppm_receipt_parse(const char * packageName, UPPMReceipt * * out) {
-    int resultCode = uppm_is_package_name(packageName);
+    int resultCode = uppm_check_if_the_given_argument_matches_package_name_pattern(packageName);
 
     if (resultCode != UPPM_OK) {
         return resultCode;

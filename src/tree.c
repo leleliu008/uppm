@@ -6,7 +6,7 @@
 #include "uppm.h"
 
 int uppm_tree(const char * packageName, size_t argc, char* argv[]) {
-    int resultCode = uppm_is_package_name(packageName);
+    int resultCode = uppm_check_if_the_given_argument_matches_package_name_pattern(packageName);
 
     if (resultCode != UPPM_OK) {
         return resultCode;
@@ -34,7 +34,7 @@ int uppm_tree(const char * packageName, size_t argc, char* argv[]) {
         return UPPM_PACKAGE_IS_NOT_INSTALLED;
     }
 
-    resultCode = uppm_is_package_installed("tree");
+    resultCode = uppm_check_if_the_given_package_is_installed("tree");
 
     if (resultCode == UPPM_PACKAGE_IS_NOT_INSTALLED) {
         resultCode = uppm_install("tree", false);

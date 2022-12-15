@@ -5,7 +5,7 @@
 #include "uppm.h"
 
 int uppm_formula_path(const char * packageName, char ** out) {
-    int resultCode = uppm_is_package_name(packageName);
+    int resultCode = uppm_check_if_the_given_argument_matches_package_name_pattern(packageName);
 
     if (resultCode != UPPM_OK) {
         return resultCode;
