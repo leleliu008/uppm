@@ -8,9 +8,9 @@
 typedef enum {
     INSTALLED_METADATA_KEY_CODE_unknown,
     INSTALLED_METADATA_KEY_CODE_summary,
-    INSTALLED_METADATA_KEY_CODE_web_url,
     INSTALLED_METADATA_KEY_CODE_version,
     INSTALLED_METADATA_KEY_CODE_license,
+    INSTALLED_METADATA_KEY_CODE_web_url,
     INSTALLED_METADATA_KEY_CODE_bin_url,
     INSTALLED_METADATA_KEY_CODE_bin_sha,
     INSTALLED_METADATA_KEY_CODE_dep_pkg,
@@ -46,11 +46,6 @@ void uppm_receipt_free(UPPMReceipt * receipt) {
         receipt->summary = NULL;
     }
 
-    if (receipt->web_url != NULL) {
-        free(receipt->web_url);
-        receipt->web_url = NULL;
-    }
-
     if (receipt->version != NULL) {
         free(receipt->version);
         receipt->version = NULL;
@@ -59,6 +54,11 @@ void uppm_receipt_free(UPPMReceipt * receipt) {
     if (receipt->license != NULL) {
         free(receipt->license);
         receipt->license = NULL;
+    }
+
+    if (receipt->web_url != NULL) {
+        free(receipt->web_url);
+        receipt->web_url = NULL;
     }
 
     if (receipt->bin_url != NULL) {
@@ -125,9 +125,9 @@ static UPPMReceiptKeyCode uppm_receipt_key_code_from_key_name(char * key) {
 void uppm_receipt_set_value(UPPMReceiptKeyCode keyCode, char * value, UPPMReceipt * receipt) {
     switch (keyCode) {
         case INSTALLED_METADATA_KEY_CODE_summary:  if (receipt->summary != NULL)   free(receipt->summary);   receipt->summary = strdup(value); break;
-        case INSTALLED_METADATA_KEY_CODE_web_url:  if (receipt->web_url != NULL)   free(receipt->web_url);   receipt->web_url = strdup(value); break;
         case INSTALLED_METADATA_KEY_CODE_version:  if (receipt->version != NULL)   free(receipt->version);   receipt->version = strdup(value); break;
         case INSTALLED_METADATA_KEY_CODE_license:  if (receipt->license != NULL)   free(receipt->license);   receipt->license = strdup(value); break;
+        case INSTALLED_METADATA_KEY_CODE_web_url:  if (receipt->web_url != NULL)   free(receipt->web_url);   receipt->web_url = strdup(value); break;
         case INSTALLED_METADATA_KEY_CODE_bin_url:  if (receipt->bin_url != NULL)   free(receipt->bin_url);   receipt->bin_url = strdup(value); break;
         case INSTALLED_METADATA_KEY_CODE_bin_sha:  if (receipt->bin_sha != NULL)   free(receipt->bin_sha);   receipt->bin_sha = strdup(value); break;
         case INSTALLED_METADATA_KEY_CODE_dep_pkg:  if (receipt->dep_pkg != NULL)   free(receipt->dep_pkg);   receipt->dep_pkg = strdup(value); break;
@@ -151,18 +151,6 @@ static int uppm_receipt_check(UPPMReceipt * receipt, const char * receiptFilePat
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    if (receipt->web_url == NULL) {
-        fprintf(stderr, "scheme error in receipt file: %s : web-url field not found.\n", receiptFilePath);
-        return UPPM_RECEIPT_SCHEME_ERROR;
-    }
-
-    if (strcmp(receipt->web_url, "") == 0) {
-        fprintf(stderr, "scheme error in receipt file: %s : web-url field's value must not be empty.\n", receiptFilePath);
-        return UPPM_RECEIPT_SCHEME_ERROR;
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////
-
     if (receipt->version == NULL) {
         fprintf(stderr, "scheme error in receipt file: %s : version field not found.\n", receiptFilePath);
         return UPPM_RECEIPT_SCHEME_ERROR;
@@ -170,6 +158,18 @@ static int uppm_receipt_check(UPPMReceipt * receipt, const char * receiptFilePat
 
     if (strcmp(receipt->version, "") == 0) {
         fprintf(stderr, "scheme error in receipt file: %s : version field's value must not be empty.\n", receiptFilePath);
+        return UPPM_RECEIPT_SCHEME_ERROR;
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    if (receipt->web_url == NULL) {
+        fprintf(stderr, "scheme error in receipt file: %s : web-url field not found.\n", receiptFilePath);
+        return UPPM_RECEIPT_SCHEME_ERROR;
+    }
+
+    if (strcmp(receipt->web_url, "") == 0) {
+        fprintf(stderr, "scheme error in receipt file: %s : web-url field's value must not be empty.\n", receiptFilePath);
         return UPPM_RECEIPT_SCHEME_ERROR;
     }
 
@@ -204,24 +204,36 @@ static int uppm_receipt_check(UPPMReceipt * receipt, const char * receiptFilePat
         return UPPM_RECEIPT_SCHEME_ERROR;
     }
 
-    size_t timestampLength = strlen(receipt->timestamp);
+    size_t i = 0;
+    char   c;
 
-    if (timestampLength != 10) {
-        fprintf(stderr, "scheme error in receipt file: %s : timestamp field's value's length must be 10.\n", receiptFilePath);
-        return UPPM_RECEIPT_SCHEME_ERROR;
-    }
+    for (;; i++) {
+        c = receipt->timestamp[i];
 
-    for (size_t i = 0; i < 10; i++) {
-        if ((receipt->timestamp[i] < '0') || (receipt->timestamp[i] > '9')) {
+        if (c == '\0') {
+            break;
+        }
+
+        if ((c < '0') || (c > '9')) {
             fprintf(stderr, "scheme error in receipt file: %s : timestamp field's value should only contains non-numeric characters.\n", receiptFilePath);
             return UPPM_RECEIPT_SCHEME_ERROR;
         }
+    }
+
+    if (i != 10) {
+        fprintf(stderr, "scheme error in receipt file: %s : timestamp field's value's length must be 10.\n", receiptFilePath);
+        return UPPM_RECEIPT_SCHEME_ERROR;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////
 
     if (receipt->signature == NULL) {
         fprintf(stderr, "scheme error in receipt file: %s : signature field not found.\n", receiptFilePath);
+        return UPPM_RECEIPT_SCHEME_ERROR;
+    }
+
+    if (strcmp(receipt->signature, "") == 0) {
+        fprintf(stderr, "scheme error in receipt file: %s : signature field's value must not be empty.\n", receiptFilePath);
         return UPPM_RECEIPT_SCHEME_ERROR;
     }
 

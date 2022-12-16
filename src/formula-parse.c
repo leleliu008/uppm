@@ -8,9 +8,9 @@
 typedef enum {
     FORMULA_KEY_CODE_unknown,
     FORMULA_KEY_CODE_summary,
-    FORMULA_KEY_CODE_web_url,
     FORMULA_KEY_CODE_version,
     FORMULA_KEY_CODE_license,
+    FORMULA_KEY_CODE_web_url,
     FORMULA_KEY_CODE_bin_url,
     FORMULA_KEY_CODE_bin_sha,
     FORMULA_KEY_CODE_res_url,
@@ -25,9 +25,9 @@ void uppm_formula_dump(UPPMFormula * formula) {
     }
 
     printf("summary: %s\n", formula->summary);
-    printf("web-url: %s\n", formula->web_url);
     printf("version: %s\n", formula->version);
     printf("license: %s\n", formula->license);
+    printf("web-url: %s\n", formula->web_url);
     printf("bin-url: %s\n", formula->bin_url);
     printf("bin-sha: %s\n", formula->bin_sha);
     printf("dep-pkg: %s\n", formula->dep_pkg);
@@ -45,11 +45,6 @@ void uppm_formula_free(UPPMFormula * formula) {
         formula->summary = NULL;
     }
 
-    if (formula->web_url != NULL) {
-        free(formula->web_url);
-        formula->web_url = NULL;
-    }
-
     if (formula->version != NULL) {
         free(formula->version);
         formula->version = NULL;
@@ -58,6 +53,11 @@ void uppm_formula_free(UPPMFormula * formula) {
     if (formula->license != NULL) {
         free(formula->license);
         formula->license = NULL;
+    }
+
+    if (formula->web_url != NULL) {
+        free(formula->web_url);
+        formula->web_url = NULL;
     }
 
     if (formula->bin_url != NULL) {
@@ -119,9 +119,9 @@ static UPPMFormulaKeyCode uppm_formula_key_code_from_key_name(char * key) {
 static void uppm_formula_set_value(UPPMFormulaKeyCode keyCode, char * value, UPPMFormula * formula, bool isLinuxMuslLibc) {
     switch (keyCode) {
         case FORMULA_KEY_CODE_summary: if (formula->summary != NULL) free(formula->summary); formula->summary = strdup(value); break;
-        case FORMULA_KEY_CODE_web_url: if (formula->web_url != NULL) free(formula->web_url); formula->web_url = strdup(value); break;
         case FORMULA_KEY_CODE_version: if (formula->version != NULL) free(formula->version); formula->version = strdup(value); break;
         case FORMULA_KEY_CODE_license: if (formula->license != NULL) free(formula->license); formula->license = strdup(value); break;
+        case FORMULA_KEY_CODE_web_url: if (formula->web_url != NULL) free(formula->web_url); formula->web_url = strdup(value); break;
         case FORMULA_KEY_CODE_bin_url: if (formula->bin_url != NULL) free(formula->bin_url); formula->bin_url = strdup(value); break;
         case FORMULA_KEY_CODE_bin_sha: if (formula->bin_sha != NULL) free(formula->bin_sha); formula->bin_sha = strdup(value); break;
         case FORMULA_KEY_CODE_dep_pkg: if (formula->dep_pkg != NULL) free(formula->dep_pkg); formula->dep_pkg = strdup(value); break;
@@ -159,18 +159,6 @@ static int uppm_formula_check(UPPMFormula * formula, const char * formulaFilePat
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    if (formula->web_url == NULL) {
-        fprintf(stderr, "scheme error in formula file: %s : web-url field not found.\n", formulaFilePath);
-        return UPPM_FORMULA_SCHEME_ERROR;
-    }
-
-    if (strcmp(formula->web_url, "") == 0) {
-        fprintf(stderr, "scheme error in formula file: %s : web-url field's value must not be empty.\n", formulaFilePath);
-        return UPPM_FORMULA_SCHEME_ERROR;
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////
-
     if (formula->version == NULL) {
         fprintf(stderr, "scheme error in formula file: %s : version field not found.\n", formulaFilePath);
         return UPPM_FORMULA_SCHEME_ERROR;
@@ -178,6 +166,18 @@ static int uppm_formula_check(UPPMFormula * formula, const char * formulaFilePat
 
     if (strcmp(formula->version, "") == 0) {
         fprintf(stderr, "scheme error in formula file: %s : version field's value must not be empty.\n", formulaFilePath);
+        return UPPM_FORMULA_SCHEME_ERROR;
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    if (formula->web_url == NULL) {
+        fprintf(stderr, "scheme error in formula file: %s : web-url field not found.\n", formulaFilePath);
+        return UPPM_FORMULA_SCHEME_ERROR;
+    }
+
+    if (strcmp(formula->web_url, "") == 0) {
+        fprintf(stderr, "scheme error in formula file: %s : web-url field's value must not be empty.\n", formulaFilePath);
         return UPPM_FORMULA_SCHEME_ERROR;
     }
 
