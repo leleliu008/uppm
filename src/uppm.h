@@ -44,9 +44,9 @@ void uppm_show_error_message(int errorCode, const char * str);
 
 typedef struct {
     char * summary;
-    char * web_url;
     char * version;
     char * license;
+    char * web_url;
     char * bin_url;
     char * bin_sha;
     char * dep_pkg;
@@ -89,9 +89,9 @@ int   uppm_formula_repo_del(const char * formulaRepoName);
 
 typedef struct {
     char * summary;
-    char * web_url;
     char * version;
     char * license;
+    char * web_url;
     char * bin_url;
     char * bin_sha;
     char * dep_pkg;

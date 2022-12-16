@@ -243,7 +243,7 @@ int uppm_info(const char * packageName, const char * key) {
         }
 
         uppm_formula_free(formula);
-    } else if (strcmp(key, "web_url") == 0) {
+    } else if (strcmp(key, "web-url") == 0) {
         UPPMFormula * formula = NULL;
 
         resultCode = uppm_formula_parse(packageName, &formula);

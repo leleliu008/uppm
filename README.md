@@ -31,6 +31,8 @@ ppkg install uppm
 
 **[vcpkg](https://github.com/microsoft/vcpkg)**
 ```bash
+# install g++ curl zip unzip tar git
+
 git clone https://github.com/microsoft/vcpkg.git
 cd vcpkg
 ./bootstrap-vcpkg.sh
