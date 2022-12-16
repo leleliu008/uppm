@@ -85,7 +85,7 @@ int uppm_main(int argc, char* argv[]) {
             fprintf(stderr, "Usage: %s info <PACKAGE-NAME> [KEY], <PACKAGE-NAME> is empty string.\n", argv[0]);
         } else if (resultCode == UPPM_ARG_IS_INVALID) {
             fprintf(stderr, "Usage: %s info <PACKAGE-NAME> [KEY], <PACKAGE-NAME> is not match pattern %s\n", argv[0], UPPM_PACKAGE_NAME_PATTERN);
-        } else if (resultCode == UPPM_INFO_UNRECOGNIZED_KEY) {
+        } else if (resultCode == UPPM_ARG_IS_UNKNOWN) {
             fprintf(stderr, "Usage: %s info <PACKAGE-NAME> [KEY], unrecognized KEY: %s\n", argv[0], argv[3]);
         } else if (resultCode == UPPM_PACKAGE_IS_NOT_AVAILABLE) {
             fprintf(stderr, "package [%s] is not available.\n", argv[2]);

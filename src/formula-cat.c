@@ -19,7 +19,7 @@ int uppm_formula_cat(const char * packageName) {
     if (file == NULL) {
         perror(formulaFilePath);
         free(formulaFilePath);
-        return UPPM_FORMULA_FILE_OPEN_ERROR;
+        return UPPM_ERROR;
     }
 
     printf("formula: %s\n", formulaFilePath);

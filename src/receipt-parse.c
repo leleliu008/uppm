@@ -8,7 +8,7 @@
 typedef enum {
     INSTALLED_METADATA_KEY_CODE_unknown,
     INSTALLED_METADATA_KEY_CODE_summary,
-    INSTALLED_METADATA_KEY_CODE_webpage,
+    INSTALLED_METADATA_KEY_CODE_web_url,
     INSTALLED_METADATA_KEY_CODE_version,
     INSTALLED_METADATA_KEY_CODE_license,
     INSTALLED_METADATA_KEY_CODE_bin_url,
@@ -25,12 +25,12 @@ void uppm_receipt_dump(UPPMReceipt * receipt) {
     }
 
     printf("summary: %s\n", receipt->summary);
-    printf("webpage: %s\n", receipt->webpage);
     printf("version: %s\n", receipt->version);
     printf("license: %s\n", receipt->license);
-    printf("bin_url: %s\n", receipt->bin_url);
-    printf("bin_sha: %s\n", receipt->bin_sha);
-    printf("dep_pkg: %s\n", receipt->dep_pkg);
+    printf("web-url: %s\n", receipt->web_url);
+    printf("bin-url: %s\n", receipt->bin_url);
+    printf("bin-sha: %s\n", receipt->bin_sha);
+    printf("dep-pkg: %s\n", receipt->dep_pkg);
     printf("install: %s\n", receipt->install);
     printf("signature: %s\n", receipt->signature);
     printf("timestamp: %s\n", receipt->timestamp);
@@ -46,9 +46,9 @@ void uppm_receipt_free(UPPMReceipt * receipt) {
         receipt->summary = NULL;
     }
 
-    if (receipt->webpage != NULL) {
-        free(receipt->webpage);
-        receipt->webpage = NULL;
+    if (receipt->web_url != NULL) {
+        free(receipt->web_url);
+        receipt->web_url = NULL;
     }
 
     if (receipt->version != NULL) {
@@ -97,8 +97,10 @@ void uppm_receipt_free(UPPMReceipt * receipt) {
 static UPPMReceiptKeyCode uppm_receipt_key_code_from_key_name(char * key) {
            if (strcmp(key, "summary") == 0) {
         return INSTALLED_METADATA_KEY_CODE_summary;
+    } else if (strcmp(key, "web_url") == 0) {
+        return INSTALLED_METADATA_KEY_CODE_web_url;
     } else if (strcmp(key, "webpage") == 0) {
-        return INSTALLED_METADATA_KEY_CODE_webpage;
+        return INSTALLED_METADATA_KEY_CODE_web_url;
     } else if (strcmp(key, "version") == 0) {
         return INSTALLED_METADATA_KEY_CODE_version;
     } else if (strcmp(key, "license") == 0) {
@@ -123,7 +125,7 @@ static UPPMReceiptKeyCode uppm_receipt_key_code_from_key_name(char * key) {
 void uppm_receipt_set_value(UPPMReceiptKeyCode keyCode, char * value, UPPMReceipt * receipt) {
     switch (keyCode) {
         case INSTALLED_METADATA_KEY_CODE_summary:  if (receipt->summary != NULL)   free(receipt->summary);   receipt->summary = strdup(value); break;
-        case INSTALLED_METADATA_KEY_CODE_webpage:  if (receipt->webpage != NULL)   free(receipt->webpage);   receipt->webpage = strdup(value); break;
+        case INSTALLED_METADATA_KEY_CODE_web_url:  if (receipt->web_url != NULL)   free(receipt->web_url);   receipt->web_url = strdup(value); break;
         case INSTALLED_METADATA_KEY_CODE_version:  if (receipt->version != NULL)   free(receipt->version);   receipt->version = strdup(value); break;
         case INSTALLED_METADATA_KEY_CODE_license:  if (receipt->license != NULL)   free(receipt->license);   receipt->license = strdup(value); break;
         case INSTALLED_METADATA_KEY_CODE_bin_url:  if (receipt->bin_url != NULL)   free(receipt->bin_url);   receipt->bin_url = strdup(value); break;
@@ -135,6 +137,97 @@ void uppm_receipt_set_value(UPPMReceiptKeyCode keyCode, char * value, UPPMReceip
         default: break;
     }
 }
+
+static int uppm_receipt_check(UPPMReceipt * receipt, const char * receiptFilePath) {
+    if (receipt->summary == NULL) {
+        fprintf(stderr, "scheme error in receipt file: %s : summary field not found.\n", receiptFilePath);
+        return UPPM_RECEIPT_SCHEME_ERROR;
+    }
+
+    if (strcmp(receipt->summary, "") == 0) {
+        fprintf(stderr, "scheme error in receipt file: %s : summary field's value must not be empty.\n", receiptFilePath);
+        return UPPM_RECEIPT_SCHEME_ERROR;
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    if (receipt->web_url == NULL) {
+        fprintf(stderr, "scheme error in receipt file: %s : web-url field not found.\n", receiptFilePath);
+        return UPPM_RECEIPT_SCHEME_ERROR;
+    }
+
+    if (strcmp(receipt->web_url, "") == 0) {
+        fprintf(stderr, "scheme error in receipt file: %s : web-url field's value must not be empty.\n", receiptFilePath);
+        return UPPM_RECEIPT_SCHEME_ERROR;
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    if (receipt->version == NULL) {
+        fprintf(stderr, "scheme error in receipt file: %s : version field not found.\n", receiptFilePath);
+        return UPPM_RECEIPT_SCHEME_ERROR;
+    }
+
+    if (strcmp(receipt->version, "") == 0) {
+        fprintf(stderr, "scheme error in receipt file: %s : version field's value must not be empty.\n", receiptFilePath);
+        return UPPM_RECEIPT_SCHEME_ERROR;
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    if (receipt->bin_url == NULL) {
+        fprintf(stderr, "scheme error in receipt file: %s : bin-url field not found.\n", receiptFilePath);
+        return UPPM_RECEIPT_SCHEME_ERROR;
+    }
+
+    if (strcmp(receipt->bin_url, "") == 0) {
+        fprintf(stderr, "scheme error in receipt file: %s : bin-url field's value must not be empty.\n", receiptFilePath);
+        return UPPM_RECEIPT_SCHEME_ERROR;
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    if (receipt->bin_sha == NULL) {
+        fprintf(stderr, "scheme error in receipt file: %s : bin-sha field not found.\n", receiptFilePath);
+        return UPPM_RECEIPT_SCHEME_ERROR;
+    }
+
+    if (strlen(receipt->bin_sha) != 64) {
+        fprintf(stderr, "scheme error in receipt file: %s : bin-sha field's value's length must be 64.\n", receiptFilePath);
+        return UPPM_RECEIPT_SCHEME_ERROR;
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    if (receipt->timestamp == NULL) {
+        fprintf(stderr, "scheme error in receipt file: %s : timestamp field not found.\n", receiptFilePath);
+        return UPPM_RECEIPT_SCHEME_ERROR;
+    }
+
+    size_t timestampLength = strlen(receipt->timestamp);
+
+    if (timestampLength != 10) {
+        fprintf(stderr, "scheme error in receipt file: %s : timestamp field's value's length must be 10.\n", receiptFilePath);
+        return UPPM_RECEIPT_SCHEME_ERROR;
+    }
+
+    for (size_t i = 0; i < 10; i++) {
+        if ((receipt->timestamp[i] < '0') || (receipt->timestamp[i] > '9')) {
+            fprintf(stderr, "scheme error in receipt file: %s : timestamp field's value should only contains non-numeric characters.\n", receiptFilePath);
+            return UPPM_RECEIPT_SCHEME_ERROR;
+        }
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    if (receipt->signature == NULL) {
+        fprintf(stderr, "scheme error in receipt file: %s : signature field not found.\n", receiptFilePath);
+        return UPPM_RECEIPT_SCHEME_ERROR;
+    }
+
+    return UPPM_OK;
+}
+
 
 int uppm_receipt_parse(const char * packageName, UPPMReceipt * * out) {
     int resultCode = uppm_check_if_the_given_argument_matches_package_name_pattern(packageName);
@@ -189,13 +282,11 @@ int uppm_receipt_parse(const char * packageName, UPPMReceipt * * out) {
 
     int lastTokenType = 0;
 
-    bool success = true;
-
     do {
         // https://libyaml.docsforge.com/master/api/yaml_parser_scan/
         if (yaml_parser_scan(&parser, &token) == 0) {
-            fprintf(stderr, "syntax error: %s\n", receiptFilePath);
-            success = false;
+            fprintf(stderr, "syntax error in receipt file: %s\n", receiptFilePath);
+            resultCode = UPPM_RECEIPT_SYNTAX_ERROR;
             goto clean;
         }
 
@@ -233,61 +324,18 @@ clean:
 
     fclose(file);
 
-    if (success) {
-        if ((receipt->timestamp == NULL) || (strcmp(receipt->timestamp, "") == 0)) {
-            fprintf(stderr, "timestamp not configed in %s\n", receiptFilePath);
-            uppm_receipt_free(receipt);
-            return UPPM_ERROR;
-        }
+    //uppm_receipt_dump(receipt);
 
-        size_t timestampLength = strlen(receipt->timestamp);
+    if (resultCode == UPPM_OK) {
+        resultCode = uppm_receipt_check(receipt, receiptFilePath);
 
-        if (timestampLength != 10) {
-            fprintf(stderr, "value of timestamp length must be 10\n");
-            uppm_receipt_free(receipt);
-            return UPPM_ERROR;
+        if (resultCode == UPPM_OK) {
+            (*out) = receipt;
+            return UPPM_OK;
         }
-
-        for (size_t i = 0; i < 10; i++) {
-            if ((receipt->timestamp[i] < '0') || (receipt->timestamp[i] > '9')) {
-                fprintf(stderr, "timestamp contains non-numeric character.\n");
-                uppm_receipt_free(receipt);
-                return UPPM_ERROR;
-            }
-        }
-
-        if ((receipt->signature == NULL) || (strcmp(receipt->signature, "") == 0)) {
-            fprintf(stderr, "signature not configed in %s\n", receiptFilePath);
-            uppm_receipt_free(receipt);
-            return UPPM_ERROR;
-        }
-
-        if ((receipt->bin_url == NULL) || (strcmp(receipt->bin_url, "") == 0)) {
-            fprintf(stderr, "bin-url not configed in %s\n", receiptFilePath);
-            uppm_receipt_free(receipt);
-            return UPPM_ERROR;
-        }
-
-        if ((receipt->bin_sha == NULL) || (strcmp(receipt->bin_url, "") == 0)) {
-            fprintf(stderr, "bin-sha not configed in %s\n", receiptFilePath);
-            uppm_receipt_free(receipt);
-            return UPPM_ERROR;
-        }
-
-        if (strlen(receipt->bin_sha) != 64) {
-            fprintf(stderr, "value of bin-sha length must be 64\n");
-            uppm_receipt_free(receipt);
-            return UPPM_ERROR;
-        }
-
-        (*out) = receipt;
-        return UPPM_OK;
-    } else {
-        if (receipt != NULL) {
-            uppm_receipt_free(receipt);
-        } else {
-            //free(receiptFilePath);
-        }
-        return UPPM_ERROR;
     }
+
+    uppm_receipt_free(receipt);
+
+    return resultCode;
 }

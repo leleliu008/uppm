@@ -33,22 +33,18 @@
 
 #define UPPM_FORMULA_REPO_NOT_EXIST   30
 
-#define UPPM_FORMULA_FILE_OPEN_ERROR  35
-#define UPPM_FORMULA_FILE_READ_ERROR  36
+#define UPPM_FORMULA_SYNTAX_ERROR     40
+#define UPPM_FORMULA_SCHEME_ERROR     41
 
-#define UPPM_INSTALLED_METADATA_FILE_OPEN_ERROR  40
-#define UPPM_INSTALLED_METADATA_FILE_READ_ERROR  41
+#define UPPM_RECEIPT_SYNTAX_ERROR     50
+#define UPPM_RECEIPT_SCHEME_ERROR     51
 
-#define UPPM_INSTALLED_FILES_CONFIG_FILE_NOT_EXISTS  45
-#define UPPM_INSTALLED_FILES_CONFIG_FILE_OPEN_ERROR  46
-
-#define UPPM_INFO_UNRECOGNIZED_KEY  51
 
 void uppm_show_error_message(int errorCode, const char * str);
 
 typedef struct {
     char * summary;
-    char * webpage;
+    char * web_url;
     char * version;
     char * license;
     char * bin_url;
@@ -93,7 +89,7 @@ int   uppm_formula_repo_del(const char * formulaRepoName);
 
 typedef struct {
     char * summary;
-    char * webpage;
+    char * web_url;
     char * version;
     char * license;
     char * bin_url;

@@ -8,7 +8,7 @@
 typedef enum {
     FORMULA_KEY_CODE_unknown,
     FORMULA_KEY_CODE_summary,
-    FORMULA_KEY_CODE_webpage,
+    FORMULA_KEY_CODE_web_url,
     FORMULA_KEY_CODE_version,
     FORMULA_KEY_CODE_license,
     FORMULA_KEY_CODE_bin_url,
@@ -25,12 +25,12 @@ void uppm_formula_dump(UPPMFormula * formula) {
     }
 
     printf("summary: %s\n", formula->summary);
-    printf("webpage: %s\n", formula->webpage);
+    printf("web-url: %s\n", formula->web_url);
     printf("version: %s\n", formula->version);
     printf("license: %s\n", formula->license);
-    printf("bin_url: %s\n", formula->bin_url);
-    printf("bin_sha: %s\n", formula->bin_sha);
-    printf("dep_pkg: %s\n", formula->dep_pkg);
+    printf("bin-url: %s\n", formula->bin_url);
+    printf("bin-sha: %s\n", formula->bin_sha);
+    printf("dep-pkg: %s\n", formula->dep_pkg);
     printf("install: %s\n", formula->install);
     printf("path:    %s\n", formula->path);
 }
@@ -45,9 +45,9 @@ void uppm_formula_free(UPPMFormula * formula) {
         formula->summary = NULL;
     }
 
-    if (formula->webpage != NULL) {
-        free(formula->webpage);
-        formula->webpage = NULL;
+    if (formula->web_url != NULL) {
+        free(formula->web_url);
+        formula->web_url = NULL;
     }
 
     if (formula->version != NULL) {
@@ -91,8 +91,10 @@ void uppm_formula_free(UPPMFormula * formula) {
 static UPPMFormulaKeyCode uppm_formula_key_code_from_key_name(char * key) {
            if (strcmp(key, "summary") == 0) {
         return FORMULA_KEY_CODE_summary;
+    } else if (strcmp(key, "web_url") == 0) {
+        return FORMULA_KEY_CODE_web_url;
     } else if (strcmp(key, "webpage") == 0) {
-        return FORMULA_KEY_CODE_webpage;
+        return FORMULA_KEY_CODE_web_url;
     } else if (strcmp(key, "version") == 0) {
         return FORMULA_KEY_CODE_version;
     } else if (strcmp(key, "license") == 0) {
@@ -117,7 +119,7 @@ static UPPMFormulaKeyCode uppm_formula_key_code_from_key_name(char * key) {
 static void uppm_formula_set_value(UPPMFormulaKeyCode keyCode, char * value, UPPMFormula * formula, bool isLinuxMuslLibc) {
     switch (keyCode) {
         case FORMULA_KEY_CODE_summary: if (formula->summary != NULL) free(formula->summary); formula->summary = strdup(value); break;
-        case FORMULA_KEY_CODE_webpage: if (formula->webpage != NULL) free(formula->webpage); formula->webpage = strdup(value); break;
+        case FORMULA_KEY_CODE_web_url: if (formula->web_url != NULL) free(formula->web_url); formula->web_url = strdup(value); break;
         case FORMULA_KEY_CODE_version: if (formula->version != NULL) free(formula->version); formula->version = strdup(value); break;
         case FORMULA_KEY_CODE_license: if (formula->license != NULL) free(formula->license); formula->license = strdup(value); break;
         case FORMULA_KEY_CODE_bin_url: if (formula->bin_url != NULL) free(formula->bin_url); formula->bin_url = strdup(value); break;
@@ -142,6 +144,68 @@ static void uppm_formula_set_value(UPPMFormulaKeyCode keyCode, char * value, UPP
             break;
         default: break;
     }
+}
+
+static int uppm_formula_check(UPPMFormula * formula, const char * formulaFilePath) {
+    if (formula->summary == NULL) {
+        fprintf(stderr, "scheme error in formula file: %s : summary field not found.\n", formulaFilePath);
+        return UPPM_FORMULA_SCHEME_ERROR;
+    }
+
+    if (strcmp(formula->summary, "") == 0) {
+        fprintf(stderr, "scheme error in formula file: %s : summary field's value must not be empty.\n", formulaFilePath);
+        return UPPM_FORMULA_SCHEME_ERROR;
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    if (formula->web_url == NULL) {
+        fprintf(stderr, "scheme error in formula file: %s : web-url field not found.\n", formulaFilePath);
+        return UPPM_FORMULA_SCHEME_ERROR;
+    }
+
+    if (strcmp(formula->web_url, "") == 0) {
+        fprintf(stderr, "scheme error in formula file: %s : web-url field's value must not be empty.\n", formulaFilePath);
+        return UPPM_FORMULA_SCHEME_ERROR;
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    if (formula->version == NULL) {
+        fprintf(stderr, "scheme error in formula file: %s : version field not found.\n", formulaFilePath);
+        return UPPM_FORMULA_SCHEME_ERROR;
+    }
+
+    if (strcmp(formula->version, "") == 0) {
+        fprintf(stderr, "scheme error in formula file: %s : version field's value must not be empty.\n", formulaFilePath);
+        return UPPM_FORMULA_SCHEME_ERROR;
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    if (formula->bin_url == NULL) {
+        fprintf(stderr, "scheme error in formula file: %s : bin-url field not found.\n", formulaFilePath);
+        return UPPM_FORMULA_SCHEME_ERROR;
+    }
+
+    if (strcmp(formula->bin_url, "") == 0) {
+        fprintf(stderr, "scheme error in formula file: %s : bin-url field's value must not be empty.\n", formulaFilePath);
+        return UPPM_FORMULA_SCHEME_ERROR;
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    if (formula->bin_sha == NULL) {
+        fprintf(stderr, "scheme error in formula file: %s : bin-sha field not found.\n", formulaFilePath);
+        return UPPM_FORMULA_SCHEME_ERROR;
+    }
+
+    if (strlen(formula->bin_sha) != 64) {
+        fprintf(stderr, "scheme error in formula file: %s : bin-sha field's value's length must be 64.\n", formulaFilePath);
+        return UPPM_FORMULA_SCHEME_ERROR;
+    }
+
+    return UPPM_OK;
 }
 
 int uppm_formula_parse(const char * packageName, UPPMFormula * * out) {
@@ -169,9 +233,9 @@ int uppm_formula_parse(const char * packageName, UPPMFormula * * out) {
         return resultCode;
     }
 
-    FILE * file = fopen(formulaFilePath, "r");
+    FILE * formulaFile = fopen(formulaFilePath, "r");
 
-    if (file == NULL) {
+    if (formulaFile == NULL) {
         perror(formulaFilePath);
         free(formulaFilePath);
         return UPPM_ERROR;
@@ -187,7 +251,7 @@ int uppm_formula_parse(const char * packageName, UPPMFormula * * out) {
         return UPPM_ERROR;
     }
 
-    yaml_parser_set_input_file(&parser, file);
+    yaml_parser_set_input_file(&parser, formulaFile);
 
     UPPMFormulaKeyCode formulaKeyCode = FORMULA_KEY_CODE_unknown;
 
@@ -195,13 +259,11 @@ int uppm_formula_parse(const char * packageName, UPPMFormula * * out) {
 
     int lastTokenType = 0;
 
-    bool success = true;
-
     do {
         // https://libyaml.docsforge.com/master/api/yaml_parser_scan/
         if (yaml_parser_scan(&parser, &token) == 0) {
-            fprintf(stderr, "syntax error: %s\n", formulaFilePath);
-            success = false;
+            fprintf(stderr, "syntax error in formula file: %s\n", formulaFilePath);
+            resultCode = UPPM_FORMULA_SYNTAX_ERROR;
             goto clean;
         }
 
@@ -238,35 +300,24 @@ clean:
 
     yaml_parser_delete(&parser);
 
-    fclose(file);
+    fclose(formulaFile);
 
-    if (success) {
-        if ((formula->bin_url == NULL) || (strcmp(formula->bin_url, "") == 0)) {
-            fprintf(stderr, "bin-url not configed in %s\n", formulaFilePath);
-            uppm_formula_free(formula);
-            return UPPM_ERROR;
-        }
+    //uppm_formula_dump(formula);
 
-        if ((formula->bin_sha == NULL) || (strcmp(formula->bin_url, "") == 0)) {
-            fprintf(stderr, "bin-sha not configed in %s\n", formulaFilePath);
-            uppm_formula_free(formula);
-            return UPPM_ERROR;
-        }
+    if (resultCode == UPPM_OK) {
+        resultCode = uppm_formula_check(formula, formulaFilePath);
 
-        if (strlen(formula->bin_sha) != 64) {
-            fprintf(stderr, "value of bin-sha length must be 64\n");
-            uppm_formula_free(formula);
-            return UPPM_ERROR;
+        if (resultCode == UPPM_OK) {
+            (*out) = formula;
+            return UPPM_OK;
         }
-
-        (*out) = formula;
-        return UPPM_OK;
-    } else {
-        if (formula != NULL) {
-            uppm_formula_free(formula);
-        } else {
-            free(formulaFilePath);
-        }
-        return UPPM_ERROR;
     }
+
+    if (formula == NULL) {
+        free(formulaFilePath);
+    } else {
+        uppm_formula_free(formula);
+    }
+
+    return resultCode;
 }

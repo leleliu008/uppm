@@ -81,7 +81,7 @@ int record_installed_files(const char * installedDirPath) {
 
     if (installedManifestFile == NULL) {
         perror(installedManifestFilePath);
-        return UPPM_INSTALLED_FILES_CONFIG_FILE_OPEN_ERROR;
+        return UPPM_ERROR;
     }
 
     int resultCode = record_installed_files_r(installedDirPath, installedDirLength + 1, installedManifestFile);

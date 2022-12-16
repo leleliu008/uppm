@@ -241,7 +241,7 @@ int uppm_install(const char * packageName, bool verbose) {
                 UPPM_VERSION,
                 uppmHomeDir,
                 formula->summary == NULL ? "" : formula->summary,
-                formula->webpage == NULL ? "" : formula->webpage,
+                formula->web_url == NULL ? "" : formula->web_url,
                 formula->version == NULL ? "" : formula->version,
                 formula->bin_url == NULL ? "" : formula->bin_url,
                 formula->bin_sha == NULL ? "" : formula->bin_sha,
@@ -293,7 +293,7 @@ int uppm_install(const char * packageName, bool verbose) {
     if (formulaFile == NULL) {
         perror(formula->path);
         uppm_formula_free(formula);
-        return UPPM_FORMULA_FILE_OPEN_ERROR;
+        return UPPM_ERROR;
     }
 
     uppm_formula_free(formula);

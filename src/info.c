@@ -122,7 +122,7 @@ int uppm_info(const char * packageName, const char * key) {
         if (formulaFile == NULL) {
             perror(formulaFilePath);
             free(formulaFilePath);
-            return UPPM_FORMULA_FILE_OPEN_ERROR;
+            return UPPM_ERROR;
         }
 
         if (isatty(STDOUT_FILENO)) {
@@ -159,14 +159,13 @@ int uppm_info(const char * packageName, const char * key) {
 
         json_object_set_new(root, "pkgname", json_string(packageName));
         json_object_set_new(root, "summary", json_string(formula->summary));
-        json_object_set_new(root, "webpage", json_string(formula->webpage));
         json_object_set_new(root, "version", json_string(formula->version));
+        json_object_set_new(root, "license", json_string(formula->license));
+        json_object_set_new(root, "web-url", json_string(formula->web_url));
         json_object_set_new(root, "bin-url", json_string(formula->bin_url));
         json_object_set_new(root, "bin-sha", json_string(formula->bin_sha));
-
-        if ((formula->install != NULL) && (strcmp(formula->install, "") != 0)) {
-            json_object_set_new(root, "install", json_string(formula->install));
-        }
+        json_object_set_new(root, "dep-pkg", json_string(formula->dep_pkg));
+        json_object_set_new(root, "install", json_string(formula->install));
 
         char * jsonStr = json_dumps(root, 0);
 
@@ -191,7 +190,7 @@ int uppm_info(const char * packageName, const char * key) {
 
         printf("UPPM_PKG_PKGNAME='%s'\n", packageName);
         printf("UPPM_PKG_SUMMARY='%s'\n", formula->summary);
-        printf("UPPM_PKG_WEBPAGE='%s'\n", formula->webpage);
+        printf("UPPM_PKG_WEBPAGE='%s'\n", formula->web_url);
         printf("UPPM_PKG_VERSION='%s'\n", formula->version);
         printf("UPPM_PKG_BIN_URL='%s'\n", formula->bin_url);
         printf("UPPM_PKG_BIN_SHA='%s'\n", formula->bin_sha);
@@ -215,7 +214,7 @@ int uppm_info(const char * packageName, const char * key) {
         if (file == NULL) {
             perror(formulaFilePath);
             free(formulaFilePath);
-            return UPPM_FORMULA_FILE_OPEN_ERROR;
+            return UPPM_ERROR;
         }
 
         printf("formula: %s\n", formulaFilePath);
@@ -244,7 +243,7 @@ int uppm_info(const char * packageName, const char * key) {
         }
 
         uppm_formula_free(formula);
-    } else if (strcmp(key, "webpage") == 0) {
+    } else if (strcmp(key, "web_url") == 0) {
         UPPMFormula * formula = NULL;
 
         resultCode = uppm_formula_parse(packageName, &formula);
@@ -253,8 +252,8 @@ int uppm_info(const char * packageName, const char * key) {
             return resultCode;
         }
 
-        if (formula->webpage != NULL) {
-            printf("%s\n", formula->webpage);
+        if (formula->web_url != NULL) {
+            printf("%s\n", formula->web_url);
         }
 
         uppm_formula_free(formula);
@@ -394,15 +393,11 @@ int uppm_info(const char * packageName, const char * key) {
         memset (installedManifestFilePath, 0, installedManifestFilePathLength);
         sprintf(installedManifestFilePath, "%s/.uppm/manifest.txt", installedDir);
 
-        if (!exists_and_is_a_regular_file(installedManifestFilePath)) {
-            return UPPM_INSTALLED_FILES_CONFIG_FILE_NOT_EXISTS;
-        }
-
         FILE * installedManifestFile = fopen(installedManifestFilePath, "r");
 
         if (installedManifestFile == NULL) {
             perror(installedManifestFilePath);
-            return UPPM_INSTALLED_FILES_CONFIG_FILE_OPEN_ERROR;
+            return UPPM_ERROR;
         }
 
         char buff[1024];
@@ -463,7 +458,7 @@ int uppm_info(const char * packageName, const char * key) {
 
         if (receiptFile == NULL) {
             perror(receiptFilePath);
-            return UPPM_INSTALLED_METADATA_FILE_OPEN_ERROR;
+            return UPPM_ERROR;
         }
 
         char buff[1024];
@@ -486,15 +481,13 @@ int uppm_info(const char * packageName, const char * key) {
 
         json_object_set_new(root, "pkgname", json_string(packageName));
         json_object_set_new(root, "summary", json_string(receipt->summary));
-        json_object_set_new(root, "webpage", json_string(receipt->webpage));
         json_object_set_new(root, "version", json_string(receipt->version));
+        json_object_set_new(root, "license", json_string(receipt->license));
+        json_object_set_new(root, "web-url", json_string(receipt->web_url));
         json_object_set_new(root, "bin-url", json_string(receipt->bin_url));
         json_object_set_new(root, "bin-sha", json_string(receipt->bin_sha));
-
-        if ((receipt->install != NULL) && (strcmp(receipt->install, "") != 0)) {
-            json_object_set_new(root, "install", json_string(receipt->install));
-        }
-
+        json_object_set_new(root, "dep-pkg", json_string(receipt->dep_pkg));
+        json_object_set_new(root, "install", json_string(receipt->install));
         json_object_set_new(root, "signature", json_string(receipt->signature));
         json_object_set_new(root, "timestamp", json_string(receipt->timestamp));
 
@@ -579,7 +572,7 @@ int uppm_info(const char * packageName, const char * key) {
 
         uppm_receipt_free(receipt);
     } else {
-        return UPPM_INFO_UNRECOGNIZED_KEY;
+        return UPPM_ARG_IS_UNKNOWN;
     }
 
     return resultCode;

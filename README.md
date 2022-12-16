@@ -254,7 +254,7 @@ all relevant dirs and files are located in `~/.uppm` directory.
         uppm info curl
         uppm info curl version
         uppm info curl summary
-        uppm info curl webpage
+        uppm info curl web-url
         uppm info curl bin-url
         uppm info curl bin-sha
         uppm info curl install
