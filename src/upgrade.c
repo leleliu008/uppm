@@ -13,7 +13,5 @@ int uppm_upgrade(const char * packageName, bool verbose) {
         return resultCode;
     }
 
-    resultCode = uppm_install(packageName, verbose);
-
-    return resultCode;
+    return uppm_install(packageName, verbose);
 }

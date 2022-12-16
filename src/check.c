@@ -93,9 +93,7 @@ int uppm_check_if_the_given_package_is_outdated(const char * packageName) {
     UPPMFormula * formula = NULL;
     UPPMReceipt * receipt = NULL;
 
-    int resultCode = UPPM_OK;
-
-    resultCode = uppm_formula_parse(packageName, &formula);
+    int resultCode = uppm_formula_parse(packageName, &formula);
 
     if (resultCode != UPPM_OK) {
         goto clean;

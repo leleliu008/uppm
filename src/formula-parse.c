@@ -219,15 +219,9 @@ int uppm_formula_parse(const char * packageName, UPPMFormula * * out) {
         return UPPM_ERROR;
     }
 
-    int resultCode = uppm_check_if_the_given_argument_matches_package_name_pattern(packageName);
-
-    if (resultCode != UPPM_OK) {
-        return resultCode;
-    }
-
     char * formulaFilePath = NULL;
 
-    resultCode = uppm_formula_path(packageName, &formulaFilePath);
+    int resultCode = uppm_formula_path(packageName, &formulaFilePath);
 
     if (resultCode != UPPM_OK) {
         return resultCode;

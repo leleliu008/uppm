@@ -63,7 +63,9 @@ int uppm_search(const char * keyword) {
                 memset (packageName, 0, fileNameLength);
                 strncpy(packageName, dir_entry->d_name, fileNameLength - 4);
 
-                if (!isFirst) {
+                if (isFirst) {
+                    isFirst = false;
+                } else {
                     printf("\n");
                 }
 
@@ -74,10 +76,6 @@ int uppm_search(const char * keyword) {
                     uppm_formula_repo_list_free(formulaRepoList);
                     closedir(dir);
                     return resultCode;
-                }
-
-                if (isFirst) {
-                    isFirst = false;
                 }
             } else if(r == FNM_NOMATCH) {
                 ;

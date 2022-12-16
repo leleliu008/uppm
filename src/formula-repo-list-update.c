@@ -9,7 +9,7 @@ int uppm_formula_repo_list_update() {
 
     int resultCode = uppm_formula_repo_list_new(&formulaRepoList);
 
-    if (resultCode == 0) {
+    if (resultCode == UPPM_OK) {
         for (size_t i = 0; i < formulaRepoList->size; i++) {
             UPPMFormulaRepo * formulaRepo = formulaRepoList->repos[i];
             printf("updating formula repo : %s => %s\n", formulaRepo->name, formulaRepo->url);
