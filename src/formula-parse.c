@@ -148,60 +148,60 @@ static void uppm_formula_set_value(UPPMFormulaKeyCode keyCode, char * value, UPP
 
 static int uppm_formula_check(UPPMFormula * formula, const char * formulaFilePath) {
     if (formula->summary == NULL) {
-        fprintf(stderr, "scheme error in formula file: %s : summary field not found.\n", formulaFilePath);
+        fprintf(stderr, "scheme error in formula file: %s : summary mapping not found.\n", formulaFilePath);
         return UPPM_FORMULA_SCHEME_ERROR;
     }
 
     if (strcmp(formula->summary, "") == 0) {
-        fprintf(stderr, "scheme error in formula file: %s : summary field's value must not be empty.\n", formulaFilePath);
+        fprintf(stderr, "scheme error in formula file: %s : summary mapping's value must not be empty.\n", formulaFilePath);
         return UPPM_FORMULA_SCHEME_ERROR;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////
 
     if (formula->version == NULL) {
-        fprintf(stderr, "scheme error in formula file: %s : version field not found.\n", formulaFilePath);
+        fprintf(stderr, "scheme error in formula file: %s : version mapping not found.\n", formulaFilePath);
         return UPPM_FORMULA_SCHEME_ERROR;
     }
 
     if (strcmp(formula->version, "") == 0) {
-        fprintf(stderr, "scheme error in formula file: %s : version field's value must not be empty.\n", formulaFilePath);
+        fprintf(stderr, "scheme error in formula file: %s : version mapping's value must not be empty.\n", formulaFilePath);
         return UPPM_FORMULA_SCHEME_ERROR;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////
 
     if (formula->web_url == NULL) {
-        fprintf(stderr, "scheme error in formula file: %s : web-url field not found.\n", formulaFilePath);
+        fprintf(stderr, "scheme error in formula file: %s : web-url mapping not found.\n", formulaFilePath);
         return UPPM_FORMULA_SCHEME_ERROR;
     }
 
     if (strcmp(formula->web_url, "") == 0) {
-        fprintf(stderr, "scheme error in formula file: %s : web-url field's value must not be empty.\n", formulaFilePath);
+        fprintf(stderr, "scheme error in formula file: %s : web-url mapping's value must not be empty.\n", formulaFilePath);
         return UPPM_FORMULA_SCHEME_ERROR;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////
 
     if (formula->bin_url == NULL) {
-        fprintf(stderr, "scheme error in formula file: %s : bin-url field not found.\n", formulaFilePath);
+        fprintf(stderr, "scheme error in formula file: %s : bin-url mapping not found.\n", formulaFilePath);
         return UPPM_FORMULA_SCHEME_ERROR;
     }
 
     if (strcmp(formula->bin_url, "") == 0) {
-        fprintf(stderr, "scheme error in formula file: %s : bin-url field's value must not be empty.\n", formulaFilePath);
+        fprintf(stderr, "scheme error in formula file: %s : bin-url mapping's value must not be empty.\n", formulaFilePath);
         return UPPM_FORMULA_SCHEME_ERROR;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////
 
     if (formula->bin_sha == NULL) {
-        fprintf(stderr, "scheme error in formula file: %s : bin-sha field not found.\n", formulaFilePath);
+        fprintf(stderr, "scheme error in formula file: %s : bin-sha mapping not found.\n", formulaFilePath);
         return UPPM_FORMULA_SCHEME_ERROR;
     }
 
     if (strlen(formula->bin_sha) != 64) {
-        fprintf(stderr, "scheme error in formula file: %s : bin-sha field's value's length must be 64.\n", formulaFilePath);
+        fprintf(stderr, "scheme error in formula file: %s : bin-sha mapping's value's length must be 64.\n", formulaFilePath);
         return UPPM_FORMULA_SCHEME_ERROR;
     }
 

@@ -140,67 +140,67 @@ void uppm_receipt_set_value(UPPMReceiptKeyCode keyCode, char * value, UPPMReceip
 
 static int uppm_receipt_check(UPPMReceipt * receipt, const char * receiptFilePath) {
     if (receipt->summary == NULL) {
-        fprintf(stderr, "scheme error in receipt file: %s : summary field not found.\n", receiptFilePath);
+        fprintf(stderr, "scheme error in receipt file: %s : summary mapping not found.\n", receiptFilePath);
         return UPPM_RECEIPT_SCHEME_ERROR;
     }
 
     if (strcmp(receipt->summary, "") == 0) {
-        fprintf(stderr, "scheme error in receipt file: %s : summary field's value must not be empty.\n", receiptFilePath);
+        fprintf(stderr, "scheme error in receipt file: %s : summary mapping's value must not be empty.\n", receiptFilePath);
         return UPPM_RECEIPT_SCHEME_ERROR;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////
 
     if (receipt->version == NULL) {
-        fprintf(stderr, "scheme error in receipt file: %s : version field not found.\n", receiptFilePath);
+        fprintf(stderr, "scheme error in receipt file: %s : version mapping not found.\n", receiptFilePath);
         return UPPM_RECEIPT_SCHEME_ERROR;
     }
 
     if (strcmp(receipt->version, "") == 0) {
-        fprintf(stderr, "scheme error in receipt file: %s : version field's value must not be empty.\n", receiptFilePath);
+        fprintf(stderr, "scheme error in receipt file: %s : version mapping's value must not be empty.\n", receiptFilePath);
         return UPPM_RECEIPT_SCHEME_ERROR;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////
 
     if (receipt->web_url == NULL) {
-        fprintf(stderr, "scheme error in receipt file: %s : web-url field not found.\n", receiptFilePath);
+        fprintf(stderr, "scheme error in receipt file: %s : web-url mapping not found.\n", receiptFilePath);
         return UPPM_RECEIPT_SCHEME_ERROR;
     }
 
     if (strcmp(receipt->web_url, "") == 0) {
-        fprintf(stderr, "scheme error in receipt file: %s : web-url field's value must not be empty.\n", receiptFilePath);
+        fprintf(stderr, "scheme error in receipt file: %s : web-url mapping's value must not be empty.\n", receiptFilePath);
         return UPPM_RECEIPT_SCHEME_ERROR;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////
 
     if (receipt->bin_url == NULL) {
-        fprintf(stderr, "scheme error in receipt file: %s : bin-url field not found.\n", receiptFilePath);
+        fprintf(stderr, "scheme error in receipt file: %s : bin-url mapping not found.\n", receiptFilePath);
         return UPPM_RECEIPT_SCHEME_ERROR;
     }
 
     if (strcmp(receipt->bin_url, "") == 0) {
-        fprintf(stderr, "scheme error in receipt file: %s : bin-url field's value must not be empty.\n", receiptFilePath);
+        fprintf(stderr, "scheme error in receipt file: %s : bin-url mapping's value must not be empty.\n", receiptFilePath);
         return UPPM_RECEIPT_SCHEME_ERROR;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////
 
     if (receipt->bin_sha == NULL) {
-        fprintf(stderr, "scheme error in receipt file: %s : bin-sha field not found.\n", receiptFilePath);
+        fprintf(stderr, "scheme error in receipt file: %s : bin-sha mapping not found.\n", receiptFilePath);
         return UPPM_RECEIPT_SCHEME_ERROR;
     }
 
     if (strlen(receipt->bin_sha) != 64) {
-        fprintf(stderr, "scheme error in receipt file: %s : bin-sha field's value's length must be 64.\n", receiptFilePath);
+        fprintf(stderr, "scheme error in receipt file: %s : bin-sha mapping's value's length must be 64.\n", receiptFilePath);
         return UPPM_RECEIPT_SCHEME_ERROR;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////
 
     if (receipt->timestamp == NULL) {
-        fprintf(stderr, "scheme error in receipt file: %s : timestamp field not found.\n", receiptFilePath);
+        fprintf(stderr, "scheme error in receipt file: %s : timestamp mapping not found.\n", receiptFilePath);
         return UPPM_RECEIPT_SCHEME_ERROR;
     }
 
@@ -215,25 +215,25 @@ static int uppm_receipt_check(UPPMReceipt * receipt, const char * receiptFilePat
         }
 
         if ((c < '0') || (c > '9')) {
-            fprintf(stderr, "scheme error in receipt file: %s : timestamp field's value should only contains non-numeric characters.\n", receiptFilePath);
+            fprintf(stderr, "scheme error in receipt file: %s : timestamp mapping's value should only contains non-numeric characters.\n", receiptFilePath);
             return UPPM_RECEIPT_SCHEME_ERROR;
         }
     }
 
     if (i != 10) {
-        fprintf(stderr, "scheme error in receipt file: %s : timestamp field's value's length must be 10.\n", receiptFilePath);
+        fprintf(stderr, "scheme error in receipt file: %s : timestamp mapping's value's length must be 10.\n", receiptFilePath);
         return UPPM_RECEIPT_SCHEME_ERROR;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////
 
     if (receipt->signature == NULL) {
-        fprintf(stderr, "scheme error in receipt file: %s : signature field not found.\n", receiptFilePath);
+        fprintf(stderr, "scheme error in receipt file: %s : signature mapping not found.\n", receiptFilePath);
         return UPPM_RECEIPT_SCHEME_ERROR;
     }
 
     if (strcmp(receipt->signature, "") == 0) {
-        fprintf(stderr, "scheme error in receipt file: %s : signature field's value must not be empty.\n", receiptFilePath);
+        fprintf(stderr, "scheme error in receipt file: %s : signature mapping's value must not be empty.\n", receiptFilePath);
         return UPPM_RECEIPT_SCHEME_ERROR;
     }
 
