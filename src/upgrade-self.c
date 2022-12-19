@@ -18,11 +18,13 @@ int uppm_upgrade_self(bool verbose) {
         return UPPM_ENV_HOME_NOT_SET;
     }
 
-    if (strcmp(userHomeDir, "") == 0) {
+    size_t userHomeDirLength = strlen(userHomeDir);
+
+    if (userHomeDirLength == 0) {
         return UPPM_ENV_HOME_NOT_SET;
     }
 
-    size_t userHomeDirLength = strlen(userHomeDir);
+    ////////////////////////////////////////////////////////////////
 
     size_t  uppmHomeDirLength = userHomeDirLength + 7;
     char    uppmHomeDir[uppmHomeDirLength];
@@ -36,6 +38,8 @@ int uppm_upgrade_self(bool verbose) {
         }
     }
 
+    ////////////////////////////////////////////////////////////////
+
     size_t  uppmTmpDirLength = uppmHomeDirLength + 5;
     char    uppmTmpDir[uppmTmpDirLength];
     memset (uppmTmpDir, 0, uppmTmpDirLength);
@@ -47,7 +51,6 @@ int uppm_upgrade_self(bool verbose) {
             return UPPM_ERROR;
         }
     }
-
 
     ////////////////////////////////////////////////////////////////////////////////////////////
 

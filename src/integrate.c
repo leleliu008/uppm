@@ -10,16 +10,36 @@ int uppm_integrate_zsh_completion(const char * outputDir, bool verbose) {
 
     char * userHomeDir = getenv("HOME");
 
-    if (userHomeDir == NULL || strcmp(userHomeDir, "") == 0) {
+    if (userHomeDir == NULL) {
         return UPPM_ENV_HOME_NOT_SET;
     }
 
     size_t userHomeDirLength = strlen(userHomeDir);
 
-    size_t  zshCompletionDirLength = userHomeDirLength + 18;
+    if (userHomeDirLength == 0) {
+        return UPPM_ENV_HOME_NOT_SET;
+    }
+
+    ////////////////////////////////////////////////////////////////
+
+    size_t  uppmHomeDirLength = userHomeDirLength + 7;
+    char    uppmHomeDir[uppmHomeDirLength];
+    memset (uppmHomeDir, 0, uppmHomeDirLength);
+    sprintf(uppmHomeDir, "%s/.uppm", userHomeDir);
+
+    if (!exists_and_is_a_directory(uppmHomeDir)) {
+        if (mkdir(uppmHomeDir, S_IRWXU) != 0) {
+            perror(uppmHomeDir);
+            return UPPM_ERROR;
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////
+
+    size_t  zshCompletionDirLength = uppmHomeDirLength + 16;
     char    zshCompletionDir[zshCompletionDirLength];
     memset (zshCompletionDir, 0, zshCompletionDirLength);
-    sprintf(zshCompletionDir, "%s/.uppm/zsh_completion", userHomeDir);
+    sprintf(zshCompletionDir, "%s/zsh_completion", uppmHomeDir);
 
     if (!exists_and_is_a_directory(zshCompletionDir)) {
         if (mkdir(zshCompletionDir, S_IRWXU) != 0) {
@@ -28,7 +48,9 @@ int uppm_integrate_zsh_completion(const char * outputDir, bool verbose) {
         }
     }
 
-    size_t  zshCompletionFilePathLength = zshCompletionDirLength + 2;
+    ////////////////////////////////////////////////////////////////
+
+    size_t  zshCompletionFilePathLength = zshCompletionDirLength + 7;
     char    zshCompletionFilePath[zshCompletionFilePathLength];
     memset (zshCompletionFilePath, 0, zshCompletionFilePathLength);
     sprintf(zshCompletionFilePath, "%s/_uppm", zshCompletionDir);
