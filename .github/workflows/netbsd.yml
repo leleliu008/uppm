@@ -60,7 +60,7 @@ jobs:
 
             run ./output/bin/uppm search zip
 
-            run ./output/bin/uppm depends zip
+            run ./output/bin/uppm depends gzip
             run ./output/bin/uppm depends android-sdk
             run ./output/bin/uppm depends android-sdk --format=box
             run ./output/bin/uppm depends android-sdk --format=dot
