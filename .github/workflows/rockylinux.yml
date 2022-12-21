@@ -33,14 +33,83 @@ jobs:
       - run:  ./ppkg install uppm
       - run:  ./ppkg tree    uppm
 
+
+
+      - run:  echo "SSL_CERT_FILE=/opt/ppkg/core/etc/ssl/certs/cacert.pem" >> $GITHUB_ENV
+
+
+      - run:  /opt/ppkg/installed/uppm/bin/uppm
+
       - run:  /opt/ppkg/installed/uppm/bin/uppm --help
       - run:  /opt/ppkg/installed/uppm/bin/uppm --version
+
+      - run:  /opt/ppkg/installed/uppm/bin/uppm -h
+      - run:  /opt/ppkg/installed/uppm/bin/uppm -V
+
       - run:  /opt/ppkg/installed/uppm/bin/uppm env
-      - run:  |
-          export SSL_CERT_FILE=/opt/ppkg/core/etc/ssl/certs/cacert.pem
-          /opt/ppkg/installed/uppm/bin/uppm update
-      - run:  /opt/ppkg/installed/uppm/bin/uppm search    zip
-      - run:  /opt/ppkg/installed/uppm/bin/uppm info      unzip
-      - run:  /opt/ppkg/installed/uppm/bin/uppm install   unzip
-      - run:  /opt/ppkg/installed/uppm/bin/uppm tree      unzip
+      - run:  /opt/ppkg/installed/uppm/bin/uppm env -v
+
+      - run:  /opt/ppkg/installed/uppm/bin/uppm integrate zsh
+
+      - run:  /opt/ppkg/installed/uppm/bin/uppm update
+
+      - run:  /opt/ppkg/installed/uppm/bin/uppm search zip
+
+      - run:  /opt/ppkg/installed/uppm/bin/uppm depends zip
+      - run:  /opt/ppkg/installed/uppm/bin/uppm depends android-sdk
+      - run:  /opt/ppkg/installed/uppm/bin/uppm depends android-sdk --format=box
+      - run:  /opt/ppkg/installed/uppm/bin/uppm depends android-sdk --format=dot
+
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info @all
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip --json
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip --yaml
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip version
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip license
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip summary
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip webpage
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip bin-url
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip bin-sha
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip install
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip formula
+
+      - run:  /opt/ppkg/installed/uppm/bin/uppm fetch   gzip
+      - run:  /opt/ppkg/installed/uppm/bin/uppm fetch   gsed -v
+
+      - run:  /opt/ppkg/installed/uppm/bin/uppm install unzip
+
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip installed-dir
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip installed-files
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip installed-receipt-path
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip installed-receipt-json
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip installed-receipt-yaml
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip installed-timestamp-unix
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip installed-timestamp-iso-8601
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip installed-timestamp-rfc-3339
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip installed-version
+
+      - run:  /opt/ppkg/installed/uppm/bin/uppm tree unzip
+      - run:  /opt/ppkg/installed/uppm/bin/uppm tree unzip -L 3
+
+      - run: |
+          sed -i '/^version: /c version: 6.0.28' $(/opt/ppkg/installed/uppm/bin/uppm info unzip formula | head -n 1 | cut -d ' ' -f2)
+
+      - run:  /opt/ppkg/installed/uppm/bin/uppm ls-available
+      - run:  /opt/ppkg/installed/uppm/bin/uppm ls-installed
+      - run:  /opt/ppkg/installed/uppm/bin/uppm ls-outdated
+
+      - run:  /opt/ppkg/installed/uppm/bin/uppm is-available curl
+      - run:  /opt/ppkg/installed/uppm/bin/uppm is-installed unzip
+      - run:  /opt/ppkg/installed/uppm/bin/uppm is-outdated  unzip
+
+      - run:  /opt/ppkg/installed/uppm/bin/uppm upgrade   unzip
+      - run:  /opt/ppkg/installed/uppm/bin/uppm reinstall unzip
       - run:  /opt/ppkg/installed/uppm/bin/uppm uninstall unzip
+
+      - run:  /opt/ppkg/installed/uppm/bin/uppm upgrade-self
+
+      - run:  /opt/ppkg/installed/uppm/bin/uppm formula-repo-list
+      - run:  /opt/ppkg/installed/uppm/bin/uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo
+      - run:  /opt/ppkg/installed/uppm/bin/uppm formula-repo-del my_repo
+
+      - run:  /opt/ppkg/installed/uppm/bin/uppm cleanup

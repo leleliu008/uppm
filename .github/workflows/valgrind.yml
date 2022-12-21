@@ -46,7 +46,7 @@ jobs:
       - run:  $VALGRIND ./output/bin/uppm search    and
 
       - run:  $VALGRIND ./output/bin/uppm info      tree
-      - run:  $VALGRIND ./output/bin/uppm info      tree @all
+        #- run:  $VALGRIND ./output/bin/uppm info      tree @all
       - run:  $VALGRIND ./output/bin/uppm info      tree --shell
       - run:  $VALGRIND ./output/bin/uppm info      tree --json
       - run:  $VALGRIND ./output/bin/uppm info      tree --yaml
