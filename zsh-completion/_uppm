@@ -87,7 +87,7 @@ function _uppm() {
                                 ;;
                             *)  _arguments \
                                     '1:package-name:(@all $(uppm ls-available 2>/dev/null))' \
-                                    '2:key:(formula summary version license web-url bin-url bin-sha dep-pkg installed-dir installed-receipt-path installed-receipt-json installed-receipt-yaml installed-timestamp-unix installed-timestamp-rfc-3339 installed-timestamp-iso-8601 installed-version installed-files --json --yaml --shell)'
+                                    '2:key:(formula summary version license webpage bin-url bin-sha dep-pkg installed-dir installed-receipt-path installed-receipt-json installed-receipt-yaml installed-timestamp-unix installed-timestamp-rfc-3339 installed-timestamp-iso-8601 installed-version installed-files --json --yaml --shell)'
                         esac
                     fi
                     ;;

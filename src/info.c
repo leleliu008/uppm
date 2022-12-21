@@ -159,7 +159,7 @@ int uppm_info(const char * packageName, const char * key) {
         json_object_set_new(root, "summary", json_string(formula->summary));
         json_object_set_new(root, "version", json_string(formula->version));
         json_object_set_new(root, "license", json_string(formula->license));
-        json_object_set_new(root, "web-url", json_string(formula->web_url));
+        json_object_set_new(root, "webpage", json_string(formula->webpage));
         json_object_set_new(root, "bin-url", json_string(formula->bin_url));
         json_object_set_new(root, "bin-sha", json_string(formula->bin_sha));
         json_object_set_new(root, "dep-pkg", json_string(formula->dep_pkg));
@@ -188,14 +188,11 @@ int uppm_info(const char * packageName, const char * key) {
 
         printf("UPPM_PKG_PKGNAME='%s'\n", packageName);
         printf("UPPM_PKG_SUMMARY='%s'\n", formula->summary);
-        printf("UPPM_PKG_WEBPAGE='%s'\n", formula->web_url);
         printf("UPPM_PKG_VERSION='%s'\n", formula->version);
+        printf("UPPM_PKG_WEB_URL='%s'\n", formula->webpage);
         printf("UPPM_PKG_BIN_URL='%s'\n", formula->bin_url);
         printf("UPPM_PKG_BIN_SHA='%s'\n", formula->bin_sha);
-
-        if ((formula->install != NULL) && (strcmp(formula->install, "") != 0)) {
-            printf("UPPM_PKG_INSTALL=\"%s\"\n", formula->install);
-        }
+        printf("UPPM_PKG_INSTALL=\"%s\"\n", formula->install == NULL ? "" : formula->install);
 
         uppm_formula_free(formula);
     } else if (strcmp(key, "formula") == 0) {
@@ -241,7 +238,7 @@ int uppm_info(const char * packageName, const char * key) {
         }
 
         uppm_formula_free(formula);
-    } else if (strcmp(key, "web-url") == 0) {
+    } else if (strcmp(key, "webpage") == 0) {
         UPPMFormula * formula = NULL;
 
         resultCode = uppm_formula_parse(packageName, &formula);
@@ -250,8 +247,8 @@ int uppm_info(const char * packageName, const char * key) {
             return resultCode;
         }
 
-        if (formula->web_url != NULL) {
-            printf("%s\n", formula->web_url);
+        if (formula->webpage != NULL) {
+            printf("%s\n", formula->webpage);
         }
 
         uppm_formula_free(formula);
@@ -342,11 +339,15 @@ int uppm_info(const char * packageName, const char * key) {
     } else if (strcmp(key, "installed-dir") == 0) {
         char * userHomeDir = getenv("HOME");
 
-        if (userHomeDir == NULL || strcmp(userHomeDir, "") == 0) {
+        if (userHomeDir == NULL) {
             return UPPM_ENV_HOME_NOT_SET;
         }
 
         size_t userHomeDirLength = strlen(userHomeDir);
+
+        if (userHomeDirLength == 0) {
+            return UPPM_ENV_HOME_NOT_SET;
+        }
 
         size_t  installedDirLength = userHomeDirLength + strlen(packageName) + 20;
         char    installedDir[installedDirLength];
@@ -366,11 +367,15 @@ int uppm_info(const char * packageName, const char * key) {
     } else if (strcmp(key, "installed-files") == 0) {
         char * userHomeDir = getenv("HOME");
 
-        if (userHomeDir == NULL || strcmp(userHomeDir, "") == 0) {
+        if (userHomeDir == NULL) {
             return UPPM_ENV_HOME_NOT_SET;
         }
 
         size_t userHomeDirLength = strlen(userHomeDir);
+
+        if (userHomeDirLength == 0) {
+            return UPPM_ENV_HOME_NOT_SET;
+        }
 
         size_t  installedDirLength = userHomeDirLength + strlen(packageName) + 20;
         char    installedDir[installedDirLength];
@@ -408,11 +413,15 @@ int uppm_info(const char * packageName, const char * key) {
     } else if (strcmp(key, "installed-receipt-path") == 0) {
         char * userHomeDir = getenv("HOME");
 
-        if (userHomeDir == NULL || strcmp(userHomeDir, "") == 0) {
+        if (userHomeDir == NULL) {
             return UPPM_ENV_HOME_NOT_SET;
         }
 
         size_t userHomeDirLength = strlen(userHomeDir);
+
+        if (userHomeDirLength == 0) {
+            return UPPM_ENV_HOME_NOT_SET;
+        }
 
         size_t  installedDirLength = userHomeDirLength + strlen(packageName) + 20;
         char    installedDir[installedDirLength];
@@ -432,11 +441,15 @@ int uppm_info(const char * packageName, const char * key) {
     } else if (strcmp(key, "installed-receipt-yaml") == 0) {
         char * userHomeDir = getenv("HOME");
 
-        if (userHomeDir == NULL || strcmp(userHomeDir, "") == 0) {
+        if (userHomeDir == NULL) {
             return UPPM_ENV_HOME_NOT_SET;
         }
 
         size_t userHomeDirLength = strlen(userHomeDir);
+
+        if (userHomeDirLength == 0) {
+            return UPPM_ENV_HOME_NOT_SET;
+        }
 
         size_t  installedDirLength = userHomeDirLength + strlen(packageName) + 20;
         char    installedDir[installedDirLength];
@@ -481,7 +494,7 @@ int uppm_info(const char * packageName, const char * key) {
         json_object_set_new(root, "summary", json_string(receipt->summary));
         json_object_set_new(root, "version", json_string(receipt->version));
         json_object_set_new(root, "license", json_string(receipt->license));
-        json_object_set_new(root, "web-url", json_string(receipt->web_url));
+        json_object_set_new(root, "webpage", json_string(receipt->webpage));
         json_object_set_new(root, "bin-url", json_string(receipt->bin_url));
         json_object_set_new(root, "bin-sha", json_string(receipt->bin_sha));
         json_object_set_new(root, "dep-pkg", json_string(receipt->dep_pkg));

@@ -98,12 +98,17 @@ int uppm_env(bool verbose) {
 
     char * userHomeDir = getenv("HOME");
 
-    if ((userHomeDir == NULL) || (strcmp(userHomeDir, "") == 0)) {
-        fprintf(stderr, "HOME environment variable is not set.\n");
+    if (userHomeDir == NULL) {
         return UPPM_ENV_HOME_NOT_SET;
     }
 
-    size_t  uppmHomeDirLength = strlen(userHomeDir) + 7;
+    size_t  userHomeDirLength = strlen(userHomeDir);
+
+    if (userHomeDirLength == 0) {
+        return UPPM_ENV_HOME_NOT_SET;
+    }
+
+    size_t  uppmHomeDirLength = userHomeDirLength + 7;
     char    uppmHomeDir[uppmHomeDirLength];
     memset (uppmHomeDir, 0, uppmHomeDirLength);
     sprintf(uppmHomeDir, "%s/.uppm", userHomeDir);

@@ -14,11 +14,15 @@ int uppm_tree(const char * packageName, size_t argc, char* argv[]) {
 
     char * userHomeDir = getenv("HOME");
 
-    if (userHomeDir == NULL || strcmp(userHomeDir, "") == 0) {
+    if (userHomeDir == NULL) {
         return UPPM_ENV_HOME_NOT_SET;
     }
 
     size_t userHomeDirLength = strlen(userHomeDir);
+
+    if (userHomeDirLength == 0) {
+        return UPPM_ENV_HOME_NOT_SET;
+    }
 
     size_t  packageInstalledDirLength = userHomeDirLength + strlen(packageName) + 20;
     char    packageInstalledDir[packageInstalledDirLength];

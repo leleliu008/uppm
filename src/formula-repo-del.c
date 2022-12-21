@@ -21,11 +21,15 @@ int uppm_formula_repo_del(const char * formulaRepoName) {
 
     char * userHomeDir = getenv("HOME");
 
-    if (userHomeDir == NULL || strcmp(userHomeDir, "") == 0) {
+    if (userHomeDir == NULL) {
         return UPPM_ENV_HOME_NOT_SET;
     }
 
     size_t userHomeDirLength = strlen(userHomeDir);
+
+    if (userHomeDirLength == 0) {
+        return UPPM_ENV_HOME_NOT_SET;
+    }
 
     size_t  formulaRepoDBPathLength = userHomeDirLength + 16;
     char    formulaRepoDBPath[formulaRepoDBPathLength];

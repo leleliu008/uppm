@@ -1,22 +1,22 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include <libgen.h>
 #include <yaml.h>
 #include "core/sysinfo.h"
+#include "core/regex/regex.h"
 #include "uppm.h"
 
 typedef enum {
-    FORMULA_KEY_CODE_unknown,
-    FORMULA_KEY_CODE_summary,
-    FORMULA_KEY_CODE_version,
-    FORMULA_KEY_CODE_license,
-    FORMULA_KEY_CODE_web_url,
-    FORMULA_KEY_CODE_bin_url,
-    FORMULA_KEY_CODE_bin_sha,
-    FORMULA_KEY_CODE_res_url,
-    FORMULA_KEY_CODE_res_sha,
-    FORMULA_KEY_CODE_dep_pkg,
-    FORMULA_KEY_CODE_install,
+    UPPMFormulaKeyCode_unknown,
+    UPPMFormulaKeyCode_summary,
+    UPPMFormulaKeyCode_version,
+    UPPMFormulaKeyCode_license,
+    UPPMFormulaKeyCode_webpage,
+    UPPMFormulaKeyCode_bin_url,
+    UPPMFormulaKeyCode_bin_sha,
+    UPPMFormulaKeyCode_dep_pkg,
+    UPPMFormulaKeyCode_install,
 } UPPMFormulaKeyCode;
 
 void uppm_formula_dump(UPPMFormula * formula) {
@@ -27,7 +27,7 @@ void uppm_formula_dump(UPPMFormula * formula) {
     printf("summary: %s\n", formula->summary);
     printf("version: %s\n", formula->version);
     printf("license: %s\n", formula->license);
-    printf("web-url: %s\n", formula->web_url);
+    printf("webpage: %s\n", formula->webpage);
     printf("bin-url: %s\n", formula->bin_url);
     printf("bin-sha: %s\n", formula->bin_sha);
     printf("dep-pkg: %s\n", formula->dep_pkg);
@@ -55,9 +55,9 @@ void uppm_formula_free(UPPMFormula * formula) {
         formula->license = NULL;
     }
 
-    if (formula->web_url != NULL) {
-        free(formula->web_url);
-        formula->web_url = NULL;
+    if (formula->webpage != NULL) {
+        free(formula->webpage);
+        formula->webpage = NULL;
     }
 
     if (formula->bin_url != NULL) {
@@ -88,60 +88,69 @@ void uppm_formula_free(UPPMFormula * formula) {
     free(formula);
 }
 
-static UPPMFormulaKeyCode uppm_formula_key_code_from_key_name(char * key) {
+static UPPMFormulaKeyCode uppm_formula_key_code_from_key_name(char * key, bool isLinuxMuslLibc) {
            if (strcmp(key, "summary") == 0) {
-        return FORMULA_KEY_CODE_summary;
-    } else if (strcmp(key, "web_url") == 0) {
-        return FORMULA_KEY_CODE_web_url;
+        return UPPMFormulaKeyCode_summary;
     } else if (strcmp(key, "webpage") == 0) {
-        return FORMULA_KEY_CODE_web_url;
+        return UPPMFormulaKeyCode_webpage;
+    } else if (strcmp(key, "webpage") == 0) {
+        return UPPMFormulaKeyCode_webpage;
     } else if (strcmp(key, "version") == 0) {
-        return FORMULA_KEY_CODE_version;
+        return UPPMFormulaKeyCode_version;
     } else if (strcmp(key, "license") == 0) {
-        return FORMULA_KEY_CODE_license;
+        return UPPMFormulaKeyCode_license;
     } else if (strcmp(key, "bin-url") == 0) {
-        return FORMULA_KEY_CODE_bin_url;
+        return UPPMFormulaKeyCode_bin_url;
     } else if (strcmp(key, "bin-sha") == 0) {
-        return FORMULA_KEY_CODE_bin_sha;
-    } else if (strcmp(key, "res-url") == 0) {
-        return FORMULA_KEY_CODE_res_url;
-    } else if (strcmp(key, "res-sha") == 0) {
-        return FORMULA_KEY_CODE_res_sha;
+        return UPPMFormulaKeyCode_bin_sha;
     } else if (strcmp(key, "dep-pkg") == 0) {
-        return FORMULA_KEY_CODE_dep_pkg;
+        return UPPMFormulaKeyCode_dep_pkg;
     } else if (strcmp(key, "install") == 0) {
-        return FORMULA_KEY_CODE_install;
+        return UPPMFormulaKeyCode_install;
     } else {
-        return FORMULA_KEY_CODE_unknown;
+        if (isLinuxMuslLibc) {
+                   if (strcmp(key, "res-url") == 0) {
+                return UPPMFormulaKeyCode_bin_url;
+            } else if (strcmp(key, "res-sha") == 0) {
+                return UPPMFormulaKeyCode_bin_sha;
+            }
+        }
+
+        return UPPMFormulaKeyCode_unknown;
     }
 }
 
-static void uppm_formula_set_value(UPPMFormulaKeyCode keyCode, char * value, UPPMFormula * formula, bool isLinuxMuslLibc) {
+static void uppm_formula_set_value(UPPMFormulaKeyCode keyCode, char * value, UPPMFormula * formula) {
+    if (keyCode == UPPMFormulaKeyCode_unknown) {
+        return;
+    }
+
+    char c;
+
+    for (;;) {
+        c = value[0];
+
+        if (c == '\0') {
+            return;
+        }
+
+        // non-printable ASCII characters and space
+        if (c <= 32) {
+            value = &value[1];
+        } else {
+            break;
+        }
+    }
+
     switch (keyCode) {
-        case FORMULA_KEY_CODE_summary: if (formula->summary != NULL) free(formula->summary); formula->summary = strdup(value); break;
-        case FORMULA_KEY_CODE_version: if (formula->version != NULL) free(formula->version); formula->version = strdup(value); break;
-        case FORMULA_KEY_CODE_license: if (formula->license != NULL) free(formula->license); formula->license = strdup(value); break;
-        case FORMULA_KEY_CODE_web_url: if (formula->web_url != NULL) free(formula->web_url); formula->web_url = strdup(value); break;
-        case FORMULA_KEY_CODE_bin_url: if (formula->bin_url != NULL) free(formula->bin_url); formula->bin_url = strdup(value); break;
-        case FORMULA_KEY_CODE_bin_sha: if (formula->bin_sha != NULL) free(formula->bin_sha); formula->bin_sha = strdup(value); break;
-        case FORMULA_KEY_CODE_dep_pkg: if (formula->dep_pkg != NULL) free(formula->dep_pkg); formula->dep_pkg = strdup(value); break;
-        case FORMULA_KEY_CODE_install: if (formula->install != NULL) free(formula->install); formula->install = strdup(value); break;
-        case FORMULA_KEY_CODE_res_url:
-            if (isLinuxMuslLibc) {
-                if (formula->bin_url != NULL) {
-                    free(formula->bin_url);
-                }
-                formula->bin_url = strdup(value);
-            }
-            break;
-        case FORMULA_KEY_CODE_res_sha:
-            if (isLinuxMuslLibc) {
-                if (formula->bin_sha != NULL) {
-                    free(formula->bin_sha);
-                }
-                formula->bin_sha = strdup(value);
-            }
-            break;
+        case UPPMFormulaKeyCode_summary: if (formula->summary != NULL) free(formula->summary); formula->summary = strdup(value); break;
+        case UPPMFormulaKeyCode_version: if (formula->version != NULL) free(formula->version); formula->version = strdup(value); break;
+        case UPPMFormulaKeyCode_license: if (formula->license != NULL) free(formula->license); formula->license = strdup(value); break;
+        case UPPMFormulaKeyCode_webpage: if (formula->webpage != NULL) free(formula->webpage); formula->webpage = strdup(value); break;
+        case UPPMFormulaKeyCode_bin_url: if (formula->bin_url != NULL) free(formula->bin_url); formula->bin_url = strdup(value); break;
+        case UPPMFormulaKeyCode_bin_sha: if (formula->bin_sha != NULL) free(formula->bin_sha); formula->bin_sha = strdup(value); break;
+        case UPPMFormulaKeyCode_dep_pkg: if (formula->dep_pkg != NULL) free(formula->dep_pkg); formula->dep_pkg = strdup(value); break;
+        case UPPMFormulaKeyCode_install: if (formula->install != NULL) free(formula->install); formula->install = strdup(value); break;
         default: break;
     }
 }
@@ -152,48 +161,15 @@ static int uppm_formula_check(UPPMFormula * formula, const char * formulaFilePat
         return UPPM_FORMULA_SCHEME_ERROR;
     }
 
-    if (strcmp(formula->summary, "") == 0) {
-        fprintf(stderr, "scheme error in formula file: %s : summary mapping's value must not be empty.\n", formulaFilePath);
+    if (formula->webpage == NULL) {
+        fprintf(stderr, "scheme error in formula file: %s : webpage mapping not found.\n", formulaFilePath);
         return UPPM_FORMULA_SCHEME_ERROR;
     }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    if (formula->version == NULL) {
-        fprintf(stderr, "scheme error in formula file: %s : version mapping not found.\n", formulaFilePath);
-        return UPPM_FORMULA_SCHEME_ERROR;
-    }
-
-    if (strcmp(formula->version, "") == 0) {
-        fprintf(stderr, "scheme error in formula file: %s : version mapping's value must not be empty.\n", formulaFilePath);
-        return UPPM_FORMULA_SCHEME_ERROR;
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    if (formula->web_url == NULL) {
-        fprintf(stderr, "scheme error in formula file: %s : web-url mapping not found.\n", formulaFilePath);
-        return UPPM_FORMULA_SCHEME_ERROR;
-    }
-
-    if (strcmp(formula->web_url, "") == 0) {
-        fprintf(stderr, "scheme error in formula file: %s : web-url mapping's value must not be empty.\n", formulaFilePath);
-        return UPPM_FORMULA_SCHEME_ERROR;
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////
 
     if (formula->bin_url == NULL) {
         fprintf(stderr, "scheme error in formula file: %s : bin-url mapping not found.\n", formulaFilePath);
         return UPPM_FORMULA_SCHEME_ERROR;
     }
-
-    if (strcmp(formula->bin_url, "") == 0) {
-        fprintf(stderr, "scheme error in formula file: %s : bin-url mapping's value must not be empty.\n", formulaFilePath);
-        return UPPM_FORMULA_SCHEME_ERROR;
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////
 
     if (formula->bin_sha == NULL) {
         fprintf(stderr, "scheme error in formula file: %s : bin-sha mapping not found.\n", formulaFilePath);
@@ -203,6 +179,122 @@ static int uppm_formula_check(UPPMFormula * formula, const char * formulaFilePat
     if (strlen(formula->bin_sha) != 64) {
         fprintf(stderr, "scheme error in formula file: %s : bin-sha mapping's value's length must be 64.\n", formulaFilePath);
         return UPPM_FORMULA_SCHEME_ERROR;
+    }
+
+    if (formula->version == NULL) {
+        size_t urlLength = strlen(formula->bin_url);
+        size_t urlCopyLength = urlLength + 1;
+        char   urlCopy[urlCopyLength];
+        memset(urlCopy, 0, urlCopyLength);
+        strcpy(urlCopy, formula->bin_url);
+
+        char * srcFileName = basename(urlCopy);
+
+        size_t srcFileNameLength = 0;
+
+        char c;
+
+        for (;;) {
+            c = srcFileName[srcFileNameLength];
+
+            if (c == '\0') {
+                break;
+            }
+
+            if (c == '_' || c == '@') {
+                srcFileName[srcFileNameLength] = '-';
+            }
+
+            srcFileNameLength++;
+        }
+
+        if (srcFileNameLength > 8) {
+                   if (strcmp(&srcFileName[srcFileNameLength - 8], ".tar.bz2") == 0) {
+                srcFileName[srcFileNameLength - 8] = '\0';
+                srcFileNameLength -= 8;
+            } else if (strcmp(&srcFileName[srcFileNameLength - 7], ".tar.gz") == 0) {
+                srcFileName[srcFileNameLength - 7] = '\0';
+                srcFileNameLength -= 7;
+            } else if (strcmp(&srcFileName[srcFileNameLength - 7], ".tar.xz") == 0) {
+                srcFileName[srcFileNameLength - 7] = '\0';
+                srcFileNameLength -= 7;
+            } else if (strcmp(&srcFileName[srcFileNameLength - 7], ".tar.lz") == 0) {
+                srcFileName[srcFileNameLength - 7] = '\0';
+                srcFileNameLength -= 7;
+            } else if (strcmp(&srcFileName[srcFileNameLength - 5], ".tbz2") == 0) {
+                srcFileName[srcFileNameLength - 5] = '\0';
+                srcFileNameLength -= 5;
+            } else if (strcmp(&srcFileName[srcFileNameLength - 4], ".tgz") == 0) {
+                srcFileName[srcFileNameLength - 4] = '\0';
+                srcFileNameLength -= 4;
+            } else if (strcmp(&srcFileName[srcFileNameLength - 4], ".txz") == 0) {
+                srcFileName[srcFileNameLength - 4] = '\0';
+                srcFileNameLength -= 4;
+            } else if (strcmp(&srcFileName[srcFileNameLength - 4], ".tlz") == 0) {
+                srcFileName[srcFileNameLength - 4] = '\0';
+                srcFileNameLength -= 4;
+            } else if (strcmp(&srcFileName[srcFileNameLength - 4], ".zip") == 0) {
+                srcFileName[srcFileNameLength - 4] = '\0';
+                srcFileNameLength -= 4;
+            }
+        } else if (srcFileNameLength > 7) {
+                   if (strcmp(&srcFileName[srcFileNameLength - 7], ".tar.gz") == 0) {
+                srcFileName[srcFileNameLength - 7] = '\0';
+                srcFileNameLength -= 7;
+            } else if (strcmp(&srcFileName[srcFileNameLength - 7], ".tar.xz") == 0) {
+                srcFileName[srcFileNameLength - 7] = '\0';
+                srcFileNameLength -= 7;
+            } else if (strcmp(&srcFileName[srcFileNameLength - 7], ".tar.lz") == 0) {
+                srcFileName[srcFileNameLength - 7] = '\0';
+                srcFileNameLength -= 7;
+            }
+        } else if (srcFileNameLength > 5) {
+                   if (strcmp(&srcFileName[srcFileNameLength - 5], ".tbz2") == 0) {
+                srcFileName[srcFileNameLength - 5] = '\0';
+                srcFileNameLength -= 5;
+            }
+        } else if (srcFileNameLength > 4) {
+                   if (strcmp(&srcFileName[srcFileNameLength - 4], ".tgz") == 0) {
+                srcFileName[srcFileNameLength - 4] = '\0';
+                srcFileNameLength -= 4;
+            } else if (strcmp(&srcFileName[srcFileNameLength - 4], ".txz") == 0) {
+                srcFileName[srcFileNameLength - 4] = '\0';
+                srcFileNameLength -= 4;
+            } else if (strcmp(&srcFileName[srcFileNameLength - 4], ".tlz") == 0) {
+                srcFileName[srcFileNameLength - 4] = '\0';
+                srcFileNameLength -= 4;
+            } else if (strcmp(&srcFileName[srcFileNameLength - 4], ".zip") == 0) {
+                srcFileName[srcFileNameLength - 4] = '\0';
+                srcFileNameLength -= 4;
+            }
+        }
+
+        //printf("----------------srcFileName = %s\n", srcFileName);
+
+        char * splitedStr = strtok(srcFileName, "-");
+
+        while (splitedStr != NULL) {
+            if (regex_matched(splitedStr, "^[0-9]+(\\.[0-9]+)+[a-z]?$")) {
+                formula->version = strdup(splitedStr);
+                break;
+            } else if (regex_matched(splitedStr, "^[vV][0-9]+(\\.[0-9]+)+[a-z]?$")) {
+                formula->version = strdup(&splitedStr[1]);
+                break;
+            } else if (regex_matched(splitedStr, "^[0-9]{3,8}$")) {
+                formula->version = strdup(splitedStr);
+                break;
+            } else if (regex_matched(splitedStr, "^[vrR][0-9]{2,8}[a-z]?$")) {
+                formula->version = strdup(&splitedStr[1]);
+                break;
+            }
+
+            splitedStr = strtok(NULL, "-");
+        }
+
+        if (formula->version == NULL) {
+            fprintf(stderr, "scheme error in formula file: %s : version mapping not found.\n", formulaFilePath);
+            return UPPM_FORMULA_SCHEME_ERROR;
+        }
     }
 
     return UPPM_OK;
@@ -247,7 +339,7 @@ int uppm_formula_parse(const char * packageName, UPPMFormula * * out) {
 
     yaml_parser_set_input_file(&parser, formulaFile);
 
-    UPPMFormulaKeyCode formulaKeyCode = FORMULA_KEY_CODE_unknown;
+    UPPMFormulaKeyCode formulaKeyCode = UPPMFormulaKeyCode_unknown;
 
     UPPMFormula * formula = NULL;
 
@@ -270,13 +362,13 @@ int uppm_formula_parse(const char * packageName, UPPMFormula * * out) {
                 break;
             case YAML_SCALAR_TOKEN:
                 if (lastTokenType == 1) {
-                    formulaKeyCode = uppm_formula_key_code_from_key_name((char*)token.data.scalar.value);
+                    formulaKeyCode = uppm_formula_key_code_from_key_name((char*)token.data.scalar.value, isLinuxMuslLibc);
                 } else if (lastTokenType == 2) {
                     if (formula == NULL) {
                         formula = (UPPMFormula*)calloc(1, sizeof(UPPMFormula));
                         formula->path = formulaFilePath;
                     }
-                    uppm_formula_set_value(formulaKeyCode, (char*)token.data.scalar.value, formula, isLinuxMuslLibc);
+                    uppm_formula_set_value(formulaKeyCode, (char*)token.data.scalar.value, formula);
                 }
                 break;
             default: 
@@ -295,8 +387,6 @@ clean:
     yaml_parser_delete(&parser);
 
     fclose(formulaFile);
-
-    //uppm_formula_dump(formula);
 
     if (resultCode == UPPM_OK) {
         resultCode = uppm_formula_check(formula, formulaFilePath);

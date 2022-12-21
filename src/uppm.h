@@ -46,7 +46,7 @@ typedef struct {
     char * summary;
     char * version;
     char * license;
-    char * web_url;
+    char * webpage;
     char * bin_url;
     char * bin_sha;
     char * dep_pkg;
@@ -91,7 +91,7 @@ typedef struct {
     char * summary;
     char * version;
     char * license;
-    char * web_url;
+    char * webpage;
     char * bin_url;
     char * bin_sha;
     char * dep_pkg;

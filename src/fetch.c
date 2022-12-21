@@ -112,12 +112,17 @@ int uppm_fetch(const char * packageName, bool verbose) {
 
     char * userHomeDir = getenv("HOME");
 
-    if (userHomeDir == NULL || strcmp(userHomeDir, "") == 0) {
+    if (userHomeDir == NULL) {
         uppm_formula_free(formula);
         return UPPM_ENV_HOME_NOT_SET;
     }
 
     size_t userHomeDirLength = strlen(userHomeDir);
+
+    if (userHomeDirLength == 0) {
+        uppm_formula_free(formula);
+        return UPPM_ENV_HOME_NOT_SET;
+    }
 
     size_t  downloadDirLength = userHomeDirLength + 18;
     char    downloadDir[downloadDirLength];

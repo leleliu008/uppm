@@ -14,11 +14,15 @@ int uppm_uninstall(const char * packageName, bool verbose) {
 
     char * userHomeDir = getenv("HOME");
 
-    if (userHomeDir == NULL || strcmp(userHomeDir, "") == 0) {
+    if (userHomeDir == NULL) {
         return UPPM_ENV_HOME_NOT_SET;
     }
 
     size_t userHomeDirLength = strlen(userHomeDir);
+
+    if (userHomeDirLength == 0) {
+        return UPPM_ENV_HOME_NOT_SET;
+    }
 
     size_t  installedDirLength = userHomeDirLength + strlen(packageName) + 20;
     char    installedDir[installedDirLength];

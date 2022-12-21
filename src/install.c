@@ -32,15 +32,57 @@ int uppm_install_the_given_packages(const char * packageNames[], size_t size) {
 extern int record_installed_files(const char * installedDirPath);
 
 int uppm_install(const char * packageName, bool verbose) {
-    fprintf(stderr, "prepare to install package [%s].\n", packageName);
+    UPPMFormula * formula = NULL;
+
+    int resultCode = uppm_formula_parse(packageName, &formula);
+
+    if (resultCode != UPPM_OK) {
+        return resultCode;
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+
+    if (formula->dep_pkg != NULL) {
+        size_t depPackageNamesLength = strlen(formula->dep_pkg);
+        size_t depPackageNamesCopyLength = depPackageNamesLength + 1;
+        char   depPackageNamesCopy[depPackageNamesCopyLength];
+        memset(depPackageNamesCopy, 0, depPackageNamesCopyLength);
+        strcpy(depPackageNamesCopy, formula->dep_pkg);
+
+        char * depPackageNameArrayList[10];
+        size_t depPackageNameArrayListSize = 0;
+
+        char * depPackageName = strtok(depPackageNamesCopy, " ");
+
+        while (depPackageName != NULL) {
+            depPackageNameArrayList[depPackageNameArrayListSize] = depPackageName;
+            depPackageNameArrayListSize++;
+            depPackageName = strtok (NULL, " ");
+        }
+
+        for (size_t i = 0; i < depPackageNameArrayListSize; i++) {
+            resultCode = uppm_install(depPackageNameArrayList[i], verbose);
+
+            if (resultCode != UPPM_OK) {
+                uppm_formula_free(formula);
+                return resultCode;
+            }
+        }
+    }
+
+    //////////////////////////////////////////////////////////////////////////
 
     char * userHomeDir = getenv("HOME");
 
-    if (userHomeDir == NULL || strcmp(userHomeDir, "") == 0) {
+    if (userHomeDir == NULL) {
         return UPPM_ENV_HOME_NOT_SET;
     }
 
     size_t userHomeDirLength = strlen(userHomeDir);
+
+    if (userHomeDirLength == 0) {
+        return UPPM_ENV_HOME_NOT_SET;
+    }
 
     size_t  packageInstalledDirLength = userHomeDirLength + strlen(packageName) + 20;
     char    packageInstalledDir[packageInstalledDirLength];
@@ -62,41 +104,9 @@ int uppm_install(const char * packageName, bool verbose) {
         return UPPM_OK;
     }
 
-    UPPMFormula * formula = NULL;
+    //////////////////////////////////////////////////////////////////////////
 
-    int resultCode = uppm_formula_parse(packageName, &formula);
-
-    if (resultCode != UPPM_OK) {
-        return resultCode;
-    }
-
-    if ((formula->dep_pkg != NULL) && (strcmp(formula->dep_pkg, "") != 0)) {
-        size_t depPackageNamesLength = strlen(formula->dep_pkg);
-        size_t depPackageNamesCopyLength = depPackageNamesLength + 1;
-        char   depPackageNamesCopy[depPackageNamesCopyLength];
-        memset(depPackageNamesCopy, 0, depPackageNamesCopyLength);
-        strcpy(depPackageNamesCopy, formula->dep_pkg);
-
-        size_t index = 0;
-        char * depPackageNameList[10];
-
-        char * depPackageName = strtok(depPackageNamesCopy, " ");
-
-        while (depPackageName != NULL) {
-            depPackageNameList[index] = depPackageName;
-            index++;
-            depPackageName = strtok (NULL, " ");
-        }
-
-        for (size_t i = 0; i < index; i++) {
-            resultCode = uppm_install(depPackageNameList[i], verbose);
-
-            if (resultCode != UPPM_OK) {
-                uppm_formula_free(formula);
-                return resultCode;
-            }
-        }
-    }
+    fprintf(stderr, "prepare to install package [%s].\n", packageName);
 
     size_t  urlLength = strlen(formula->bin_url);
     size_t  urlCopyLength = urlLength + 1;
@@ -241,7 +251,7 @@ int uppm_install(const char * packageName, bool verbose) {
                 UPPM_VERSION,
                 uppmHomeDir,
                 formula->summary == NULL ? "" : formula->summary,
-                formula->web_url == NULL ? "" : formula->web_url,
+                formula->webpage == NULL ? "" : formula->webpage,
                 formula->version == NULL ? "" : formula->version,
                 formula->bin_url == NULL ? "" : formula->bin_url,
                 formula->bin_sha == NULL ? "" : formula->bin_sha,
