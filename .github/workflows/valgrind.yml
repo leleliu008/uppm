@@ -24,9 +24,19 @@ jobs:
       - run:  cmake --build   build.d
       - run:  cmake --install build.d
 
+      - run:  $VALGRIND ./output/bin/uppm
+
       - run:  $VALGRIND ./output/bin/uppm --help
       - run:  $VALGRIND ./output/bin/uppm --version
+
+      - run:  $VALGRIND ./output/bin/uppm -h
+      - run:  $VALGRIND ./output/bin/uppm -V
+
       - run:  $VALGRIND ./output/bin/uppm env
+      - run:  $VALGRIND ./output/bin/uppm env -v
+
+      - run:  $VALGRIND ./output/bin/uppm integrate zsh
+
       - run:            ./output/bin/uppm update
 
       - run:  $VALGRIND ./output/bin/uppm ls-available
@@ -36,6 +46,7 @@ jobs:
       - run:  $VALGRIND ./output/bin/uppm search    and
 
       - run:  $VALGRIND ./output/bin/uppm info      tree
+      - run:  $VALGRIND ./output/bin/uppm info      tree @all
       - run:  $VALGRIND ./output/bin/uppm info      tree --shell
       - run:  $VALGRIND ./output/bin/uppm info      tree --json
       - run:  $VALGRIND ./output/bin/uppm info      tree --yaml
@@ -43,13 +54,20 @@ jobs:
       - run:  $VALGRIND ./output/bin/uppm info      tree summary
       - run:  $VALGRIND ./output/bin/uppm info      tree version
       - run:  $VALGRIND ./output/bin/uppm info      tree license
+      - run:  $VALGRIND ./output/bin/uppm info      tree webpage
       - run:  $VALGRIND ./output/bin/uppm info      tree bin-url
       - run:  $VALGRIND ./output/bin/uppm info      tree bin-sha
       - run:  $VALGRIND ./output/bin/uppm info      tree dep-pkg
       - run:  $VALGRIND ./output/bin/uppm info      tree install
       - run:  $VALGRIND ./output/bin/uppm info      tree formula
 
+      - run:  $VALGRIND ./output/bin/uppm depends   tree
       - run:  $VALGRIND ./output/bin/uppm depends   android-sdk
+      - run:  $VALGRIND ./output/bin/uppm depends   android-sdk --format=box
+      - run:  $VALGRIND ./output/bin/uppm depends   android-sdk --format=box
+
+      - run:  $VALGRIND ./output/bin/uppm fetch gzip
+      - run:  $VALGRIND ./output/bin/uppm fetch gsed -v
 
       - run:  $VALGRIND ./output/bin/uppm install   tree
 
@@ -75,7 +93,16 @@ jobs:
       - run:  $VALGRIND ./output/bin/uppm is-outdated  tree
 
       - run:  $VALGRIND ./output/bin/uppm tree      tree
+      - run:  $VALGRIND ./output/bin/uppm tree      tree -L 2
 
+      - run:  $VALGRIND ./output/bin/uppm upgrade   tree
+      - run:  $VALGRIND ./output/bin/uppm reinstall tree
       - run:  $VALGRIND ./output/bin/uppm uninstall tree
+
+      - run:  $VALGRIND ./output/bin/uppm upgrade-self
+
+      - run:  $VALGRIND ./output/bin/uppm formula-repo-list
+      - run:  $VALGRIND ./output/bin/uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo
+      - run:  $VALGRIND ./output/bin/uppm formula-repo-del my_repo
 
       - run:  $VALGRIND ./output/bin/uppm cleanup
