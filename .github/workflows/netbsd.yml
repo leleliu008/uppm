@@ -61,9 +61,6 @@ jobs:
             run ./output/bin/uppm search zip
 
             run ./output/bin/uppm depends gzip
-            run ./output/bin/uppm depends android-sdk
-            run ./output/bin/uppm depends android-sdk --format=box
-            run ./output/bin/uppm depends android-sdk --format=dot
 
             run ./output/bin/uppm info @all
             run ./output/bin/uppm info unzip
@@ -78,8 +75,8 @@ jobs:
             run ./output/bin/uppm info unzip install
             run ./output/bin/uppm info unzip formula
 
-            run ./output/bin/uppm fetch   gzip
-            run ./output/bin/uppm fetch   gsed -v
+            run ./output/bin/uppm fetch   tree
+            run ./output/bin/uppm fetch   tree -v
 
             run ./output/bin/uppm install unzip
 

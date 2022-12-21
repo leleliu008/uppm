@@ -56,50 +56,50 @@ jobs:
       - run:  /opt/ppkg/installed/uppm/bin/uppm depends android-sdk --format=dot
 
       - run:  /opt/ppkg/installed/uppm/bin/uppm info @all
-      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip
-      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip --json
-      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip --yaml
-      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip version
-      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip license
-      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip summary
-      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip webpage
-      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip bin-url
-      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip bin-sha
-      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip install
-      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip formula
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info gsed
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info gsed --json
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info gsed --yaml
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info gsed version
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info gsed license
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info gsed summary
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info gsed webpage
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info gsed bin-url
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info gsed bin-sha
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info gsed install
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info gsed formula
 
-      - run:  /opt/ppkg/installed/uppm/bin/uppm fetch   gzip
-      - run:  /opt/ppkg/installed/uppm/bin/uppm fetch   gsed -v
+      - run:  /opt/ppkg/installed/uppm/bin/uppm fetch   gtar
+      - run:  /opt/ppkg/installed/uppm/bin/uppm fetch   gtar -v
 
-      - run:  /opt/ppkg/installed/uppm/bin/uppm install unzip
+      - run:  /opt/ppkg/installed/uppm/bin/uppm install gsed
 
-      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip installed-dir
-      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip installed-files
-      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip installed-receipt-path
-      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip installed-receipt-json
-      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip installed-receipt-yaml
-      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip installed-timestamp-unix
-      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip installed-timestamp-iso-8601
-      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip installed-timestamp-rfc-3339
-      - run:  /opt/ppkg/installed/uppm/bin/uppm info unzip installed-version
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info gsed installed-dir
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info gsed installed-files
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info gsed installed-receipt-path
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info gsed installed-receipt-json
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info gsed installed-receipt-yaml
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info gsed installed-timestamp-unix
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info gsed installed-timestamp-iso-8601
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info gsed installed-timestamp-rfc-3339
+      - run:  /opt/ppkg/installed/uppm/bin/uppm info gsed installed-version
 
-      - run:  /opt/ppkg/installed/uppm/bin/uppm tree unzip
-      - run:  /opt/ppkg/installed/uppm/bin/uppm tree unzip -L 3
+      - run:  /opt/ppkg/installed/uppm/bin/uppm tree gsed
+      - run:  /opt/ppkg/installed/uppm/bin/uppm tree gsed -L 3
 
       - run: |
-          sed -i '/^version: /c version: 6.0.28' $(/opt/ppkg/installed/uppm/bin/uppm info unzip formula | head -n 1 | cut -d ' ' -f2)
+          /opt/ppkg/installed/gsed/bin/gsed -i '/^version: /c version: 6.0.28' $(/opt/ppkg/installed/uppm/bin/uppm info gsed formula | head -n 1 | cut -d ' ' -f2)
 
       - run:  /opt/ppkg/installed/uppm/bin/uppm ls-available
       - run:  /opt/ppkg/installed/uppm/bin/uppm ls-installed
       - run:  /opt/ppkg/installed/uppm/bin/uppm ls-outdated
 
       - run:  /opt/ppkg/installed/uppm/bin/uppm is-available curl
-      - run:  /opt/ppkg/installed/uppm/bin/uppm is-installed unzip
-      - run:  /opt/ppkg/installed/uppm/bin/uppm is-outdated  unzip
+      - run:  /opt/ppkg/installed/uppm/bin/uppm is-installed gsed
+      - run:  /opt/ppkg/installed/uppm/bin/uppm is-outdated  gsed
 
-      - run:  /opt/ppkg/installed/uppm/bin/uppm upgrade   unzip
-      - run:  /opt/ppkg/installed/uppm/bin/uppm reinstall unzip
-      - run:  /opt/ppkg/installed/uppm/bin/uppm uninstall unzip
+      - run:  /opt/ppkg/installed/uppm/bin/uppm upgrade   gsed
+      - run:  /opt/ppkg/installed/uppm/bin/uppm reinstall gsed
+      - run:  /opt/ppkg/installed/uppm/bin/uppm uninstall gsed
 
       - run:  /opt/ppkg/installed/uppm/bin/uppm upgrade-self
 
