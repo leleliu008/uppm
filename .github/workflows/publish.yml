@@ -16,6 +16,9 @@ jobs:
 
       - run: brew uninstall go@1.17
 
+      - run: brew update
+      - run: brew install --overwrite python@3.10
+
       - run: wget https://raw.githubusercontent.com/leleliu008/ppkg/master/bin/ppkg
       - run: chmod a+x ppkg
       - run: ./ppkg setup --use-system-package-manager
