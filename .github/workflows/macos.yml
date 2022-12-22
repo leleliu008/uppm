@@ -94,7 +94,7 @@ jobs:
       - run:  ./output/bin/uppm tree gsed -L 3
 
       - run: |
-          printf '%s\n' 'version: 4.9' > ~/.uppm/repos.d/offical-core/formula/gsed.yml
+          printf '%s\n' 'version: 1000' >> ~/.uppm/repos.d/offical-core/formula/gsed.yml
 
       - run:  ./output/bin/uppm ls-available
       - run:  ./output/bin/uppm ls-installed
@@ -206,7 +206,7 @@ jobs:
       - run:  ./output/bin/uppm tree gsed -L 3
 
       - run: |
-          printf '%s\n' 'version: 4.9' > ~/.uppm/repos.d/offical-core/formula/gsed.yml
+          printf '%s\n' 'version: 1000' >> ~/.uppm/repos.d/offical-core/formula/gsed.yml
 
       - run:  ./output/bin/uppm ls-available
       - run:  ./output/bin/uppm ls-installed
@@ -321,7 +321,7 @@ jobs:
       - run:  ./output/bin/uppm tree gsed -L 3
 
       - run: |
-          printf '%s\n' 'version: 4.9' > ~/.uppm/repos.d/offical-core/formula/gsed.yml
+          printf '%s\n' 'version: 1000' >> ~/.uppm/repos.d/offical-core/formula/gsed.yml
 
       - run:  ./output/bin/uppm ls-available
       - run:  ./output/bin/uppm ls-installed
@@ -431,7 +431,7 @@ jobs:
       - run:  ./output/bin/uppm tree gsed -L 3
 
       - run: |
-          printf '%s\n' 'version: 4.9' > ~/.uppm/repos.d/offical-core/formula/gsed.yml
+          printf '%s\n' 'version: 1000' >> ~/.uppm/repos.d/offical-core/formula/gsed.yml
 
       - run:  ./output/bin/uppm ls-available
       - run:  ./output/bin/uppm ls-installed
