@@ -63,51 +63,50 @@ jobs:
             run ./output/bin/uppm depends gzip
 
             run ./output/bin/uppm info @all
-            run ./output/bin/uppm info unzip
-            run ./output/bin/uppm info unzip --json
-            run ./output/bin/uppm info unzip --yaml
-            run ./output/bin/uppm info unzip version
-            run ./output/bin/uppm info unzip license
-            run ./output/bin/uppm info unzip summary
-            run ./output/bin/uppm info unzip webpage
-            run ./output/bin/uppm info unzip bin-url
-            run ./output/bin/uppm info unzip bin-sha
-            run ./output/bin/uppm info unzip install
-            run ./output/bin/uppm info unzip formula
+            run ./output/bin/uppm info gsed
+            run ./output/bin/uppm info gsed --json
+            run ./output/bin/uppm info gsed --yaml
+            run ./output/bin/uppm info gsed version
+            run ./output/bin/uppm info gsed license
+            run ./output/bin/uppm info gsed summary
+            run ./output/bin/uppm info gsed webpage
+            run ./output/bin/uppm info gsed bin-url
+            run ./output/bin/uppm info gsed bin-sha
+            run ./output/bin/uppm info gsed install
+            run ./output/bin/uppm info gsed formula
 
-            run ./output/bin/uppm fetch   tree
-            run ./output/bin/uppm fetch   tree -v
+            run ./output/bin/uppm fetch   gzip
+            run ./output/bin/uppm fetch   gtar -v
 
-            run ./output/bin/uppm install unzip
+            run ./output/bin/uppm install gsed
 
-            run ./output/bin/uppm info unzip installed-dir
-            run ./output/bin/uppm info unzip installed-files
-            run ./output/bin/uppm info unzip installed-receipt-path
-            run ./output/bin/uppm info unzip installed-receipt-json
-            run ./output/bin/uppm info unzip installed-receipt-yaml
-            run ./output/bin/uppm info unzip installed-timestamp-unix
-            run ./output/bin/uppm info unzip installed-timestamp-iso-8601
-            run ./output/bin/uppm info unzip installed-timestamp-rfc-3339
-            run ./output/bin/uppm info unzip installed-version
+            run ./output/bin/uppm info gsed installed-dir
+            run ./output/bin/uppm info gsed installed-files
+            run ./output/bin/uppm info gsed installed-receipt-path
+            run ./output/bin/uppm info gsed installed-receipt-json
+            run ./output/bin/uppm info gsed installed-receipt-yaml
+            run ./output/bin/uppm info gsed installed-timestamp-unix
+            run ./output/bin/uppm info gsed installed-timestamp-iso-8601
+            run ./output/bin/uppm info gsed installed-timestamp-rfc-3339
+            run ./output/bin/uppm info gsed installed-version
 
-            run ./output/bin/uppm tree unzip
-            run ./output/bin/uppm tree unzip -L 3
+            run ./output/bin/uppm tree gsed
+            run ./output/bin/uppm tree gsed -L 3
 
-            sed -i '/^version: /c version: 6.0.28' $(./output/bin/uppm info unzip formula | head -n 1 | cut -d ' ' -f2)
+            printf '%s\n' 'version: 4.9' > ~/.uppm/repos.d/offical-core/formula/gsed.yml
 
             run ./output/bin/uppm ls-available
             run ./output/bin/uppm ls-installed
             run ./output/bin/uppm ls-outdated
 
             run ./output/bin/uppm is-available curl
-            run ./output/bin/uppm is-installed unzip
-            run ./output/bin/uppm is-outdated  unzip
+            run ./output/bin/uppm is-installed gsed
+            run ./output/bin/uppm is-outdated  gsed
 
-            run ./output/bin/uppm upgrade   unzip
-            run ./output/bin/uppm reinstall unzip
-            run ./output/bin/uppm uninstall unzip
+            run ./output/bin/uppm upgrade   gsed
+            run ./output/bin/uppm reinstall gsed
+            run ./output/bin/uppm uninstall gsed
 
-            run ./output/bin/uppm upgrade-self
 
             run ./output/bin/uppm formula-repo-list
             run ./output/bin/uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo

@@ -96,7 +96,6 @@ jobs:
       - run:  ./output/bin/uppm reinstall unzip
       - run:  ./output/bin/uppm uninstall unzip
 
-      - run:  ./output/bin/uppm upgrade-self
 
       - run:  ./output/bin/uppm formula-repo-list
       - run:  ./output/bin/uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo

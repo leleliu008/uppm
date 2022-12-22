@@ -94,7 +94,7 @@ jobs:
       - run:  ./output/bin/uppm tree gsed -L 3
 
       - run: |
-          /opt/ppkg/installed/gsed/bin/gsed -i '/^version: /c version: 6.0.28' $(./output/bin/uppm info gsed formula | head -n 1 | cut -d ' ' -f2)
+          printf '%s\n' 'version: 4.9' > ~/.uppm/repos.d/offical-core/formula/gsed.yml
 
       - run:  ./output/bin/uppm ls-available
       - run:  ./output/bin/uppm ls-installed
@@ -108,7 +108,6 @@ jobs:
       - run:  ./output/bin/uppm reinstall gsed
       - run:  ./output/bin/uppm uninstall gsed
 
-      - run:  ./output/bin/uppm upgrade-self
 
       - run:  ./output/bin/uppm formula-repo-list
       - run:  ./output/bin/uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo
@@ -207,7 +206,7 @@ jobs:
       - run:  ./output/bin/uppm tree gsed -L 3
 
       - run: |
-          /opt/ppkg/installed/gsed/bin/gsed -i '/^version: /c version: 6.0.28' $(./output/bin/uppm info gsed formula | head -n 1 | cut -d ' ' -f2)
+          printf '%s\n' 'version: 4.9' > ~/.uppm/repos.d/offical-core/formula/gsed.yml
 
       - run:  ./output/bin/uppm ls-available
       - run:  ./output/bin/uppm ls-installed
@@ -221,7 +220,6 @@ jobs:
       - run:  ./output/bin/uppm reinstall gsed
       - run:  ./output/bin/uppm uninstall gsed
 
-      - run:  ./output/bin/uppm upgrade-self
 
       - run:  ./output/bin/uppm formula-repo-list
       - run:  ./output/bin/uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo
@@ -323,7 +321,7 @@ jobs:
       - run:  ./output/bin/uppm tree gsed -L 3
 
       - run: |
-          /opt/ppkg/installed/gsed/bin/gsed -i '/^version: /c version: 6.0.28' $(./output/bin/uppm info gsed formula | head -n 1 | cut -d ' ' -f2)
+          printf '%s\n' 'version: 4.9' > ~/.uppm/repos.d/offical-core/formula/gsed.yml
 
       - run:  ./output/bin/uppm ls-available
       - run:  ./output/bin/uppm ls-installed
@@ -337,7 +335,6 @@ jobs:
       - run:  ./output/bin/uppm reinstall gsed
       - run:  ./output/bin/uppm uninstall gsed
 
-      - run:  ./output/bin/uppm upgrade-self
 
       - run:  ./output/bin/uppm formula-repo-list
       - run:  ./output/bin/uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo
@@ -434,7 +431,7 @@ jobs:
       - run:  ./output/bin/uppm tree gsed -L 3
 
       - run: |
-          /opt/ppkg/installed/gsed/bin/gsed -i '/^version: /c version: 6.0.28' $(./output/bin/uppm info gsed formula | head -n 1 | cut -d ' ' -f2)
+          printf '%s\n' 'version: 4.9' > ~/.uppm/repos.d/offical-core/formula/gsed.yml
 
       - run:  ./output/bin/uppm ls-available
       - run:  ./output/bin/uppm ls-installed
@@ -448,7 +445,6 @@ jobs:
       - run:  ./output/bin/uppm reinstall gsed
       - run:  ./output/bin/uppm uninstall gsed
 
-      - run:  ./output/bin/uppm upgrade-self
 
       - run:  ./output/bin/uppm formula-repo-list
       - run:  ./output/bin/uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo
