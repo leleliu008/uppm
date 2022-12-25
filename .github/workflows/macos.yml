@@ -239,6 +239,7 @@ jobs:
     steps:
       - run:  brew update
       - run:  brew install --overwrite python@3.10
+      - run:  brew install --overwrite python@3.11
       - run:  brew install cmake ninja llvm pkg-config
 
       - uses: actions/checkout@v3
