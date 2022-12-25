@@ -68,22 +68,24 @@ static int uppm_list_dirs(const char * installedDir, size_t installedDirLength, 
 }
 
 int uppm_env(bool verbose) {
+    printf("build.time: %s\n\n", UPPM_BUILD_TIMESTAMP);
+
     //printf("pcre2   : %d.%d\n", PCRE2_MAJOR, PCRE2_MINOR);
-    printf("libyaml : %s\n", yaml_get_version_string());
-    printf("libcurl : %s\n", LIBCURL_VERSION);
-    printf("libgit2 : %s\n", LIBGIT2_VERSION);
+    printf("build.libyaml: %s\n", yaml_get_version_string());
+    printf("build.libcurl: %s\n", LIBCURL_VERSION);
+    printf("build.libgit2: %s\n", LIBGIT2_VERSION);
 
 //https://www.openssl.org/docs/man3.0/man3/OPENSSL_VERSION_BUILD_METADATA.html
 //https://www.openssl.org/docs/man1.1.1/man3/OPENSSL_VERSION_TEXT.html
 #ifdef OPENSSL_VERSION_STR
-    printf("openssl : %s\n", OPENSSL_VERSION_STR);
+    printf("build.openssl: %s\n", OPENSSL_VERSION_STR);
 #else
-    printf("openssl : %s\n", OPENSSL_VERSION_TEXT);
+    printf("build.openssl: %s\n", OPENSSL_VERSION_TEXT);
 #endif
 
-    printf("sqlite3 : %s\n", SQLITE_VERSION);
-    printf("jansson : %s\n", JANSSON_VERSION);
-    printf("archive : %s\n\n", ARCHIVE_VERSION_ONLY_STRING);
+    printf("build.sqlite3: %s\n", SQLITE_VERSION);
+    printf("build.jansson: %s\n", JANSSON_VERSION);
+    printf("build.archive: %s\n\n", ARCHIVE_VERSION_ONLY_STRING);
 
     SysInfo * sysinfo = NULL;
 
