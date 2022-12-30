@@ -39,6 +39,7 @@ jobs:
       - run:  ./output/bin/uppm env -v
 
       - run:  ./output/bin/uppm integrate zsh
+      - run:  ./output/bin/uppm integrate zsh -v
 
       - run:  ./output/bin/uppm update
 
