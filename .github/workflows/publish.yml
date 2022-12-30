@@ -17,6 +17,14 @@ jobs:
           run: |
             run sudo pkgin -y install curl
 
+            export LD_LIBRARY_PATH=/usr/pkg/lib
+
+            run sudo rm -rf /usr/pkg/etc/openssl
+            run sudo pkgin -y install mozilla-rootcerts
+            run sudo mozilla-rootcerts install
+
+            export SSL_CERT_FILE=/etc/openssl/certs/ca-certificates.crt
+
             run curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/bin/ppkg
             run chmod a+x ppkg
             run ./ppkg setup --use-system-package-manager
