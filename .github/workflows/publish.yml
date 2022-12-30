@@ -19,7 +19,7 @@ jobs:
 
             export LD_LIBRARY_PATH=/usr/pkg/lib
 
-            run sudo rm -rf /usr/pkg/etc/openssl
+            run sudo rm -rf /etc/openssl/certs
             run sudo pkgin -y install mozilla-rootcerts
             run sudo mozilla-rootcerts install
 
