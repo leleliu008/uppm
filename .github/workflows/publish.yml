@@ -15,15 +15,16 @@ jobs:
           mem: 2048
           box: generic/netbsd9
           run: |
-            run sudo pkgin -y install curl
+            run sudo sed -i 's/#ETCCERTSDIR=/ETCCERTSDIR=/' /usr/pkg/etc/ca-certificates-dir.conf
+            run sudo update-ca-certificates
 
-            export LD_LIBRARY_PATH=/usr/pkg/lib
+            unset ETCCERTSDIR
 
-            run sudo rm -rf /etc/openssl/certs
-            run sudo pkgin -y install mozilla-rootcerts
-            run sudo mozilla-rootcerts install
+            ETCCERTSDIR=$(sed -n '/^ETCCERTSDIR=/p' /usr/pkg/etc/ca-certificates-dir.conf | sed 's|ETCCERTSDIR=\(.*\)|\1|')
 
-            export SSL_CERT_FILE=/etc/openssl/certs/ca-certificates.crt
+            if [ -n "$ETCCERTSDIR" ] ; then
+                export SSL_CERT_FILE="$ETCCERTSDIR/ca-certificates.crt"
+            fi
 
             run curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/bin/ppkg
             run chmod a+x ppkg
