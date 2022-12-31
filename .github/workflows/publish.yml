@@ -32,7 +32,7 @@ jobs:
             run ./ppkg update
 
 
-            V=$(sed -n '/SET(PROJECT_VERSION /p' CMakeLists.txt | sed 's|SET(PROJECT_VERSION[[:space:]]*\(.*\))|\1|')
+            V=$(sed -n '/set(PROJECT_VERSION /p' CMakeLists.txt | sed 's|set(PROJECT_VERSION[[:space:]]*\(.*\))|\1|')
 
             printf '%s\n' "git-sha: ${{ github.sha }}" >> /opt/ppkg/repos.d/offical-core/formula/uppm.yml
             printf '%s\n' "src-url: dir://$PWD"        >> /opt/ppkg/repos.d/offical-core/formula/uppm.yml
@@ -68,7 +68,7 @@ jobs:
             run ./ppkg update
 
 
-            V=$(sed -n '/SET(PROJECT_VERSION /p' CMakeLists.txt | sed 's|SET(PROJECT_VERSION[[:space:]]*\(.*\))|\1|')
+            V=$(sed -n '/set(PROJECT_VERSION /p' CMakeLists.txt | sed 's|set(PROJECT_VERSION[[:space:]]*\(.*\))|\1|')
 
             printf '%s\n' "git-sha: ${{ github.sha }}" >> /opt/ppkg/repos.d/offical-core/formula/uppm.yml
             printf '%s\n' "src-url: dir://$PWD"        >> /opt/ppkg/repos.d/offical-core/formula/uppm.yml
@@ -104,7 +104,7 @@ jobs:
             run ./ppkg update
 
 
-            V=$(sed -n '/SET(PROJECT_VERSION /p' CMakeLists.txt | sed 's|SET(PROJECT_VERSION[[:space:]]*\(.*\))|\1|')
+            V=$(sed -n '/set(PROJECT_VERSION /p' CMakeLists.txt | sed 's|set(PROJECT_VERSION[[:space:]]*\(.*\))|\1|')
 
             printf '%s\n' "git-sha: ${{ github.sha }}" >> /opt/ppkg/repos.d/offical-core/formula/uppm.yml
             printf '%s\n' "src-url: dir://$PWD"        >> /opt/ppkg/repos.d/offical-core/formula/uppm.yml
