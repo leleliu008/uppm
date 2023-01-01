@@ -62,6 +62,8 @@ jobs:
           run: |
             run sudo pkg_add curl
 
+            export LD_LIBRARY_PATH=/usr/local/lib
+
             run curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/bin/ppkg
             run chmod a+x ppkg
             run ./ppkg setup --use-system-package-manager
