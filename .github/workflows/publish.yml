@@ -69,6 +69,7 @@ jobs:
             run ./ppkg setup --use-system-package-manager
             run ./ppkg update
 
+            run sudo ln -sf /usr/local/bin/pkgconf /usr/bin/pkg-config
 
             V=$(sed -n '/set(PROJECT_VERSION /p' CMakeLists.txt | sed 's|set(PROJECT_VERSION[[:space:]]*\(.*\))|\1|')
 
