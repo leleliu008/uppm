@@ -34,14 +34,14 @@ jobs:
 
             V=$(sed -n '/set(PROJECT_VERSION /p' CMakeLists.txt | sed 's|set(PROJECT_VERSION[[:space:]]*\(.*\))|\1|')
 
-            printf '%s\n' "git-sha: ${{ github.sha }}" >> /opt/ppkg/repos.d/offical-core/formula/uppm.yml
-            printf '%s\n' "src-url: dir://$PWD"        >> /opt/ppkg/repos.d/offical-core/formula/uppm.yml
-            printf '%s\n' "version: $V"                >> /opt/ppkg/repos.d/offical-core/formula/uppm.yml
+            printf '%s\n' "git-sha: ${{ github.sha }}" >> ~/.ppkg/repos.d/offical-core/formula/uppm.yml
+            printf '%s\n' "src-url: dir://$PWD"        >> ~/.ppkg/repos.d/offical-core/formula/uppm.yml
+            printf '%s\n' "version: $V"                >> ~/.ppkg/repos.d/offical-core/formula/uppm.yml
 
             run ./ppkg install uppm --link-type=static-only --install-lib=static
             run ./ppkg pack    uppm
 
-      - run:  scp -i $VAGRANT_CWD/.vagrant/machines/default/virtualbox/private_key -o StrictHostKeyChecking=no -r -P 2222 vagrant@127.0.0.1:/opt/ppkg/cache.d/bin/uppm-1.0.0-netbsd-amd64.tar.xz .
+      - run:  scp -i $VAGRANT_CWD/.vagrant/machines/default/virtualbox/private_key -o StrictHostKeyChecking=no -r -P 2222 vagrant@127.0.0.1:~/.ppkg/cache.d/bin/uppm-1.0.0-netbsd-amd64.tar.xz .
 
       - uses: actions/upload-artifact@v2
         with:
@@ -73,16 +73,16 @@ jobs:
 
             V=$(sed -n '/set(PROJECT_VERSION /p' CMakeLists.txt | sed 's|set(PROJECT_VERSION[[:space:]]*\(.*\))|\1|')
 
-            printf '%s\n' "git-sha: ${{ github.sha }}" >> /opt/ppkg/repos.d/offical-core/formula/uppm.yml
-            printf '%s\n' "src-url: dir://$PWD"        >> /opt/ppkg/repos.d/offical-core/formula/uppm.yml
-            printf '%s\n' "version: $V"                >> /opt/ppkg/repos.d/offical-core/formula/uppm.yml
+            printf '%s\n' "git-sha: ${{ github.sha }}" >> ~/.ppkg/repos.d/offical-core/formula/uppm.yml
+            printf '%s\n' "src-url: dir://$PWD"        >> ~/.ppkg/repos.d/offical-core/formula/uppm.yml
+            printf '%s\n' "version: $V"                >> ~/.ppkg/repos.d/offical-core/formula/uppm.yml
 
             run ./ppkg install uppm --link-type=static-only --install-lib=static
             run ./ppkg pack    uppm
 
       - run: |
           export LD_LIBRARY_PATH=/usr/local/lib
-          scp -i $VAGRANT_CWD/.vagrant/machines/default/virtualbox/private_key -o StrictHostKeyChecking=no -r -P 2222 vagrant@127.0.0.1:/opt/ppkg/cache.d/bin/uppm-1.0.0-openbsd-amd64.tar.xz .
+          scp -i $VAGRANT_CWD/.vagrant/machines/default/virtualbox/private_key -o StrictHostKeyChecking=no -r -P 2222 vagrant@127.0.0.1:~/.ppkg/cache.d/bin/uppm-1.0.0-openbsd-amd64.tar.xz .
 
       - uses: actions/upload-artifact@v2
         with:
@@ -111,14 +111,14 @@ jobs:
 
             V=$(sed -n '/set(PROJECT_VERSION /p' CMakeLists.txt | sed 's|set(PROJECT_VERSION[[:space:]]*\(.*\))|\1|')
 
-            printf '%s\n' "git-sha: ${{ github.sha }}" >> /opt/ppkg/repos.d/offical-core/formula/uppm.yml
-            printf '%s\n' "src-url: dir://$PWD"        >> /opt/ppkg/repos.d/offical-core/formula/uppm.yml
-            printf '%s\n' "version: $V"                >> /opt/ppkg/repos.d/offical-core/formula/uppm.yml
+            printf '%s\n' "git-sha: ${{ github.sha }}" >> ~/.ppkg/repos.d/offical-core/formula/uppm.yml
+            printf '%s\n' "src-url: dir://$PWD"        >> ~/.ppkg/repos.d/offical-core/formula/uppm.yml
+            printf '%s\n' "version: $V"                >> ~/.ppkg/repos.d/offical-core/formula/uppm.yml
 
             run ./ppkg install uppm --link-type=static-only --install-lib=static
             run ./ppkg pack    uppm
 
-      - run:  scp -i $VAGRANT_CWD/.vagrant/machines/default/virtualbox/private_key -o StrictHostKeyChecking=no -r -P 2222 vagrant@127.0.0.1:/opt/ppkg/cache.d/bin/uppm-1.0.0-freebsd-amd64.tar.xz .
+      - run:  scp -i $VAGRANT_CWD/.vagrant/machines/default/virtualbox/private_key -o StrictHostKeyChecking=no -r -P 2222 vagrant@127.0.0.1:~/.ppkg/cache.d/bin/uppm-1.0.0-freebsd-amd64.tar.xz .
 
       - uses: actions/upload-artifact@v2
         with:
@@ -149,7 +149,7 @@ jobs:
 
       - run: |
           V=$(sed -n '/set(PROJECT_VERSION /p' CMakeLists.txt | sed 's|set(PROJECT_VERSION[[:space:]]*\(.*\))|\1|')
-          cat >> /opt/ppkg/repos.d/offical-core/formula/uppm.yml <<EOF
+          cat >> ~/.ppkg/repos.d/offical-core/formula/uppm.yml <<EOF
           git-sha: ${{ github.sha }}
           src-url: dir://$PWD
           version: $V
@@ -161,7 +161,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: uppm-macos-tar-xz
-          path: /opt/ppkg/cache.d/bin/*.tar.xz
+          path: ~/.ppkg/cache.d/bin/*.tar.xz
 
   linux:
     needs: macos
@@ -186,7 +186,7 @@ jobs:
 
       - run: |
           V=$(sed -n '/set(PROJECT_VERSION /p' CMakeLists.txt | sed 's|set(PROJECT_VERSION[[:space:]]*\(.*\))|\1|')
-          cat >> /opt/ppkg/repos.d/offical-core/formula/uppm.yml <<EOF
+          cat >> ~/.ppkg/repos.d/offical-core/formula/uppm.yml <<EOF
           git-sha: ${{ github.sha }}
           src-url: dir://$PWD
           version: $V
@@ -198,28 +198,28 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: uppm-netbsd-tar-xz
-          path: /opt/ppkg/cache.d/bin/
+          path: ~/.ppkg/cache.d/bin/
 
       - uses: actions/download-artifact@v2
         with:
           name: uppm-openbsd-tar-xz
-          path: /opt/ppkg/cache.d/bin/
+          path: ~/.ppkg/cache.d/bin/
 
       - uses: actions/download-artifact@v2
         with:
           name: uppm-freebsd-tar-xz
-          path: /opt/ppkg/cache.d/bin/
+          path: ~/.ppkg/cache.d/bin/
 
       - uses: actions/download-artifact@v2
         with:
           name: uppm-macos-tar-xz
-          path: /opt/ppkg/cache.d/bin/
+          path: ~/.ppkg/cache.d/bin/
 
       - run: ls -a
-      - run: ls /opt/ppkg/cache.d/bin
+      - run: ls ~/.ppkg/packed
 
-      - run: printf '%s\n' "$RELEASE_TOKEN" | /opt/ppkg/installed/gh/bin/gh auth login --with-token
+      - run: printf '%s\n' "$RELEASE_TOKEN" | ~/.ppkg/installed/gh/bin/gh auth login --with-token
 
       - run: git config --global --add safe.directory /__w/uppm/uppm
 
-      - run: /opt/ppkg/installed/gh/bin/gh release create $(./ppkg info uppm version) /opt/ppkg/cache.d/bin/*
+      - run: ~/.ppkg/installed/gh/bin/gh release create $(./ppkg info uppm version) ~/.ppkg/packed/*

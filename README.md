@@ -351,11 +351,14 @@ all relevant dirs and files are located in `~/.uppm` directory.
     **Note:**
     - this software supports multiple formula repositories.
     - offical formula repository are as follows:
+        - https://github.com/leleliu008/uppm-formula-repository-android-aarch64
         - https://github.com/leleliu008/uppm-formula-repository-linux-x86_64
         - https://github.com/leleliu008/uppm-formula-repository-linux-aarch64
         - https://github.com/leleliu008/uppm-formula-repository-macos-x86_64
         - https://github.com/leleliu008/uppm-formula-repository-macos-arm64
-        - https://github.com/leleliu008/uppm-formula-repository-android-aarch64
+        - https://github.com/leleliu008/uppm-formula-repository-freebsd-amd64
+        - https://github.com/leleliu008/uppm-formula-repository-openbsd-amd64
+        - https://github.com/leleliu008/uppm-formula-repository-netbsd-amd64
 
 *   **delete a existing formula repository**
 
