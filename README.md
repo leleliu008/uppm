@@ -427,6 +427,8 @@ all relevant dirs and files are located in `~/.uppm` directory.
     ```bash
     #!/bin/sh
 
+    set -e
+
     case $1 in
         *githubusercontent.com/*)
             printf 'https://ghproxy.com/%s\n' "$1"

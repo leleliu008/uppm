@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 
 #include "core/fs.h"
+#include "core/util.h"
 #include "core/http.h"
 #include "core/sha256sum.h"
 
@@ -102,14 +103,6 @@ int uppm_fetch(const char * packageName, bool verbose) {
         return resultCode;
     }
 
-    size_t urlLength = strlen(formula->bin_url);
-    size_t urlCopyLength = urlLength + 1;
-    char   urlCopy[urlCopyLength];
-    memset(urlCopy, 0, urlCopyLength);
-    strcpy(urlCopy, formula->bin_url);
-
-    const char * archiveFileName = basename(urlCopy);
-
     char * userHomeDir = getenv("HOME");
 
     if (userHomeDir == NULL) {
@@ -137,29 +130,43 @@ int uppm_fetch(const char * packageName, bool verbose) {
         }
     }
 
-    size_t  archiveFilePathLength = downloadDirLength + strlen(archiveFileName) + 2;
-    char    archiveFilePath[archiveFilePathLength];
-    memset (archiveFilePath, 0, archiveFilePathLength);
-    sprintf(archiveFilePath, "%s/%s", downloadDir, archiveFileName);
+    char * binFileNameExtension = NULL;
 
-    if (exists_and_is_a_regular_file(archiveFilePath)) {
-        char * actualSHA256SUM = sha256sum_of_file(archiveFilePath);
+    if (get_file_extension_from_url(&binFileNameExtension, formula->bin_url) < 0) {
+        uppm_formula_free(formula);
+        return UPPM_ERROR;
+    }
+
+    size_t  binFileNameLength = strlen(formula->bin_sha) + strlen(binFileNameExtension) + 1;
+    char    binFileName[binFileNameLength];
+    memset( binFileName, 0, binFileNameLength);
+    sprintf(binFileName, "%s%s", formula->bin_sha, binFileNameExtension);
+
+    free(binFileNameExtension);
+
+    size_t  binFilePathLength = downloadDirLength + binFileNameLength + 1;
+    char    binFilePath[binFilePathLength];
+    memset (binFilePath, 0, binFilePathLength);
+    sprintf(binFilePath, "%s/%s", downloadDir, binFileName);
+
+    if (exists_and_is_a_regular_file(binFilePath)) {
+        char * actualSHA256SUM = sha256sum_of_file(binFilePath);
         if (strcmp(actualSHA256SUM, formula->bin_sha) == 0) {
             free(actualSHA256SUM);
             uppm_formula_free(formula);
-            fprintf(stderr, "%s already have been fetched.\n", archiveFilePath);
+            fprintf(stderr, "%s already have been fetched.\n", binFilePath);
             return UPPM_OK;
         } else {
             free(actualSHA256SUM);
         }
     }
 
-    if (http_fetch_to_file(formula->bin_url, archiveFilePath, verbose, verbose) != 0) {
+    if (http_fetch_to_file(formula->bin_url, binFilePath, verbose, verbose) != 0) {
         uppm_formula_free(formula);
         return UPPM_NETWORK_ERROR;
     }
 
-    char * actualSHA256SUM = sha256sum_of_file(archiveFilePath);
+    char * actualSHA256SUM = sha256sum_of_file(binFilePath);
 
     if (strcmp(actualSHA256SUM, formula->bin_sha) == 0) {
         free(actualSHA256SUM);

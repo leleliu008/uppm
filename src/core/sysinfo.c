@@ -203,7 +203,7 @@ int sysinfo_name(char * * out) {
         fclose(file);
     }
 
-    (*out) = strdup("unknown");
+    (*out) = strdup("");
 
     return 0;
 }
@@ -407,7 +407,7 @@ void sysinfo_dump(SysInfo * sysinfo) {
     switch(sysinfo->libc) {
         case LIBC_GLIBC: printf("sysinfo.libc: glibc\n"); break;
         case LIBC_MUSL:  printf("sysinfo.libc: musl\n");  break;
-        default:         printf("sysinfo.libc: unknown\n");
+        default:         printf("sysinfo.libc: \n");
     }
 }
 
