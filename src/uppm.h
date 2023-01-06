@@ -5,9 +5,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#ifndef UPPM_VERSION
-#define UPPM_VERSION "0.0.0"
-#endif
 
 #define UPPM_PACKAGE_NAME_PATTERN "^[A-Za-z0-9+-._]{1,50}$"
 

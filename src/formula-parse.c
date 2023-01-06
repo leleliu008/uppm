@@ -93,8 +93,6 @@ static UPPMFormulaKeyCode uppm_formula_key_code_from_key_name(char * key, bool i
         return UPPMFormulaKeyCode_summary;
     } else if (strcmp(key, "webpage") == 0) {
         return UPPMFormulaKeyCode_webpage;
-    } else if (strcmp(key, "webpage") == 0) {
-        return UPPMFormulaKeyCode_webpage;
     } else if (strcmp(key, "version") == 0) {
         return UPPMFormulaKeyCode_version;
     } else if (strcmp(key, "license") == 0) {

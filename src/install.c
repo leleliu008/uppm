@@ -58,7 +58,7 @@ int uppm_install(const char * packageName, bool verbose) {
         while (depPackageName != NULL) {
             depPackageNameArrayList[depPackageNameArrayListSize] = depPackageName;
             depPackageNameArrayListSize++;
-            depPackageName = strtok (NULL, " ");
+            depPackageName = strtok(NULL, " ");
         }
 
         for (size_t i = 0; i < depPackageNameArrayListSize; i++) {
@@ -101,6 +101,7 @@ int uppm_install(const char * packageName, bool verbose) {
     sprintf(receiptFilePath, "%s/receipt.yml", packageInstalledMetaInfoDir);
 
     if (exists_and_is_a_regular_file(receiptFilePath)) {
+        uppm_formula_free(formula);
         fprintf(stderr, "package [%s] already has been installed.\n", packageName);
         return UPPM_OK;
     }
@@ -225,7 +226,7 @@ int uppm_install(const char * packageName, bool verbose) {
         memset (uppmHomeDir, 0, uppmHomeDirLength);
         sprintf(uppmHomeDir, "%s/.uppm", userHomeDir);
 
-        size_t  shellCodeLength = strlen(formula->install) + 512;
+        size_t  shellCodeLength = strlen(formula->install) + 1024;
         char    shellCode[shellCodeLength];
         memset (shellCode, 0, shellCodeLength);
         sprintf(shellCode,
@@ -238,7 +239,11 @@ int uppm_install(const char * packageName, bool verbose) {
                 "NATIVE_OS_ARCH='%s'\n"
                 "NATIVE_OS_NCPU='%ld'\n\n"
                 "UPPM_VERSION='%s'\n"
+                "UPPM_VERSION_MAJOR='%d'\n"
+                "UPPM_VERSION_MINOR='%d'\n"
+                "UPPM_VERSION_PATCH='%d'\n"
                 "UPPM_HOME='%s'\n\n"
+                "UPPM_EXECUTABLE='%s'\n\n"
                 "PKG_SUMMARY='%s'\n"
                 "PKG_WEBPAGE='%s'\n"
                 "PKG_VERSION='%s'\n"
@@ -257,7 +262,11 @@ int uppm_install(const char * packageName, bool verbose) {
                 sysinfo->arch,
                 sysinfo->ncpu,
                 UPPM_VERSION,
+                UPPM_VERSION_MAJOR,
+                UPPM_VERSION_MINOR,
+                UPPM_VERSION_PATCH,
                 uppmHomeDir,
+                "",
                 formula->summary == NULL ? "" : formula->summary,
                 formula->webpage == NULL ? "" : formula->webpage,
                 formula->version == NULL ? "" : formula->version,
