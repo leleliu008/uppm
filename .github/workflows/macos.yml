@@ -26,8 +26,8 @@ jobs:
       - run: sed -i '.bak' '/Requires.private:/d' "$(brew --prefix libarchive)/lib/pkgconfig/libarchive.pc"
 
       - run:  |
-          export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:/usr/local~/.openssl@1.1/lib/pkgconfig:/usr/local/opt/curl/lib/pkgconfig:/usr/local/opt/libarchive/lib/pkgconfig"
-          CMAKE_EXE_LINKER_FLAGS='-L/usr/local/lib -L/usr/local~/.openssl@1.1/lib -lssl -liconv -framework CoreFoundation -framework Security'
+          export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:/usr/local/opt/openssl@1.1/lib/pkgconfig:/usr/local/opt/curl/lib/pkgconfig:/usr/local/opt/libarchive/lib/pkgconfig"
+          CMAKE_EXE_LINKER_FLAGS='-L/usr/local/lib -L/usr/local/opt/openssl@1.1/lib -lssl -liconv -framework CoreFoundation -framework Security'
           CMAKE_FIND_ROOT_PATH="$(brew --prefix openssl@1.1);$(brew --prefix curl);$(brew --prefix sqlite);$(brew --prefix libarchive)"
 
           cmake \
@@ -264,7 +264,7 @@ jobs:
               -DCMAKE_INSTALL_PREFIX=./output \
               -DCMAKE_VERBOSE_MAKEFILE=ON \
               -DCMAKE_BUILD_TYPE=Debug \
-              -DCMAKE_C_COMPILER=/usr/local~/.llvm/bin/clang \
+              -DCMAKE_C_COMPILER=/usr/local/opt/llvm/bin/clang \
               -DCMAKE_C_FLAGS="-fsanitize=undefined -fsanitize=address -fsanitize=leak"
 
       - run:  cmake --build   build.d
@@ -364,8 +364,8 @@ jobs:
       - run: sed -i '.bak' '/Requires.private:/d' "$(brew --prefix libarchive)/lib/pkgconfig/libarchive.pc"
 
       - run:  |
-          export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:/usr/local~/.openssl@1.1/lib/pkgconfig:/usr/local/opt/curl/lib/pkgconfig:/usr/local/opt/libarchive/lib/pkgconfig"
-          CMAKE_EXE_LINKER_FLAGS='-L/usr/local/lib -L/usr/local~/.openssl@1.1/lib -lssl -liconv -framework CoreFoundation -framework Security'
+          export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:/usr/local/opt/openssl@1.1/lib/pkgconfig:/usr/local/opt/curl/lib/pkgconfig:/usr/local/opt/libarchive/lib/pkgconfig"
+          CMAKE_EXE_LINKER_FLAGS='-L/usr/local/lib -L/usr/local/opt/openssl@1.1/lib -lssl -liconv -framework CoreFoundation -framework Security'
           CMAKE_FIND_ROOT_PATH="$(brew --prefix openssl@1.1);$(brew --prefix curl);$(brew --prefix sqlite);$(brew --prefix libarchive)"
 
           cmake \
@@ -377,7 +377,7 @@ jobs:
               -DCMAKE_EXE_LINKER_FLAGS="$CMAKE_EXE_LINKER_FLAGS" \
               -DCMAKE_FIND_ROOT_PATH="$CMAKE_FIND_ROOT_PATH" \
               -DCMAKE_BUILD_TYPE=Debug \
-              -DCMAKE_C_COMPILER=/usr/local~/.llvm/bin/clang \
+              -DCMAKE_C_COMPILER=/usr/local/opt/llvm/bin/clang \
               -DCMAKE_C_FLAGS="-fsanitize=undefined -fsanitize=address -fsanitize=leak"
 
       - run:  cmake --build   build.d
