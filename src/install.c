@@ -122,9 +122,9 @@ int uppm_install(const char * packageName, bool verbose) {
         }
     }
 
-    char * binFileNameExtension = NULL;
+    char binFileNameExtension[21] = {0};
 
-    if (get_file_extension_from_url(&binFileNameExtension, formula->bin_url) < 0) {
+    if (get_file_extension_from_url(binFileNameExtension, 20, formula->bin_url) < 0) {
         uppm_formula_free(formula);
         return UPPM_ERROR;
     }
@@ -133,8 +133,6 @@ int uppm_install(const char * packageName, bool verbose) {
     char    binFileName[binFileNameLength];
     memset( binFileName, 0, binFileNameLength);
     sprintf(binFileName, "%s%s", formula->bin_sha, binFileNameExtension);
-
-    free(binFileNameExtension);
 
     size_t  binFilePathLength = uppmDownloadDirLength + binFileNameLength + 1;
     char    binFilePath[binFilePathLength];
@@ -251,6 +249,7 @@ int uppm_install(const char * packageName, bool verbose) {
                 "PKG_BIN_SHA='%s'\n"
                 "PKG_DEP_PKG='%s'\n"
                 "PKG_BIN_FILENAME='%s'\n"
+                "PKG_BIN_FILETYPE='%s'\n"
                 "PKG_BIN_FILEPATH='%s'\n"
                 "PKG_INSTALL_DIR='%s'\n\n"
                 "%s",
@@ -274,6 +273,7 @@ int uppm_install(const char * packageName, bool verbose) {
                 formula->bin_sha == NULL ? "" : formula->bin_sha,
                 formula->dep_pkg == NULL ? "" : formula->dep_pkg,
                 binFileName,
+                binFileNameExtension,
                 binFilePath,
                 packageInstalledDir,
                 formula->install);

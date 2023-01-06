@@ -130,9 +130,9 @@ int uppm_fetch(const char * packageName, bool verbose) {
         }
     }
 
-    char * binFileNameExtension = NULL;
+    char binFileNameExtension[21] = {0};
 
-    if (get_file_extension_from_url(&binFileNameExtension, formula->bin_url) < 0) {
+    if (get_file_extension_from_url(binFileNameExtension, 20, formula->bin_url) < 0) {
         uppm_formula_free(formula);
         return UPPM_ERROR;
     }
@@ -141,8 +141,6 @@ int uppm_fetch(const char * packageName, bool verbose) {
     char    binFileName[binFileNameLength];
     memset( binFileName, 0, binFileNameLength);
     sprintf(binFileName, "%s%s", formula->bin_sha, binFileNameExtension);
-
-    free(binFileNameExtension);
 
     size_t  binFilePathLength = downloadDirLength + binFileNameLength + 1;
     char    binFilePath[binFilePathLength];
@@ -171,6 +169,7 @@ int uppm_fetch(const char * packageName, bool verbose) {
     if (strcmp(actualSHA256SUM, formula->bin_sha) == 0) {
         free(actualSHA256SUM);
         uppm_formula_free(formula);
+        printf("%s\n", binFilePath);
         return UPPM_OK;
     } else {
         fprintf(stderr, "sha256sum mismatch.\n    expect : %s\n    actual : %s\n", formula->bin_sha, actualSHA256SUM);
