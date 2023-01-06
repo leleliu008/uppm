@@ -19,17 +19,24 @@ static bool check_os_kind_arch_is_supported(const char * osKind, const char * os
 }
 
 UPPMFormulaRepo* uppm_formula_repo_default_new(char * userHomeDir, size_t userHomeDirLength) {
-    char * osType = NULL;
-    char * osArch = NULL;
+    char osType[31] = {0};
 
-    sysinfo_type(&osType);
-    sysinfo_arch(&osArch);
+    int resultCode = sysinfo_type(osType, 30);
+
+    if (resultCode != 0) {
+        return NULL;
+    }
+
+    char osArch[31] = {0};
+
+    resultCode = sysinfo_arch(osArch, 30);
+
+    if (resultCode != 0) {
+        return NULL;
+    }
 
     char *  formulaRepoUrl = (char*)calloc(strlen(osType) + strlen(osArch) + 56, sizeof(char));
     sprintf(formulaRepoUrl, "https://github.com/leleliu008/uppm-formula-repository-%s-%s", osType, osArch);
-
-    free(osType);
-    free(osArch);
 
     char *  formulaRepoPath = (char*)calloc(userHomeDirLength + 80, sizeof(char));
     sprintf(formulaRepoPath, "%s/.uppm/repos.d/offical-core", userHomeDir);

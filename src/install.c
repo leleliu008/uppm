@@ -214,7 +214,7 @@ int uppm_install(const char * packageName, bool verbose) {
             return resultCode;
         }
     } else {
-        SysInfo * sysinfo = NULL;
+        SysInfo sysinfo = {0};
 
         if (sysinfo_make(&sysinfo) != 0) {
             uppm_formula_free(formula);
@@ -223,7 +223,7 @@ int uppm_install(const char * packageName, bool verbose) {
 
         char * libcName = NULL;
 
-        switch(sysinfo->libc) {
+        switch(sysinfo.libc) {
             case LIBC_GLIBC: libcName = (char*)"glibc"; break;
             case LIBC_MUSL:  libcName = (char*)"musl";  break;
             default:         libcName = (char*)"";
@@ -263,13 +263,13 @@ int uppm_install(const char * packageName, bool verbose) {
                 "PKG_BIN_FILEPATH='%s'\n"
                 "PKG_INSTALL_DIR='%s'\n\n"
                 "%s",
-                sysinfo->kind,
-                sysinfo->type,
-                sysinfo->name,
-                sysinfo->vers,
+                sysinfo.kind,
+                sysinfo.type,
+                sysinfo.name,
+                sysinfo.vers,
                 libcName,
-                sysinfo->arch,
-                sysinfo->ncpu,
+                sysinfo.arch,
+                sysinfo.ncpu,
                 UPPM_VERSION,
                 UPPM_VERSION_MAJOR,
                 UPPM_VERSION_MINOR,

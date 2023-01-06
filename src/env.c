@@ -87,7 +87,7 @@ int uppm_env(bool verbose) {
     printf("build.jansson: %s\n", JANSSON_VERSION);
     printf("build.archive: %s\n\n", ARCHIVE_VERSION_ONLY_STRING);
 
-    SysInfo * sysinfo = NULL;
+    SysInfo sysinfo = {0};
 
     if (sysinfo_make(&sysinfo) != 0) {
         return UPPM_ERROR;
