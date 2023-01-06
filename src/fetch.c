@@ -148,14 +148,19 @@ int uppm_fetch(const char * packageName, bool verbose) {
     sprintf(binFilePath, "%s/%s", downloadDir, binFileName);
 
     if (exists_and_is_a_regular_file(binFilePath)) {
-        char * actualSHA256SUM = sha256sum_of_file(binFilePath);
+        char actualSHA256SUM[65] = {0};
+
+        resultCode = sha256sum_of_file(actualSHA256SUM, binFilePath);
+
+        if (resultCode != 0) {
+            uppm_formula_free(formula);
+            return UPPM_ERROR;
+        }
+
         if (strcmp(actualSHA256SUM, formula->bin_sha) == 0) {
-            free(actualSHA256SUM);
             uppm_formula_free(formula);
             fprintf(stderr, "%s already have been fetched.\n", binFilePath);
             return UPPM_OK;
-        } else {
-            free(actualSHA256SUM);
         }
     }
 
@@ -164,17 +169,22 @@ int uppm_fetch(const char * packageName, bool verbose) {
         return UPPM_NETWORK_ERROR;
     }
 
-    char * actualSHA256SUM = sha256sum_of_file(binFilePath);
+    char actualSHA256SUM[65] = {0};
+
+    resultCode = sha256sum_of_file(actualSHA256SUM, binFilePath);
+
+    if (resultCode != 0) {
+        uppm_formula_free(formula);
+        return UPPM_ERROR;
+    }
 
     if (strcmp(actualSHA256SUM, formula->bin_sha) == 0) {
-        free(actualSHA256SUM);
         uppm_formula_free(formula);
         printf("%s\n", binFilePath);
         return UPPM_OK;
     } else {
-        fprintf(stderr, "sha256sum mismatch.\n    expect : %s\n    actual : %s\n", formula->bin_sha, actualSHA256SUM);
-        free(actualSHA256SUM);
         uppm_formula_free(formula);
+        fprintf(stderr, "sha256sum mismatch.\n    expect : %s\n    actual : %s\n", formula->bin_sha, actualSHA256SUM);
         return UPPM_SHA256_MISMATCH;
     }
 }
