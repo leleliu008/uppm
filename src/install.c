@@ -296,7 +296,7 @@ int uppm_install(const char * packageName, bool verbose) {
 
         if (resultCode != 0) {
             uppm_formula_free(formula);
-            return resultCode;
+            return UPPM_ERROR;
         }
     }
 
