@@ -120,8 +120,8 @@ int check_if_is_a_empty_dir(const char * dirpath, bool * value) {
 }
 
 // implement following steps:
-// git -C -c init.defaultBranch=master init
-// git -C remote add origin https://github.com/leleliu008/uppm-formula-repository-offical-core.git
+// git -c init.defaultBranch=master init
+// git remote add origin https://github.com/leleliu008/uppm-formula-repository-offical-core.git
 // git fetch --progress origin +refs/heads/master:refs/remotes/origin/master
 // git checkout --progress --force -B master refs/remotes/origin/master
 int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const char * refspec, const char * localeTrackingBranchName) {
@@ -224,9 +224,9 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
     git_reference  * localeTrackingBranchRef = NULL;
     git_reference  * remoteTrackingBranchRef = NULL;
 
-    const git_oid * remoteTrackingBranchHeadOid = NULL;
-    git_object * remoteTrackingBranchHeadCommit = NULL;
-    git_tree   * remoteTrackingBranchHeadTree   = NULL;
+    const git_oid * remoteTrackingBranchHeadOid    = NULL;
+    git_object    * remoteTrackingBranchHeadCommit = NULL;
+    git_tree      * remoteTrackingBranchHeadTree   = NULL;
 
     const git_error * gitError        = NULL;
 
@@ -327,6 +327,7 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
         goto clean;
     }
 
+//    goto clean;
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     resultCode = git_branch_lookup(&remoteTrackingBranchRef, gitRepo, &refspecDst[13], GIT_BRANCH_REMOTE);
@@ -358,30 +359,34 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
         }
     }
  
-    resultCode = git_reference_create(&localeTrackingBranchRef, gitRepo, localeTrackingBranchRefString, remoteTrackingBranchHeadOid, false, NULL);
+    resultCode = git_branch_lookup(&localeTrackingBranchRef, gitRepo, localeTrackingBranchName, GIT_BRANCH_LOCAL);
 
-    if (resultCode == GIT_EEXISTS) {
+    if (resultCode == GIT_OK) {
         git_oid localeTrackingBranchHeadOid  = {0};
 
         resultCode = git_reference_name_to_id(&localeTrackingBranchHeadOid, gitRepo, localeTrackingBranchRefString);
 
         if (resultCode == GIT_OK) {
-            print_git_oid((*remoteTrackingBranchHeadOid), "remoteTrackingBranchHeadOid");
-            print_git_oid(localeTrackingBranchHeadOid, "localeTrackingBranchHeadOid");
+            //print_git_oid((*remoteTrackingBranchHeadOid), "remoteTrackingBranchHeadOid");
+            //print_git_oid(localeTrackingBranchHeadOid, "localeTrackingBranchHeadOid");
             // remote tracking branch's SHA-1 is equal to remote tracking branch's HEAD SHA-1, means no need to perform merge
             if (memcmp(remoteTrackingBranchHeadOid->id, localeTrackingBranchHeadOid.id, 20) == 0) {
                 resultCode = git_repository_set_head(gitRepo, localeTrackingBranchRefString);
 
                 if (resultCode != GIT_OK) {
                     gitError = git_error_last();
+                    goto clean;
                 }
-
-                goto clean;
             }
         }
-    }
+    } else if (resultCode == GIT_ENOTFOUND) {
+        resultCode = git_reference_create(&localeTrackingBranchRef, gitRepo, localeTrackingBranchRefString, remoteTrackingBranchHeadOid, false, NULL);
 
-    if (resultCode != GIT_OK) {
+        if (resultCode != GIT_OK) {
+            gitError = git_error_last();
+            goto clean;
+        }
+    } else {
         gitError = git_error_last();
         goto clean;
     }

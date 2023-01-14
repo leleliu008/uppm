@@ -347,17 +347,7 @@ all relevant dirs and files are located in `~/.uppm` directory.
         uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo master
         uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo main
         
-    **Note:**
-    - this software supports multiple formula repositories.
-    - offical formula repository are as follows:
-        - https://github.com/leleliu008/uppm-formula-repository-android-aarch64
-        - https://github.com/leleliu008/uppm-formula-repository-linux-x86_64
-        - https://github.com/leleliu008/uppm-formula-repository-linux-aarch64
-        - https://github.com/leleliu008/uppm-formula-repository-macos-x86_64
-        - https://github.com/leleliu008/uppm-formula-repository-macos-arm64
-        - https://github.com/leleliu008/uppm-formula-repository-freebsd-amd64
-        - https://github.com/leleliu008/uppm-formula-repository-openbsd-amd64
-        - https://github.com/leleliu008/uppm-formula-repository-netbsd-amd64
+    **Note:** this software supports multiple formula repositories.
 
 *   **delete a existing formula repository**
 
@@ -449,7 +439,7 @@ all relevant dirs and files are located in `~/.uppm` directory.
 
     If you want change the request url, you can set this environment variable. It is very useful for chinese users.
 
-## uppm formula repository
+## what's uppm formula repository ?
 a uppm formula repository is a git repository.
 
 a uppm formula repository's location is `~/.uppm/repos.d/${UPPMFormulaRepoName}`
@@ -469,9 +459,24 @@ timestamp-last-updated: 1673684767
 
 If a uppm formula repository is pinned, which means this uppm formula repository would not be updated.
 
-If you find that a package is not in `offical-core` formula repo yet, PR is welcomed.
-
 **Note:**
  - please do not directly modify the formula file. your modifications may be lost after updaing.
  - uppm supports multiple formula repositories.
+
+
+## offical-core
+
+There is a special uppm formula repository whose name is `offical-core`, it is offical formula repository.
+
+`offical-core` formula repository's url:
+- https://github.com/leleliu008/uppm-formula-repository-android-aarch64
+- https://github.com/leleliu008/uppm-formula-repository-linux-x86_64
+- https://github.com/leleliu008/uppm-formula-repository-linux-aarch64
+- https://github.com/leleliu008/uppm-formula-repository-macos-x86_64
+- https://github.com/leleliu008/uppm-formula-repository-macos-arm64
+- https://github.com/leleliu008/uppm-formula-repository-freebsd-amd64
+- https://github.com/leleliu008/uppm-formula-repository-openbsd-amd64
+- https://github.com/leleliu008/uppm-formula-repository-netbsd-amd64
+
+If you find that a package is not in `offical-core` formula repository yet, PR is welcomed.
 
