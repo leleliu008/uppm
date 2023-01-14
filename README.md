@@ -52,7 +52,7 @@ cmake --install build.d
 
 ```bash
 apt -y update
-apt -y install git cmake ninja-build pkg-config gcc libcurl4 libcurl4-openssl-dev libgit2-dev libarchive-dev libyaml-dev libjansson-dev libsqlite3-dev
+apt -y install git cmake ninja-build pkg-config gcc libcurl4 libcurl4-openssl-dev libgit2-dev libarchive-dev libyaml-dev libjansson-dev
 
 git clone https://github.com/leleliu008/uppm
 cd uppm
@@ -66,7 +66,7 @@ cmake --install build.d
 
 ```bash
 dnf -y update
-dnf -y install git cmake ninja-build pkg-config gcc libcurl-devel libgit2-devel libarchive-devel libyaml-devel jansson-devel sqlite-devel
+dnf -y install git cmake ninja-build pkg-config gcc libcurl-devel libgit2-devel libarchive-devel libyaml-devel jansson-devel
 
 git clone https://github.com/leleliu008/uppm
 cd uppm
@@ -80,7 +80,7 @@ cmake --install build.d
 
 ```bash
 pacman -Syyuu --noconfirm
-pacman -S     --noconfirm git cmake ninja pkg-config gcc curl openssl libgit2 libarchive libyaml jansson sqlite
+pacman -S     --noconfirm git cmake ninja pkg-config gcc curl openssl libgit2 libarchive libyaml jansson
 
 git clone https://github.com/leleliu008/uppm
 cd uppm
@@ -93,7 +93,7 @@ cmake --install build.d
 **[AlpineLinux](https://www.alpinelinux.org/)**
 
 ```bash
-apk add git cmake ninja pkgconf gcc libc-dev curl-dev openssl-dev libgit2-dev libarchive-dev yaml-dev jansson-dev sqlite-dev
+apk add git cmake ninja pkgconf gcc libc-dev curl-dev openssl-dev libgit2-dev libarchive-dev yaml-dev jansson-dev
 
 git clone https://github.com/leleliu008/uppm
 cd uppm
@@ -107,7 +107,7 @@ cmake --install build.d
 
 ```bash
 xbps-install -Suy xbps
-xbps-install -Suy cmake ninja gcc pkg-config libcurl-devel libgit2-devel libarchive-devel libyaml-devel jansson-devel sqlite-devel
+xbps-install -Suy cmake ninja gcc pkg-config libcurl-devel libgit2-devel libarchive-devel libyaml-devel jansson-devel
 
 git clone https://github.com/leleliu008/uppm
 cd uppm
@@ -120,7 +120,7 @@ cmake --install build.d
 **[Gentoo Linux](https://www.gentoo.org/)**
 
 ```bash
-emerge dev-vcs/git cmake dev-util/ninja gcc pkg-config net-misc/curl dev-libs/libgit2 libarchive dev-libs/libyaml dev-libs/jansson dev-db/sqlite
+emerge dev-vcs/git cmake dev-util/ninja gcc pkg-config net-misc/curl dev-libs/libgit2 libarchive dev-libs/libyaml dev-libs/jansson
 
 git clone https://github.com/leleliu008/uppm
 cd uppm
@@ -134,7 +134,7 @@ cmake --install build.d
 
 ```bash
 zypper update  -y  
-zypper install -y git cmake ninja gcc pkg-config libcurl-devel libgit2-devel libarchive-devel libyaml-devel libjansson-devel sqlite3-devel
+zypper install -y git cmake ninja gcc pkg-config libcurl-devel libgit2-devel libarchive-devel libyaml-devel libjansson-devel
 
 git clone https://github.com/leleliu008/uppm
 cd uppm
@@ -148,7 +148,7 @@ cmake --install build.d
 
 ```bash
 brew update
-brew install git cmake pkg-config ninja curl jansson libyaml libgit2 libarchive sqlite
+brew install git cmake pkg-config ninja curl jansson libyaml libgit2 libarchive
 
 git clone https://github.com/leleliu008/uppm
 cd uppm
@@ -156,7 +156,7 @@ cd uppm
 export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:/usr/local/opt/openssl@1.1/lib/pkgconfig:/usr/local/opt/curl/lib/pkgconfig:/usr/local/opt/libarchive/lib/pkgconfig"
 
 CMAKE_EXE_LINKER_FLAGS='-L/usr/local/lib -L/usr/local/opt/openssl@1.1/lib -lssl -liconv -framework CoreFoundation -framework Security'
-CMAKE_FIND_ROOT_PATH="$(brew --prefix openssl@1.1);$(brew --prefix curl);$(brew --prefix libarchive);$(brew --prefix sqlite)"
+CMAKE_FIND_ROOT_PATH="$(brew --prefix openssl@1.1);$(brew --prefix curl);$(brew --prefix libarchive)"
 
 cmake \
     -S . \
@@ -173,7 +173,7 @@ cmake --install build.d
 **[FreeBSD](https://www.freebsd.org/)**
 
 ```bash
-pkg install -y git cmake ninja pkgconf gcc curl openssl libgit2 libarchive libyaml jansson sqlite3
+pkg install -y git cmake ninja pkgconf gcc curl openssl libgit2 libarchive libyaml jansson
 
 git clone https://github.com/leleliu008/uppm
 cd uppm
@@ -186,7 +186,7 @@ cmake --install build.d
 **[OpenBSD](https://www.openbsd.org/)**
 
 ```bash
-pkg_add git cmake ninja pkgconf llvm curl libgit2 libarchive libyaml jansson sqlite
+pkg_add git cmake ninja pkgconf llvm curl libgit2 libarchive libyaml jansson
 
 git clone https://github.com/leleliu008/uppm
 cd uppm
@@ -199,7 +199,7 @@ cmake --install build.d
 **[NetBSD](https://www.netbsd.org/)**
 
 ```bash
-pkgin -y install git mozilla-rootcerts cmake ninja-build pkg-config clang curl openssl libgit2 libarchive libyaml jansson sqlite
+pkgin -y install git mozilla-rootcerts cmake ninja-build pkg-config clang curl openssl libgit2 libarchive libyaml jansson
 
 mozilla-rootcerts install
 
@@ -403,7 +403,7 @@ all relevant dirs and files are located in `~/.uppm` directory.
 
     this environment variable must be set.
 
-    this environment variable already have been set on most systems, if not set or set a empty string, you should set it manully.
+    this environment variable already have been set on most systems, if not set or set a empty string, you will receive an error message.
 
 *   **PATH**
 
@@ -456,12 +456,15 @@ a uppm formula repository's location is `~/.uppm/repos.d/${UPPMFormulaRepoName}`
 
 a uppm formula repository should have a config file whose location is `~/.uppm/repos.d/${UPPMFormulaRepoName}/.uppm-formula-repo.dat`, this file is zlib deflated, and you're able to uncompress it via `zlib-flate -uncompress < ~/.uppm/repos.d/${UPPMFormulaRepoName}/.uppm-formula-repo.dat`.
 
-follwoing is `offical-core` formula repository's uncompressed config:
+a typical uppm formula repository's uncompressed config as following:
 
 ```
 url: https://github.com/leleliu008/uppm-formula-repository-linux-x86_64
 branch: master
 pinned: no
+enabled: yes
+timestamp-added: 1673684639
+timestamp-last-updated: 1673684767
 ```
 
 If a uppm formula repository is pinned, which means this uppm formula repository would not be updated.

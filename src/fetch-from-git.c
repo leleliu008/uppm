@@ -230,8 +230,6 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
 
     const git_error * gitError        = NULL;
 
-    git_reference * HEADRef = NULL;
-
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     if (needInitGitRepo) {
@@ -448,7 +446,6 @@ clean:
     git_repository_free(gitRepo);
     git_refspec_free(gitRefSpec);
     git_remote_free(gitRemote);
-    git_reference_free(HEADRef);
     git_reference_free(localeTrackingBranchRef);
     git_reference_free(remoteTrackingBranchRef);
     git_tree_free(remoteTrackingBranchHeadTree);
