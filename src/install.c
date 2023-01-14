@@ -88,17 +88,17 @@ int uppm_install(const char * packageName, bool verbose) {
     size_t  packageInstalledDirLength = userHomeDirLength + strlen(packageName) + 20;
     char    packageInstalledDir[packageInstalledDirLength];
     memset (packageInstalledDir, 0, packageInstalledDirLength);
-    sprintf(packageInstalledDir, "%s/.uppm/installed/%s", userHomeDir, packageName);
+    snprintf(packageInstalledDir, packageInstalledDirLength, "%s/.uppm/installed/%s", userHomeDir, packageName);
 
     size_t  packageInstalledMetaInfoDirLength = packageInstalledDirLength + 6;
     char    packageInstalledMetaInfoDir[packageInstalledMetaInfoDirLength];
     memset (packageInstalledMetaInfoDir, 0, packageInstalledMetaInfoDirLength);
-    sprintf(packageInstalledMetaInfoDir, "%s/.uppm", packageInstalledDir);
+    snprintf(packageInstalledMetaInfoDir, packageInstalledMetaInfoDirLength, "%s/.uppm", packageInstalledDir);
 
     size_t  receiptFilePathLength = packageInstalledMetaInfoDirLength + 12;
     char    receiptFilePath[receiptFilePathLength];
     memset (receiptFilePath, 0, receiptFilePathLength);
-    sprintf(receiptFilePath, "%s/receipt.yml", packageInstalledMetaInfoDir);
+    snprintf(receiptFilePath, receiptFilePathLength, "%s/receipt.yml", packageInstalledMetaInfoDir);
 
     if (exists_and_is_a_regular_file(receiptFilePath)) {
         uppm_formula_free(formula);
@@ -113,7 +113,7 @@ int uppm_install(const char * packageName, bool verbose) {
     size_t  uppmDownloadDirLength = userHomeDirLength + 18;
     char    uppmDownloadDir[uppmDownloadDirLength];
     memset (uppmDownloadDir, 0, uppmDownloadDirLength);
-    sprintf(uppmDownloadDir, "%s/.uppm/downloads", userHomeDir);
+    snprintf(uppmDownloadDir, uppmDownloadDirLength, "%s/.uppm/downloads", userHomeDir);
 
     if (!exists_and_is_a_directory(uppmDownloadDir)) {
         if (mkdir(uppmDownloadDir, S_IRWXU) != 0) {
@@ -132,12 +132,12 @@ int uppm_install(const char * packageName, bool verbose) {
     size_t  binFileNameLength = strlen(formula->bin_sha) + strlen(binFileNameExtension) + 1;
     char    binFileName[binFileNameLength];
     memset( binFileName, 0, binFileNameLength);
-    sprintf(binFileName, "%s%s", formula->bin_sha, binFileNameExtension);
+    snprintf(binFileName, binFileNameLength, "%s%s", formula->bin_sha, binFileNameExtension);
 
     size_t  binFilePathLength = uppmDownloadDirLength + binFileNameLength + 1;
     char    binFilePath[binFilePathLength];
     memset (binFilePath, 0, binFilePathLength);
-    sprintf(binFilePath, "%s/%s", uppmDownloadDir, binFileName);
+    snprintf(binFilePath, binFilePathLength, "%s/%s", uppmDownloadDir, binFileName);
 
     bool needFetch = true;
 
@@ -191,7 +191,7 @@ int uppm_install(const char * packageName, bool verbose) {
         size_t  installedDirLength = userHomeDirLength + 20;
         char    installedDir[installedDirLength];
         memset (installedDir, 0, installedDirLength);
-        sprintf(installedDir, "%s/.uppm/installed", userHomeDir);
+        snprintf(installedDir, installedDirLength, "%s/.uppm/installed", userHomeDir);
 
         if (!exists_and_is_a_directory(installedDir)) {
             if (mkdir(installedDir, S_IRWXU) != 0) {
@@ -232,12 +232,12 @@ int uppm_install(const char * packageName, bool verbose) {
         size_t  uppmHomeDirLength = strlen(userHomeDir) + 7;
         char    uppmHomeDir[uppmHomeDirLength];
         memset (uppmHomeDir, 0, uppmHomeDirLength);
-        sprintf(uppmHomeDir, "%s/.uppm", userHomeDir);
+        snprintf(uppmHomeDir, uppmHomeDirLength, "%s/.uppm", userHomeDir);
 
         size_t  shellCodeLength = strlen(formula->install) + 1024;
         char    shellCode[shellCodeLength];
         memset (shellCode, 0, shellCodeLength);
-        sprintf(shellCode,
+        snprintf(shellCode, shellCodeLength,
                 "set -ex\n\n"
                 "NATIVE_OS_KIND='%s'\n"
                 "NATIVE_OS_TYPE='%s'\n"

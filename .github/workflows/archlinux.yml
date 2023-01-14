@@ -95,7 +95,7 @@ jobs:
 
 
       - run:  ./output/bin/uppm formula-repo-list
-      - run:  ./output/bin/uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo
+      - run:  ./output/bin/uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-linux-x86_64
       - run:  ./output/bin/uppm formula-repo-del my_repo
 
       - run:  ./output/bin/uppm cleanup

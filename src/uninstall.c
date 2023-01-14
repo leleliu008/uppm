@@ -27,12 +27,12 @@ int uppm_uninstall(const char * packageName, bool verbose) {
     size_t  installedDirLength = userHomeDirLength + strlen(packageName) + 20;
     char    installedDir[installedDirLength];
     memset (installedDir, 0, installedDirLength);
-    sprintf(installedDir, "%s/.uppm/installed/%s", userHomeDir, packageName);
+    snprintf(installedDir, installedDirLength, "%s/.uppm/installed/%s", userHomeDir, packageName);
 
     size_t  receiptFilePathLength = installedDirLength + 20;
     char    receiptFilePath[receiptFilePathLength];
     memset (receiptFilePath, 0, receiptFilePathLength);
-    sprintf(receiptFilePath, "%s/.uppm/receipt.yml", installedDir);
+    snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", installedDir);
 
     if (exists_and_is_a_regular_file(receiptFilePath)) {
         if (rm_r(installedDir, verbose) == 0) {

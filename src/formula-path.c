@@ -26,7 +26,7 @@ int uppm_formula_path(const char * packageName, char ** out) {
     size_t  uppmHomeDirLength = userHomeDirLength + 7; 
     char    uppmHomeDir[uppmHomeDirLength];
     memset (uppmHomeDir, 0, uppmHomeDirLength);
-    sprintf(uppmHomeDir, "%s/.uppm", userHomeDir);
+    snprintf(uppmHomeDir, uppmHomeDirLength, "%s/.uppm", userHomeDir);
 
     if (!exists_and_is_a_directory(uppmHomeDir)) {
         return UPPM_FORMULA_REPO_NOT_EXIST;
@@ -43,9 +43,10 @@ int uppm_formula_path(const char * packageName, char ** out) {
 
     for (size_t i = 0; i < formulaRepoList->size; i++) {
         char *  formulaRepoPath = formulaRepoList->repos[i]->path;
+
         size_t  formulaFilePathLength =  strlen(formulaRepoPath) + strlen(packageName) + 15;
         char *  formulaFilePath = (char*)calloc(formulaFilePathLength, sizeof(char));
-        sprintf(formulaFilePath, "%s/formula/%s.yml", formulaRepoPath, packageName);
+        snprintf(formulaFilePath, formulaFilePathLength, "%s/formula/%s.yml", formulaRepoPath, packageName);
 
         if (exists_and_is_a_regular_file(formulaFilePath)) {
             (*out) = formulaFilePath;

@@ -1,5 +1,5 @@
-#ifndef PPKG_UTIL_H
-#define PPKG_UTIL_H
+#ifndef UPPM_UTIL_H
+#define UPPM_UTIL_H
 
 int get_file_extension_from_url(char * buf, size_t bufSize, const char * url);
 

@@ -23,7 +23,7 @@ int uppm_list_the_outdated__packages() {
     size_t  installedDirLength = userHomeDirLength + 17; 
     char    installedDir[installedDirLength];
     memset (installedDir, 0, installedDirLength);
-    sprintf(installedDir, "%s/.uppm/installed", userHomeDir);
+    snprintf(installedDir, installedDirLength, "%s/.uppm/installed", userHomeDir);
 
     if (!exists_and_is_a_directory(installedDir)) {
         return UPPM_OK;
@@ -47,7 +47,7 @@ int uppm_list_the_outdated__packages() {
         size_t  receiptFilePathLength = installedDirLength + strlen(dir_entry->d_name) + 20;
         char    receiptFilePath[receiptFilePathLength];
         memset (receiptFilePath, 0, receiptFilePathLength);
-        sprintf(receiptFilePath, "%s/%s/.uppm/receipt.yml", installedDir, dir_entry->d_name);
+        snprintf(receiptFilePath, receiptFilePathLength, "%s/%s/.uppm/receipt.yml", installedDir, dir_entry->d_name);
 
         if (exists_and_is_a_regular_file(receiptFilePath)) {
             //printf("%s\n", dir_entry->d_name);

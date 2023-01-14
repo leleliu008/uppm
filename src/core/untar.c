@@ -112,9 +112,10 @@ int untar_extract(const char * outputDir, const char * inputFilePath, int flags,
 
         if ((outputDir != NULL) && (strcmp(outputDir, "") != 0)) {
             size_t outputFilePathLength = strlen(outputDir) + strlen(entry_pathname) + 2;
-            char outputFilePath[outputFilePathLength];
+            char   outputFilePath[outputFilePathLength];
             memset(outputFilePath, 0, outputFilePathLength);
-            sprintf(outputFilePath, "%s/%s", outputDir, entry_pathname);
+            snprintf(outputFilePath, outputFilePathLength, "%s/%s", outputDir, entry_pathname);
+
             archive_entry_set_pathname(entry, outputFilePath);
         } else {
             archive_entry_set_pathname(entry, entry_pathname);
@@ -136,9 +137,10 @@ int untar_extract(const char * outputDir, const char * inputFilePath, int flags,
 
                 if ((outputDir != NULL) && (strcmp(outputDir, "") != 0)) {
                     size_t outputFilePathLength = strlen(outputDir) + strlen(hardlinkname) + 2;
-                    char outputFilePath[outputFilePathLength];
+                    char   outputFilePath[outputFilePathLength];
                     memset(outputFilePath, 0, outputFilePathLength);
-                    sprintf(outputFilePath, "%s/%s", outputDir, hardlinkname);
+                    snprintf(outputFilePath, outputFilePathLength, "%s/%s", outputDir, hardlinkname);
+
                     archive_entry_set_hardlink_utf8(entry, outputFilePath);
                 } else {
                     archive_entry_set_hardlink_utf8(entry, hardlinkname);

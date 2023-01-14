@@ -26,10 +26,11 @@ int uppm_fetch_all_available_packages(bool verbose) {
 
     for (size_t i = 0; i < formulaRepoList->size; i++) {
         char *  formulaRepoPath  = formulaRepoList->repos[i]->path;
+
         size_t  formulaDirLength = strlen(formulaRepoPath) + 10;
         char    formulaDir[formulaDirLength];
         memset (formulaDir, 0, formulaDirLength);
-        sprintf(formulaDir, "%s/formula", formulaRepoPath);
+        snprintf(formulaDir, formulaDirLength, "%s/formula", formulaRepoPath);
 
         DIR           * dir;
         struct dirent * dir_entry;
@@ -120,7 +121,7 @@ int uppm_fetch(const char * packageName, bool verbose) {
     size_t  downloadDirLength = userHomeDirLength + 18;
     char    downloadDir[downloadDirLength];
     memset (downloadDir, 0, downloadDirLength);
-    sprintf(downloadDir, "%s/.uppm/downloads", userHomeDir);
+    snprintf(downloadDir, downloadDirLength, "%s/.uppm/downloads", userHomeDir);
 
     if (!exists_and_is_a_directory(downloadDir)) {
         if (mkdir(downloadDir, S_IRWXU) != 0) {
@@ -140,12 +141,12 @@ int uppm_fetch(const char * packageName, bool verbose) {
     size_t  binFileNameLength = strlen(formula->bin_sha) + strlen(binFileNameExtension) + 1;
     char    binFileName[binFileNameLength];
     memset( binFileName, 0, binFileNameLength);
-    sprintf(binFileName, "%s%s", formula->bin_sha, binFileNameExtension);
+    snprintf(binFileName, binFileNameLength, "%s%s", formula->bin_sha, binFileNameExtension);
 
     size_t  binFilePathLength = downloadDirLength + binFileNameLength + 1;
     char    binFilePath[binFilePathLength];
     memset (binFilePath, 0, binFilePathLength);
-    sprintf(binFilePath, "%s/%s", downloadDir, binFileName);
+    snprintf(binFilePath, binFilePathLength, "%s/%s", downloadDir, binFileName);
 
     if (exists_and_is_a_regular_file(binFilePath)) {
         char actualSHA256SUM[65] = {0};

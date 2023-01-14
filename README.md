@@ -7,9 +7,9 @@ brew tap leleliu008/fpliu
 brew install uppm
 ```
 
-## Install uppm via [ppkg](https://github.com/leleliu008/ppkg)
+## Install uppm via [uppm](https://github.com/leleliu008/uppm)
 ```bash
-ppkg install uppm
+uppm install uppm
 ```
 
 ## Build from source
@@ -19,13 +19,13 @@ ppkg install uppm
 |[ninja](https://ninja-build.org/)|required |for doing jobs that read from `build.ninja`|
 |[pkg-config>=0.18](https://www.freedesktop.org/wiki/Software/pkg-config/)|required|for finding libraries|
 ||||
-|[sqlite3](https://www.sqlite.org/)|required|for storing data.|
 |[jansson](https://github.com/akheron/jansson)|required|for parsing and creating JSON.|
 |[libyaml](https://github.com/yaml/libyaml/)|required|for parsing formula files whose format is YAML.|
 |[libgit2](https://libgit2.org/)|required|for updating formula repositories.|
 |[libcurl](https://curl.se/)|required|for http requesting support.|
 |[openssl](https://www.openssl.org/)|required|for https requesting support and SHA-256 sum checking support.|
 |[libarchive](https://www.libarchive.org/)|required|for uncompressing .zip and .tar.* files.|
+|[zlib](https://www.zlib.net/)|required|for compress and uncompress data.|
 |[pcre2](https://www.pcre.org/)||for Regular Expressions support. only required on OpenBSD.|
 
 
@@ -406,6 +406,12 @@ all relevant dirs and files are located in `~/.uppm` directory.
 
     this environment variable already have been set on most systems, if not set or set a empty string, you should set it manully.
 
+*   **PATH**
+
+    some features rely on this environment variable.
+
+    this environment variable already have been set on most systems, if not set or set a empty string, you will receive an error message.
+
 *   **SSL_CERT_FILE**
 
     ```bash
@@ -415,10 +421,10 @@ all relevant dirs and files are located in `~/.uppm` directory.
 
     In general, you don't need to set this environment variable, but, if you encounter the reporting `the SSL certificate is invalid`, trying to run above commands in your terminal will do the trick.
 
-*   **URL_TRANSFORM**
+*   **UPPM_URL_TRANSFORM**
 
     ```bash
-    export URL_TRANSFORM=/path/of/url-transform
+    export UPPM_URL_TRANSFORM=/path/of/url-transform
     ```
 
     `/path/of/url-transform` command would be invoked as `/path/of/url-transform <URL>`
@@ -429,8 +435,6 @@ all relevant dirs and files are located in `~/.uppm` directory.
 
     ```bash
     #!/bin/sh
-
-    set -e
 
     case $1 in
         *githubusercontent.com/*)
@@ -445,3 +449,27 @@ all relevant dirs and files are located in `~/.uppm` directory.
     ```
 
     If you want change the request url, you can set this environment variable. It is very useful for chinese users.
+
+## uppm formula repository
+a uppm formula repository is a git repository.
+
+a uppm formula repository's location is `~/.uppm/repos.d/${UPPMFormulaRepoName}`
+
+a uppm formula repository should have a config file whose location is `~/.uppm/repos.d/${UPPMFormulaRepoName}/.uppm-formula-repo.dat`, this file is zlib deflated, and you're able to uncompress it via `zlib-flate -uncompress < ~/.uppm/repos.d/${UPPMFormulaRepoName}/.uppm-formula-repo.dat`.
+
+follwoing is `offical-core` formula repository's uncompressed config:
+
+```
+url: https://github.com/leleliu008/uppm-formula-repository-linux-x86_64
+branch: master
+pinned: no
+```
+
+If a uppm formula repository is pinned, which means this uppm formula repository would not be updated.
+
+If you find that a package is not in `offical-core` formula repo yet, PR is welcomed.
+
+**Note:**
+ - please do not directly modify the formula file. your modifications may be lost after updaing.
+ - uppm supports multiple formula repositories.
+

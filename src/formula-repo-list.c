@@ -1,54 +1,10 @@
 #include <stdio.h>
 #include <string.h>
+#include <dirent.h>
 
+#include "core/zlib-flate.h"
 #include "core/fs.h"
-#include "core/sysinfo.h"
 #include "uppm.h"
-
-#include <sqlite3.h>
-
-static bool check_os_kind_arch_is_supported(const char * osKind, const char * osArch) {
-    if (strcmp(osArch, "x86_64") == 0) {
-        return true;
-    } else if (strcmp(osArch, "arm64") == 0) {
-        return true;
-    } else {
-        fprintf(stderr, "%s/%s is not supported yet.", osKind, osArch);
-        return false;
-    }
-}
-
-UPPMFormulaRepo* uppm_formula_repo_default_new(char * userHomeDir, size_t userHomeDirLength) {
-    char osType[31] = {0};
-
-    int resultCode = sysinfo_type(osType, 30);
-
-    if (resultCode != 0) {
-        return NULL;
-    }
-
-    char osArch[31] = {0};
-
-    resultCode = sysinfo_arch(osArch, 30);
-
-    if (resultCode != 0) {
-        return NULL;
-    }
-
-    char *  formulaRepoUrl = (char*)calloc(strlen(osType) + strlen(osArch) + 56, sizeof(char));
-    sprintf(formulaRepoUrl, "https://github.com/leleliu008/uppm-formula-repository-%s-%s", osType, osArch);
-
-    char *  formulaRepoPath = (char*)calloc(userHomeDirLength + 80, sizeof(char));
-    sprintf(formulaRepoPath, "%s/.uppm/repos.d/offical-core", userHomeDir);
-
-    UPPMFormulaRepo * formulaRepo = (UPPMFormulaRepo*)calloc(1, sizeof(UPPMFormulaRepo));
-    formulaRepo->branch = strdup("master");
-    formulaRepo->name   = strdup("offical-core");
-    formulaRepo->url    = formulaRepoUrl;
-    formulaRepo->path   = formulaRepoPath;
-
-    return formulaRepo;
-}
 
 int uppm_formula_repo_list_new(UPPMFormulaRepoList * * out) {
     char * userHomeDir = getenv("HOME");
@@ -63,101 +19,155 @@ int uppm_formula_repo_list_new(UPPMFormulaRepoList * * out) {
         return UPPM_ENV_HOME_NOT_SET;
     }
 
-    size_t  formulaRepoDBPathLength = userHomeDirLength + 16;
-    char    formulaRepoDBPath[formulaRepoDBPathLength];
-    memset (formulaRepoDBPath, 0, formulaRepoDBPathLength);
-    sprintf(formulaRepoDBPath, "%s/.uppm/repos.db", userHomeDir);
+    size_t  uppmFormulaRepoDirLength = userHomeDirLength + 15;
+    char    uppmFormulaRepoDir[uppmFormulaRepoDirLength];
+    memset (uppmFormulaRepoDir, 0, uppmFormulaRepoDirLength);
+    snprintf(uppmFormulaRepoDir, uppmFormulaRepoDirLength, "%s/.uppm/repos.d", userHomeDir);
 
-    UPPMFormulaRepoList * formulaRepoList = (UPPMFormulaRepoList*)calloc(1, sizeof(UPPMFormulaRepoList));
-    formulaRepoList->repos = (UPPMFormulaRepo**)calloc(1, sizeof(UPPMFormulaRepo*));
-    formulaRepoList->repos[0] = uppm_formula_repo_default_new(userHomeDir, userHomeDirLength);
-    formulaRepoList->size     = 1;
+    if (!exists_and_is_a_directory(uppmFormulaRepoDir)) {
+        UPPMFormulaRepoList* formulaRepoList = (UPPMFormulaRepoList*)calloc(1, sizeof(UPPMFormulaRepoList));
 
-    if (!exists_and_is_a_regular_file(formulaRepoDBPath)) {
-        (*out) = formulaRepoList;
-        return UPPM_OK;
-    }
-
-    size_t capacity = 5;
-
-    sqlite3      * db        = NULL;
-    sqlite3_stmt * statement = NULL;
-
-    int resultCode = sqlite3_open(formulaRepoDBPath, &db);
-
-    if (resultCode != SQLITE_OK) {
-        goto clean;
-    }
-
-    resultCode = sqlite3_prepare_v2(db, "select * from formulaRepo", -1, &statement, NULL);
-
-    if (resultCode != SQLITE_OK) {
-        if (strcmp(sqlite3_errmsg(db), "Error: no such table: formulaRepo") == 0) {
-            resultCode = SQLITE_OK;
+        if (formulaRepoList == NULL) {
+            return UPPM_ERROR_ALLOCATE_MEMORY_FAILED;
+        } else {
+            (*out) = formulaRepoList;
+            return UPPM_OK;
         }
-        goto clean;
     }
 
-    for(;;) {
-        resultCode = sqlite3_step(statement);
+    DIR           * dir;
+    struct dirent * dir_entry;
 
-        if (resultCode == SQLITE_ROW) {
-            resultCode =  SQLITE_OK;
+    dir = opendir(uppmFormulaRepoDir);
 
-            char * formulaRepoName   = (char *)sqlite3_column_text(statement, 0);
-            char * formulaRepoUrl    = (char *)sqlite3_column_text(statement, 1);
-            char * formulaRepoBranch = (char *)sqlite3_column_text(statement, 2);
+    if (dir == NULL) {
+        perror(uppmFormulaRepoDir);
+        return UPPM_ERROR;
+    }
 
-            //printf("formulaRepoName=%s\nformulaRepoUrl=%s\nformulaRepoBranch=%s\n", formulaRepoName, formulaRepoUrl, formulaRepoBranch);
+    size_t capcity = 5;
 
-            char *  formulaRepoPath = (char*)calloc(userHomeDirLength + 16 + strlen(formulaRepoName), sizeof(char));
-            sprintf(formulaRepoPath, "%s/.uppm/repos.d/%s", userHomeDir, formulaRepoName);
+    UPPMFormulaRepoList * formulaRepoList = NULL;
 
-            UPPMFormulaRepo * formulaRepo = (UPPMFormulaRepo*)calloc(1, sizeof(UPPMFormulaRepo));
-            formulaRepo->name = strdup(formulaRepoName);
-            formulaRepo->url  = strdup(formulaRepoUrl);
-            formulaRepo->path =        formulaRepoPath;
-            formulaRepo->branch  = strdup(formulaRepoBranch);
+    int resultCode = UPPM_OK;
 
-            if (formulaRepoList->size == capacity) {
-                capacity += capacity;
-                formulaRepoList->repos = (UPPMFormulaRepo**)realloc(formulaRepoList->repos, capacity * sizeof(UPPMFormulaRepo*));
-            }
-
-            formulaRepoList->repos[formulaRepoList->size] = formulaRepo;
-            formulaRepoList->size += 1;
-
+    while ((dir_entry = readdir(dir))) {
+        //puts(dir_entry->d_name);
+        if ((strcmp(dir_entry->d_name, ".") == 0) || (strcmp(dir_entry->d_name, "..") == 0)) {
             continue;
         }
 
-        if (resultCode == SQLITE_DONE) {
-            resultCode =  SQLITE_OK;
-        }
+        size_t  formulaRepoPathLength = uppmFormulaRepoDirLength + strlen(dir_entry->d_name) + 2;
+        char    formulaRepoPath[formulaRepoPathLength];
+        memset (formulaRepoPath, 0, formulaRepoPathLength);
+        snprintf(formulaRepoPath, formulaRepoPathLength, "%s/%s", uppmFormulaRepoDir, dir_entry->d_name);
 
-        break;
+        size_t  formulaRepoConfigFilePathLength = formulaRepoPathLength + 24;
+        char    formulaRepoConfigFilePath[formulaRepoConfigFilePathLength];
+        memset (formulaRepoConfigFilePath, 0, formulaRepoConfigFilePathLength);
+        snprintf(formulaRepoConfigFilePath, formulaRepoConfigFilePathLength, "%s/.uppm-formula-repo.dat", formulaRepoPath);
+
+        if (exists_and_is_a_regular_file(formulaRepoConfigFilePath)) {
+            UPPMFormulaRepo * formulaRepo = NULL;
+
+            size_t  formulaRepoConfigFilePath2Length = formulaRepoPathLength + 24;
+            char    formulaRepoConfigFilePath2[formulaRepoConfigFilePath2Length];
+            memset (formulaRepoConfigFilePath2, 0, formulaRepoConfigFilePath2Length);
+            snprintf(formulaRepoConfigFilePath2, formulaRepoConfigFilePath2Length, "%s/.uppm-formula-repo.yml", formulaRepoPath);
+
+            FILE * inputFile  = NULL;
+            FILE * outputFile = NULL;
+
+            inputFile = fopen(formulaRepoConfigFilePath, "rb");
+
+            if (inputFile == NULL) {
+                perror(formulaRepoConfigFilePath);
+                goto clean;
+            }
+
+            outputFile = fopen(formulaRepoConfigFilePath2, "w");
+
+            if (outputFile == NULL) {
+                perror(formulaRepoConfigFilePath2);
+                fclose(inputFile);
+                goto clean;
+            }
+
+            resultCode = zlib_inflate_file_to_file(inputFile, outputFile);
+
+            fclose(inputFile);
+            fclose(outputFile);
+
+            if (resultCode != 0) {
+                goto clean;
+            }
+
+            resultCode = uppm_formula_repo_parse(formulaRepoConfigFilePath2, &formulaRepo);
+
+            if (resultCode != UPPM_OK) {
+                //parse failed, treat it as a invalid uppm formula repo.
+                continue;
+            }
+
+            if (formulaRepoList == NULL) {
+                formulaRepoList = (UPPMFormulaRepoList*)calloc(1, sizeof(UPPMFormulaRepoList));
+
+                if (formulaRepoList == NULL) {
+                    uppm_formula_repo_free(formulaRepo);
+                    resultCode = UPPM_ERROR_ALLOCATE_MEMORY_FAILED;
+                    goto clean;
+                }
+
+                formulaRepoList->repos = (UPPMFormulaRepo**)calloc(capcity, sizeof(UPPMFormulaRepo*));
+
+                if (formulaRepoList->repos == NULL) {
+                    uppm_formula_repo_free(formulaRepo);
+                    resultCode = UPPM_ERROR_ALLOCATE_MEMORY_FAILED;
+                    goto clean;
+                }
+            }
+
+            if (capcity == formulaRepoList->size) {
+                capcity += 5;
+                UPPMFormulaRepo ** formulaRepoArray = (UPPMFormulaRepo**)realloc(formulaRepoList->repos, capcity * sizeof(UPPMFormulaRepo*));
+
+                if (formulaRepoArray == NULL) {
+                    uppm_formula_repo_free(formulaRepo);
+                    uppm_formula_repo_list_free(formulaRepoList);
+                    resultCode = UPPM_ERROR_ALLOCATE_MEMORY_FAILED;
+                    goto clean;
+                } else {
+                    formulaRepoList->repos = formulaRepoArray;
+                }
+            }
+
+            formulaRepo->name = strdup(dir_entry->d_name);
+            formulaRepo->path = strdup(formulaRepoPath);
+
+            formulaRepoList->repos[formulaRepoList->size] = formulaRepo;
+            formulaRepoList->size += 1;
+        } else {
+            continue;
+        }
+    }
+
+    if (formulaRepoList == NULL) {
+        formulaRepoList = (UPPMFormulaRepoList*)calloc(1, sizeof(UPPMFormulaRepoList));
+
+        if (formulaRepoList == NULL) {
+            resultCode = UPPM_ERROR_ALLOCATE_MEMORY_FAILED;
+            goto clean;
+        }
     }
 
 clean:
-    if (resultCode == SQLITE_OK) {
-        if (formulaRepoList == NULL) {
-            formulaRepoList = (UPPMFormulaRepoList*)calloc(1, sizeof(UPPMFormulaRepoList));
-            formulaRepoList->repos = (UPPMFormulaRepo**)calloc(1, sizeof(UPPMFormulaRepo*));
-            formulaRepoList->repos[0] = uppm_formula_repo_default_new(userHomeDir, userHomeDirLength);
-            formulaRepoList->size     = 1;
-        }
-
+    if (resultCode == UPPM_OK) {
         (*out) = formulaRepoList;
     } else {
-        fprintf(stderr, "%s\n", sqlite3_errmsg(db));
+        uppm_formula_repo_list_free(formulaRepoList);
     }
 
-    if (statement != NULL) {
-        sqlite3_finalize(statement);
-    }
-
-    if (db != NULL) {
-        sqlite3_close(db);
-    }
+    closedir(dir);
 
     return resultCode;
 }
@@ -174,19 +184,7 @@ void uppm_formula_repo_list_free(UPPMFormulaRepoList * formulaRepoList) {
 
     for (size_t i = 0; i < formulaRepoList->size; i++) {
         UPPMFormulaRepo * formulaRepo = formulaRepoList->repos[i];
-
-        free(formulaRepo->name);
-        free(formulaRepo->url);
-        free(formulaRepo->path);
-        free(formulaRepo->branch);
-
-        formulaRepo->name = NULL;
-        formulaRepo->url  = NULL;
-        formulaRepo->path = NULL;
-        formulaRepo->branch = NULL;
-
-        free(formulaRepoList->repos[i]);
-        formulaRepoList->repos[i] = NULL;
+        uppm_formula_repo_free(formulaRepo);
     }
 
     free(formulaRepoList->repos);

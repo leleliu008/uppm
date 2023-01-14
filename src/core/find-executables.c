@@ -37,8 +37,9 @@ int find_executables(ExecuablePathList ** out, const char * commandName, bool fi
         struct stat st;
 
         if ((stat(PATHItem, &st) == 0) && S_ISDIR(st.st_mode)) {
-            char * fullPath = (char*)calloc(strlen(PATHItem) + commandNameLength + 2, sizeof(char));
-            sprintf(fullPath, "%s/%s", PATHItem, commandName);
+            size_t fullPathLength = strlen(PATHItem) + commandNameLength + 2;
+            char * fullPath = (char*)calloc(fullPathLength, sizeof(char));
+            snprintf(fullPath, fullPathLength, "%s/%s", PATHItem, commandName);
 
             if (access(fullPath, X_OK) == 0) {
                 if (pathList == NULL) {

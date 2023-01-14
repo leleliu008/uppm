@@ -6,10 +6,13 @@ int uppm_formula_repo_list_printf() {
 
     int resultCode = uppm_formula_repo_list_new(&formulaRepoList);
 
-    if (resultCode == 0) {
+    if (resultCode == UPPM_OK) {
         for (size_t i = 0; i < formulaRepoList->size; i++) {
-            UPPMFormulaRepo * formulaRepo = formulaRepoList->repos[i];
-            printf("%s %s %s\n", formulaRepo->name, formulaRepo->url, formulaRepo->branch);
+            if (i > 0) {
+                printf("---\n");
+            }
+
+            uppm_formula_repo_dump(formulaRepoList->repos[i]);
         }
     }
 

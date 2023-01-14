@@ -29,7 +29,7 @@ int uppm_upgrade_self(bool verbose) {
     size_t  uppmHomeDirLength = userHomeDirLength + 7;
     char    uppmHomeDir[uppmHomeDirLength];
     memset (uppmHomeDir, 0, uppmHomeDirLength);
-    sprintf(uppmHomeDir, "%s/.uppm", userHomeDir);
+    snprintf(uppmHomeDir, uppmHomeDirLength, "%s/.uppm", userHomeDir);
 
     if (!exists_and_is_a_directory(uppmHomeDir)) {
         if (mkdir(uppmHomeDir, S_IRWXU) != 0) {
@@ -43,7 +43,7 @@ int uppm_upgrade_self(bool verbose) {
     size_t  uppmTmpDirLength = uppmHomeDirLength + 5;
     char    uppmTmpDir[uppmTmpDirLength];
     memset (uppmTmpDir, 0, uppmTmpDirLength);
-    sprintf(uppmTmpDir, "%s/tmp", uppmHomeDir);
+    snprintf(uppmTmpDir, uppmTmpDirLength, "%s/tmp", uppmHomeDir);
 
     if (!exists_and_is_a_directory(uppmTmpDir)) {
         if (mkdir(uppmTmpDir, S_IRWXU) != 0) {
@@ -59,7 +59,7 @@ int uppm_upgrade_self(bool verbose) {
     size_t  githubApiResultJsonFilePathLength = uppmTmpDirLength + 13;
     char    githubApiResultJsonFilePath[githubApiResultJsonFilePathLength];
     memset (githubApiResultJsonFilePath, 0, githubApiResultJsonFilePathLength);
-    sprintf(githubApiResultJsonFilePath, "%s/latest.json", uppmTmpDir);
+    snprintf(githubApiResultJsonFilePath, githubApiResultJsonFilePathLength, "%s/latest.json", uppmTmpDir);
 
     if (http_fetch_to_file(githubApiUrl, githubApiResultJsonFilePath, verbose, verbose) != 0) {
         return UPPM_NETWORK_ERROR;
@@ -129,17 +129,17 @@ int uppm_upgrade_self(bool verbose) {
     size_t  tarballFileNameLength = latestVersionLength + strlen(osType) + strlen(osArch) + 15;
     char    tarballFileName[tarballFileNameLength];
     memset( tarballFileName, 0, tarballFileNameLength);
-    sprintf(tarballFileName, "uppm-%s-%s-%s.tar.xz", latestVersion, osType, osArch);
+    snprintf(tarballFileName, tarballFileNameLength, "uppm-%s-%s-%s.tar.xz", latestVersion, osType, osArch);
 
     size_t  tarballUrlLength = tarballFileNameLength + latestVersionLength + 55;
     char    tarballUrl[tarballUrlLength];
     memset( tarballUrl, 0, tarballUrlLength);
-    sprintf(tarballUrl, "https://github.com/leleliu008/uppm/releases/download/%s/%s", latestVersion, tarballFileName);
+    snprintf(tarballUrl, tarballUrlLength, "https://github.com/leleliu008/uppm/releases/download/%s/%s", latestVersion, tarballFileName);
 
     size_t  tarballFilePathLength = uppmTmpDirLength + tarballFileNameLength + 2;
     char    tarballFilePath[tarballFilePathLength];
     memset (tarballFilePath, 0, tarballFilePathLength);
-    sprintf(tarballFilePath, "%s/%s", uppmTmpDir, tarballFileName);
+    snprintf(tarballFilePath, tarballFilePathLength, "%s/%s", uppmTmpDir, tarballFileName);
 
     if (http_fetch_to_file(tarballUrl, tarballFilePath, verbose, verbose) != 0) {
         return UPPM_NETWORK_ERROR;
@@ -150,7 +150,7 @@ int uppm_upgrade_self(bool verbose) {
     size_t  tarballExtractDirLength = tarballFilePathLength + 3;
     char    tarballExtractDir[tarballExtractDirLength];
     memset (tarballExtractDir, 0, tarballExtractDirLength);
-    sprintf(tarballExtractDir, "%s.d", tarballFilePath);
+    snprintf(tarballExtractDir, tarballExtractDirLength, "%s.d", tarballFilePath);
 
     int resultCode = untar_extract(tarballExtractDir, tarballFilePath, 0, verbose, 1);
 
@@ -161,7 +161,7 @@ int uppm_upgrade_self(bool verbose) {
     size_t  upgradableExecutableFilePathLength = tarballExtractDirLength + 10;
     char    upgradableExecutableFilePath[upgradableExecutableFilePathLength];
     memset (upgradableExecutableFilePath, 0, upgradableExecutableFilePathLength);
-    sprintf(upgradableExecutableFilePath, "%s/bin/uppm", tarballExtractDir);
+    snprintf(upgradableExecutableFilePath, upgradableExecutableFilePathLength, "%s/bin/uppm", tarballExtractDir);
 
     printf("the latest version of executable was downloaded to %s\n", upgradableExecutableFilePath);
 

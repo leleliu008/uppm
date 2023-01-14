@@ -33,7 +33,7 @@ int uppm_help() {
         COLOR_OFF
         "    show information of the given package.\n\n"
         COLOR_GREEN
-        "ppkg tree <PACKAGE-NAME> [--dirsfirst | -L N]\n"
+        "uppm tree <PACKAGE-NAME> [--dirsfirst | -L N]\n"
         COLOR_OFF
         "    list files of the given installed package in a tree-like format.\n\n"
         COLOR_GREEN
@@ -93,11 +93,11 @@ int uppm_help() {
         COLOR_OFF
         "    list formula repositories.\n\n"
         COLOR_GREEN
-        "ppkg formula-repo-add <FORMULA-REPO-NAME> <FORMULA-REPO-URL> <BRANCH>\n"
+        "uppm formula-repo-add <FORMULA-REPO-NAME> <FORMULA-REPO-URL> <BRANCH>\n"
         COLOR_OFF
         "    add a new formula-repo.\n\n"
         COLOR_GREEN
-        "ppkg formula-repo-del <FORMULA-REPO-NAME>\n"
+        "uppm formula-repo-del <FORMULA-REPO-NAME>\n"
         COLOR_OFF
         "    delete a existing formula-repo.\n";
 
@@ -120,7 +120,7 @@ int uppm_help() {
         "    search packages whose name match the given keyword.\n\n"
         "uppm info    <PACKAGE-NAME|@all>\n"
         "    show information of the given package.\n\n"
-        "ppkg tree <PACKAGE-NAME> [--dirsfirst | -L N]\n"
+        "uppm tree <PACKAGE-NAME> [--dirsfirst | -L N]\n"
         "    list files of the given installed package in a tree-like format.\n\n"
         "uppm depends <PACKAGE-NAME>\n"
         "    show packages that are depended by the given package.\n\n"
@@ -150,9 +150,9 @@ int uppm_help() {
         "    cleanup the unused cache.\n\n"
         "uppm formula-repo-list\n"
         "    list formula repositories.\n\n"
-        "ppkg formula-repo-add <FORMULA-REPO-NAME> <FORMULA-REPO-URL> <BRANCH>\n"
+        "uppm formula-repo-add <FORMULA-REPO-NAME> <FORMULA-REPO-URL> <BRANCH>\n"
         "    add a new formula-repo.\n\n"
-        "ppkg formula-repo-del <FORMULA-REPO-NAME>\n"
+        "uppm formula-repo-del <FORMULA-REPO-NAME>\n"
         "    delete a existing formula-repo.\n";
 
         printf("%s\n", str);

@@ -12,6 +12,8 @@
 #define UPPM_OK               0
 #define UPPM_ERROR            1
 
+#define UPPM_ERROR_ALLOCATE_MEMORY_FAILED  2
+
 #define UPPM_ARG_IS_NULL      10
 #define UPPM_ARG_IS_EMPTY     11
 #define UPPM_ARG_IS_INVALID   12
@@ -36,6 +38,8 @@
 #define UPPM_RECEIPT_SYNTAX_ERROR     50
 #define UPPM_RECEIPT_SCHEME_ERROR     51
 
+#define UPPM_FORMULA_REPO_CONFIG_SYNTAX_ERROR     60
+#define UPPM_FORMULA_REPO_CONFIG_SCHEME_ERROR     61
 
 void uppm_show_error_message(int errorCode, const char * str);
 
@@ -66,12 +70,21 @@ typedef struct {
     char * url;
     char * branch;
     char * path;
+    char * timestamp_added;
+    char * timestamp_last_updated;
+    bool   pinned;
+    bool   enabled;
 } UPPMFormulaRepo ;
 
 typedef struct {
     UPPMFormulaRepo * * repos;
     size_t size;
 } UPPMFormulaRepoList ;
+
+int  uppm_formula_repo_parse(const char * formulaRepoConfigFilePath, UPPMFormulaRepo * * formulaRepo);
+void uppm_formula_repo_free(UPPMFormulaRepo * formulaRepo);
+void uppm_formula_repo_dump(UPPMFormulaRepo * formulaRepo);
+int  uppm_formula_repo_update(UPPMFormulaRepo * formulaRepo);
 
 int  uppm_formula_repo_list_new (UPPMFormulaRepoList * * p);
 void uppm_formula_repo_list_free(UPPMFormulaRepoList   * p);
@@ -154,5 +167,7 @@ int uppm_check_if_the_given_package_is_outdated (const char * packageName);
 int uppm_list_the_available_packages();
 int uppm_list_the_installed_packages();
 int uppm_list_the_outdated__packages();
+
+int uppm_fetch_via_git(const char * gitRepositoryDirPath, const char * remoteUrl, const char * refspec, const char * checkoutToBranchName);
 
 #endif

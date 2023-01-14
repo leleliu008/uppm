@@ -281,7 +281,7 @@ int sysinfo_libc(LIBC * out) {
         size_t  dynamicLoaderPathLength = osArchLength + 19;
         char    dynamicLoaderPath[dynamicLoaderPathLength];
         memset( dynamicLoaderPath, 0, dynamicLoaderPathLength);
-        sprintf(dynamicLoaderPath, "/lib/ld-musl-%s.so.1", uts.machine);
+        snprintf(dynamicLoaderPath, dynamicLoaderPathLength, "/lib/ld-musl-%s.so.1", uts.machine);
 
         struct stat sb;
 
@@ -302,7 +302,7 @@ int sysinfo_libc(LIBC * out) {
                 size_t  dynamicLoaderPathLength = osArchLength + 22;
                 char    dynamicLoaderPath[dynamicLoaderPathLength];
                 memset( dynamicLoaderPath, 0, dynamicLoaderPathLength);
-                sprintf(dynamicLoaderPath, "/lib64/ld-linux-%s.so.2", uts.machine);
+                snprintf(dynamicLoaderPath, dynamicLoaderPathLength, "/lib64/ld-linux-%s.so.2", uts.machine);
 
                 struct stat sb;
 
