@@ -327,7 +327,6 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
         goto clean;
     }
 
-//    goto clean;
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     resultCode = git_branch_lookup(&remoteTrackingBranchRef, gitRepo, &refspecDst[13], GIT_BRANCH_REMOTE);
@@ -358,10 +357,8 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
             }
         }
     }
- 
-    resultCode = git_branch_lookup(&localeTrackingBranchRef, gitRepo, localeTrackingBranchName, GIT_BRANCH_LOCAL);
 
-    if (resultCode == GIT_OK) {
+    {
         git_oid localeTrackingBranchHeadOid  = {0};
 
         resultCode = git_reference_name_to_id(&localeTrackingBranchHeadOid, gitRepo, localeTrackingBranchRefString);
@@ -378,17 +375,20 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
                     goto clean;
                 }
             }
-        }
-    } else if (resultCode == GIT_ENOTFOUND) {
-        resultCode = git_reference_create(&localeTrackingBranchRef, gitRepo, localeTrackingBranchRefString, remoteTrackingBranchHeadOid, false, NULL);
+        } else if (resultCode == GIT_ENOTFOUND) {
+            git_reference * localeTrackingBranchRef = NULL;
 
-        if (resultCode != GIT_OK) {
+            resultCode = git_reference_create(&localeTrackingBranchRef, gitRepo, localeTrackingBranchRefString, remoteTrackingBranchHeadOid, false, NULL);
+            git_reference_free(localeTrackingBranchRef);
+
+            if (resultCode != GIT_OK) {
+                gitError = git_error_last();
+                goto clean;
+            }
+        } else {
             gitError = git_error_last();
             goto clean;
         }
-    } else {
-        gitError = git_error_last();
-        goto clean;
     }
 
     // git cat-file commit HEAD
