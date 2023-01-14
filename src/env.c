@@ -9,7 +9,6 @@
 
 #include <git2.h>
 #include <yaml.h>
-#include <sqlite3.h>
 #include <jansson.h>
 #include <archive.h>
 #include <curl/curlver.h>
@@ -83,7 +82,6 @@ int uppm_env(bool verbose) {
     printf("build.openssl: %s\n", OPENSSL_VERSION_TEXT);
 #endif
 
-    printf("build.sqlite3: %s\n", SQLITE_VERSION);
     printf("build.jansson: %s\n", JANSSON_VERSION);
     printf("build.archive: %s\n\n", ARCHIVE_VERSION_ONLY_STRING);
 
