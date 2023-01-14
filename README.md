@@ -36,10 +36,9 @@ uppm install uppm
 git clone https://github.com/microsoft/vcpkg.git
 cd vcpkg
 ./bootstrap-vcpkg.sh
-export VCPKG_ROOT="$PWD/vcpkg"
-export PATH="$VCPKG_ROOT:$PATH"
+./vcpkg install curl openssl libgit2 libarchive libyaml jansson zlib
 
-vcpkg install curl openssl libgit2 libarchive libyaml jansson sqlite3
+cd -
 
 git clone https://github.com/leleliu008/uppm
 cd uppm

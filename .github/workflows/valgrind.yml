@@ -11,18 +11,41 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    container: ubuntu:22.04
+
     env:
       VALGRIND: valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --error-exitcode=1
 
     steps:
       - uses: actions/checkout@main
 
-      - run:  sudo apt -y update
-      - run:  sudo apt -y install valgrind cmake ninja-build gcc pkg-config libcurl4-openssl-dev libgit2-dev libarchive-dev libyaml-dev libjansson-dev libsqlite3-dev
+      - run:  apt -y update
+      - run:  apt -y install valgrind cmake ninja-build pkg-config g++ linux-headers-generic  curl zip unzip tar git
 
-      - run:  cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_VERBOSE_MAKEFILE=ON
+      - uses: actions/checkout@v3
+
+      - uses: actions/checkout@v3
+        with:
+          repository: microsoft/vcpkg
+          path: vcpkg
+
+      - run:  cd vcpkg && ./bootstrap-vcpkg.sh
+
+      - run:  cd vcpkg && ./vcpkg install curl openssl libgit2 libarchive libyaml jansson zlib
+
+      - run:  |
+          cmake \
+              -S . \
+              -B build.d \
+              -G Ninja \
+              -DCMAKE_TOOLCHAIN_FILE=$PWD/vcpkg/scripts/buildsystems/vcpkg.cmake \
+              -DCMAKE_INSTALL_PREFIX=./output \
+              -DCMAKE_VERBOSE_MAKEFILE=ON \
+              -DCMAKE_BUILD_TYPE=Debug
+
       - run:  cmake --build   build.d
       - run:  cmake --install build.d
+
 
       - run:  $VALGRIND ./output/bin/uppm
 
@@ -102,6 +125,7 @@ jobs:
 
       - run:  $VALGRIND ./output/bin/uppm formula-repo-list
       - run:  $VALGRIND ./output/bin/uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-linux-x86_64
+      - run:  $VALGRIND ./output/bin/uppm formula-repo-list
       - run:  $VALGRIND ./output/bin/uppm formula-repo-del my_repo
 
       - run:  $VALGRIND ./output/bin/uppm cleanup
