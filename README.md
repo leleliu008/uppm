@@ -20,7 +20,7 @@ uppm install uppm
 |[pkg-config>=0.18](https://www.freedesktop.org/wiki/Software/pkg-config/)|required|for finding libraries|
 ||||
 |[jansson](https://github.com/akheron/jansson)|required|for parsing and creating JSON.|
-|[libyaml](https://github.com/yaml/libyaml/)|required|for parsing formula files whose format is YAML.|
+|[libyaml](https://github.com/yaml/libyaml/)|required|for parsing formulas whose format is YAML.|
 |[libgit2](https://libgit2.org/)|required|for updating formula repositories.|
 |[libcurl](https://curl.se/)|required|for http requesting support.|
 |[openssl](https://www.openssl.org/)|required|for https requesting support and SHA-256 sum checking support.|
@@ -391,13 +391,9 @@ all relevant dirs and files are located in `~/.uppm` directory.
 
 *   **HOME**
 
-    this environment variable must be set.
-
     this environment variable already have been set on most systems, if not set or set a empty string, you will receive an error message.
 
 *   **PATH**
-
-    some features rely on this environment variable.
 
     this environment variable already have been set on most systems, if not set or set a empty string, you will receive an error message.
 
@@ -437,23 +433,26 @@ all relevant dirs and files are located in `~/.uppm` directory.
     esac
     ```
 
-    If you want change the request url, you can set this environment variable. It is very useful for chinese users.
+    If you want to change the request url, you can set this environment variable. It is very useful for chinese users.
 
-## formula
+## uppm formula
 
-a uppm formula is a [YAML](https://yaml.org/spec/1.2.2/) format file which is used to config a uppm package's infomation and describe how to install it.
+a uppm formula is a [YAML](https://yaml.org/spec/1.2.2/) format file which is used to config a uppm package's meta-infomation including package version, installation instructions, etc.
 
-[uppm formula scheme](https://github.com/leleliu008/uppm-formula-repository-linux-x86_64)
+a uppm formula's file extension must be `.yml`
 
+## uppm formula scheme
 
-## formula repository
+[Reference](https://github.com/leleliu008/uppm-formula-repository-linux-x86_64)
+
+## uppm formula repository
 a uppm formula repository is a git repository.
 
-a uppm formula repository's root dir should have a `formula` named sub dir, this repository's formula files all should be located in this dir.
+a uppm formula repository's root dir should have a `formula` named sub dir, this repository's formulas all should be located in this dir.
 
 a uppm formula repository's local path is `~/.uppm/repos.d/${UPPMFormulaRepoName}`
 
-After a uppm formula repository is successfully fetched from server, a config file for this repository would be create, this config file path is `~/.uppm/repos.d/${UPPMFormulaRepoName}/.uppm-formula-repo.dat`, this config file is zlib deflated, and you're able to uncompress it via `zlib-flate -uncompress < ~/.uppm/repos.d/${UPPMFormulaRepoName}/.uppm-formula-repo.dat`.
+After a uppm formula repository is successfully fetched from server to local, a config file for this repository would be create, this config file path is `~/.uppm/repos.d/${UPPMFormulaRepoName}/.uppm-formula-repo.dat`, this config file is zlib deflated, and you're able to uncompress it via `zlib-flate -uncompress < ~/.uppm/repos.d/${UPPMFormulaRepoName}/.uppm-formula-repo.dat`.
 
 a typical uppm formula repository's uncompressed config as following:
 
@@ -468,16 +467,16 @@ timestamp-last-updated: 1673684767
 
 If a uppm formula repository is pinned, which means it would not be updated.
 
-If a uppm formula repository is disabled, which means uppm would not search formula file in this formula repository.
+If a uppm formula repository is disabled, which means uppm would not search formula in this formula repository.
 
 **Note:**
- - please do NOT directly modify the formula files since your changes may be lost after the formula repository is updated!
+ - please do NOT directly modify the formulas since your changes may be lost after the formula repository is updated!
  - uppm supports multiple formula repositories.
 
 
-## offical formula repository
+## uppm offical formula repository
 
-There is a special uppm formula repository whose name is `offical-core`, it is a offical formula repository.
+There is a special uppm formula repository whose name is `offical-core`.
 
 `offical-core` formula repository's url:
 - https://github.com/leleliu008/uppm-formula-repository-android-aarch64
