@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "core/fs.h"
 #include "uppm.h"
 
 int uppm_formula_cat(const char * packageName) {
@@ -27,8 +26,8 @@ int uppm_formula_cat(const char * packageName) {
     free(formulaFilePath);
     formulaFilePath = NULL;
 
-    char buff[1024];
-    int  size = 0;
+    char   buff[1024];
+    size_t size = 0;
     while((size = fread(buff, 1, 1024, file)) != 0) {
         fwrite(buff, 1, size, stdout);
     }

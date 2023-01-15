@@ -4,16 +4,14 @@
 #include <stdbool.h>
 #include <libgen.h>
 #include <sys/stat.h>
+#include <dirent.h>
+#include <fnmatch.h>
 
-#include "core/fs.h"
 #include "core/util.h"
 #include "core/http.h"
 #include "core/sha256sum.h"
 
 #include "uppm.h"
-
-#include <dirent.h>
-#include <fnmatch.h>
 
 int uppm_fetch_all_available_packages(bool verbose) {
     UPPMFormulaRepoList * formulaRepoList = NULL;
@@ -118,12 +116,19 @@ int uppm_fetch(const char * packageName, bool verbose) {
         return UPPM_ENV_HOME_NOT_SET;
     }
 
+    struct stat st;
+
     size_t  downloadDirLength = userHomeDirLength + 18;
     char    downloadDir[downloadDirLength];
     memset (downloadDir, 0, downloadDirLength);
     snprintf(downloadDir, downloadDirLength, "%s/.uppm/downloads", userHomeDir);
 
-    if (!exists_and_is_a_directory(downloadDir)) {
+    if (stat(downloadDir, &st) == 0) {
+        if (!S_ISDIR(st.st_mode)) {
+            fprintf(stderr, "not a directory: %s\n", downloadDir);
+            return UPPM_ERROR;
+        }
+    } else {
         if (mkdir(downloadDir, S_IRWXU) != 0) {
             perror(downloadDir);
             uppm_formula_free(formula);
@@ -148,7 +153,7 @@ int uppm_fetch(const char * packageName, bool verbose) {
     memset (binFilePath, 0, binFilePathLength);
     snprintf(binFilePath, binFilePathLength, "%s/%s", downloadDir, binFileName);
 
-    if (exists_and_is_a_regular_file(binFilePath)) {
+    if (stat(binFilePath, &st) == 0 && S_ISREG(st.st_mode)) {
         char actualSHA256SUM[65] = {0};
 
         resultCode = sha256sum_of_file(actualSHA256SUM, binFilePath);

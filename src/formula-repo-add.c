@@ -2,11 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
-#include <unistd.h>
+
 #include "uppm.h"
-#include "core/fs.h"
 #include "core/zlib-flate.h"
 
 int uppm_formula_repo_add(const char * formulaRepoName, const char * formulaRepoUrl, const char * branchName) {
@@ -52,12 +52,19 @@ int uppm_formula_repo_add(const char * formulaRepoName, const char * formulaRepo
 
     ////////////////////////////////////////////////////////////////////////////////////////
 
+    struct stat st;
+
     size_t  uppmHomeDirLength = userHomeDirLength + 7;
     char    uppmHomeDir[uppmHomeDirLength];
     memset (uppmHomeDir, 0, uppmHomeDirLength);
     snprintf(uppmHomeDir, uppmHomeDirLength, "%s/.uppm", userHomeDir);
 
-    if (!exists_and_is_a_directory(uppmHomeDir)) {
+    if (stat(uppmHomeDir, &st) == 0) {
+        if (!S_ISDIR(st.st_mode)) {
+            fprintf(stderr, "not a directory: %s\n", uppmHomeDir);
+            return UPPM_ERROR;
+        }
+    } else {
         if (mkdir(uppmHomeDir, S_IRWXU) != 0) {
             perror(uppmHomeDir);
             return UPPM_ERROR;
@@ -71,7 +78,12 @@ int uppm_formula_repo_add(const char * formulaRepoName, const char * formulaRepo
     memset (formulaRepoRootDir, 0, formulaRepoRootDirLength);
     snprintf(formulaRepoRootDir, formulaRepoRootDirLength, "%s/repos.d", uppmHomeDir);
 
-    if (!exists_and_is_a_directory(formulaRepoRootDir)) {
+    if (stat(formulaRepoRootDir, &st) == 0) {
+        if (!S_ISDIR(st.st_mode)) {
+            fprintf(stderr, "not a directory: %s\n", formulaRepoRootDir);
+            return UPPM_ERROR;
+        }
+    } else {
         if (mkdir(formulaRepoRootDir, S_IRWXU) != 0) {
             perror(formulaRepoRootDir);
             return UPPM_ERROR;
@@ -85,7 +97,12 @@ int uppm_formula_repo_add(const char * formulaRepoName, const char * formulaRepo
     memset (formulaRepoDir, 0, formulaRepoDirLength);
     snprintf(formulaRepoDir, formulaRepoDirLength, "%s/%s", formulaRepoRootDir, formulaRepoName);
 
-    if (!exists_and_is_a_directory(formulaRepoDir)) {
+    if (stat(formulaRepoDir, &st) == 0) {
+        if (!S_ISDIR(st.st_mode)) {
+            fprintf(stderr, "not a directory: %s\n", formulaRepoDir);
+            return UPPM_ERROR;
+        }
+    } else {
         if (mkdir(formulaRepoDir, S_IRWXU) != 0) {
             perror(formulaRepoDir);
             return UPPM_ERROR;

@@ -2,9 +2,8 @@
 #include <string.h>
 #include <dirent.h>
 #include <fnmatch.h>
+#include <sys/stat.h>
 
-#include "core/log.h"
-#include "core/fs.h"
 #include "uppm.h"
 
 int uppm_search(const char * keyword) {
@@ -33,6 +32,16 @@ int uppm_search(const char * keyword) {
         char    formulaDir[formulaDirLength];
         memset (formulaDir, 0, formulaDirLength);
         snprintf(formulaDir, formulaDirLength, "%s/formula", formulaRepoPath);
+
+        struct stat status;
+
+        if (stat(formulaDir, &status) != 0) {
+            continue;
+        }
+
+        if (!S_ISDIR(status.st_mode)) {
+            continue;
+        }
 
         DIR           * dir;
         struct dirent * dir_entry;

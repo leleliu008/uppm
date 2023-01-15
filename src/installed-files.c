@@ -4,7 +4,6 @@
 #include <dirent.h>
 #include <sys/stat.h>
 
-#include "core/fs.h"
 #include "uppm.h"
 
 static int record_installed_files_r(const char * dirPath, size_t offset, FILE * installedManifestFile) {
@@ -72,10 +71,6 @@ int record_installed_files(const char * installedDirPath) {
     char    installedManifestFilePath[installedManifestFilePathLength];
     memset (installedManifestFilePath, 0, installedManifestFilePathLength);
     snprintf(installedManifestFilePath, installedManifestFilePathLength, "%s/.uppm/manifest.txt", installedDirPath);
-
-    if (exists_and_is_a_regular_file(installedManifestFilePath)) {
-        return UPPM_OK;
-    }
 
     FILE * installedManifestFile = fopen(installedManifestFilePath, "w");
 

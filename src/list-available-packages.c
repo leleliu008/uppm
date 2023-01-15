@@ -3,8 +3,6 @@
 #include <dirent.h>
 #include <fnmatch.h>
 
-#include "core/log.h"
-#include "core/fs.h"
 #include "uppm.h"
 
 int uppm_list_the_available_packages() {

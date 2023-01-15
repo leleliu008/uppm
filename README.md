@@ -439,21 +439,21 @@ all relevant dirs and files are located in `~/.uppm` directory.
 
     If you want change the request url, you can set this environment variable. It is very useful for chinese users.
 
-## what's uppm formula ?
+## formula
 
 a uppm formula is a [YAML](https://yaml.org/spec/1.2.2/) format file which is used to config a uppm package's infomation and describe how to install it.
 
 [uppm formula scheme](https://github.com/leleliu008/uppm-formula-repository-linux-x86_64)
 
 
-## what's uppm formula repository ?
+## formula repository
 a uppm formula repository is a git repository.
 
 a uppm formula repository's root dir should have a `formula` named sub dir, this repository's formula files all should be located in this dir.
 
 a uppm formula repository's local path is `~/.uppm/repos.d/${UPPMFormulaRepoName}`
 
-After a uppm formula repository is successfully fetched from server, a config file for this repository would be written into `~/.uppm/repos.d/${UPPMFormulaRepoName}/.uppm-formula-repo.dat`, this config file is zlib deflated, and you're able to uncompress it via `zlib-flate -uncompress < ~/.uppm/repos.d/${UPPMFormulaRepoName}/.uppm-formula-repo.dat`.
+After a uppm formula repository is successfully fetched from server, a config file for this repository would be create, this config file path is `~/.uppm/repos.d/${UPPMFormulaRepoName}/.uppm-formula-repo.dat`, this config file is zlib deflated, and you're able to uncompress it via `zlib-flate -uncompress < ~/.uppm/repos.d/${UPPMFormulaRepoName}/.uppm-formula-repo.dat`.
 
 a typical uppm formula repository's uncompressed config as following:
 
@@ -467,6 +467,7 @@ timestamp-last-updated: 1673684767
 ```
 
 If a uppm formula repository is pinned, which means it would not be updated.
+
 If a uppm formula repository is disabled, which means uppm would not search formula file in this formula repository.
 
 **Note:**

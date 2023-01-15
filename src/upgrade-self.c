@@ -8,7 +8,6 @@
 #include "core/http.h"
 #include "core/util.h"
 #include "core/log.h"
-#include "core/fs.h"
 #include "uppm.h"
 
 int uppm_upgrade_self(bool verbose) {
@@ -26,12 +25,19 @@ int uppm_upgrade_self(bool verbose) {
 
     ////////////////////////////////////////////////////////////////
 
+    struct stat st;
+
     size_t  uppmHomeDirLength = userHomeDirLength + 7;
     char    uppmHomeDir[uppmHomeDirLength];
     memset (uppmHomeDir, 0, uppmHomeDirLength);
     snprintf(uppmHomeDir, uppmHomeDirLength, "%s/.uppm", userHomeDir);
 
-    if (!exists_and_is_a_directory(uppmHomeDir)) {
+    if (stat(uppmHomeDir, &st) == 0) {
+        if (!S_ISDIR(st.st_mode)) {
+            fprintf(stderr, "not a directory: %s\n", uppmHomeDir);
+            return UPPM_ERROR;
+        }
+    } else {
         if (mkdir(uppmHomeDir, S_IRWXU) != 0) {
             perror(uppmHomeDir);
             return UPPM_ERROR;
@@ -45,7 +51,12 @@ int uppm_upgrade_self(bool verbose) {
     memset (uppmTmpDir, 0, uppmTmpDirLength);
     snprintf(uppmTmpDir, uppmTmpDirLength, "%s/tmp", uppmHomeDir);
 
-    if (!exists_and_is_a_directory(uppmTmpDir)) {
+    if (stat(uppmTmpDir, &st) == 0) {
+        if (!S_ISDIR(st.st_mode)) {
+            fprintf(stderr, "not a directory: %s\n", uppmTmpDir);
+            return UPPM_ERROR;
+        }
+    } else {
         if (mkdir(uppmTmpDir, S_IRWXU) != 0) {
             perror(uppmTmpDir);
             return UPPM_ERROR;

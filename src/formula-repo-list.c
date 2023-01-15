@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <dirent.h>
+#include <sys/stat.h>
 
 #include "core/zlib-flate.h"
-#include "core/fs.h"
 #include "uppm.h"
 
 int uppm_formula_repo_list_new(UPPMFormulaRepoList * * out) {
@@ -24,7 +24,9 @@ int uppm_formula_repo_list_new(UPPMFormulaRepoList * * out) {
     memset (uppmFormulaRepoDir, 0, uppmFormulaRepoDirLength);
     snprintf(uppmFormulaRepoDir, uppmFormulaRepoDirLength, "%s/.uppm/repos.d", userHomeDir);
 
-    if (!exists_and_is_a_directory(uppmFormulaRepoDir)) {
+    struct stat st;
+
+    if ((stat(uppmFormulaRepoDir, &st) != 0) || (!S_ISDIR(st.st_mode))) {
         UPPMFormulaRepoList* formulaRepoList = (UPPMFormulaRepoList*)calloc(1, sizeof(UPPMFormulaRepoList));
 
         if (formulaRepoList == NULL) {
@@ -67,7 +69,7 @@ int uppm_formula_repo_list_new(UPPMFormulaRepoList * * out) {
         memset (formulaRepoConfigFilePath, 0, formulaRepoConfigFilePathLength);
         snprintf(formulaRepoConfigFilePath, formulaRepoConfigFilePathLength, "%s/.uppm-formula-repo.dat", formulaRepoPath);
 
-        if (exists_and_is_a_regular_file(formulaRepoConfigFilePath)) {
+        if ((stat(formulaRepoConfigFilePath, &st) == 0) && S_ISREG(st.st_mode)) {
             UPPMFormulaRepo * formulaRepo = NULL;
 
             size_t  formulaRepoConfigFilePath2Length = formulaRepoPathLength + 24;

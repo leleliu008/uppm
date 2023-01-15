@@ -4,7 +4,6 @@
 
 #include "core/sysinfo.h"
 #include "core/util.h"
-#include "core/fs.h"
 #include "uppm.h"
 
 #include <git2.h>
@@ -18,6 +17,8 @@
 //#include <pcre2.h>
 
 static int uppm_list_dirs(const char * installedDir, size_t installedDirLength, const char * sub) {
+    struct stat st;
+
     DIR           * dir;
     struct dirent * dir_entry;
 
@@ -45,17 +46,17 @@ static int uppm_list_dirs(const char * installedDir, size_t installedDirLength, 
         memset (receiptFilePath, 0, receiptFilePathLength);
         snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", packageInstalledDir);
 
-        if (exists_and_is_a_regular_file(receiptFilePath)) {
+        if (stat(receiptFilePath, &st) == 0 && S_ISREG(st.st_mode)) {
             if ((sub == NULL) || (strcmp(sub, "") == 0)) {
-                puts(packageInstalledDir);
+                printf("%s\n", packageInstalledDir);
             } else {
                 size_t  subDirLength = packageInstalledDirLength + strlen(sub) + 2;
                 char    subDir[subDirLength];
                 memset (subDir, 0, subDirLength);
                 snprintf(subDir, subDirLength, "%s/%s", packageInstalledDir, sub);
 
-                if (exists_and_is_a_directory(subDir)) {
-                    puts(subDir);
+                if (stat(subDir, &st) == 0 && S_ISDIR(st.st_mode)) {
+                    printf("%s\n", subDir);
                 }
             }
         }
@@ -130,12 +131,19 @@ int uppm_env(bool verbose) {
         return UPPM_OK;
     }
 
+    struct stat st;
+
     size_t  installedDirLength = uppmHomeDirLength + 11;
     char    installedDir[installedDirLength];
     memset (installedDir, 0, installedDirLength);
     snprintf(installedDir, installedDirLength, "%s/installed", uppmHomeDir);
 
-    if (!exists_and_is_a_directory(installedDir)) {
+    if (stat(installedDir, &st) == 0) {
+        if (!S_ISDIR(st.st_mode)) {
+            fprintf(stderr, "not a directory: %s\n", installedDir);
+            return UPPM_ERROR;
+        }
+    } else {
         return UPPM_OK;
     }
 

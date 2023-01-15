@@ -3,7 +3,6 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "core/fs.h"
 #include "uppm.h"
 
 int uppm_formula_bat(const char * packageName) {

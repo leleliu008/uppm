@@ -6,7 +6,6 @@
 #include <libgen.h>
 #include <sys/stat.h>
 
-#include "core/fs.h"
 #include "core/util.h"
 #include "core/http.h"
 #include "core/sysinfo.h"
@@ -85,6 +84,8 @@ int uppm_install(const char * packageName, bool verbose) {
         return UPPM_ENV_HOME_NOT_SET;
     }
 
+    struct stat st;
+
     size_t  packageInstalledDirLength = userHomeDirLength + strlen(packageName) + 20;
     char    packageInstalledDir[packageInstalledDirLength];
     memset (packageInstalledDir, 0, packageInstalledDirLength);
@@ -100,7 +101,7 @@ int uppm_install(const char * packageName, bool verbose) {
     memset (receiptFilePath, 0, receiptFilePathLength);
     snprintf(receiptFilePath, receiptFilePathLength, "%s/receipt.yml", packageInstalledMetaInfoDir);
 
-    if (exists_and_is_a_regular_file(receiptFilePath)) {
+    if (stat(receiptFilePath, &st) == 0 && S_ISREG(st.st_mode)) {
         uppm_formula_free(formula);
         fprintf(stderr, "package [%s] already has been installed.\n", packageName);
         return UPPM_OK;
@@ -115,7 +116,12 @@ int uppm_install(const char * packageName, bool verbose) {
     memset (uppmDownloadDir, 0, uppmDownloadDirLength);
     snprintf(uppmDownloadDir, uppmDownloadDirLength, "%s/.uppm/downloads", userHomeDir);
 
-    if (!exists_and_is_a_directory(uppmDownloadDir)) {
+    if (stat(uppmDownloadDir, &st) == 0) {
+        if (!S_ISDIR(st.st_mode)) {
+            fprintf(stderr, "not a directory: %s\n", uppmDownloadDir);
+            return UPPM_ERROR;
+        }
+    } else {
         if (mkdir(uppmDownloadDir, S_IRWXU) != 0) {
             uppm_formula_free(formula);
             return UPPM_ERROR;
@@ -141,18 +147,20 @@ int uppm_install(const char * packageName, bool verbose) {
 
     bool needFetch = true;
 
-    if (exists_and_is_a_regular_file(binFilePath)) {
-        char actualSHA256SUM[65] = {0};
+    if (stat(binFilePath, &st) == 0) {
+        if (S_ISREG(st.st_mode)) {
+            char actualSHA256SUM[65] = {0};
 
-        resultCode = sha256sum_of_file(actualSHA256SUM, binFilePath);
+            resultCode = sha256sum_of_file(actualSHA256SUM, binFilePath);
 
-        if (resultCode != 0) {
-            uppm_formula_free(formula);
-            return UPPM_ERROR;
-        }
+            if (resultCode != 0) {
+                uppm_formula_free(formula);
+                return UPPM_ERROR;
+            }
 
-        if (strcmp(actualSHA256SUM, formula->bin_sha) == 0) {
-            needFetch = false;
+            if (strcmp(actualSHA256SUM, formula->bin_sha) == 0) {
+                needFetch = false;
+            }
         }
     }
 
@@ -182,19 +190,35 @@ int uppm_install(const char * packageName, bool verbose) {
         fprintf(stderr, "%s already have been fetched.\n", binFilePath);
     }
 
-    if (exists_and_is_a_directory(packageInstalledDir)) {
-        if (rm_r(packageInstalledDir, verbose) != 0) {
+    size_t  installedDirLength = userHomeDirLength + 20;
+    char    installedDir[installedDirLength];
+    memset (installedDir, 0, installedDirLength);
+    snprintf(installedDir, installedDirLength, "%s/.uppm/installed", userHomeDir);
+
+    if (stat(installedDir, &st) == 0) {
+        if (!S_ISDIR(st.st_mode)) {
+            if (unlink(installedDir) != 0) {
+                perror(installedDir);
+                uppm_formula_free(formula);
+                return UPPM_ERROR;
+            }
+        }
+    } else {
+        if (mkdir(installedDir, S_IRWXU) != 0) {
             uppm_formula_free(formula);
             return UPPM_ERROR;
         }
-    } else {
-        size_t  installedDirLength = userHomeDirLength + 20;
-        char    installedDir[installedDirLength];
-        memset (installedDir, 0, installedDirLength);
-        snprintf(installedDir, installedDirLength, "%s/.uppm/installed", userHomeDir);
+    }
 
-        if (!exists_and_is_a_directory(installedDir)) {
-            if (mkdir(installedDir, S_IRWXU) != 0) {
+    if (stat(packageInstalledDir, &st) == 0) {
+        if (S_ISDIR(st.st_mode)) {
+            if (rm_r(packageInstalledDir, verbose) != 0) {
+                uppm_formula_free(formula);
+                return UPPM_ERROR;
+            }
+        } else {
+            if (unlink(packageInstalledDir) != 0) {
+                perror(packageInstalledDir);
                 uppm_formula_free(formula);
                 return UPPM_ERROR;
             }

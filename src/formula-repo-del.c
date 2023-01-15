@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 
-#include "core/fs.h"
 #include "core/rm-r.h"
 #include "uppm.h"
 
@@ -11,7 +11,9 @@ int uppm_formula_repo_del(const char * formulaRepoName) {
         return UPPM_ARG_IS_NULL;
     }
 
-    if (strcmp(formulaRepoName, "") == 0) {
+    size_t formulaRepoNameLength = strlen(formulaRepoName);
+
+    if (formulaRepoNameLength == 0) {
         return UPPM_ARG_IS_EMPTY;
     }
 
@@ -28,24 +30,31 @@ int uppm_formula_repo_del(const char * formulaRepoName) {
 
     size_t userHomeDirLength = strlen(userHomeDir);
 
-    if (strcmp(userHomeDir, "") == 0) {
+    if (userHomeDirLength == 0) {
         return UPPM_ENV_HOME_NOT_SET;
     }
 
-    size_t  uppmFormulaRepoDirLength = userHomeDirLength + 15;
-    char    uppmFormulaRepoDir[uppmFormulaRepoDirLength];
-    memset (uppmFormulaRepoDir, 0, uppmFormulaRepoDirLength);
-    snprintf(uppmFormulaRepoDir, uppmFormulaRepoDirLength, "%s/.uppm/repos.d", userHomeDir);
+    size_t  formulaRepoPathLength = userHomeDirLength + formulaRepoNameLength + 16;
+    char    formulaRepoPath[formulaRepoPathLength];
+    memset (formulaRepoPath, 0, formulaRepoPathLength);
+    snprintf(formulaRepoPath, formulaRepoPathLength, "%s/.uppm/repos.d/%s", userHomeDir, formulaRepoName);
 
-    size_t  formulaRepoDirLength = uppmFormulaRepoDirLength + strlen(formulaRepoName) + 2;
-    char    formulaRepoDir[formulaRepoDirLength];
-    memset (formulaRepoDir, 0, formulaRepoDirLength);
-    snprintf(formulaRepoDir, formulaRepoDirLength, "%s/%s", uppmFormulaRepoDir, formulaRepoName);
+    struct stat st;
 
-    if (exists_and_is_a_directory(formulaRepoDir)) {
-        return rm_r(formulaRepoDir, false);
+    if (stat(formulaRepoPath, &st) != 0) {
+        fprintf(stderr, "formula repo not found: %s\n", formulaRepoName);
+        return UPPM_ERROR;
+    }
+
+    size_t  formulaRepoConfigFilePathLength = formulaRepoPathLength + 24;
+    char    formulaRepoConfigFilePath[formulaRepoConfigFilePathLength];
+    memset (formulaRepoConfigFilePath, 0, formulaRepoConfigFilePathLength);
+    snprintf(formulaRepoConfigFilePath, formulaRepoConfigFilePathLength, "%s/.uppm-formula-repo.dat", formulaRepoPath);
+
+    if (stat(formulaRepoConfigFilePath, &st) == 0 && S_ISREG(st.st_mode)) {
+        return rm_r(formulaRepoPath, false);
     } else {
-        fprintf(stderr, "%s named formula repo is not exist.", formulaRepoName);
+        fprintf(stderr, "formula repo is broken: %s\n", formulaRepoName);
         return UPPM_ERROR;
     }
 }

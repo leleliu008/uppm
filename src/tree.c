@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/stat.h>
 
-#include "core/fs.h"
 #include "uppm.h"
 
 int uppm_tree(const char * packageName, size_t argc, char* argv[]) {
@@ -29,13 +29,19 @@ int uppm_tree(const char * packageName, size_t argc, char* argv[]) {
     memset (packageInstalledDir, 0, packageInstalledDirLength);
     snprintf(packageInstalledDir, packageInstalledDirLength, "%s/.uppm/installed/%s", userHomeDir, packageName);
 
+    struct stat st;
+
+    if (stat(packageInstalledDir, &st) != 0) {
+        return UPPM_PACKAGE_IS_NOT_INSTALLED;
+    }
+
     size_t  receiptFilePathLength = packageInstalledDirLength + 20;
     char    receiptFilePath[receiptFilePathLength];
     memset (receiptFilePath, 0, receiptFilePathLength);
     snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", packageInstalledDir);
 
-    if (!exists_and_is_a_regular_file(receiptFilePath)) {
-        return UPPM_PACKAGE_IS_NOT_INSTALLED;
+    if (stat(receiptFilePath, &st) != 0 || (!S_ISREG(st.st_mode))) {
+        return UPPM_PACKAGE_IS_BROKEN;
     }
 
     resultCode = uppm_check_if_the_given_package_is_installed("tree");

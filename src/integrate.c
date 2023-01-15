@@ -2,7 +2,6 @@
 #include <sys/stat.h>
 
 #include "core/http.h"
-#include "core/fs.h"
 #include "uppm.h"
 
 int uppm_integrate_zsh_completion(const char * outputDir, bool verbose) {
@@ -22,12 +21,19 @@ int uppm_integrate_zsh_completion(const char * outputDir, bool verbose) {
 
     ////////////////////////////////////////////////////////////////
 
+    struct stat st;
+
     size_t  uppmHomeDirLength = userHomeDirLength + 7;
     char    uppmHomeDir[uppmHomeDirLength];
     memset (uppmHomeDir, 0, uppmHomeDirLength);
     snprintf(uppmHomeDir, uppmHomeDirLength, "%s/.uppm", userHomeDir);
 
-    if (!exists_and_is_a_directory(uppmHomeDir)) {
+    if (stat(uppmHomeDir, &st) == 0) {
+        if (!S_ISDIR(st.st_mode)) {
+            fprintf(stderr, "not a directory: %s\n", uppmHomeDir);
+            return UPPM_ERROR;
+        }
+    } else {
         if (mkdir(uppmHomeDir, S_IRWXU) != 0) {
             perror(uppmHomeDir);
             return UPPM_ERROR;
@@ -41,7 +47,12 @@ int uppm_integrate_zsh_completion(const char * outputDir, bool verbose) {
     memset (zshCompletionDir, 0, zshCompletionDirLength);
     snprintf(zshCompletionDir, zshCompletionDirLength, "%s/zsh_completion", uppmHomeDir);
 
-    if (!exists_and_is_a_directory(zshCompletionDir)) {
+    if (stat(zshCompletionDir, &st) == 0) {
+        if (!S_ISDIR(st.st_mode)) {
+            fprintf(stderr, "not a directory: %s\n", zshCompletionDir);
+            return UPPM_ERROR;
+        }
+    } else {
         if (mkdir(zshCompletionDir, S_IRWXU) != 0) {
             perror(zshCompletionDir);
             return UPPM_ERROR;

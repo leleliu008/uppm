@@ -4,8 +4,8 @@
 #include <libgen.h>
 #include <time.h>
 #include <yaml.h>
+
 #include "uppm.h"
-#include "core/fs.h"
 
 typedef enum {
     UPPMFormulaRepoKeyCode_unknown,

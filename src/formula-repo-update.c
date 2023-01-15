@@ -2,9 +2,9 @@
 #include <string.h>
 #include <unistd.h>
 #include <time.h>
+
 #include "core/zlib-flate.h"
 #include "core/log.h"
-#include "core/fs.h"
 #include "uppm.h"
 
 int uppm_formula_repo_update(UPPMFormulaRepo * formulaRepo) {

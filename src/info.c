@@ -3,9 +3,9 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+#include <sys/stat.h>
 #include <jansson.h>
 
-#include "core/fs.h"
 #include "core/log.h"
 #include "uppm.h"
 
@@ -350,20 +350,34 @@ int uppm_info(const char * packageName, const char * key) {
             return UPPM_ENV_HOME_NOT_SET;
         }
 
+        struct stat st;
+
         size_t  installedDirLength = userHomeDirLength + strlen(packageName) + 20;
         char    installedDir[installedDirLength];
         memset (installedDir, 0, installedDirLength);
         snprintf(installedDir, installedDirLength, "%s/.uppm/installed/%s", userHomeDir, packageName);
+
+        if (stat(installedDir, &st) == 0) {
+            if (!S_ISDIR(st.st_mode)) {
+                return UPPM_PACKAGE_IS_BROKEN;
+            }
+        } else {
+            return UPPM_PACKAGE_IS_NOT_INSTALLED;
+        }
 
         size_t  receiptFilePathLength = installedDirLength + 20;
         char    receiptFilePath[receiptFilePathLength];
         memset (receiptFilePath, 0, receiptFilePathLength);
         snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", installedDir);
 
-        if (exists_and_is_a_regular_file(receiptFilePath)) {
-            printf("%s\n", installedDir);
+        if (stat(receiptFilePath, &st) == 0) {
+            if (S_ISREG(st.st_mode)) {
+                printf("%s\n", installedDir);
+            } else {
+                return UPPM_PACKAGE_IS_BROKEN;
+            }
         } else {
-            return UPPM_PACKAGE_IS_NOT_INSTALLED;
+            return UPPM_PACKAGE_IS_BROKEN;
         }
     } else if (strcmp(key, "installed-files") == 0) {
         char * userHomeDir = getenv("HOME");
@@ -378,24 +392,38 @@ int uppm_info(const char * packageName, const char * key) {
             return UPPM_ENV_HOME_NOT_SET;
         }
 
+        struct stat st;
+
         size_t  installedDirLength = userHomeDirLength + strlen(packageName) + 20;
         char    installedDir[installedDirLength];
         memset (installedDir, 0, installedDirLength);
         snprintf(installedDir, installedDirLength, "%s/.uppm/installed/%s", userHomeDir, packageName);
+
+        if (stat(installedDir, &st) == 0) {
+            if (!S_ISDIR(st.st_mode)) {
+                return UPPM_PACKAGE_IS_BROKEN;
+            }
+        } else {
+            return UPPM_PACKAGE_IS_NOT_INSTALLED;
+        }
 
         size_t  receiptFilePathLength = installedDirLength + 20;
         char    receiptFilePath[receiptFilePathLength];
         memset (receiptFilePath, 0, receiptFilePathLength);
         snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", installedDir);
 
-        if (!exists_and_is_a_regular_file(receiptFilePath)) {
-            return UPPM_PACKAGE_IS_NOT_INSTALLED;
+        if (stat(receiptFilePath, &st) != 0 || (!S_ISREG(st.st_mode))) {
+            return UPPM_PACKAGE_IS_BROKEN;
         }
 
         size_t  installedManifestFilePathLength = installedDirLength + 20;
         char    installedManifestFilePath[installedManifestFilePathLength];
         memset (installedManifestFilePath, 0, installedManifestFilePathLength);
         snprintf(installedManifestFilePath, installedManifestFilePathLength, "%s/.uppm/manifest.txt", installedDir);
+
+        if (stat(installedManifestFilePath, &st) != 0 || (!S_ISREG(st.st_mode))) {
+            return UPPM_PACKAGE_IS_BROKEN;
+        }
 
         FILE * installedManifestFile = fopen(installedManifestFilePath, "r");
 
@@ -424,20 +452,34 @@ int uppm_info(const char * packageName, const char * key) {
             return UPPM_ENV_HOME_NOT_SET;
         }
 
+        struct stat st;
+
         size_t  installedDirLength = userHomeDirLength + strlen(packageName) + 20;
         char    installedDir[installedDirLength];
         memset (installedDir, 0, installedDirLength);
         snprintf(installedDir, installedDirLength, "%s/.uppm/installed/%s", userHomeDir, packageName);
+
+        if (stat(installedDir, &st) == 0) {
+            if (!S_ISDIR(st.st_mode)) {
+                return UPPM_PACKAGE_IS_BROKEN;
+            }
+        } else {
+            return UPPM_PACKAGE_IS_NOT_INSTALLED;
+        }
 
         size_t  receiptFilePathLength = installedDirLength + 20;
         char    receiptFilePath[receiptFilePathLength];
         memset (receiptFilePath, 0, receiptFilePathLength);
         snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", installedDir);
 
-        if (exists_and_is_a_regular_file(receiptFilePath)) {
-            printf("%s\n", receiptFilePath);
+        if (stat(receiptFilePath, &st) == 0) {
+            if (S_ISREG(st.st_mode)) {
+                printf("%s\n", receiptFilePath);
+            } else {
+                return UPPM_PACKAGE_IS_BROKEN;
+            }
         } else {
-            return UPPM_PACKAGE_IS_NOT_INSTALLED;
+            return UPPM_PACKAGE_IS_BROKEN;
         }
     } else if (strcmp(key, "installed-receipt-yaml") == 0) {
         char * userHomeDir = getenv("HOME");
@@ -452,18 +494,28 @@ int uppm_info(const char * packageName, const char * key) {
             return UPPM_ENV_HOME_NOT_SET;
         }
 
+        struct stat st;
+
         size_t  installedDirLength = userHomeDirLength + strlen(packageName) + 20;
         char    installedDir[installedDirLength];
         memset (installedDir, 0, installedDirLength);
         snprintf(installedDir, installedDirLength, "%s/.uppm/installed/%s", userHomeDir, packageName);
+
+        if (stat(installedDir, &st) == 0) {
+            if (!S_ISDIR(st.st_mode)) {
+                return UPPM_PACKAGE_IS_BROKEN;
+            }
+        } else {
+            return UPPM_PACKAGE_IS_NOT_INSTALLED;
+        }
 
         size_t  receiptFilePathLength = installedDirLength + 20;
         char    receiptFilePath[receiptFilePathLength];
         memset (receiptFilePath, 0, receiptFilePathLength);
         snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", installedDir);
 
-        if (!exists_and_is_a_regular_file(receiptFilePath)) {
-            return UPPM_PACKAGE_IS_NOT_INSTALLED;
+        if (stat(receiptFilePath, &st) != 0 || (!S_ISREG(st.st_mode))) {
+            return UPPM_PACKAGE_IS_BROKEN;
         }
 
         FILE * receiptFile = fopen(receiptFilePath, "r");

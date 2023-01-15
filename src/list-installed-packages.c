@@ -2,9 +2,9 @@
 #include <string.h>
 #include <dirent.h>
 #include <fnmatch.h>
+#include <sys/stat.h>
 
 #include "core/log.h"
-#include "core/fs.h"
 #include "uppm.h"
 
 int uppm_list_the_installed_packages() {
@@ -20,22 +20,24 @@ int uppm_list_the_installed_packages() {
         return UPPM_ENV_HOME_NOT_SET;
     }
 
-    size_t  installedDirLength = userHomeDirLength + 17; 
-    char    installedDir[installedDirLength];
-    memset (installedDir, 0, installedDirLength);
-    snprintf(installedDir, installedDirLength, "%s/.uppm/installed", userHomeDir);
+    struct stat st;
 
-    if (!exists_and_is_a_directory(installedDir)) {
+    size_t  uppmInstalledDirLength = userHomeDirLength + 17; 
+    char    uppmInstalledDir[uppmInstalledDirLength];
+    memset (uppmInstalledDir, 0, uppmInstalledDirLength);
+    snprintf(uppmInstalledDir, uppmInstalledDirLength, "%s/.uppm/installed", userHomeDir);
+
+    if (stat(uppmInstalledDir, &st) != 0 || (!S_ISDIR(st.st_mode))) {
         return UPPM_OK;
     }
 
     DIR           * dir;
     struct dirent * dir_entry;
 
-    dir = opendir(installedDir);
+    dir = opendir(uppmInstalledDir);
 
     if (dir == NULL) {
-        perror(installedDir);
+        perror(uppmInstalledDir);
         return UPPM_ERROR;
     }
 
@@ -44,12 +46,12 @@ int uppm_list_the_installed_packages() {
             continue;
         }
 
-        size_t  receiptFilePathLength = installedDirLength + strlen(dir_entry->d_name) + 20;
+        size_t  receiptFilePathLength = uppmInstalledDirLength + strlen(dir_entry->d_name) + 20;
         char    receiptFilePath[receiptFilePathLength];
         memset (receiptFilePath, 0, receiptFilePathLength);
-        snprintf(receiptFilePath, receiptFilePathLength, "%s/%s/.uppm/receipt.yml", installedDir, dir_entry->d_name);
+        snprintf(receiptFilePath, receiptFilePathLength, "%s/%s/.uppm/receipt.yml", uppmInstalledDir, dir_entry->d_name);
 
-        if (exists_and_is_a_regular_file(receiptFilePath)) {
+        if (stat(receiptFilePath, &st) == 0 && S_ISREG(st.st_mode)) {
             printf("%s\n", dir_entry->d_name);
         }
     }

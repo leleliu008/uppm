@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include <sys/stat.h>
 #include <yaml.h>
+
 #include "uppm.h"
-#include "core/fs.h"
 
 typedef enum {
     UPPMReceiptKeyCode_unknown,
@@ -246,18 +247,24 @@ int uppm_receipt_parse(const char * packageName, UPPMReceipt * * out) {
         return UPPM_ENV_HOME_NOT_SET;
     }
 
-    size_t  installedDirLength = userHomeDirLength + strlen(packageName) + 20;
-    char    installedDir[installedDirLength];
-    memset (installedDir, 0, installedDirLength);
-    snprintf(installedDir, installedDirLength, "%s/.uppm/installed/%s", userHomeDir, packageName);
+    size_t  packageInstalledDirLength = userHomeDirLength + strlen(packageName) + 20;
+    char    packageInstalledDir[packageInstalledDirLength];
+    memset (packageInstalledDir, 0, packageInstalledDirLength);
+    snprintf(packageInstalledDir, packageInstalledDirLength, "%s/.uppm/installed/%s", userHomeDir, packageName);
 
-    size_t  receiptFilePathLength = installedDirLength + 20;
+    struct stat st;
+
+    if (stat(packageInstalledDir, &st) != 0) {
+        return UPPM_PACKAGE_IS_NOT_INSTALLED;
+    }
+
+    size_t  receiptFilePathLength = packageInstalledDirLength + 20;
     char    receiptFilePath[receiptFilePathLength];
     memset (receiptFilePath, 0, receiptFilePathLength);
-    snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", installedDir);
+    snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", packageInstalledDir);
 
-    if (!exists_and_is_a_regular_file(receiptFilePath)) {
-        return UPPM_PACKAGE_IS_NOT_INSTALLED;
+    if (stat(receiptFilePath, &st) != 0 || (!S_ISREG(st.st_mode))) {
+        return UPPM_PACKAGE_IS_BROKEN;
     }
 
     FILE * file = fopen(receiptFilePath, "r");

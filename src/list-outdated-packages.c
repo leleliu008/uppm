@@ -2,9 +2,8 @@
 #include <string.h>
 #include <dirent.h>
 #include <fnmatch.h>
+#include <sys/stat.h>
 
-#include "core/log.h"
-#include "core/fs.h"
 #include "uppm.h"
 
 int uppm_list_the_outdated__packages() {
@@ -25,7 +24,9 @@ int uppm_list_the_outdated__packages() {
     memset (installedDir, 0, installedDirLength);
     snprintf(installedDir, installedDirLength, "%s/.uppm/installed", userHomeDir);
 
-    if (!exists_and_is_a_directory(installedDir)) {
+    struct stat st;
+
+    if (stat(installedDir, &st) != 0 || (!S_ISDIR(st.st_mode))) {
         return UPPM_OK;
     }
 
@@ -49,7 +50,7 @@ int uppm_list_the_outdated__packages() {
         memset (receiptFilePath, 0, receiptFilePathLength);
         snprintf(receiptFilePath, receiptFilePathLength, "%s/%s/.uppm/receipt.yml", installedDir, dir_entry->d_name);
 
-        if (exists_and_is_a_regular_file(receiptFilePath)) {
+        if (stat(receiptFilePath, &st) == 0 && S_ISREG(st.st_mode)) {
             //printf("%s\n", dir_entry->d_name);
 
             UPPMReceipt * receipt = NULL;

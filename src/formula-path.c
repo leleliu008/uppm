@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
+#include <sys/stat.h>
 
-#include "core/fs.h"
 #include "uppm.h"
 
 int uppm_formula_path(const char * packageName, char ** out) {
@@ -23,15 +23,6 @@ int uppm_formula_path(const char * packageName, char ** out) {
         return UPPM_ENV_HOME_NOT_SET;
     }
 
-    size_t  uppmHomeDirLength = userHomeDirLength + 7; 
-    char    uppmHomeDir[uppmHomeDirLength];
-    memset (uppmHomeDir, 0, uppmHomeDirLength);
-    snprintf(uppmHomeDir, uppmHomeDirLength, "%s/.uppm", userHomeDir);
-
-    if (!exists_and_is_a_directory(uppmHomeDir)) {
-        return UPPM_FORMULA_REPO_NOT_EXIST;
-    }
-
     UPPMFormulaRepoList * formulaRepoList = NULL;
 
     resultCode = uppm_formula_repo_list_new(&formulaRepoList);
@@ -41,20 +32,26 @@ int uppm_formula_path(const char * packageName, char ** out) {
         return resultCode;
     }
 
+    struct stat st;
+
     for (size_t i = 0; i < formulaRepoList->size; i++) {
         char *  formulaRepoPath = formulaRepoList->repos[i]->path;
 
-        size_t  formulaFilePathLength =  strlen(formulaRepoPath) + strlen(packageName) + 15;
-        char *  formulaFilePath = (char*)calloc(formulaFilePathLength, sizeof(char));
+        size_t formulaFilePathLength =  strlen(formulaRepoPath) + strlen(packageName) + 15;
+        char   formulaFilePath[formulaFilePathLength];
+        memset(formulaFilePath, 0, formulaFilePathLength);
         snprintf(formulaFilePath, formulaFilePathLength, "%s/formula/%s.yml", formulaRepoPath, packageName);
 
-        if (exists_and_is_a_regular_file(formulaFilePath)) {
-            (*out) = formulaFilePath;
+        if (stat(formulaFilePath, &st) == 0 && S_ISREG(st.st_mode)) {
             uppm_formula_repo_list_free(formulaRepoList);
-            return UPPM_OK;
-        } else {
-            free(formulaFilePath);
-            formulaFilePath = NULL;
+
+            (*out) = strdup(formulaFilePath);
+
+            if (*out == NULL) {
+                return UPPM_ERROR_ALLOCATE_MEMORY_FAILED;
+            } else {
+                return UPPM_OK;
+            }
         }
     }
 
