@@ -7,9 +7,9 @@ brew tap leleliu008/fpliu
 brew install uppm
 ```
 
-## Install uppm via [uppm](https://github.com/leleliu008/uppm)
+## Install uppm via [ppkg](https://github.com/leleliu008/ppkg)
 ```bash
-uppm install uppm
+ppkg install uppm
 ```
 
 ## Build from source
@@ -454,7 +454,7 @@ a uppm formula repository's root dir should have a `formula` named sub dir, this
 
 a uppm formula repository's local path is `~/.uppm/repos.d/${UPPMFormulaRepoName}`
 
-After a uppm formula repository is successfully fetched from server to local, a config file for this repository would be create, this config file path is `~/.uppm/repos.d/${UPPMFormulaRepoName}/.uppm-formula-repo.dat`, this config file is zlib deflated, and you're able to uncompress it via `zlib-flate -uncompress < ~/.uppm/repos.d/${UPPMFormulaRepoName}/.uppm-formula-repo.dat`.
+After a uppm formula repository is successfully fetched from server to local, a config file for this repository would be created, this config file's path is `~/.uppm/repos.d/${UPPMFormulaRepoName}/.uppm-formula-repo.dat`, this config file is zlib deflated, and you're able to uncompress it via `zlib-flate -uncompress < ~/.uppm/repos.d/${UPPMFormulaRepoName}/.uppm-formula-repo.dat`.
 
 a typical uppm formula repository's uncompressed config as following:
 

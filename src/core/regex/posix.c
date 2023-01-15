@@ -46,9 +46,15 @@ char* regex_extract(const char * content, const char * pattern) {
             if (regmatch[0].rm_so >= 0 && regmatch[0].rm_eo > regmatch[0].rm_so) {
                 int n = regmatch[0].rm_eo - regmatch[0].rm_so;
                 const char * str = &content[regmatch[0].rm_so];
-                char * result = (char*)calloc(n+1, sizeof(char));
-                strncpy(result, str, n);
+
+                char * result = (char*)calloc(n + 1, sizeof(char));
+
+                if (result != NULL) {
+                    strncpy(result, str, n);
+                }
+
                 regfree(&regex);
+
                 return result;
             }
         }

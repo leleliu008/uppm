@@ -118,9 +118,9 @@ static UPPMFormulaKeyCode uppm_formula_key_code_from_key_name(char * key, bool i
     }
 }
 
-static void uppm_formula_set_value(UPPMFormulaKeyCode keyCode, char * value, UPPMFormula * formula) {
+static int uppm_formula_set_value(UPPMFormulaKeyCode keyCode, char * value, UPPMFormula * formula) {
     if (keyCode == UPPMFormulaKeyCode_unknown) {
-        return;
+        return UPPM_OK;
     }
 
     char c;
@@ -129,7 +129,7 @@ static void uppm_formula_set_value(UPPMFormulaKeyCode keyCode, char * value, UPP
         c = value[0];
 
         if (c == '\0') {
-            return;
+            return UPPM_OK;
         }
 
         // non-printable ASCII characters and space
@@ -141,15 +141,103 @@ static void uppm_formula_set_value(UPPMFormulaKeyCode keyCode, char * value, UPP
     }
 
     switch (keyCode) {
-        case UPPMFormulaKeyCode_summary: if (formula->summary != NULL) free(formula->summary); formula->summary = strdup(value); break;
-        case UPPMFormulaKeyCode_version: if (formula->version != NULL) free(formula->version); formula->version = strdup(value); break;
-        case UPPMFormulaKeyCode_license: if (formula->license != NULL) free(formula->license); formula->license = strdup(value); break;
-        case UPPMFormulaKeyCode_webpage: if (formula->webpage != NULL) free(formula->webpage); formula->webpage = strdup(value); break;
-        case UPPMFormulaKeyCode_bin_url: if (formula->bin_url != NULL) free(formula->bin_url); formula->bin_url = strdup(value); break;
-        case UPPMFormulaKeyCode_bin_sha: if (formula->bin_sha != NULL) free(formula->bin_sha); formula->bin_sha = strdup(value); break;
-        case UPPMFormulaKeyCode_dep_pkg: if (formula->dep_pkg != NULL) free(formula->dep_pkg); formula->dep_pkg = strdup(value); break;
-        case UPPMFormulaKeyCode_install: if (formula->install != NULL) free(formula->install); formula->install = strdup(value); break;
-        default: break;
+        case UPPMFormulaKeyCode_summary:
+            if (formula->summary != NULL) {
+                free(formula->summary);
+            }
+
+            formula->summary = strdup(value);
+
+            if (formula->summary == NULL) {
+                return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+            } else {
+                return UPPM_OK;
+            }
+        case UPPMFormulaKeyCode_version:
+            if (formula->version != NULL) {
+                free(formula->version);
+            }
+
+            formula->version = strdup(value);
+
+            if (formula->version == NULL) {
+                return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+            } else {
+                return UPPM_OK;
+            }
+        case UPPMFormulaKeyCode_license:
+            if (formula->license != NULL) {
+                free(formula->license);
+            }
+
+            formula->license = strdup(value);
+
+            if (formula->license == NULL) {
+                return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+            } else {
+                return UPPM_OK;
+            }
+        case UPPMFormulaKeyCode_webpage:
+            if (formula->webpage != NULL) {
+                free(formula->webpage);
+            }
+
+            formula->webpage = strdup(value);
+
+            if (formula->webpage == NULL) {
+                return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+            } else {
+                return UPPM_OK;
+            }
+        case UPPMFormulaKeyCode_bin_url:
+            if (formula->bin_url != NULL) {
+                free(formula->bin_url);
+            }
+
+            formula->bin_url = strdup(value);
+
+            if (formula->bin_url == NULL) {
+                return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+            } else {
+                return UPPM_OK;
+            }
+        case UPPMFormulaKeyCode_bin_sha:
+            if (formula->bin_sha != NULL) {
+                free(formula->bin_sha);
+            }
+
+            formula->bin_sha = strdup(value);
+
+            if (formula->bin_sha == NULL) {
+                return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+            } else {
+                return UPPM_OK;
+            }
+        case UPPMFormulaKeyCode_dep_pkg:
+            if (formula->dep_pkg != NULL) {
+                free(formula->dep_pkg);
+            }
+
+            formula->dep_pkg = strdup(value);
+
+            if (formula->dep_pkg == NULL) {
+                return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+            } else {
+                return UPPM_OK;
+            }
+        case UPPMFormulaKeyCode_install:
+            if (formula->install != NULL) {
+                free(formula->install);
+            }
+
+            formula->install = strdup(value);
+
+            if (formula->install == NULL) {
+                return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+            } else {
+                return UPPM_OK;
+            }
+        default: return UPPM_OK;
     }
 }
 
@@ -311,7 +399,7 @@ int uppm_formula_parse(const char * packageName, UPPMFormula * * out) {
 
     char * formulaFilePath = NULL;
 
-    int resultCode = uppm_formula_path(packageName, &formulaFilePath);
+    int resultCode = uppm_formula_find(packageName, &formulaFilePath);
 
     if (resultCode != UPPM_OK) {
         return resultCode;
@@ -364,9 +452,20 @@ int uppm_formula_parse(const char * packageName, UPPMFormula * * out) {
                 } else if (lastTokenType == 2) {
                     if (formula == NULL) {
                         formula = (UPPMFormula*)calloc(1, sizeof(UPPMFormula));
+
+                        if (formula == NULL) {
+                            resultCode = UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+                            goto clean;
+                        }
+
                         formula->path = formulaFilePath;
                     }
-                    uppm_formula_set_value(formulaKeyCode, (char*)token.data.scalar.value, formula);
+
+                    resultCode = uppm_formula_set_value(formulaKeyCode, (char*)token.data.scalar.value, formula);
+
+                    if (resultCode != UPPM_OK) {
+                        goto clean;
+                    }
                 }
                 break;
             default: 

@@ -112,9 +112,9 @@ static UPPMFormulaRepoKeyCode uppm_formula_repo_key_code_from_key_name(char * ke
     }
 }
 
-static void uppm_formula_repo_set_value(UPPMFormulaRepoKeyCode keyCode, char * value, UPPMFormulaRepo * formulaRepo) {
+static int uppm_formula_repo_set_value(UPPMFormulaRepoKeyCode keyCode, char * value, UPPMFormulaRepo * formulaRepo) {
     if (keyCode == UPPMFormulaRepoKeyCode_unknown) {
-        return;
+        return UPPM_OK;
     }
 
     char c;
@@ -123,7 +123,7 @@ static void uppm_formula_repo_set_value(UPPMFormulaRepoKeyCode keyCode, char * v
         c = value[0];
 
         if (c == '\0') {
-            return;
+            return UPPM_OK;
         }
 
         // non-printable ASCII characters and space
@@ -135,25 +135,43 @@ static void uppm_formula_repo_set_value(UPPMFormulaRepoKeyCode keyCode, char * v
     }
 
     switch (keyCode) {
-        case UPPMFormulaRepoKeyCode_url:    if (formulaRepo->url    != NULL) free(formulaRepo->url);    formulaRepo->url    = strdup(value); break;
-        case UPPMFormulaRepoKeyCode_branch: if (formulaRepo->branch != NULL) free(formulaRepo->branch); formulaRepo->branch = strdup(value); break;
+        case UPPMFormulaRepoKeyCode_url:
+            if (formulaRepo->url != NULL) {
+                free(formulaRepo->url);
+            }
+
+            formulaRepo->url = strdup(value);
+
+            return formulaRepo->url == NULL ? UPPM_ERROR_MEMORY_ALLOCATION_FAILURE : UPPM_OK;
+        case UPPMFormulaRepoKeyCode_branch:
+            if (formulaRepo->branch != NULL) {
+                free(formulaRepo->branch);
+            }
+
+            formulaRepo->branch = strdup(value);
+
+            return formulaRepo->branch == NULL ? UPPM_ERROR_MEMORY_ALLOCATION_FAILURE : UPPM_OK;
         case UPPMFormulaRepoKeyCode_timestamp_added:
             if (formulaRepo->timestamp_added != NULL) {
                 free(formulaRepo->timestamp_added);
             }
+
             formulaRepo->timestamp_added = strdup(value);
-            break;
+
+            return formulaRepo->timestamp_added == NULL ? UPPM_ERROR_MEMORY_ALLOCATION_FAILURE : UPPM_OK;
         case UPPMFormulaRepoKeyCode_timestamp_last_updated:
             free(formulaRepo->timestamp_last_updated);
             formulaRepo->timestamp_last_updated = strdup(value);
-            break;
+
+            return formulaRepo->timestamp_last_updated == NULL ? UPPM_ERROR_MEMORY_ALLOCATION_FAILURE : UPPM_OK;
         case UPPMFormulaRepoKeyCode_pinned:
             if (strcmp(value, "yes") == 0) {
                 formulaRepo->pinned = true;
             }
-            break;
+            return UPPM_OK;
+        case UPPMFormulaRepoKeyCode_unknown:
         default:
-            break;
+            return UPPM_OK;
     }
 }
 
@@ -273,11 +291,16 @@ int uppm_formula_repo_parse(const char * formulaRepoConfigFilePath, UPPMFormulaR
                         formulaRepo = (UPPMFormulaRepo*)calloc(1, sizeof(UPPMFormulaRepo));
 
                         if (formulaRepo == NULL) {
-                            resultCode = UPPM_ERROR_ALLOCATE_MEMORY_FAILED;
+                            resultCode = UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
                             goto clean;
                         }
                     }
-                    uppm_formula_repo_set_value(formulaRepoKeyCode, (char*)token.data.scalar.value, formulaRepo);
+
+                    resultCode = uppm_formula_repo_set_value(formulaRepoKeyCode, (char*)token.data.scalar.value, formulaRepo);
+
+                    if (resultCode != UPPM_OK) {
+                        goto clean;
+                    }
                 }
                 break;
             default: 
@@ -299,18 +322,15 @@ clean:
 
     if (resultCode == UPPM_OK) {
         resultCode = uppm_formula_repo_check(formulaRepo, formulaRepoConfigFilePath);
-
-        if (resultCode == UPPM_OK) {
-            //uppm_formula_dump(formula);
-
-            (*out) = formulaRepo;
-            return UPPM_OK;
-        }
     }
 
     //uppm_formula_repo_dump(formulaRepo);
 
-    uppm_formula_repo_free(formulaRepo);
-
-    return resultCode;
+    if (resultCode == UPPM_OK) {
+        (*out) = formulaRepo;
+        return UPPM_OK;
+    } else {
+        uppm_formula_repo_free(formulaRepo);
+        return resultCode;
+    }
 }

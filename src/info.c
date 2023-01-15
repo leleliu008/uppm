@@ -110,7 +110,7 @@ int uppm_info(const char * packageName, const char * key) {
     if ((key == NULL) || (strcmp(key, "") == 0) || (strcmp(key, "--yaml") == 0)) {
         char * formulaFilePath = NULL;
 
-        resultCode = uppm_formula_path(packageName, &formulaFilePath);
+        resultCode = uppm_formula_find(packageName, &formulaFilePath);
 
         if (resultCode != UPPM_OK) {
             return resultCode;
@@ -199,7 +199,7 @@ int uppm_info(const char * packageName, const char * key) {
     } else if (strcmp(key, "formula") == 0) {
         char * formulaFilePath = NULL;
 
-        resultCode = uppm_formula_path(packageName, &formulaFilePath);
+        resultCode = uppm_formula_find(packageName, &formulaFilePath);
 
         if (resultCode != UPPM_OK) {
             return resultCode;

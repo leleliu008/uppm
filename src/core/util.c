@@ -146,8 +146,12 @@ int get_current_executable_realpath(char * * out) {
 
     char * buf = (char*)calloc(bufLength + 1, sizeof(char));
 
+    if (buf == NULL) {
+        return -2
+    }
+
     if (sysctl(mib, 4, buf, &bufLength, NULL, 0) < 0) {
-        return -2;
+        return -3;
     }
 
     (*out) = buf;
@@ -161,10 +165,15 @@ int get_current_executable_realpath(char * * out) {
     }
 
     char** argv = (char**)malloc(size);
+
+    if (argv == NULL) {
+        return -2;
+    }
+
     memset(argv, 0, size);
 
     if (sysctl(mib, 4, argv, &size, NULL, 0) != 0) {
-        return -2;
+        return -3;
     }
 
     bool isPath = false;
@@ -195,7 +204,7 @@ int get_current_executable_realpath(char * * out) {
         char * PATH = getenv("PATH");
 
         if ((PATH == NULL) || (strcmp(PATH, "") == 0)) {
-            return -3;
+            return -4;
         }
 
         size_t PATH2Length = strlen(PATH) + 1;
@@ -225,7 +234,7 @@ int get_current_executable_realpath(char * * out) {
             PATHItem = strtok(NULL, ":");
         }
 
-        return -4;
+        return -5;
     }
 #else
     char buf[PATH_MAX + 1] = {0};

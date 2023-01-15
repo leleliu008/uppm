@@ -38,27 +38,53 @@ int find_executables(ExecuablePathList ** out, const char * commandName, bool fi
 
         if ((stat(PATHItem, &st) == 0) && S_ISDIR(st.st_mode)) {
             size_t fullPathLength = strlen(PATHItem) + commandNameLength + 2;
-            char * fullPath = (char*)calloc(fullPathLength, sizeof(char));
+            char   fullPath[fullPathLength];
             snprintf(fullPath, fullPathLength, "%s/%s", PATHItem, commandName);
 
             if (access(fullPath, X_OK) == 0) {
                 if (pathList == NULL) {
                     pathList = (ExecuablePathList*)calloc(1, sizeof(ExecuablePathList));
+
+                    if (pathList == NULL) {
+                        return FIND_EXECUTABLES_ERROR;
+                    }
                 }
 
                 if (pathList->size == capcity) {
                     capcity += 2;
-                    pathList->paths = (char**)realloc(pathList->paths, capcity * sizeof(char*));
+
+                    char** paths = (char**)realloc(pathList->paths, capcity * sizeof(char*));
+
+                    if (paths == NULL) {
+                        free(pathList->paths);
+                        return FIND_EXECUTABLES_ERROR;
+                    } else {
+                        pathList->paths = paths;
+                    }
                 }
 
-                pathList->paths[pathList->size] = fullPath;
+                char * fullPathDup = strdup(fullPath);
+
+                if (fullPathDup == NULL) {
+                    if (pathList != NULL) {
+                        for (size_t i = 0; i < pathList->size; i++) {
+                            free(pathList->paths[i]);
+                            pathList->paths[i] = NULL;
+                        }
+                    }
+
+                    free(pathList->paths);
+                    free(pathList);
+
+                    return FIND_EXECUTABLES_ERROR;
+                }
+
+                pathList->paths[pathList->size] = fullPathDup;
                 pathList->size += 1;
 
                 if (!findAll) {
                     break;
                 }
-            } else {
-                free(fullPath);
             }
         }
 

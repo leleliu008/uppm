@@ -4,7 +4,7 @@
 
 #include "uppm.h"
 
-int uppm_formula_path(const char * packageName, char ** out) {
+int uppm_formula_find(const char * packageName, char ** out) {
     int resultCode = uppm_check_if_the_given_argument_matches_package_name_pattern(packageName);
 
     if (resultCode != UPPM_OK) {
@@ -35,6 +35,10 @@ int uppm_formula_path(const char * packageName, char ** out) {
     struct stat st;
 
     for (size_t i = 0; i < formulaRepoList->size; i++) {
+        if (!(formulaRepoList->repos[i]->enabled)) {
+            continue;
+        }
+
         char *  formulaRepoPath = formulaRepoList->repos[i]->path;
 
         size_t formulaFilePathLength =  strlen(formulaRepoPath) + strlen(packageName) + 15;
@@ -48,7 +52,7 @@ int uppm_formula_path(const char * packageName, char ** out) {
             (*out) = strdup(formulaFilePath);
 
             if (*out == NULL) {
-                return UPPM_ERROR_ALLOCATE_MEMORY_FAILED;
+                return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
             } else {
                 return UPPM_OK;
             }

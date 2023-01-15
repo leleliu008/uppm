@@ -7,7 +7,7 @@
 int uppm_formula_cat(const char * packageName) {
     char * formulaFilePath = NULL;
 
-    int resultCode = uppm_formula_path(packageName, &formulaFilePath);
+    int resultCode = uppm_formula_find(packageName, &formulaFilePath);
 
     if (resultCode != UPPM_OK) {
         return resultCode;

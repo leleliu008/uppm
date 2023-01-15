@@ -12,7 +12,7 @@
 #define UPPM_OK               0
 #define UPPM_ERROR            1
 
-#define UPPM_ERROR_ALLOCATE_MEMORY_FAILED  2
+#define UPPM_ERROR_MEMORY_ALLOCATION_FAILURE  2
 
 #define UPPM_ARG_IS_NULL      10
 #define UPPM_ARG_IS_EMPTY     11
@@ -57,7 +57,7 @@ typedef struct {
 } UPPMFormula;
 
 int  uppm_formula_parse (const char * packageName, UPPMFormula * * formula);
-int  uppm_formula_path  (const char * packageName, char * * out);
+int  uppm_formula_find  (const char * packageName, char * * out);
 int  uppm_formula_cat   (const char * packageName);
 int  uppm_formula_bat   (const char * packageName);
 

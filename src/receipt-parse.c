@@ -123,9 +123,9 @@ static UPPMReceiptKeyCode uppm_receipt_key_code_from_key_name(char * key) {
     }
 }
 
-void uppm_receipt_set_value(UPPMReceiptKeyCode keyCode, char * value, UPPMReceipt * receipt) {
+static int uppm_receipt_set_value(UPPMReceiptKeyCode keyCode, char * value, UPPMReceipt * receipt) {
     if (keyCode == UPPMReceiptKeyCode_unknown) {
-        return;
+        return UPPM_OK;
     }
 
     char c;
@@ -134,7 +134,7 @@ void uppm_receipt_set_value(UPPMReceiptKeyCode keyCode, char * value, UPPMReceip
         c = value[0];
 
         if (c == '\0') {
-            return;
+            return UPPM_OK;
         }
 
         // non-printable ASCII characters and space
@@ -146,17 +146,127 @@ void uppm_receipt_set_value(UPPMReceiptKeyCode keyCode, char * value, UPPMReceip
     }
 
     switch (keyCode) {
-        case UPPMReceiptKeyCode_summary:  if (receipt->summary != NULL)   free(receipt->summary);   receipt->summary = strdup(value); break;
-        case UPPMReceiptKeyCode_version:  if (receipt->version != NULL)   free(receipt->version);   receipt->version = strdup(value); break;
-        case UPPMReceiptKeyCode_license:  if (receipt->license != NULL)   free(receipt->license);   receipt->license = strdup(value); break;
-        case UPPMReceiptKeyCode_webpage:  if (receipt->webpage != NULL)   free(receipt->webpage);   receipt->webpage = strdup(value); break;
-        case UPPMReceiptKeyCode_bin_url:  if (receipt->bin_url != NULL)   free(receipt->bin_url);   receipt->bin_url = strdup(value); break;
-        case UPPMReceiptKeyCode_bin_sha:  if (receipt->bin_sha != NULL)   free(receipt->bin_sha);   receipt->bin_sha = strdup(value); break;
-        case UPPMReceiptKeyCode_dep_pkg:  if (receipt->dep_pkg != NULL)   free(receipt->dep_pkg);   receipt->dep_pkg = strdup(value); break;
-        case UPPMReceiptKeyCode_install:  if (receipt->install != NULL)   free(receipt->install);   receipt->install = strdup(value); break;
-        case UPPMReceiptKeyCode_timestamp:if (receipt->timestamp != NULL) free(receipt->timestamp); receipt->timestamp = strdup(value); break;
-        case UPPMReceiptKeyCode_signature:if (receipt->signature != NULL) free(receipt->signature); receipt->signature = strdup(value); break;
-        default: break;
+        case UPPMReceiptKeyCode_summary:
+            if (receipt->summary != NULL) {
+                free(receipt->summary);
+            }
+
+            receipt->summary = strdup(value);
+
+            if (receipt->summary == NULL) {
+                return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+            } else {
+                return UPPM_OK;
+            }
+        case UPPMReceiptKeyCode_version:
+            if (receipt->version != NULL) {
+                free(receipt->version);
+            }
+
+            receipt->version = strdup(value);
+
+            if (receipt->version == NULL) {
+                return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+            } else {
+                return UPPM_OK;
+            }
+        case UPPMReceiptKeyCode_license:
+            if (receipt->license != NULL) {
+                free(receipt->license);
+            }
+
+            receipt->license = strdup(value);
+
+            if (receipt->license == NULL) {
+                return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+            } else {
+                return UPPM_OK;
+            }
+        case UPPMReceiptKeyCode_webpage:
+            if (receipt->webpage != NULL) {
+                free(receipt->webpage);
+            }
+
+            receipt->webpage = strdup(value);
+
+            if (receipt->webpage == NULL) {
+                return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+            } else {
+                return UPPM_OK;
+            }
+        case UPPMReceiptKeyCode_bin_url:
+            if (receipt->bin_url != NULL) {
+                free(receipt->bin_url);
+            }
+
+            receipt->bin_url = strdup(value);
+
+            if (receipt->bin_url == NULL) {
+                return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+            } else {
+                return UPPM_OK;
+            }
+        case UPPMReceiptKeyCode_bin_sha:
+            if (receipt->bin_sha != NULL) {
+                free(receipt->bin_sha);
+            }
+
+            receipt->bin_sha = strdup(value);
+
+            if (receipt->bin_sha == NULL) {
+                return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+            } else {
+                return UPPM_OK;
+            }
+        case UPPMReceiptKeyCode_dep_pkg:
+            if (receipt->dep_pkg != NULL) {
+                free(receipt->dep_pkg);
+            }
+
+            receipt->dep_pkg = strdup(value);
+
+            if (receipt->dep_pkg == NULL) {
+                return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+            } else {
+                return UPPM_OK;
+            }
+        case UPPMReceiptKeyCode_install:
+            if (receipt->install != NULL) {
+                free(receipt->install);
+            }
+
+            receipt->install = strdup(value);
+
+            if (receipt->install == NULL) {
+                return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+            } else {
+                return UPPM_OK;
+            }
+        case UPPMReceiptKeyCode_timestamp:
+            if (receipt->timestamp != NULL) {
+                free(receipt->timestamp);
+            }
+
+            receipt->timestamp = strdup(value);
+
+            if (receipt->timestamp == NULL) {
+                return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+            } else {
+                return UPPM_OK;
+            }
+        case UPPMReceiptKeyCode_signature:
+            if (receipt->signature != NULL) {
+                free(receipt->signature);
+            }
+
+            receipt->signature = strdup(value);
+
+            if (receipt->signature == NULL) {
+                return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+            } else {
+                return UPPM_OK;
+            }
+        case UPPMReceiptKeyCode_unknown: return UPPM_OK;
     }
 }
 
@@ -312,8 +422,18 @@ int uppm_receipt_parse(const char * packageName, UPPMReceipt * * out) {
                 } else if (lastTokenType == 2) {
                     if (receipt == NULL) {
                         receipt = (UPPMReceipt*)calloc(1, sizeof(UPPMReceipt));
+
+                        if (receipt == NULL) {
+                            resultCode = UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+                            goto clean;
+                        }
                     }
-                    uppm_receipt_set_value(receiptKeyCode, (char*)token.data.scalar.value, receipt);
+
+                    resultCode = uppm_receipt_set_value(receiptKeyCode, (char*)token.data.scalar.value, receipt);
+
+                    if (resultCode != UPPM_OK) {
+                        goto clean;
+                    }
                 }
                 break;
             default: 
@@ -332,8 +452,6 @@ clean:
     yaml_parser_delete(&parser);
 
     fclose(file);
-
-    //uppm_receipt_dump(receipt);
 
     if (resultCode == UPPM_OK) {
         resultCode = uppm_receipt_check(receipt, receiptFilePath);
