@@ -437,13 +437,15 @@ all relevant dirs and files are located in `~/.uppm` directory.
 
 ## uppm formula
 
-a uppm formula is a [YAML](https://yaml.org/spec/1.2.2/) format file which is used to config a uppm package's meta-infomation including package version, installation instructions, etc.
+a uppm formula is a [YAML](https://yaml.org/spec/1.2.2/) format file which is used to config a uppm package's meta-infomation including one sentence description, package version, installation instructions, etc.
 
-a uppm formula's file extension must be `.yml`
+a uppm formula's filename suffix must be `.yml`
 
-## uppm formula scheme
+a uppm formula'a filename prefix would be treated as the package name.
 
-[Reference](https://github.com/leleliu008/uppm-formula-repository-linux-x86_64)
+a uppm formula'a filename prefix must match regular expression partten `^[A-Za-z0-9+-._]{1,50}$`
+
+a uppm formula's file content must follow [the uppm formula scheme](https://github.com/leleliu008/uppm-formula-repository-linux-x86_64)
 
 ## uppm formula repository
 a uppm formula repository is a git repository.
