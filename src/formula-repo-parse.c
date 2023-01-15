@@ -294,6 +294,8 @@ int uppm_formula_repo_parse(const char * formulaRepoConfigFilePath, UPPMFormulaR
                             resultCode = UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
                             goto clean;
                         }
+
+                        formulaRepo->enabled = true;
                     }
 
                     resultCode = uppm_formula_repo_set_value(formulaRepoKeyCode, (char*)token.data.scalar.value, formulaRepo);
