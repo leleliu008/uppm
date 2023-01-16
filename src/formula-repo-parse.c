@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
-#include <libgen.h>
 #include <time.h>
 #include <yaml.h>
 
@@ -12,6 +11,7 @@ typedef enum {
     UPPMFormulaRepoKeyCode_url,
     UPPMFormulaRepoKeyCode_branch,
     UPPMFormulaRepoKeyCode_pinned,
+    UPPMFormulaRepoKeyCode_enabled,
     UPPMFormulaRepoKeyCode_timestamp_added,
     UPPMFormulaRepoKeyCode_timestamp_last_updated
 } UPPMFormulaRepoKeyCode;
@@ -26,6 +26,7 @@ void uppm_formula_repo_dump(UPPMFormulaRepo * formulaRepo) {
     printf("url:  %s\n", formulaRepo->url);
     printf("branch: %s\n", formulaRepo->branch);
     printf("pinned: %s\n", formulaRepo->pinned ? "yes" : "no");
+    printf("enabled: %s\n", formulaRepo->enabled ? "yes" : "no");
     printf("timestamp-added:         %s\n", formulaRepo->timestamp_added);
     printf("timestamp-last-updated:  %s\n", formulaRepo->timestamp_last_updated);
 
@@ -103,6 +104,8 @@ static UPPMFormulaRepoKeyCode uppm_formula_repo_key_code_from_key_name(char * ke
         return UPPMFormulaRepoKeyCode_branch;
     } else if (strcmp(key, "pinned") == 0) {
         return UPPMFormulaRepoKeyCode_pinned;
+    } else if (strcmp(key, "enabled") == 0) {
+        return UPPMFormulaRepoKeyCode_enabled;
     } else if (strcmp(key, "timestamp-added") == 0) {
         return UPPMFormulaRepoKeyCode_timestamp_added;
     } else if (strcmp(key, "timestamp-last-updated") == 0) {
@@ -167,6 +170,11 @@ static int uppm_formula_repo_set_value(UPPMFormulaRepoKeyCode keyCode, char * va
         case UPPMFormulaRepoKeyCode_pinned:
             if (strcmp(value, "yes") == 0) {
                 formulaRepo->pinned = true;
+            }
+            return UPPM_OK;
+        case UPPMFormulaRepoKeyCode_enabled:
+            if (strcmp(value, "yes") == 0) {
+                formulaRepo->enabled = true;
             }
             return UPPM_OK;
         case UPPMFormulaRepoKeyCode_unknown:

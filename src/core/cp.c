@@ -1,5 +1,6 @@
-#include "cp.h"
 #include <stdio.h>
+
+#include "cp.h"
 
 int copy_file(const char * fromFilePath, const char * toFilePath) {
     FILE * fromFile = fopen(fromFilePath, "rb");
@@ -12,9 +13,9 @@ int copy_file(const char * fromFilePath, const char * toFilePath) {
     FILE * toFile = fopen(toFilePath, "wb");
 
     if (toFile == NULL) {
-        fclose(fromFile);
         perror(toFilePath);
-        return 2;
+        fclose(fromFile);
+        return 1;
     }
 
     unsigned char buff[1024];

@@ -47,7 +47,7 @@ int uppm_install(const char * packageName, bool verbose) {
         size_t depPackageNamesCopyLength = depPackageNamesLength + 1;
         char   depPackageNamesCopy[depPackageNamesCopyLength];
         memset(depPackageNamesCopy, 0, depPackageNamesCopyLength);
-        strcpy(depPackageNamesCopy, formula->dep_pkg);
+        strncpy(depPackageNamesCopy, formula->dep_pkg, depPackageNamesLength);
 
         char * depPackageNameArrayList[10];
         size_t depPackageNameArrayListSize = 0;

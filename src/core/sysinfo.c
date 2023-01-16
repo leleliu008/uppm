@@ -1,42 +1,43 @@
-#include "sysinfo.h"
-
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 #include <sys/stat.h>
 #include <sys/utsname.h>
 
 #include "regex/regex.h"
 
-#include <unistd.h>
+#include "sysinfo.h"
+
+#include "../uppm.h"
 
 int sysinfo_kind(char * buf, size_t bufSize) {
 #if defined (_WIN32)
     strncpy(buf, "windows", bufSize > 7 ? 7 : bufSize);
-    return 0;
+    return UPPM_OK;
 #elif defined (__APPLE__)
     strncpy(buf, "darwin", bufSize > 6 ? 6 : bufSize);
-    return 0;
+    return UPPM_OK;
 #elif defined (__FreeBSD__)
     strncpy(buf, "freebsd", bufSize > 7 ? 7 : bufSize);
-    return 0;
+    return UPPM_OK;
 #elif defined (__OpenBSD__)
     strncpy(buf, "openbsd", bufSize > 7 ? 7 : bufSize);
-    return 0;
+    return UPPM_OK;
 #elif defined (__NetBSD__)
     strncpy(buf, "netbsd", bufSize > 6 ? 6 : bufSize);
-    return 0;
+    return UPPM_OK;
 #elif defined (__ANDROID__)
     strncpy(buf, "android", bufSize > 7 ? 7 : bufSize);
-    return 0;
+    return UPPM_OK;
 #elif defined (__linux__)
     strncpy(buf, "linux", bufSize > 5 ? 5 : bufSize);
-    return 0;
+    return UPPM_OK;
 #else
     struct utsname uts;
 
     if (uname(&uts) < 0) {
         perror("uname() error");
-        return -1;
+        return UPPM_ERROR;
     }
 
     size_t osKindLength = strlen(uts.sysname);
@@ -50,38 +51,38 @@ int sysinfo_kind(char * buf, size_t bufSize) {
         }
     }
 
-    return 0;
+    return UPPM_OK;
 #endif
 }
 
 int sysinfo_type(char * buf, size_t bufSize) {
 #if defined (_WIN32)
     strncpy(buf, "windows", bufSize > 7 ? 7 : bufSize);
-    return 0;
+    return UPPM_OK;
 #elif defined (__APPLE__)
     strncpy(buf, "macos", bufSize > 5 ? 5 : bufSize);
-    return 0;
+    return UPPM_OK;
 #elif defined (__FreeBSD__)
     strncpy(buf, "freebsd", bufSize > 7 ? 7 : bufSize);
-    return 0;
+    return UPPM_OK;
 #elif defined (__OpenBSD__)
     strncpy(buf, "openbsd", bufSize > 7 ? 7 : bufSize);
-    return 0;
+    return UPPM_OK;
 #elif defined (__NetBSD__)
     strncpy(buf, "netbsd", bufSize > 6 ? 6 : bufSize);
-    return 0;
+    return UPPM_OK;
 #elif defined (__ANDROID__)
     strncpy(buf, "android", bufSize > 7 ? 7 : bufSize);
-    return 0;
+    return UPPM_OK;
 #elif defined (__linux__)
     strncpy(buf, "linux", bufSize > 5 ? 5 : bufSize);
-    return 0;
+    return UPPM_OK;
 #else
     struct utsname uts;
 
     if (uname(&uts) < 0) {
         perror("uname() error");
-        return -1;
+        return UPPM_ERROR;
     }
 
     size_t osKindLength = strlen(uts.sysname);
@@ -95,7 +96,7 @@ int sysinfo_type(char * buf, size_t bufSize) {
         }
     }
 
-    return 0;
+    return UPPM_OK;
 #endif
 }
 
@@ -104,44 +105,44 @@ int sysinfo_arch(char * buf, size_t bufSize) {
 
     if (uname(&uts) < 0) {
         perror("uname() error");
-        return -1;
+        return UPPM_ERROR;
     }
 
     size_t osArchLength = strlen(uts.machine);
 
     strncpy(buf, uts.machine, bufSize > osArchLength ? osArchLength : bufSize);
 
-    return 0;
+    return UPPM_OK;
 }
 
 int sysinfo_name(char * buf, size_t bufSize) {
 #if defined (_WIN32)
     strncpy(buf, "windows", bufSize > 7 ? 7 : bufSize);
-    return 0;
+    return UPPM_OK;
 #elif defined (__APPLE__)
     strncpy(buf, "macos", bufSize > 5 ? 5 : bufSize);
-    return 0;
+    return UPPM_OK;
 #elif defined (__FreeBSD__)
     strncpy(buf, "freebsd", bufSize > 7 ? 7 : bufSize);
-    return 0;
+    return UPPM_OK;
 #elif defined (__OpenBSD__)
     strncpy(buf, "openbsd", bufSize > 7 ? 7 : bufSize);
-    return 0;
+    return UPPM_OK;
 #elif defined (__NetBSD__)
     strncpy(buf, "netbsd", bufSize > 6 ? 6 : bufSize);
-    return 0;
+    return UPPM_OK;
 #elif defined (__ANDROID__)
     strncpy(buf, "android", bufSize > 7 ? 7 : bufSize);
-    return 0;
+    return UPPM_OK;
 #else
+    const char * filepath = "/etc/os-release";
     struct stat sb;
-
-    if ((stat("/etc/os-release", &sb) == 0) && (S_ISREG(sb.st_mode) || S_ISLNK(sb.st_mode))) {
-        FILE * file = fopen("/etc/os-release", "r");
+    if ((stat(filepath, &sb) == 0) && (S_ISREG(sb.st_mode) || S_ISLNK(sb.st_mode))) {
+        FILE * file = fopen(filepath, "r");
 
         if (file == NULL) {
-            perror("/etc/os-release");
-            return -1;
+            perror(filepath);
+            return UPPM_ERROR;
         }
 
         char line[50];
@@ -165,14 +166,14 @@ int sysinfo_name(char * buf, size_t bufSize) {
                 }
 
                 strncpy(buf, p, bufSize > n ? n : bufSize);
-                return 0;
+                return UPPM_OK;
             }
         }
 
         fclose(file);
     }
 
-    return -2;
+    return UPPM_ERROR;
 #endif
 }
 
@@ -182,14 +183,14 @@ int sysinfo_vers(char * buf, size_t bufSize) {
 
     if (uname(&uts) < 0) {
         perror("uname() error");
-        return -1;
+        return UPPM_ERROR;
     }
 
     size_t n = strlen(uts.release);
 
     strncpy(buf, uts.release, bufSize > n ? n : bufSize);
 
-    return 0;
+    return UPPM_OK;
 #elif defined (__APPLE__)
     const char * filepath = "/System/Library/CoreServices/SystemVersion.plist";
     struct stat sb;
@@ -198,7 +199,7 @@ int sysinfo_vers(char * buf, size_t bufSize) {
 
         if (file == NULL) {
             perror(filepath);
-            return -1;
+            return UPPM_ERROR;
         }
 
         char line[512];
@@ -206,12 +207,18 @@ int sysinfo_vers(char * buf, size_t bufSize) {
         while (fgets(line, 512, file) != NULL) {
             if (regex_matched(line, "ProductVersion")) {
                 if (fgets(line, 512, file) != NULL) {
-                    char * p = regex_extract(line, "[1-9][0-9.]+[0-9]");
-                    size_t n = strlen(p);
-                    strncpy(buf, p, bufSize > n ? n : bufSize);
-                    free(p);
                     fclose(file);
-                    return 0;
+
+                    char * p = regex_extract(line, "[1-9][0-9.]+[0-9]");
+
+                    if (p == NULL) {
+                        return UPPM_ERROR;
+                    } else {
+                        size_t n = strlen(p);
+                        strncpy(buf, p, bufSize > n ? n : bufSize);
+                        free(p);
+                        return UPPM_OK;
+                    }
                 }
 
                 break;
@@ -221,16 +228,16 @@ int sysinfo_vers(char * buf, size_t bufSize) {
         fclose(file);
     }
 
-    return -2;
+    return UPPM_ERROR;
 #else
+    const char * filepath = "/etc/os-release";
     struct stat sb;
-
-    if ((stat("/etc/os-release", &sb) == 0) && (S_ISREG(sb.st_mode) || S_ISLNK(sb.st_mode))) {
-        FILE * file = fopen("/etc/os-release", "r");
+    if ((stat(filepath, &sb) == 0) && (S_ISREG(sb.st_mode) || S_ISLNK(sb.st_mode))) {
+        FILE * file = fopen(filepath, "r");
 
         if (file == NULL) {
-            perror("/etc/os-release");
-            return -1;
+            perror(filepath);
+            return UPPM_ERROR;
         }
 
         char line[50];
@@ -254,7 +261,7 @@ int sysinfo_vers(char * buf, size_t bufSize) {
                 }
 
                 strncpy(buf, p, bufSize > n ? n : bufSize);
-                return 0;
+                return UPPM_OK;
             }
         }
 
@@ -263,7 +270,7 @@ int sysinfo_vers(char * buf, size_t bufSize) {
 
     strncpy(buf, "rolling", bufSize > 7 ? 7 : bufSize);
 
-    return 0;
+    return UPPM_OK;
 #endif
 }
 
@@ -272,7 +279,7 @@ int sysinfo_libc(LIBC * out) {
 
     if (uname(&uts) < 0) {
         perror("uname() error");
-        return -1;
+        return UPPM_ERROR;
     }
 
     if (strcmp(uts.sysname, "Linux") == 0) {
@@ -304,8 +311,6 @@ int sysinfo_libc(LIBC * out) {
                 memset( dynamicLoaderPath, 0, dynamicLoaderPathLength);
                 snprintf(dynamicLoaderPath, dynamicLoaderPathLength, "/lib64/ld-linux-%s.so.2", uts.machine);
 
-                struct stat sb;
-
                 if ((stat(dynamicLoaderPath, &sb) == 0) && (S_ISREG(sb.st_mode) || S_ISLNK(sb.st_mode))) {
                     (*out) = LIBC_GLIBC;
                 } else {
@@ -315,7 +320,7 @@ int sysinfo_libc(LIBC * out) {
         }
     }
 
-    return 0;
+    return UPPM_OK;
 }
 
 int sysinfo_ncpu(size_t * out) {
@@ -326,7 +331,7 @@ int sysinfo_ncpu(size_t * out) {
 
     if (nprocs > 0) {
         (*out) = nprocs;
-        return 0;
+        return UPPM_OK;
     }
 #endif
 
@@ -335,17 +340,17 @@ int sysinfo_ncpu(size_t * out) {
 
     if (nprocs > 0) {
         (*out) = nprocs;
-        return 0;
+        return UPPM_OK;
     }
 #endif
 
     (*out) = 1;
-    return 0;
+    return UPPM_OK;
 }
 
 int sysinfo_make(SysInfo * sysinfo) {
     if (sysinfo == NULL) {
-        return -1;
+        return UPPM_ARG_IS_NULL;
     }
 
     int resultCode;
@@ -356,7 +361,7 @@ int sysinfo_make(SysInfo * sysinfo) {
 
     resultCode = sysinfo_arch(osArch, 30);
 
-    if (resultCode != 0) {
+    if (resultCode != UPPM_OK) {
         return resultCode;
     }
 
@@ -366,7 +371,7 @@ int sysinfo_make(SysInfo * sysinfo) {
 
     resultCode = sysinfo_kind(osKind, 30);
 
-    if (resultCode != 0) {
+    if (resultCode != UPPM_OK) {
         return resultCode;
     }
 
@@ -376,7 +381,7 @@ int sysinfo_make(SysInfo * sysinfo) {
 
     resultCode = sysinfo_type(osType, 30);
 
-    if (resultCode != 0) {
+    if (resultCode != UPPM_OK) {
         return resultCode;
     }
 
@@ -386,7 +391,7 @@ int sysinfo_make(SysInfo * sysinfo) {
 
     resultCode = sysinfo_name(osName, 30);
 
-    if (resultCode != 0) {
+    if (resultCode != UPPM_OK) {
         return resultCode;
     }
 
@@ -396,7 +401,7 @@ int sysinfo_make(SysInfo * sysinfo) {
 
     resultCode = sysinfo_vers(osVers, 30);
 
-    if (resultCode != 0) {
+    if (resultCode != UPPM_OK) {
         return resultCode;
     }
 
@@ -406,7 +411,7 @@ int sysinfo_make(SysInfo * sysinfo) {
 
     resultCode = sysinfo_libc(&libc);
 
-    if (resultCode != 0) {
+    if (resultCode != UPPM_OK) {
         return resultCode;
     }
 
@@ -416,21 +421,46 @@ int sysinfo_make(SysInfo * sysinfo) {
     
     resultCode = sysinfo_ncpu(&ncpu);
 
-    if (resultCode != 0) {
+    if (resultCode != UPPM_OK) {
         return resultCode;
     }
 
     ///////////////////////////////////////
 
     sysinfo->arch = strdup(osArch);
+
+    if (sysinfo->arch == NULL) {
+        return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+    }
+
     sysinfo->kind = strdup(osKind);
+
+    if (sysinfo->kind == NULL) {
+        return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+    }
+
     sysinfo->type = strdup(osType);
+
+    if (sysinfo->type == NULL) {
+        return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+    }
+
     sysinfo->name = strdup(osName);
+
+    if (sysinfo->name == NULL) {
+        return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+    }
+
     sysinfo->vers = strdup(osVers);
+
+    if (sysinfo->vers == NULL) {
+        return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+    }
+
     sysinfo->libc = libc;
     sysinfo->ncpu = ncpu;
 
-    return 0;
+    return UPPM_OK;
 }
 
 void sysinfo_dump(SysInfo sysinfo) {

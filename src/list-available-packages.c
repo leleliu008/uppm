@@ -28,8 +28,8 @@ int uppm_list_the_available_packages() {
         dir = opendir(formulaDir);
 
         if (dir == NULL) {
-            uppm_formula_repo_list_free(formulaRepoList);
             perror(formulaDir);
+            uppm_formula_repo_list_free(formulaRepoList);
             return UPPM_ERROR;
         }
 

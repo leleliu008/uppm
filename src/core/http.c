@@ -6,8 +6,9 @@
 #include <stdbool.h>
 #include <curl/curl.h>
 #include <curl/curlver.h>
+
 #include "http.h"
-#include "url-transform.h"
+#include "../uppm.h"
 
 static size_t write_callback(void * ptr, size_t size, size_t nmemb, void * stream) {
     return fwrite(ptr, size, nmemb, (FILE *)stream);
@@ -16,24 +17,18 @@ static size_t write_callback(void * ptr, size_t size, size_t nmemb, void * strea
 int http_fetch_to_stream(const char * url, FILE * outputFile, bool verbose, bool showProgress) {
     char * transformedUrl = NULL;
 
-    switch (url_transform(url, &transformedUrl)) {
-        case URL_TRANSFORM_OK:
-            if (verbose) {
-                printf("originUrl      : %s\n", url);
-                printf("transformedUrl : %s\n", transformedUrl);
-            }
-            break;
-        case URL_TRANSFORM_ERROR:
-            return URL_TRANSFORM_ERROR;
-        case URL_TRANSFORM_ENV_IS_NOT_SET:
-            transformedUrl = strdup(url);
-            break;
-        case URL_TRANSFORM_ENV_VALUE_IS_EMPTY:
-            return URL_TRANSFORM_ENV_VALUE_IS_EMPTY;
-        case URL_TRANSFORM_ENV_VALUE_PATH_NOT_EXIST:
-            return URL_TRANSFORM_ENV_VALUE_PATH_NOT_EXIST;
-        case URL_TRANSFORM_RUN_EMPTY_RESULT:
-            return URL_TRANSFORM_RUN_EMPTY_RESULT;
+    int resultCode = uppm_url_transform(url, &transformedUrl, verbose);
+
+    if (resultCode == UPPM_OK) {
+        ;
+    } else if (resultCode == UPPM_URL_TRANSFORM_ENV_IS_NOT_SET) {
+        transformedUrl = strdup(url);
+
+        if (transformedUrl == NULL) {
+            return UPPM_URL_TRANSFORM_RUN_EMPTY_RESULT;
+        }
+    } else {
+        return resultCode;
     }
 
     if (outputFile == NULL) {
@@ -129,7 +124,7 @@ int http_fetch_to_file(const char * url, const char * outputFilePath, bool verbo
 
     if (file == NULL) {
         perror(outputFilePath);
-        return 1;
+        return UPPM_ERROR;
     }
 
     int resultCode = http_fetch_to_stream(url, file, verbose, showProgress);

@@ -138,10 +138,10 @@ int uppm_formula_repo_add(const char * formulaRepoName, const char * formulaRepo
     memset(ts, 0, 11);
     snprintf(ts, 11, "%ld", time(NULL));
 
-    size_t  strLength = formulaRepoUrlLength + branchNameLength + strlen(ts) + 45;
+    size_t  strLength = formulaRepoUrlLength + branchNameLength + strlen(ts) + 58;
     char    str[strLength];
     memset (str, 0, strLength);
-    snprintf(str, strLength, "url: %s\nbranch: %s\npinned: no\ntimestamp-added: %s\n", formulaRepoUrl, branchName, ts);
+    snprintf(str, strLength, "url: %s\nbranch: %s\npinned: no\nenabled: yes\ntimestamp-added: %s\n", formulaRepoUrl, branchName, ts);
 
     if (zlib_deflate_string_to_file(str, strLength - 1, file) != 0) {
         fclose(file);

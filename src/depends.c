@@ -28,7 +28,7 @@ int uppm_depends_make_dot_items(const char * packageName, char buff[256]) {
     size_t depPackageNamesCopyLength = depPackageNamesLength + 1;
     char   depPackageNamesCopy[depPackageNamesCopyLength];
     memset(depPackageNamesCopy, 0, depPackageNamesCopyLength);
-    strcpy(depPackageNamesCopy, formula->dep_pkg);
+    strncpy(depPackageNamesCopy, formula->dep_pkg, depPackageNamesLength);
 
     char * depPackageName = strtok(depPackageNamesCopy, " ");
 

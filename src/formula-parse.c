@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <libgen.h>
 #include <yaml.h>
+
 #include "core/sysinfo.h"
 #include "core/regex/regex.h"
 #include "uppm.h"
@@ -272,7 +273,7 @@ static int uppm_formula_check(UPPMFormula * formula, const char * formulaFilePat
         size_t urlCopyLength = urlLength + 1;
         char   urlCopy[urlCopyLength];
         memset(urlCopy, 0, urlCopyLength);
-        strcpy(urlCopy, formula->bin_url);
+        strncpy(urlCopy, formula->bin_url, urlLength);
 
         char * srcFileName = basename(urlCopy);
 
@@ -362,15 +363,43 @@ static int uppm_formula_check(UPPMFormula * formula, const char * formulaFilePat
         while (splitedStr != NULL) {
             if (regex_matched(splitedStr, "^[0-9]+(\\.[0-9]+)+[a-z]?$")) {
                 formula->version = strdup(splitedStr);
+
+                if (formula->version == NULL) {
+                    return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+                } else {
+                    return UPPM_OK;
+                }
+
                 break;
             } else if (regex_matched(splitedStr, "^[vV][0-9]+(\\.[0-9]+)+[a-z]?$")) {
                 formula->version = strdup(&splitedStr[1]);
+
+                if (formula->version == NULL) {
+                    return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+                } else {
+                    return UPPM_OK;
+                }
+
                 break;
             } else if (regex_matched(splitedStr, "^[0-9]{3,8}$")) {
                 formula->version = strdup(splitedStr);
+
+                if (formula->version == NULL) {
+                    return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+                } else {
+                    return UPPM_OK;
+                }
+
                 break;
             } else if (regex_matched(splitedStr, "^[vrR][0-9]{2,8}[a-z]?$")) {
                 formula->version = strdup(&splitedStr[1]);
+
+                if (formula->version == NULL) {
+                    return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+                } else {
+                    return UPPM_OK;
+                }
+
                 break;
             }
 
@@ -487,11 +516,11 @@ clean:
 
     if (resultCode == UPPM_OK) {
         resultCode = uppm_formula_check(formula, formulaFilePath);
+    }
 
-        if (resultCode == UPPM_OK) {
-            (*out) = formula;
-            return UPPM_OK;
-        }
+    if (resultCode == UPPM_OK) {
+        (*out) = formula;
+        return UPPM_OK;
     }
 
     if (formula == NULL) {

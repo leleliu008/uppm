@@ -37,8 +37,8 @@ int uppm_info_all_available_packages(const char * key) {
         dir = opendir(formulaDir);
 
         if (dir == NULL) {
-            uppm_formula_repo_list_free(formulaRepoList);
             perror(formulaDir);
+            uppm_formula_repo_list_free(formulaRepoList);
             return UPPM_ERROR;
         }
 

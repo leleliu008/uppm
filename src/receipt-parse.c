@@ -455,14 +455,13 @@ clean:
 
     if (resultCode == UPPM_OK) {
         resultCode = uppm_receipt_check(receipt, receiptFilePath);
-
-        if (resultCode == UPPM_OK) {
-            (*out) = receipt;
-            return UPPM_OK;
-        }
     }
 
-    uppm_receipt_free(receipt);
-
-    return resultCode;
+    if (resultCode == UPPM_OK) {
+        (*out) = receipt;
+        return UPPM_OK;
+    } else {
+        uppm_receipt_free(receipt);
+        return resultCode;
+    }
 }

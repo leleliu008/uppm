@@ -1,7 +1,8 @@
 #include <regex.h>
 #include "regex/regex.h"
-#include "util.h"
 #include "find-executables.h"
+#include "util.h"
+#include "../uppm.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,15 +26,15 @@
 
 int get_file_extension_from_url(char * buf, size_t bufSize, const char * url) {
     if (url == NULL) {
-        return -1;
+        return UPPM_ARG_IS_NULL;
     }
 
     if (buf == NULL) {
-        return -2;
+        return UPPM_ARG_IS_NULL;
     }
 
     if (bufSize == 0) {
-        return -3;
+        return UPPM_ARG_IS_INVALID;
     }
 
     size_t urlLength = 0;
@@ -52,13 +53,13 @@ int get_file_extension_from_url(char * buf, size_t bufSize, const char * url) {
     //printf("url=%s\nurlLength=%lu\n", url, urlLength);
 
     if (urlLength < 3) {
-        return -4;
+        return UPPM_ARG_IS_INVALID;
     }
 
     size_t lastIndex = urlLength - 1;
 
     if (url[lastIndex] == '.') {
-        return -5;
+        return UPPM_ARG_IS_INVALID;
     }
 
     size_t i = lastIndex;
@@ -76,21 +77,21 @@ int get_file_extension_from_url(char * buf, size_t bufSize, const char * url) {
                     if (urlLength > 7) {
                         if (strncmp(&url[i - 4], ".tar", 4) == 0) {
                             strncpy(buf, ".tgz", bufSize > 4 ? 4 : bufSize);
-                            return 0;
+                            return UPPM_OK;
                         }
                     }
                 } else if (strcmp(p, ".xz") == 0) {
                     if (urlLength > 7) {
                         if (strncmp(&url[i - 4], ".tar", 4) == 0) {
                             strncpy(buf, ".txz", bufSize > 4 ? 4 : bufSize);
-                            return 0;
+                            return UPPM_OK;
                         }
                     }
                 } else if (strcmp(p, ".lz") == 0) {
                     if (urlLength > 7) {
                         if (strncmp(&url[i - 4], ".tar", 4) == 0) {
                             strncpy(buf, ".tlz", bufSize > 4 ? 4 : bufSize);
-                            return 0;
+                            return UPPM_OK;
                         }
                     }
                 }
@@ -99,7 +100,7 @@ int get_file_extension_from_url(char * buf, size_t bufSize, const char * url) {
                     if (urlLength > 8) {
                         if (strncmp(&url[i - 4], ".tar", 4) == 0) {
                             strncpy(buf, ".tbz2", bufSize > 5 ? 5 : bufSize);
-                            return 0;
+                            return UPPM_OK;
                         }
                     }
                 }
@@ -107,7 +108,7 @@ int get_file_extension_from_url(char * buf, size_t bufSize, const char * url) {
 
             size_t n = urlLength - i;
             strncpy(buf, p, bufSize > n ? n : bufSize);
-            return 0;
+            return UPPM_OK;
         }
 
         if (i == 0) {
@@ -115,7 +116,7 @@ int get_file_extension_from_url(char * buf, size_t bufSize, const char * url) {
         }
     }
 
-    return -6;
+    return UPPM_ARG_IS_INVALID;
 }
 
 int get_current_executable_realpath(char * * out) {
@@ -130,50 +131,51 @@ int get_current_executable_realpath(char * * out) {
 
     if (realpath(path, buf) == NULL) {
         (*out) = NULL;
-        return -1;
+        return UPPM_ERROR;
     }
 
     (*out) = strdup(buf);
-    return 0;
+
+    return (*out) == NULL ? -1 : 0;
 #elif defined (__FreeBSD__)
     const int mib[] = { CTL_KERN, KERN_PROC, KERN_PROC_PATHNAME, -1 };
 
     size_t bufLength = 0;
 
     if (sysctl(mib, 4, NULL, &bufLength, NULL, 0) < 0) {
-        return -1;
+        return UPPM_ERROR;
     }
 
     char * buf = (char*)calloc(bufLength + 1, sizeof(char));
 
     if (buf == NULL) {
-        return -2
+        return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
     }
 
     if (sysctl(mib, 4, buf, &bufLength, NULL, 0) < 0) {
-        return -3;
+        return UPPM_ERROR;
     }
 
     (*out) = buf;
-    return 0;
+    return UPPM_OK;
 #elif defined (__OpenBSD__)
     const int mib[4] = { CTL_KERN, KERN_PROC_ARGS, getpid(), KERN_PROC_ARGV };
     size_t size;
 
     if (sysctl(mib, 4, NULL, &size, NULL, 0) != 0) {
-        return -1;
+        return UPPM_ERROR;
     }
 
     char** argv = (char**)malloc(size);
 
     if (argv == NULL) {
-        return -2;
+        return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
     }
 
     memset(argv, 0, size);
 
     if (sysctl(mib, 4, argv, &size, NULL, 0) != 0) {
-        return -3;
+        return UPPM_ERROR;
     }
 
     bool isPath = false;
@@ -199,18 +201,19 @@ int get_current_executable_realpath(char * * out) {
 
     if (isPath) {
         (*out) = realpath(argv[0], NULL);
-        return 0;
+        return (*out) == NULL ? UPPM_ERROR : UPPM_OK;
     } else {
         char * PATH = getenv("PATH");
 
         if ((PATH == NULL) || (strcmp(PATH, "") == 0)) {
-            return -4;
+            return UPPM_ENV_PATH_NOT_SET;
         }
 
-        size_t PATH2Length = strlen(PATH) + 1;
+        size_t PATHLength = strlen(PATH);
+        size_t PATH2Length = PATHLength + 1;
         char   PATH2[PATH2Length];
         memset(PATH2, 0, PATH2Length);
-        strcpy(PATH2, PATH);
+        strncpy(PATH2, PATH, PATHLength);
 
         size_t commandNameLength = strlen(argv[0]);
 
@@ -227,14 +230,14 @@ int get_current_executable_realpath(char * * out) {
 
                 if (access(fullPath, X_OK) == 0) {
                     (*out) = strdup(fullPath);
-                    return 0;
+                    return (*out) == NULL ? UPPM_ERROR_MEMORY_ALLOCATION_FAILURE : UPPM_OK;
                 }
             }
 
             PATHItem = strtok(NULL, ":");
         }
 
-        return -5;
+        return UPPM_ERROR;
     }
 #else
     char buf[PATH_MAX + 1] = {0};
@@ -243,10 +246,10 @@ int get_current_executable_realpath(char * * out) {
 
     if (ret == -1) {
         perror("/proc/self/exe");
-        return -1;
+        return UPPM_ERROR;
     }
 
     (*out) = strdup(buf);
-    return 0;
+    return (*out) == NULL ? UPPM_ERROR_MEMORY_ALLOCATION_FAILURE : UPPM_OK;
 #endif
 }

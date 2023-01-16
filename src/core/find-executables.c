@@ -20,10 +20,11 @@ int find_executables(ExecuablePathList ** out, const char * commandName, bool fi
         return FIND_EXECUTABLES_ENV_PATH_NO_VALUE;
     }
 
-    size_t PATH2Length = strlen(PATH) + 1;
+    size_t PATHLength = strlen(PATH);
+    size_t PATH2Length = PATHLength + 1;
     char   PATH2[PATH2Length];
     memset(PATH2, 0, PATH2Length);
-    strcpy(PATH2, PATH);
+    strncpy(PATH2, PATH, PATHLength);
 
     size_t commandNameLength = strlen(commandName);
 

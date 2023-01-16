@@ -6,7 +6,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 
-#include "core/url-transform.h"
+#include "uppm.h"
 
 typedef struct {
     git_indexer_progress indexerProgress;
@@ -130,30 +130,24 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
     }
 
     if ((remoteUrl == NULL) || (strcmp(remoteUrl, "") == 0)) {
-        return GIT_ERROR;
+        return UPPM_ERROR;
     }
 
     char * transformedUrl = NULL;
 
-    switch (url_transform(remoteUrl, &transformedUrl)) {
-        case URL_TRANSFORM_OK:
-            break;
-        case URL_TRANSFORM_ERROR:
-            return URL_TRANSFORM_ERROR;
-        case URL_TRANSFORM_ENV_IS_NOT_SET:
-            transformedUrl = strdup(remoteUrl);
-            break;
-        case URL_TRANSFORM_ENV_VALUE_IS_EMPTY:
-            return URL_TRANSFORM_ENV_VALUE_IS_EMPTY;
-        case URL_TRANSFORM_ENV_VALUE_PATH_NOT_EXIST:
-            return URL_TRANSFORM_ENV_VALUE_PATH_NOT_EXIST;
-        case URL_TRANSFORM_RUN_EMPTY_RESULT:
-            return URL_TRANSFORM_RUN_EMPTY_RESULT;
-        case URL_TRANSFORM_ALLOCATE_MEMORY_FAILED:
-            return URL_TRANSFORM_ALLOCATE_MEMORY_FAILED;
-    }
+    int resultCode = uppm_url_transform(remoteUrl, &transformedUrl, true);
 
-    int resultCode = GIT_OK;
+    if (resultCode == UPPM_OK) {
+        ;
+    } else if (resultCode == UPPM_URL_TRANSFORM_ENV_IS_NOT_SET) {
+        transformedUrl = strdup(remoteUrl);
+
+        if (transformedUrl == NULL) {
+            return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+        }
+    } else {
+        return resultCode;
+    }
 
     bool needInitGitRepo = false;
 
@@ -166,7 +160,7 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
             resultCode = check_if_is_a_empty_dir(repositoryDIR, &isAEmptyDir);
 
             if (resultCode != 0) {
-                return GIT_ERROR;
+                return UPPM_ERROR;
             }
 
             if (isAEmptyDir) {
@@ -176,11 +170,11 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
             }
         } else {
             fprintf(stderr, "%s exist and it is not a git repository.", repositoryDIR);
-            return GIT_ERROR;
+            return UPPM_ERROR;
         }
     } else {
         fprintf(stderr, "%s dir is not exist.", repositoryDIR);
-        return GIT_ERROR;
+        return UPPM_ERROR;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////

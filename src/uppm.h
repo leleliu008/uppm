@@ -42,6 +42,18 @@
 #define UPPM_FORMULA_REPO_CONFIG_SYNTAX_ERROR     60
 #define UPPM_FORMULA_REPO_CONFIG_SCHEME_ERROR     61
 
+
+#define UPPM_URL_TRANSFORM_RUN_EMPTY_RESULT         102
+#define UPPM_URL_TRANSFORM_ENV_IS_NOT_SET           103
+#define UPPM_URL_TRANSFORM_ENV_VALUE_IS_EMPTY       104
+#define UPPM_URL_TRANSFORM_ENV_VALUE_PATH_NOT_EXIST 105
+
+#define UPPM_CHECK_IF_MEMORY_ALLOCATION_FAILURE(ptr) if ((ptr) == NULL) { return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE; }
+
+
+int uppm_url_transform(const char * inUrl, char * * outUrlPointer, bool verbose);
+
+
 void uppm_show_error_message(int errorCode, const char * str);
 
 typedef struct {

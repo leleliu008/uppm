@@ -44,10 +44,21 @@ int uppm_formula_repo_update(UPPMFormulaRepo * formulaRepo) {
         pinnedValueLength = 2;
     }
 
-    size_t  strLength = strlen(formulaRepo->url) + strlen(formulaRepo->branch) + strlen(formulaRepo->timestamp_added) + strlen(ts) + pinnedValueLength + 68;
+    const char * enabledValue;
+    size_t       enabledValueLength;
+
+    if (formulaRepo->enabled) {
+        enabledValue = "yes";
+        enabledValueLength = 3;
+    } else {
+        enabledValue = "no";
+        enabledValueLength = 2;
+    }
+
+    size_t  strLength = strlen(formulaRepo->url) + strlen(formulaRepo->branch) + strlen(formulaRepo->timestamp_added) + strlen(ts) + pinnedValueLength + enabledValueLength + 78;
     char    str[strLength];
     memset (str, 0, strLength);
-    snprintf(str, strLength, "url: %s\nbranch: %s\npinned: %s\ntimestamp-added: %s\ntimestamp-last-updated: %s\n", formulaRepo->url, formulaRepo->branch, pinnedValue, formulaRepo->timestamp_added, ts);
+    snprintf(str, strLength, "url: %s\nbranch: %s\npinned: %s\nenabled: %s\ntimestamp-added: %s\ntimestamp-last-updated: %s\n", formulaRepo->url, formulaRepo->branch, pinnedValue, enabledValue, formulaRepo->timestamp_added, ts);
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
