@@ -1,18 +1,7 @@
 # uppm [Work In Progress]
 Universal Prebuild Package Manager for Unix-like systems.
 
-## Install uppm via [HomeBrew](https://brew.sh/)
-```bash
-brew tap leleliu008/fpliu
-brew install uppm
-```
-
-## Install uppm via [ppkg](https://github.com/leleliu008/ppkg)
-```bash
-ppkg install uppm
-```
-
-## Build from source
+## dependences
 |dependency|required?|purpose|
 |----|---------|-------|
 |[cmake](https://cmake.org/)|required |for generating `build.ninja`|
@@ -29,7 +18,15 @@ ppkg install uppm
 |[pcre2](https://www.pcre.org/)||for Regular Expressions support. only required on OpenBSD.|
 
 
-**[vcpkg](https://github.com/microsoft/vcpkg)**
+## build and install uppm via [ppkg](https://github.com/leleliu008/ppkg)
+```bash
+ppkg install uppm
+```
+
+## build and install uppm using [vcpkg](https://github.com/microsoft/vcpkg)
+
+**Note:** This is the recommended way to build and install uppm.
+
 ```bash
 # install g++ curl zip unzip tar git
 
@@ -47,6 +44,8 @@ cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_TOOLC
 cmake --build   build.d
 cmake --install build.d
 ```
+
+## build and install uppm using your system's default package manager
 
 **[Ubuntu](https://ubuntu.com/)**
 
@@ -387,7 +386,7 @@ all relevant dirs and files are located in `~/.uppm` directory.
         uppm cleanup
         
 
-## influential environment variables
+## environment variables
 
 *   **HOME**
 
