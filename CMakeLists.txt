@@ -150,7 +150,7 @@ target_link_libraries(uppm ZLIB::ZLIB)
 find_library(LIBM m)
 
 if (LIBM)
-    target_link_libraries(uppm LIBM)
+    target_link_libraries(uppm "${LIBM}")
 endif()
 
 if (CMAKE_SYSTEM_NAME STREQUAL OpenBSD)
