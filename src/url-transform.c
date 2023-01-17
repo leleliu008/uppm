@@ -10,11 +10,11 @@ int uppm_url_transform(const char * url, char ** out, bool verbose) {
     char * urlTransformCommandPath = getenv("UPPM_URL_TRANSFORM");
 
     if (urlTransformCommandPath == NULL) {
-        return UPPM_URL_TRANSFORM_ENV_IS_NOT_SET;
+        return UPPM_ERROR_URL_TRANSFORM_ENV_NOT_SET;
     }
 
     if (strcmp(urlTransformCommandPath, "") == 0) {
-        return UPPM_URL_TRANSFORM_ENV_VALUE_IS_EMPTY;
+        return UPPM_ERROR_URL_TRANSFORM_ENV_VALUE_IS_EMPTY;
     }
 
     struct stat st;
@@ -22,7 +22,7 @@ int uppm_url_transform(const char * url, char ** out, bool verbose) {
     if ((stat(urlTransformCommandPath, &st) == 0) && (S_ISREG(st.st_mode) || S_ISLNK(st.st_mode))) {
         ;
     } else {
-        return UPPM_URL_TRANSFORM_ENV_VALUE_PATH_NOT_EXIST;
+        return UPPM_ERROR_URL_TRANSFORM_ENV_POINT_TO_PATH_NOT_EXIST;
     }
 
     size_t urlLength = strlen(url);
@@ -63,7 +63,7 @@ int uppm_url_transform(const char * url, char ** out, bool verbose) {
             if (ptr == NULL) {
                 free(result);
                 pclose(file);
-                return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+                return UPPM_ERROR_MEMORY_ALLOCATE;
             }
 
             memset(&ptr[size], 0, 256);
@@ -78,7 +78,7 @@ int uppm_url_transform(const char * url, char ** out, bool verbose) {
     pclose(file);
 
     if (result == NULL) {
-        return UPPM_URL_TRANSFORM_RUN_EMPTY_RESULT;
+        return UPPM_ERROR_URL_TRANSFORM_RUN_NO_RESULT;
     } else {
         if (verbose) {
             fprintf(stderr, "\nyou have set UPPM_URL_TRANSFORM=%s\n", urlTransformCommandPath);

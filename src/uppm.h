@@ -9,49 +9,50 @@
 #define UPPM_PACKAGE_NAME_PATTERN "^[A-Za-z0-9+-._]{1,50}$"
 
 
-#define UPPM_OK               0
-#define UPPM_ERROR            1
+#define UPPM_OK                     0
+#define UPPM_ERROR                  1
 
-#define UPPM_ERROR_MEMORY_ALLOCATION_FAILURE  2
+#define UPPM_ERROR_ARG_IS_NULL      2
+#define UPPM_ERROR_ARG_IS_EMPTY     3
+#define UPPM_ERROR_ARG_IS_INVALID   4
+#define UPPM_ERROR_ARG_IS_UNKNOWN   5
 
-#define UPPM_ARG_IS_NULL      10
-#define UPPM_ARG_IS_EMPTY     11
-#define UPPM_ARG_IS_INVALID   12
-#define UPPM_ARG_IS_UNKNOWN   13
+#define UPPM_ERROR_MEMORY_ALLOCATE  6
 
-#define UPPM_ENV_HOME_NOT_SET 5
-#define UPPM_ENV_PATH_NOT_SET 6
+#define UPPM_ERROR_SHA256_MISMATCH  7
 
-#define UPPM_NETWORK_ERROR    7
+#define UPPM_ERROR_ENV_HOME_NOT_SET 8
+#define UPPM_ERROR_ENV_PATH_NOT_SET 9
 
-#define UPPM_SHA256_MISMATCH  8
+#define UPPM_ERROR_PACKAGE_NOT_AVAILABLE 25
+#define UPPM_ERROR_PACKAGE_NOT_INSTALLED 26
+#define UPPM_ERROR_PACKAGE_NOT_OUTDATED  27
+#define UPPM_ERROR_PACKAGE_BROKEN        28
 
-#define UPPM_PACKAGE_IS_BROKEN        24
-#define UPPM_PACKAGE_IS_NOT_AVAILABLE 25
-#define UPPM_PACKAGE_IS_NOT_INSTALLED 26
-#define UPPM_PACKAGE_IS_NOT_OUTDATED  27
+#define UPPM_ERROR_FORMULA_REPO_CONFIG_SYNTAX 30
+#define UPPM_ERROR_FORMULA_REPO_CONFIG_SCHEME 31
 
-#define UPPM_FORMULA_REPO_NOT_EXIST   30
+#define UPPM_ERROR_FORMULA_SYNTAX     40
+#define UPPM_ERROR_FORMULA_SCHEME     41
 
-#define UPPM_FORMULA_SYNTAX_ERROR     40
-#define UPPM_FORMULA_SCHEME_ERROR     41
+#define UPPM_ERROR_RECEIPT_SYNTAX     45
+#define UPPM_ERROR_RECEIPT_SCHEME     46
 
-#define UPPM_RECEIPT_SYNTAX_ERROR     50
-#define UPPM_RECEIPT_SCHEME_ERROR     51
+#define UPPM_ERROR_URL_TRANSFORM_RUN_NO_RESULT         50
+#define UPPM_ERROR_URL_TRANSFORM_ENV_NOT_SET           51
+#define UPPM_ERROR_URL_TRANSFORM_ENV_VALUE_IS_EMPTY    52
+#define UPPM_ERROR_URL_TRANSFORM_ENV_POINT_TO_PATH_NOT_EXIST 53
 
-#define UPPM_FORMULA_REPO_CONFIG_SYNTAX_ERROR     60
-#define UPPM_FORMULA_REPO_CONFIG_SCHEME_ERROR     61
+// libgit's error [-35, -1]
+#define UPPM_ERROR_LIBGIT2_BASE    70
 
+// libarchive's error [-30, 1]
+#define UPPM_ERROR_ARCHIVE_BASE    110
 
-#define UPPM_URL_TRANSFORM_RUN_EMPTY_RESULT         102
-#define UPPM_URL_TRANSFORM_ENV_IS_NOT_SET           103
-#define UPPM_URL_TRANSFORM_ENV_VALUE_IS_EMPTY       104
-#define UPPM_URL_TRANSFORM_ENV_VALUE_PATH_NOT_EXIST 105
+// libcurl's error [1, 99]
+#define UPPM_ERROR_NETWORK_BASE    150
 
-#define UPPM_CHECK_IF_MEMORY_ALLOCATION_FAILURE(ptr) if ((ptr) == NULL) { return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE; }
-
-
-int uppm_url_transform(const char * inUrl, char * * outUrlPointer, bool verbose);
+#define UPPM_CHECK_IF_MEMORY_ALLOCATION_FAILURE(ptr) if ((ptr) == NULL) { return UPPM_ERROR_MEMORY_ALLOCATE; }
 
 
 void uppm_show_error_message(int errorCode, const char * str);
@@ -182,5 +183,7 @@ int uppm_list_the_installed_packages();
 int uppm_list_the_outdated__packages();
 
 int uppm_fetch_via_git(const char * gitRepositoryDirPath, const char * remoteUrl, const char * refspec, const char * checkoutToBranchName);
+
+int uppm_url_transform(const char * inUrl, char * * outUrlPointer, bool verbose);
 
 #endif

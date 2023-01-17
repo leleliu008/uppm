@@ -8,11 +8,11 @@
 
 static int record_installed_files_r(const char * dirPath, size_t offset, FILE * installedManifestFile) {
     if (dirPath == NULL) {
-        return UPPM_ARG_IS_NULL;
+        return UPPM_ERROR_ARG_IS_NULL;
     }
 
     if (strcmp(dirPath, "") == 0) {
-        return UPPM_ARG_IS_EMPTY;
+        return UPPM_ERROR_ARG_IS_EMPTY;
     }
 
     DIR           * dir;

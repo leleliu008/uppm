@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+
 #include "core/find-executables.h"
 
 static void show_help(const char * programName) {
@@ -24,23 +25,25 @@ int main2(int argc, char* argv[]) {
         }
     }
 
-    ExecuablePathList * pathList = NULL;
+    char ** pathList = NULL;
+    size_t  pathListSize;
 
-    int resultCode = find_executables(&pathList, argv[1], findAll);
+    int resultCode = find_executables_in_PATH(&pathList, &pathListSize, argv[1], findAll);
 
     if (resultCode == 0) {
-        for (size_t i = 0; i < pathList->size; i++) {
-            printf("%s\n", pathList->paths[i]);
+        if (pathListSize == 0) {
+            return 1;
+        } else {
+            for (size_t i = 0; i < pathListSize; i++) {
+                printf("%s\n", pathList[i]);
 
-            free(pathList->paths[i]);
-            pathList->paths[i] = NULL;
+                free(pathList[i]);
+                pathList[i] = NULL;
+            }
+
+            free(pathList);
+            pathList = NULL;
         }
-
-        free(pathList->paths);
-        pathList->paths = NULL;
-
-        free(pathList);
-        pathList = NULL;
     }
 
     return resultCode;

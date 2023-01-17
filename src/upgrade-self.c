@@ -14,13 +14,13 @@ int uppm_upgrade_self(bool verbose) {
     char * userHomeDir = getenv("HOME");
 
     if (userHomeDir == NULL) {
-        return UPPM_ENV_HOME_NOT_SET;
+        return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
     size_t userHomeDirLength = strlen(userHomeDir);
 
     if (userHomeDirLength == 0) {
-        return UPPM_ENV_HOME_NOT_SET;
+        return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
     ////////////////////////////////////////////////////////////////
@@ -72,8 +72,10 @@ int uppm_upgrade_self(bool verbose) {
     memset (githubApiResultJsonFilePath, 0, githubApiResultJsonFilePathLength);
     snprintf(githubApiResultJsonFilePath, githubApiResultJsonFilePathLength, "%s/latest.json", uppmTmpDir);
 
-    if (http_fetch_to_file(githubApiUrl, githubApiResultJsonFilePath, verbose, verbose) != 0) {
-        return UPPM_NETWORK_ERROR;
+    int resultCode = http_fetch_to_file(githubApiUrl, githubApiResultJsonFilePath, verbose, verbose);
+
+    if (resultCode != UPPM_OK) {
+        return resultCode;
     }
 
     FILE * file = fopen(githubApiResultJsonFilePath, "r");
@@ -152,8 +154,10 @@ int uppm_upgrade_self(bool verbose) {
     memset (tarballFilePath, 0, tarballFilePathLength);
     snprintf(tarballFilePath, tarballFilePathLength, "%s/%s", uppmTmpDir, tarballFileName);
 
-    if (http_fetch_to_file(tarballUrl, tarballFilePath, verbose, verbose) != 0) {
-        return UPPM_NETWORK_ERROR;
+    resultCode = http_fetch_to_file(tarballUrl, tarballFilePath, verbose, verbose);
+
+    if ( resultCode != UPPM_OK) {
+        return resultCode;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -163,7 +167,7 @@ int uppm_upgrade_self(bool verbose) {
     memset (tarballExtractDir, 0, tarballExtractDirLength);
     snprintf(tarballExtractDir, tarballExtractDirLength, "%s.d", tarballFilePath);
 
-    int resultCode = untar_extract(tarballExtractDir, tarballFilePath, 0, verbose, 1);
+    resultCode = untar_extract(tarballExtractDir, tarballFilePath, 0, verbose, 1);
 
     if (resultCode != 0) {
         return resultCode;

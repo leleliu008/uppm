@@ -145,7 +145,7 @@ static int uppm_formula_repo_set_value(UPPMFormulaRepoKeyCode keyCode, char * va
 
             formulaRepo->url = strdup(value);
 
-            return formulaRepo->url == NULL ? UPPM_ERROR_MEMORY_ALLOCATION_FAILURE : UPPM_OK;
+            return formulaRepo->url == NULL ? UPPM_ERROR_MEMORY_ALLOCATE : UPPM_OK;
         case UPPMFormulaRepoKeyCode_branch:
             if (formulaRepo->branch != NULL) {
                 free(formulaRepo->branch);
@@ -153,7 +153,7 @@ static int uppm_formula_repo_set_value(UPPMFormulaRepoKeyCode keyCode, char * va
 
             formulaRepo->branch = strdup(value);
 
-            return formulaRepo->branch == NULL ? UPPM_ERROR_MEMORY_ALLOCATION_FAILURE : UPPM_OK;
+            return formulaRepo->branch == NULL ? UPPM_ERROR_MEMORY_ALLOCATE : UPPM_OK;
         case UPPMFormulaRepoKeyCode_timestamp_added:
             if (formulaRepo->timestamp_added != NULL) {
                 free(formulaRepo->timestamp_added);
@@ -161,12 +161,12 @@ static int uppm_formula_repo_set_value(UPPMFormulaRepoKeyCode keyCode, char * va
 
             formulaRepo->timestamp_added = strdup(value);
 
-            return formulaRepo->timestamp_added == NULL ? UPPM_ERROR_MEMORY_ALLOCATION_FAILURE : UPPM_OK;
+            return formulaRepo->timestamp_added == NULL ? UPPM_ERROR_MEMORY_ALLOCATE : UPPM_OK;
         case UPPMFormulaRepoKeyCode_timestamp_last_updated:
             free(formulaRepo->timestamp_last_updated);
             formulaRepo->timestamp_last_updated = strdup(value);
 
-            return formulaRepo->timestamp_last_updated == NULL ? UPPM_ERROR_MEMORY_ALLOCATION_FAILURE : UPPM_OK;
+            return formulaRepo->timestamp_last_updated == NULL ? UPPM_ERROR_MEMORY_ALLOCATE : UPPM_OK;
         case UPPMFormulaRepoKeyCode_pinned:
             if (strcmp(value, "yes") == 0) {
                 formulaRepo->pinned = true;
@@ -186,19 +186,19 @@ static int uppm_formula_repo_set_value(UPPMFormulaRepoKeyCode keyCode, char * va
 static int uppm_formula_repo_check(UPPMFormulaRepo * formulaRepo, const char * formulaRepoConfigFilePath) {
     if (formulaRepo->url == NULL) {
         fprintf(stderr, "scheme error in formula repo config file: %s : summary mapping not found.\n", formulaRepoConfigFilePath);
-        return UPPM_FORMULA_REPO_CONFIG_SCHEME_ERROR;
+        return UPPM_ERROR_FORMULA_REPO_CONFIG_SCHEME;
     }
 
     if (formulaRepo->branch == NULL) {
         fprintf(stderr, "scheme error in formula repo config file: %s : summary mapping not found.\n", formulaRepoConfigFilePath);
-        return UPPM_FORMULA_REPO_CONFIG_SCHEME_ERROR;
+        return UPPM_ERROR_FORMULA_REPO_CONFIG_SCHEME;
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     if (formulaRepo->timestamp_added == NULL) {
         fprintf(stderr, "scheme error in formula repo config file: %s : timestamp-added mapping not found.\n", formulaRepoConfigFilePath);
-        return UPPM_FORMULA_REPO_CONFIG_SCHEME_ERROR;
+        return UPPM_ERROR_FORMULA_REPO_CONFIG_SCHEME;
     }
 
     size_t i = 0;
@@ -213,13 +213,13 @@ static int uppm_formula_repo_check(UPPMFormulaRepo * formulaRepo, const char * f
 
         if ((c < '0') || (c > '9')) {
             fprintf(stderr, "scheme error in formula repo config file: %s : timestamp-added mapping's value should only contains non-numeric characters.\n", formulaRepoConfigFilePath);
-            return UPPM_FORMULA_REPO_CONFIG_SCHEME_ERROR;
+            return UPPM_ERROR_FORMULA_REPO_CONFIG_SCHEME;
         }
     }
 
     if (i != 10) {
         fprintf(stderr, "scheme error in formula repo config file: %s : timestamp-added mapping's value's length must be 10.\n", formulaRepoConfigFilePath);
-        return UPPM_FORMULA_REPO_CONFIG_SCHEME_ERROR;
+        return UPPM_ERROR_FORMULA_REPO_CONFIG_SCHEME;
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -236,13 +236,13 @@ static int uppm_formula_repo_check(UPPMFormulaRepo * formulaRepo, const char * f
 
             if ((c < '0') || (c > '9')) {
                 fprintf(stderr, "scheme error in formula repo config file: %s : timestamp-last-updated mapping's value should only contains non-numeric characters.\n", formulaRepoConfigFilePath);
-                return UPPM_FORMULA_REPO_CONFIG_SCHEME_ERROR;
+                return UPPM_ERROR_FORMULA_REPO_CONFIG_SCHEME;
             }
         }
 
         if (i != 10) {
             fprintf(stderr, "scheme error in formula repo config file: %s : timestamp-last-updated mapping's value's length must be 10.\n", formulaRepoConfigFilePath);
-            return UPPM_FORMULA_REPO_CONFIG_SCHEME_ERROR;
+            return UPPM_ERROR_FORMULA_REPO_CONFIG_SCHEME;
         }
     }
 
@@ -280,7 +280,7 @@ int uppm_formula_repo_parse(const char * formulaRepoConfigFilePath, UPPMFormulaR
         // https://libyaml.docsforge.com/master/api/yaml_parser_scan/
         if (yaml_parser_scan(&parser, &token) == 0) {
             fprintf(stderr, "syntax error in formula repo config file: %s\n", formulaRepoConfigFilePath);
-            resultCode = UPPM_FORMULA_REPO_CONFIG_SYNTAX_ERROR;
+            resultCode = UPPM_ERROR_FORMULA_REPO_CONFIG_SYNTAX;
             goto clean;
         }
 
@@ -299,7 +299,7 @@ int uppm_formula_repo_parse(const char * formulaRepoConfigFilePath, UPPMFormulaR
                         formulaRepo = (UPPMFormulaRepo*)calloc(1, sizeof(UPPMFormulaRepo));
 
                         if (formulaRepo == NULL) {
-                            resultCode = UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+                            resultCode = UPPM_ERROR_MEMORY_ALLOCATE;
                             goto clean;
                         }
 

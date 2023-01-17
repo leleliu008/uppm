@@ -100,13 +100,13 @@ int uppm_env(bool verbose) {
     char * userHomeDir = getenv("HOME");
 
     if (userHomeDir == NULL) {
-        return UPPM_ENV_HOME_NOT_SET;
+        return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
     size_t  userHomeDirLength = strlen(userHomeDir);
 
     if (userHomeDirLength == 0) {
-        return UPPM_ENV_HOME_NOT_SET;
+        return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
     size_t  uppmHomeDirLength = userHomeDirLength + 7;

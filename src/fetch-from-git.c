@@ -1,4 +1,5 @@
 #include <git2.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
@@ -100,7 +101,7 @@ int check_if_is_a_empty_dir(const char * dirpath, bool * value) {
 
     if (dir == NULL) {
         perror(dirpath);
-        return 1;
+        return UPPM_ERROR;
     }
 
     while ((dir_entry = readdir(dir))) {
@@ -111,12 +112,12 @@ int check_if_is_a_empty_dir(const char * dirpath, bool * value) {
 
         (*value) = false;
         closedir(dir);
-        return 0;
+        return UPPM_OK;
     }
 
     (*value) = true;
     closedir(dir);
-    return 0;
+    return UPPM_OK;
 }
 
 // implement following steps:
@@ -130,7 +131,7 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
     }
 
     if ((remoteUrl == NULL) || (strcmp(remoteUrl, "") == 0)) {
-        return UPPM_ERROR;
+        return UPPM_ERROR_ARG_IS_NULL;
     }
 
     char * transformedUrl = NULL;
@@ -139,11 +140,11 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
 
     if (resultCode == UPPM_OK) {
         ;
-    } else if (resultCode == UPPM_URL_TRANSFORM_ENV_IS_NOT_SET) {
+    } else if (resultCode == UPPM_ERROR_URL_TRANSFORM_ENV_NOT_SET) {
         transformedUrl = strdup(remoteUrl);
 
         if (transformedUrl == NULL) {
-            return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+            return UPPM_ERROR_MEMORY_ALLOCATE;
         }
     } else {
         return resultCode;
@@ -159,7 +160,7 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
 
             resultCode = check_if_is_a_empty_dir(repositoryDIR, &isAEmptyDir);
 
-            if (resultCode != 0) {
+            if (resultCode != UPPM_OK) {
                 return UPPM_ERROR;
             }
 
@@ -195,7 +196,7 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
             const git_error * gitError = git_error_last();
             fprintf(stderr, "%s\n", gitError->message);
             git_libgit2_shutdown();
-            return resultCode;
+            return abs(resultCode) + UPPM_ERROR_LIBGIT2_BASE;
         }
 
         refspecSrc = git_refspec_src(gitRefSpec);
@@ -235,7 +236,7 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
             git_repository_state_cleanup(gitRepo);
             git_repository_free(gitRepo);
             git_libgit2_shutdown();
-            return resultCode;
+            return abs(resultCode) + UPPM_ERROR_LIBGIT2_BASE;
         }
 
         //https://libgit2.org/libgit2/#HEAD/group/remote/git_remote_create
@@ -247,7 +248,7 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
             git_repository_state_cleanup(gitRepo);
             git_repository_free(gitRepo);
             git_libgit2_shutdown();
-            return resultCode;
+            return abs(resultCode) + UPPM_ERROR_LIBGIT2_BASE;
         }
     } else {
         resultCode = git_repository_open_ext(&gitRepo, repositoryDIR, GIT_REPOSITORY_OPEN_NO_SEARCH, NULL);
@@ -258,7 +259,7 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
             git_repository_state_cleanup(gitRepo);
             git_repository_free(gitRepo);
             git_libgit2_shutdown();
-            return resultCode;
+            return abs(resultCode) + UPPM_ERROR_LIBGIT2_BASE;
         }
 
         // https://libgit2.org/libgit2/#HEAD/group/remote/git_remote_lookup
@@ -277,7 +278,7 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
             git_repository_state_cleanup(gitRepo);
             git_repository_free(gitRepo);
             git_libgit2_shutdown();
-            return resultCode;
+            return abs(resultCode) + UPPM_ERROR_LIBGIT2_BASE;
         }
     }
 
@@ -455,5 +456,5 @@ clean:
 
     git_libgit2_shutdown();
 
-    return resultCode;
+    return resultCode == GIT_OK ? UPPM_OK : abs(resultCode) + UPPM_ERROR_LIBGIT2_BASE;
 }

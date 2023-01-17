@@ -14,13 +14,13 @@ int uppm_formula_find(const char * packageName, char ** out) {
     char * userHomeDir = getenv("HOME");
 
     if (userHomeDir == NULL) {
-        return UPPM_ENV_HOME_NOT_SET;
+        return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
     size_t userHomeDirLength = strlen(userHomeDir);
 
     if (userHomeDirLength == 0) {
-        return UPPM_ENV_HOME_NOT_SET;
+        return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
     UPPMFormulaRepoList * formulaRepoList = NULL;
@@ -52,7 +52,7 @@ int uppm_formula_find(const char * packageName, char ** out) {
             (*out) = strdup(formulaFilePath);
 
             if (*out == NULL) {
-                return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+                return UPPM_ERROR_MEMORY_ALLOCATE;
             } else {
                 return UPPM_OK;
             }
@@ -60,5 +60,5 @@ int uppm_formula_find(const char * packageName, char ** out) {
     }
 
     uppm_formula_repo_list_free(formulaRepoList);
-    return UPPM_PACKAGE_IS_NOT_AVAILABLE;
+    return UPPM_ERROR_PACKAGE_NOT_AVAILABLE;
 }

@@ -8,11 +8,11 @@
 
 int uppm_search(const char * keyword) {
     if (keyword == NULL) {
-        return UPPM_ARG_IS_NULL;
+        return UPPM_ERROR_ARG_IS_NULL;
     }
 
     if (strcmp(keyword, "") == 0) {
-        return UPPM_ARG_IS_EMPTY;
+        return UPPM_ERROR_ARG_IS_EMPTY;
     }
 
     UPPMFormulaRepoList * formulaRepoList = NULL;

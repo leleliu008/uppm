@@ -75,13 +75,13 @@ int uppm_install(const char * packageName, bool verbose) {
     char * userHomeDir = getenv("HOME");
 
     if (userHomeDir == NULL) {
-        return UPPM_ENV_HOME_NOT_SET;
+        return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
     size_t userHomeDirLength = strlen(userHomeDir);
 
     if (userHomeDirLength == 0) {
-        return UPPM_ENV_HOME_NOT_SET;
+        return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
     struct stat st;
@@ -130,9 +130,11 @@ int uppm_install(const char * packageName, bool verbose) {
 
     char binFileNameExtension[21] = {0};
 
-    if (get_file_extension_from_url(binFileNameExtension, 20, formula->bin_url) < 0) {
+    resultCode = get_file_extension_from_url(binFileNameExtension, 20, formula->bin_url);
+
+    if (resultCode != UPPM_OK) {
         uppm_formula_free(formula);
-        return UPPM_ERROR;
+        return resultCode;
     }
 
     size_t  binFileNameLength = strlen(formula->bin_sha) + strlen(binFileNameExtension) + 1;
@@ -155,7 +157,7 @@ int uppm_install(const char * packageName, bool verbose) {
 
             if (resultCode != 0) {
                 uppm_formula_free(formula);
-                return UPPM_ERROR;
+                return resultCode;
             }
 
             if (strcmp(actualSHA256SUM, formula->bin_sha) == 0) {
@@ -165,9 +167,11 @@ int uppm_install(const char * packageName, bool verbose) {
     }
 
     if (needFetch) {
-        if (http_fetch_to_file(formula->bin_url, binFilePath, verbose, verbose) != 0) {
+        resultCode = http_fetch_to_file(formula->bin_url, binFilePath, verbose, verbose);
+
+        if (resultCode != UPPM_OK) {
             uppm_formula_free(formula);
-            return UPPM_NETWORK_ERROR;
+            return resultCode;
         }
 
         char actualSHA256SUM[65] = {0};
@@ -176,7 +180,7 @@ int uppm_install(const char * packageName, bool verbose) {
 
         if (resultCode != 0) {
             uppm_formula_free(formula);
-            return UPPM_ERROR;
+            return resultCode;
         }
 
         if (strcmp(actualSHA256SUM, formula->bin_sha) == 0) {
@@ -184,7 +188,7 @@ int uppm_install(const char * packageName, bool verbose) {
         } else {
             fprintf(stderr, "sha256sum mismatch.\n    expect : %s\n    actual : %s\n", formula->bin_sha, actualSHA256SUM);
             uppm_formula_free(formula);
-            return UPPM_SHA256_MISMATCH;
+            return UPPM_ERROR_SHA256_MISMATCH;
         }
     } else {
         fprintf(stderr, "%s already have been fetched.\n", binFilePath);

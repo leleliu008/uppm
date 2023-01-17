@@ -10,13 +10,13 @@ int uppm_integrate_zsh_completion(const char * outputDir, bool verbose) {
     char * userHomeDir = getenv("HOME");
 
     if (userHomeDir == NULL) {
-        return UPPM_ENV_HOME_NOT_SET;
+        return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
     size_t userHomeDirLength = strlen(userHomeDir);
 
     if (userHomeDirLength == 0) {
-        return UPPM_ENV_HOME_NOT_SET;
+        return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
     ////////////////////////////////////////////////////////////////
@@ -66,12 +66,7 @@ int uppm_integrate_zsh_completion(const char * outputDir, bool verbose) {
     memset (zshCompletionFilePath, 0, zshCompletionFilePathLength);
     snprintf(zshCompletionFilePath, zshCompletionFilePathLength, "%s/_uppm", zshCompletionDir);
 
-    if (http_fetch_to_file(url, zshCompletionFilePath, verbose, verbose) != 0) {
-        return UPPM_NETWORK_ERROR;
-    }
-
-    (void)outputDir;
-    return UPPM_OK;
+    return http_fetch_to_file(url, zshCompletionFilePath, verbose, verbose);
 }
 
 int uppm_integrate_bash_completion(const char * outputDir, bool verbose) {

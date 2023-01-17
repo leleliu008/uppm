@@ -15,13 +15,13 @@ int uppm_tree(const char * packageName, size_t argc, char* argv[]) {
     char * userHomeDir = getenv("HOME");
 
     if (userHomeDir == NULL) {
-        return UPPM_ENV_HOME_NOT_SET;
+        return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
     size_t userHomeDirLength = strlen(userHomeDir);
 
     if (userHomeDirLength == 0) {
-        return UPPM_ENV_HOME_NOT_SET;
+        return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
     size_t  packageInstalledDirLength = userHomeDirLength + strlen(packageName) + 20;
@@ -32,7 +32,7 @@ int uppm_tree(const char * packageName, size_t argc, char* argv[]) {
     struct stat st;
 
     if (stat(packageInstalledDir, &st) != 0) {
-        return UPPM_PACKAGE_IS_NOT_INSTALLED;
+        return UPPM_ERROR_PACKAGE_NOT_INSTALLED;
     }
 
     size_t  receiptFilePathLength = packageInstalledDirLength + 20;
@@ -41,12 +41,12 @@ int uppm_tree(const char * packageName, size_t argc, char* argv[]) {
     snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", packageInstalledDir);
 
     if (stat(receiptFilePath, &st) != 0 || (!S_ISREG(st.st_mode))) {
-        return UPPM_PACKAGE_IS_BROKEN;
+        return UPPM_ERROR_PACKAGE_BROKEN;
     }
 
     resultCode = uppm_check_if_the_given_package_is_installed("tree");
 
-    if (resultCode == UPPM_PACKAGE_IS_NOT_INSTALLED) {
+    if (resultCode == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
         resultCode = uppm_install("tree", false);
 
         if (resultCode != UPPM_OK) {

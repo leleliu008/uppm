@@ -5,9 +5,17 @@
 #include <dirent.h>
 #include <sys/stat.h>
 
+#include "../uppm.h"
+
 int rm_r(const char * dirPath, bool verbose) {
-    if ((dirPath == NULL) || (strcmp(dirPath, "") == 0)) {
-        return 1;
+    if (dirPath == NULL) {
+        return UPPM_ERROR_ARG_IS_NULL;
+    }
+
+    size_t dirPathLength = strlen(dirPath);
+
+    if (dirPathLength == 0) {
+        return UPPM_ERROR_ARG_IS_EMPTY;
     }
 
     DIR * dir;
@@ -17,7 +25,7 @@ int rm_r(const char * dirPath, bool verbose) {
 
     if (dir == NULL) {
         perror(dirPath);
-        return 2;
+        return UPPM_ERROR;
     }
 
     int r = 0;
@@ -27,7 +35,7 @@ int rm_r(const char * dirPath, bool verbose) {
             continue;
         }
 
-        size_t filePathLength = strlen(dirPath) + strlen(dir_entry->d_name) + 2;
+        size_t filePathLength = dirPathLength + strlen(dir_entry->d_name) + 2;
         char   filePath[filePathLength];
         memset(filePath, 0, filePathLength);
         snprintf(filePath, filePathLength, "%s/%s", dirPath, dir_entry->d_name);
@@ -73,5 +81,5 @@ int rm_r(const char * dirPath, bool verbose) {
         }
     }
 
-    return r;
+    return r == 0 ? UPPM_OK : UPPM_ERROR;
 }

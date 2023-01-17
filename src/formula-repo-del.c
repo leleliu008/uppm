@@ -8,13 +8,13 @@
 
 int uppm_formula_repo_del(const char * formulaRepoName) {
     if (formulaRepoName == NULL) {
-        return UPPM_ARG_IS_NULL;
+        return UPPM_ERROR_ARG_IS_NULL;
     }
 
     size_t formulaRepoNameLength = strlen(formulaRepoName);
 
     if (formulaRepoNameLength == 0) {
-        return UPPM_ARG_IS_EMPTY;
+        return UPPM_ERROR_ARG_IS_EMPTY;
     }
 
     if (strcmp(formulaRepoName, "offical-core") == 0) {
@@ -25,13 +25,13 @@ int uppm_formula_repo_del(const char * formulaRepoName) {
     char * userHomeDir = getenv("HOME");
 
     if (userHomeDir == NULL) {
-        return UPPM_ENV_HOME_NOT_SET;
+        return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
     size_t userHomeDirLength = strlen(userHomeDir);
 
     if (userHomeDirLength == 0) {
-        return UPPM_ENV_HOME_NOT_SET;
+        return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
     size_t  formulaRepoPathLength = userHomeDirLength + formulaRepoNameLength + 16;

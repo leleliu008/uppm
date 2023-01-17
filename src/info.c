@@ -90,11 +90,11 @@ int uppm_info_all_available_packages(const char * key) {
 
 int uppm_info(const char * packageName, const char * key) {
     if (packageName == NULL) {
-        return UPPM_ARG_IS_NULL;
+        return UPPM_ERROR_ARG_IS_NULL;
     }
 
     if (strcmp(packageName, "") == 0) {
-        return UPPM_ARG_IS_EMPTY;
+        return UPPM_ERROR_ARG_IS_EMPTY;
     }
 
     if (strcmp(packageName, "@all") == 0) {
@@ -341,13 +341,13 @@ int uppm_info(const char * packageName, const char * key) {
         char * userHomeDir = getenv("HOME");
 
         if (userHomeDir == NULL) {
-            return UPPM_ENV_HOME_NOT_SET;
+            return UPPM_ERROR_ENV_HOME_NOT_SET;
         }
 
         size_t userHomeDirLength = strlen(userHomeDir);
 
         if (userHomeDirLength == 0) {
-            return UPPM_ENV_HOME_NOT_SET;
+            return UPPM_ERROR_ENV_HOME_NOT_SET;
         }
 
         struct stat st;
@@ -359,10 +359,10 @@ int uppm_info(const char * packageName, const char * key) {
 
         if (stat(installedDir, &st) == 0) {
             if (!S_ISDIR(st.st_mode)) {
-                return UPPM_PACKAGE_IS_BROKEN;
+                return UPPM_ERROR_PACKAGE_BROKEN;
             }
         } else {
-            return UPPM_PACKAGE_IS_NOT_INSTALLED;
+            return UPPM_ERROR_PACKAGE_NOT_INSTALLED;
         }
 
         size_t  receiptFilePathLength = installedDirLength + 20;
@@ -374,22 +374,22 @@ int uppm_info(const char * packageName, const char * key) {
             if (S_ISREG(st.st_mode)) {
                 printf("%s\n", installedDir);
             } else {
-                return UPPM_PACKAGE_IS_BROKEN;
+                return UPPM_ERROR_PACKAGE_BROKEN;
             }
         } else {
-            return UPPM_PACKAGE_IS_BROKEN;
+            return UPPM_ERROR_PACKAGE_BROKEN;
         }
     } else if (strcmp(key, "installed-files") == 0) {
         char * userHomeDir = getenv("HOME");
 
         if (userHomeDir == NULL) {
-            return UPPM_ENV_HOME_NOT_SET;
+            return UPPM_ERROR_ENV_HOME_NOT_SET;
         }
 
         size_t userHomeDirLength = strlen(userHomeDir);
 
         if (userHomeDirLength == 0) {
-            return UPPM_ENV_HOME_NOT_SET;
+            return UPPM_ERROR_ENV_HOME_NOT_SET;
         }
 
         struct stat st;
@@ -401,10 +401,10 @@ int uppm_info(const char * packageName, const char * key) {
 
         if (stat(installedDir, &st) == 0) {
             if (!S_ISDIR(st.st_mode)) {
-                return UPPM_PACKAGE_IS_BROKEN;
+                return UPPM_ERROR_PACKAGE_BROKEN;
             }
         } else {
-            return UPPM_PACKAGE_IS_NOT_INSTALLED;
+            return UPPM_ERROR_PACKAGE_NOT_INSTALLED;
         }
 
         size_t  receiptFilePathLength = installedDirLength + 20;
@@ -413,7 +413,7 @@ int uppm_info(const char * packageName, const char * key) {
         snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", installedDir);
 
         if (stat(receiptFilePath, &st) != 0 || (!S_ISREG(st.st_mode))) {
-            return UPPM_PACKAGE_IS_BROKEN;
+            return UPPM_ERROR_PACKAGE_BROKEN;
         }
 
         size_t  installedManifestFilePathLength = installedDirLength + 20;
@@ -422,7 +422,7 @@ int uppm_info(const char * packageName, const char * key) {
         snprintf(installedManifestFilePath, installedManifestFilePathLength, "%s/.uppm/manifest.txt", installedDir);
 
         if (stat(installedManifestFilePath, &st) != 0 || (!S_ISREG(st.st_mode))) {
-            return UPPM_PACKAGE_IS_BROKEN;
+            return UPPM_ERROR_PACKAGE_BROKEN;
         }
 
         FILE * installedManifestFile = fopen(installedManifestFilePath, "r");
@@ -443,13 +443,13 @@ int uppm_info(const char * packageName, const char * key) {
         char * userHomeDir = getenv("HOME");
 
         if (userHomeDir == NULL) {
-            return UPPM_ENV_HOME_NOT_SET;
+            return UPPM_ERROR_ENV_HOME_NOT_SET;
         }
 
         size_t userHomeDirLength = strlen(userHomeDir);
 
         if (userHomeDirLength == 0) {
-            return UPPM_ENV_HOME_NOT_SET;
+            return UPPM_ERROR_ENV_HOME_NOT_SET;
         }
 
         struct stat st;
@@ -461,10 +461,10 @@ int uppm_info(const char * packageName, const char * key) {
 
         if (stat(installedDir, &st) == 0) {
             if (!S_ISDIR(st.st_mode)) {
-                return UPPM_PACKAGE_IS_BROKEN;
+                return UPPM_ERROR_PACKAGE_BROKEN;
             }
         } else {
-            return UPPM_PACKAGE_IS_NOT_INSTALLED;
+            return UPPM_ERROR_PACKAGE_NOT_INSTALLED;
         }
 
         size_t  receiptFilePathLength = installedDirLength + 20;
@@ -476,22 +476,22 @@ int uppm_info(const char * packageName, const char * key) {
             if (S_ISREG(st.st_mode)) {
                 printf("%s\n", receiptFilePath);
             } else {
-                return UPPM_PACKAGE_IS_BROKEN;
+                return UPPM_ERROR_PACKAGE_BROKEN;
             }
         } else {
-            return UPPM_PACKAGE_IS_BROKEN;
+            return UPPM_ERROR_PACKAGE_BROKEN;
         }
     } else if (strcmp(key, "installed-receipt-yaml") == 0) {
         char * userHomeDir = getenv("HOME");
 
         if (userHomeDir == NULL) {
-            return UPPM_ENV_HOME_NOT_SET;
+            return UPPM_ERROR_ENV_HOME_NOT_SET;
         }
 
         size_t userHomeDirLength = strlen(userHomeDir);
 
         if (userHomeDirLength == 0) {
-            return UPPM_ENV_HOME_NOT_SET;
+            return UPPM_ERROR_ENV_HOME_NOT_SET;
         }
 
         struct stat st;
@@ -503,10 +503,10 @@ int uppm_info(const char * packageName, const char * key) {
 
         if (stat(installedDir, &st) == 0) {
             if (!S_ISDIR(st.st_mode)) {
-                return UPPM_PACKAGE_IS_BROKEN;
+                return UPPM_ERROR_PACKAGE_BROKEN;
             }
         } else {
-            return UPPM_PACKAGE_IS_NOT_INSTALLED;
+            return UPPM_ERROR_PACKAGE_NOT_INSTALLED;
         }
 
         size_t  receiptFilePathLength = installedDirLength + 20;
@@ -515,7 +515,7 @@ int uppm_info(const char * packageName, const char * key) {
         snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", installedDir);
 
         if (stat(receiptFilePath, &st) != 0 || (!S_ISREG(st.st_mode))) {
-            return UPPM_PACKAGE_IS_BROKEN;
+            return UPPM_ERROR_PACKAGE_BROKEN;
         }
 
         FILE * receiptFile = fopen(receiptFilePath, "r");
@@ -636,7 +636,7 @@ int uppm_info(const char * packageName, const char * key) {
 
         uppm_receipt_free(receipt);
     } else {
-        return UPPM_ARG_IS_UNKNOWN;
+        return UPPM_ERROR_ARG_IS_UNKNOWN;
     }
 
     return resultCode;

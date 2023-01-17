@@ -21,11 +21,11 @@ int http_fetch_to_stream(const char * url, FILE * outputFile, bool verbose, bool
 
     if (resultCode == UPPM_OK) {
         ;
-    } else if (resultCode == UPPM_URL_TRANSFORM_ENV_IS_NOT_SET) {
+    } else if (resultCode == UPPM_ERROR_URL_TRANSFORM_ENV_NOT_SET) {
         transformedUrl = strdup(url);
 
         if (transformedUrl == NULL) {
-            return UPPM_URL_TRANSFORM_RUN_EMPTY_RESULT;
+            return UPPM_ERROR_URL_TRANSFORM_RUN_NO_RESULT;
         }
     } else {
         return resultCode;
@@ -44,7 +44,7 @@ int http_fetch_to_stream(const char * url, FILE * outputFile, bool verbose, bool
 
         if (outputFile == NULL) {
             perror(filename);
-            return 1;
+            return UPPM_ERROR;
         }
     }
 
@@ -116,7 +116,7 @@ int http_fetch_to_stream(const char * url, FILE * outputFile, bool verbose, bool
 
     curl_global_cleanup();
 
-    return curlcode;
+    return curlcode == CURLE_OK ? UPPM_OK : UPPM_ERROR_NETWORK_BASE + curlcode;
 }
 
 int http_fetch_to_file(const char * url, const char * outputFilePath, bool verbose, bool showProgress) {

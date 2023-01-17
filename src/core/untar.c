@@ -1,5 +1,6 @@
 #include <string.h>
 #include <locale.h>
+
 #include "untar.h"
 
 int untar_list(const char * inputFilePath, int flags) {

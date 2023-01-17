@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+#include "../uppm.h"
 #include "cp.h"
 
 int copy_file(const char * fromFilePath, const char * toFilePath) {
@@ -7,7 +8,7 @@ int copy_file(const char * fromFilePath, const char * toFilePath) {
 
     if (fromFile == NULL) {
         perror(fromFilePath);
-        return 1;
+        return UPPM_ERROR;
     }
 
     FILE * toFile = fopen(toFilePath, "wb");
@@ -15,7 +16,7 @@ int copy_file(const char * fromFilePath, const char * toFilePath) {
     if (toFile == NULL) {
         perror(toFilePath);
         fclose(fromFile);
-        return 1;
+        return UPPM_ERROR;
     }
 
     unsigned char buff[1024];
@@ -28,5 +29,5 @@ int copy_file(const char * fromFilePath, const char * toFilePath) {
     fclose(fromFile);
     fclose(toFile);
 
-    return 0;
+    return UPPM_OK;
 }

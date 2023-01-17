@@ -133,7 +133,7 @@ static int uppm_depends_make_box(const char * dotScriptStr) {
 
     if (curlcode != CURLE_OK) {
         fprintf(stderr, "%s\n", curl_easy_strerror(curlcode));
-        resultCode = UPPM_NETWORK_ERROR;
+        resultCode = UPPM_ERROR_NETWORK_BASE + curlcode;
     }
 
     curl_free(dataUrlEncoded);

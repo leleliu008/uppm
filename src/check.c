@@ -10,13 +10,13 @@
 
 int uppm_check_if_the_given_argument_matches_package_name_pattern(const char * arg) {
     if (arg == NULL) {
-        return UPPM_ARG_IS_NULL;
+        return UPPM_ERROR_ARG_IS_NULL;
     } else if (strcmp(arg, "") == 0) {
-        return UPPM_ARG_IS_EMPTY;
+        return UPPM_ERROR_ARG_IS_EMPTY;
     } else if (regex_matched(arg, UPPM_PACKAGE_NAME_PATTERN)) {
         return UPPM_OK;
     } else {
-        return UPPM_ARG_IS_INVALID;
+        return UPPM_ERROR_ARG_IS_INVALID;
     }
 }
 
@@ -53,7 +53,7 @@ int uppm_check_if_the_given_package_is_available(const char * packageName) {
     }
 
     uppm_formula_repo_list_free(formulaRepoList);
-    return UPPM_PACKAGE_IS_NOT_AVAILABLE;
+    return UPPM_ERROR_PACKAGE_NOT_AVAILABLE;
 }
 
 int uppm_check_if_the_given_package_is_installed(const char * packageName) {
@@ -66,13 +66,13 @@ int uppm_check_if_the_given_package_is_installed(const char * packageName) {
     char * userHomeDir = getenv("HOME");
 
     if (userHomeDir == NULL) {
-        return UPPM_ENV_HOME_NOT_SET;
+        return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
     size_t userHomeDirLength = strlen(userHomeDir);
 
     if (userHomeDirLength == 0) {
-        return UPPM_ENV_HOME_NOT_SET;
+        return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
     struct stat st;
@@ -93,7 +93,7 @@ int uppm_check_if_the_given_package_is_installed(const char * packageName) {
             return UPPM_ERROR;
         }
     } else {
-        return UPPM_PACKAGE_IS_NOT_INSTALLED;
+        return UPPM_ERROR_PACKAGE_NOT_INSTALLED;
     }
 
     size_t  receiptFilePathLength = uppmHomeDirLength + packageInstalledDirLength + 19;
@@ -105,10 +105,10 @@ int uppm_check_if_the_given_package_is_installed(const char * packageName) {
         if (S_ISREG(st.st_mode)) {
             return UPPM_OK;
         } else {
-            return UPPM_PACKAGE_IS_BROKEN;
+            return UPPM_ERROR_PACKAGE_BROKEN;
         }
     } else {
-        return UPPM_PACKAGE_IS_BROKEN;
+        return UPPM_ERROR_PACKAGE_BROKEN;
     }
 }
 
@@ -129,7 +129,7 @@ int uppm_check_if_the_given_package_is_outdated(const char * packageName) {
     }
 
     if (strcmp(receipt->version, formula->version) == 0) {
-        resultCode = UPPM_PACKAGE_IS_NOT_OUTDATED;
+        resultCode = UPPM_ERROR_PACKAGE_NOT_OUTDATED;
     }
 
 clean:

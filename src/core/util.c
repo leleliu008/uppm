@@ -26,15 +26,15 @@
 
 int get_file_extension_from_url(char * buf, size_t bufSize, const char * url) {
     if (url == NULL) {
-        return UPPM_ARG_IS_NULL;
+        return UPPM_ERROR_ARG_IS_NULL;
     }
 
     if (buf == NULL) {
-        return UPPM_ARG_IS_NULL;
+        return UPPM_ERROR_ARG_IS_NULL;
     }
 
     if (bufSize == 0) {
-        return UPPM_ARG_IS_INVALID;
+        return UPPM_ERROR_ARG_IS_INVALID;
     }
 
     size_t urlLength = 0;
@@ -53,13 +53,13 @@ int get_file_extension_from_url(char * buf, size_t bufSize, const char * url) {
     //printf("url=%s\nurlLength=%lu\n", url, urlLength);
 
     if (urlLength < 3) {
-        return UPPM_ARG_IS_INVALID;
+        return UPPM_ERROR_ARG_IS_INVALID;
     }
 
     size_t lastIndex = urlLength - 1;
 
     if (url[lastIndex] == '.') {
-        return UPPM_ARG_IS_INVALID;
+        return UPPM_ERROR_ARG_IS_INVALID;
     }
 
     size_t i = lastIndex;
@@ -116,7 +116,7 @@ int get_file_extension_from_url(char * buf, size_t bufSize, const char * url) {
         }
     }
 
-    return UPPM_ARG_IS_INVALID;
+    return UPPM_ERROR_ARG_IS_INVALID;
 }
 
 int get_current_executable_realpath(char * * out) {
@@ -149,7 +149,7 @@ int get_current_executable_realpath(char * * out) {
     char * buf = (char*)calloc(bufLength + 1, sizeof(char));
 
     if (buf == NULL) {
-        return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+        return UPPM_ERROR_MEMORY_ALLOCATE;
     }
 
     if (sysctl(mib, 4, buf, &bufLength, NULL, 0) < 0) {
@@ -169,7 +169,7 @@ int get_current_executable_realpath(char * * out) {
     char** argv = (char**)malloc(size);
 
     if (argv == NULL) {
-        return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+        return UPPM_ERROR_MEMORY_ALLOCATE;
     }
 
     memset(argv, 0, size);
@@ -206,7 +206,7 @@ int get_current_executable_realpath(char * * out) {
         char * PATH = getenv("PATH");
 
         if ((PATH == NULL) || (strcmp(PATH, "") == 0)) {
-            return UPPM_ENV_PATH_NOT_SET;
+            return UPPM_ERROR_ENV_PATH_NOT_SET;
         }
 
         size_t PATHLength = strlen(PATH);
@@ -230,7 +230,7 @@ int get_current_executable_realpath(char * * out) {
 
                 if (access(fullPath, X_OK) == 0) {
                     (*out) = strdup(fullPath);
-                    return (*out) == NULL ? UPPM_ERROR_MEMORY_ALLOCATION_FAILURE : UPPM_OK;
+                    return (*out) == NULL ? UPPM_ERROR_MEMORY_ALLOCATE : UPPM_OK;
                 }
             }
 
@@ -250,6 +250,6 @@ int get_current_executable_realpath(char * * out) {
     }
 
     (*out) = strdup(buf);
-    return (*out) == NULL ? UPPM_ERROR_MEMORY_ALLOCATION_FAILURE : UPPM_OK;
+    return (*out) == NULL ? UPPM_ERROR_MEMORY_ALLOCATE : UPPM_OK;
 #endif
 }

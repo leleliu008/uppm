@@ -150,7 +150,7 @@ static int uppm_formula_set_value(UPPMFormulaKeyCode keyCode, char * value, UPPM
             formula->summary = strdup(value);
 
             if (formula->summary == NULL) {
-                return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+                return UPPM_ERROR_MEMORY_ALLOCATE;
             } else {
                 return UPPM_OK;
             }
@@ -162,7 +162,7 @@ static int uppm_formula_set_value(UPPMFormulaKeyCode keyCode, char * value, UPPM
             formula->version = strdup(value);
 
             if (formula->version == NULL) {
-                return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+                return UPPM_ERROR_MEMORY_ALLOCATE;
             } else {
                 return UPPM_OK;
             }
@@ -174,7 +174,7 @@ static int uppm_formula_set_value(UPPMFormulaKeyCode keyCode, char * value, UPPM
             formula->license = strdup(value);
 
             if (formula->license == NULL) {
-                return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+                return UPPM_ERROR_MEMORY_ALLOCATE;
             } else {
                 return UPPM_OK;
             }
@@ -186,7 +186,7 @@ static int uppm_formula_set_value(UPPMFormulaKeyCode keyCode, char * value, UPPM
             formula->webpage = strdup(value);
 
             if (formula->webpage == NULL) {
-                return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+                return UPPM_ERROR_MEMORY_ALLOCATE;
             } else {
                 return UPPM_OK;
             }
@@ -198,7 +198,7 @@ static int uppm_formula_set_value(UPPMFormulaKeyCode keyCode, char * value, UPPM
             formula->bin_url = strdup(value);
 
             if (formula->bin_url == NULL) {
-                return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+                return UPPM_ERROR_MEMORY_ALLOCATE;
             } else {
                 return UPPM_OK;
             }
@@ -210,7 +210,7 @@ static int uppm_formula_set_value(UPPMFormulaKeyCode keyCode, char * value, UPPM
             formula->bin_sha = strdup(value);
 
             if (formula->bin_sha == NULL) {
-                return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+                return UPPM_ERROR_MEMORY_ALLOCATE;
             } else {
                 return UPPM_OK;
             }
@@ -222,7 +222,7 @@ static int uppm_formula_set_value(UPPMFormulaKeyCode keyCode, char * value, UPPM
             formula->dep_pkg = strdup(value);
 
             if (formula->dep_pkg == NULL) {
-                return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+                return UPPM_ERROR_MEMORY_ALLOCATE;
             } else {
                 return UPPM_OK;
             }
@@ -234,7 +234,7 @@ static int uppm_formula_set_value(UPPMFormulaKeyCode keyCode, char * value, UPPM
             formula->install = strdup(value);
 
             if (formula->install == NULL) {
-                return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+                return UPPM_ERROR_MEMORY_ALLOCATE;
             } else {
                 return UPPM_OK;
             }
@@ -245,27 +245,27 @@ static int uppm_formula_set_value(UPPMFormulaKeyCode keyCode, char * value, UPPM
 static int uppm_formula_check(UPPMFormula * formula, const char * formulaFilePath) {
     if (formula->summary == NULL) {
         fprintf(stderr, "scheme error in formula file: %s : summary mapping not found.\n", formulaFilePath);
-        return UPPM_FORMULA_SCHEME_ERROR;
+        return UPPM_ERROR_FORMULA_SCHEME;
     }
 
     if (formula->webpage == NULL) {
         fprintf(stderr, "scheme error in formula file: %s : webpage mapping not found.\n", formulaFilePath);
-        return UPPM_FORMULA_SCHEME_ERROR;
+        return UPPM_ERROR_FORMULA_SCHEME;
     }
 
     if (formula->bin_url == NULL) {
         fprintf(stderr, "scheme error in formula file: %s : bin-url mapping not found.\n", formulaFilePath);
-        return UPPM_FORMULA_SCHEME_ERROR;
+        return UPPM_ERROR_FORMULA_SCHEME;
     }
 
     if (formula->bin_sha == NULL) {
         fprintf(stderr, "scheme error in formula file: %s : bin-sha mapping not found.\n", formulaFilePath);
-        return UPPM_FORMULA_SCHEME_ERROR;
+        return UPPM_ERROR_FORMULA_SCHEME;
     }
 
     if (strlen(formula->bin_sha) != 64) {
         fprintf(stderr, "scheme error in formula file: %s : bin-sha mapping's value's length must be 64.\n", formulaFilePath);
-        return UPPM_FORMULA_SCHEME_ERROR;
+        return UPPM_ERROR_FORMULA_SCHEME;
     }
 
     if (formula->version == NULL) {
@@ -365,7 +365,7 @@ static int uppm_formula_check(UPPMFormula * formula, const char * formulaFilePat
                 formula->version = strdup(splitedStr);
 
                 if (formula->version == NULL) {
-                    return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+                    return UPPM_ERROR_MEMORY_ALLOCATE;
                 } else {
                     return UPPM_OK;
                 }
@@ -375,7 +375,7 @@ static int uppm_formula_check(UPPMFormula * formula, const char * formulaFilePat
                 formula->version = strdup(&splitedStr[1]);
 
                 if (formula->version == NULL) {
-                    return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+                    return UPPM_ERROR_MEMORY_ALLOCATE;
                 } else {
                     return UPPM_OK;
                 }
@@ -385,7 +385,7 @@ static int uppm_formula_check(UPPMFormula * formula, const char * formulaFilePat
                 formula->version = strdup(splitedStr);
 
                 if (formula->version == NULL) {
-                    return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+                    return UPPM_ERROR_MEMORY_ALLOCATE;
                 } else {
                     return UPPM_OK;
                 }
@@ -395,7 +395,7 @@ static int uppm_formula_check(UPPMFormula * formula, const char * formulaFilePat
                 formula->version = strdup(&splitedStr[1]);
 
                 if (formula->version == NULL) {
-                    return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+                    return UPPM_ERROR_MEMORY_ALLOCATE;
                 } else {
                     return UPPM_OK;
                 }
@@ -408,7 +408,7 @@ static int uppm_formula_check(UPPMFormula * formula, const char * formulaFilePat
 
         if (formula->version == NULL) {
             fprintf(stderr, "scheme error in formula file: %s : version mapping not found.\n", formulaFilePath);
-            return UPPM_FORMULA_SCHEME_ERROR;
+            return UPPM_ERROR_FORMULA_SCHEME;
         }
     }
 
@@ -464,7 +464,7 @@ int uppm_formula_parse(const char * packageName, UPPMFormula * * out) {
         // https://libyaml.docsforge.com/master/api/yaml_parser_scan/
         if (yaml_parser_scan(&parser, &token) == 0) {
             fprintf(stderr, "syntax error in formula file: %s\n", formulaFilePath);
-            resultCode = UPPM_FORMULA_SYNTAX_ERROR;
+            resultCode = UPPM_ERROR_FORMULA_SYNTAX;
             goto clean;
         }
 
@@ -483,7 +483,7 @@ int uppm_formula_parse(const char * packageName, UPPMFormula * * out) {
                         formula = (UPPMFormula*)calloc(1, sizeof(UPPMFormula));
 
                         if (formula == NULL) {
-                            resultCode = UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+                            resultCode = UPPM_ERROR_MEMORY_ALLOCATE;
                             goto clean;
                         }
 

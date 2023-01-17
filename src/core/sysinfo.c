@@ -350,7 +350,7 @@ int sysinfo_ncpu(size_t * out) {
 
 int sysinfo_make(SysInfo * sysinfo) {
     if (sysinfo == NULL) {
-        return UPPM_ARG_IS_NULL;
+        return UPPM_ERROR_ARG_IS_NULL;
     }
 
     int resultCode;
@@ -430,31 +430,31 @@ int sysinfo_make(SysInfo * sysinfo) {
     sysinfo->arch = strdup(osArch);
 
     if (sysinfo->arch == NULL) {
-        return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+        return UPPM_ERROR_MEMORY_ALLOCATE;
     }
 
     sysinfo->kind = strdup(osKind);
 
     if (sysinfo->kind == NULL) {
-        return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+        return UPPM_ERROR_MEMORY_ALLOCATE;
     }
 
     sysinfo->type = strdup(osType);
 
     if (sysinfo->type == NULL) {
-        return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+        return UPPM_ERROR_MEMORY_ALLOCATE;
     }
 
     sysinfo->name = strdup(osName);
 
     if (sysinfo->name == NULL) {
-        return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+        return UPPM_ERROR_MEMORY_ALLOCATE;
     }
 
     sysinfo->vers = strdup(osVers);
 
     if (sysinfo->vers == NULL) {
-        return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+        return UPPM_ERROR_MEMORY_ALLOCATE;
     }
 
     sysinfo->libc = libc;

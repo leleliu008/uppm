@@ -10,13 +10,13 @@ int uppm_formula_repo_list_new(UPPMFormulaRepoList * * out) {
     char * userHomeDir = getenv("HOME");
 
     if (userHomeDir == NULL) {
-        return UPPM_ENV_HOME_NOT_SET;
+        return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
     size_t userHomeDirLength = strlen(userHomeDir);
 
     if (userHomeDirLength == 0) {
-        return UPPM_ENV_HOME_NOT_SET;
+        return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
     size_t  uppmFormulaRepoDirLength = userHomeDirLength + 15;
@@ -30,7 +30,7 @@ int uppm_formula_repo_list_new(UPPMFormulaRepoList * * out) {
         UPPMFormulaRepoList* formulaRepoList = (UPPMFormulaRepoList*)calloc(1, sizeof(UPPMFormulaRepoList));
 
         if (formulaRepoList == NULL) {
-            return UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+            return UPPM_ERROR_MEMORY_ALLOCATE;
         } else {
             (*out) = formulaRepoList;
             return UPPM_OK;
@@ -121,7 +121,7 @@ int uppm_formula_repo_list_new(UPPMFormulaRepoList * * out) {
                 if (formulaRepoList == NULL) {
                     uppm_formula_repo_free(formulaRepo);
                     uppm_formula_repo_list_free(formulaRepoList);
-                    resultCode = UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+                    resultCode = UPPM_ERROR_MEMORY_ALLOCATE;
                     goto clean;
                 }
 
@@ -130,7 +130,7 @@ int uppm_formula_repo_list_new(UPPMFormulaRepoList * * out) {
                 if (formulaRepoList->repos == NULL) {
                     uppm_formula_repo_free(formulaRepo);
                     uppm_formula_repo_list_free(formulaRepoList);
-                    resultCode = UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+                    resultCode = UPPM_ERROR_MEMORY_ALLOCATE;
                     goto clean;
                 }
             }
@@ -142,7 +142,7 @@ int uppm_formula_repo_list_new(UPPMFormulaRepoList * * out) {
                 if (formulaRepoArray == NULL) {
                     uppm_formula_repo_free(formulaRepo);
                     uppm_formula_repo_list_free(formulaRepoList);
-                    resultCode = UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+                    resultCode = UPPM_ERROR_MEMORY_ALLOCATE;
                     goto clean;
                 } else {
                     formulaRepoList->repos = formulaRepoArray;
@@ -154,7 +154,7 @@ int uppm_formula_repo_list_new(UPPMFormulaRepoList * * out) {
             if (formulaRepo->name == NULL) {
                 uppm_formula_repo_free(formulaRepo);
                 uppm_formula_repo_list_free(formulaRepoList);
-                resultCode = UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+                resultCode = UPPM_ERROR_MEMORY_ALLOCATE;
                 goto clean;
             }
 
@@ -163,7 +163,7 @@ int uppm_formula_repo_list_new(UPPMFormulaRepoList * * out) {
             if (formulaRepo->path == NULL) {
                 uppm_formula_repo_free(formulaRepo);
                 uppm_formula_repo_list_free(formulaRepoList);
-                resultCode = UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+                resultCode = UPPM_ERROR_MEMORY_ALLOCATE;
                 goto clean;
             }
 
@@ -178,7 +178,7 @@ int uppm_formula_repo_list_new(UPPMFormulaRepoList * * out) {
         formulaRepoList = (UPPMFormulaRepoList*)calloc(1, sizeof(UPPMFormulaRepoList));
 
         if (formulaRepoList == NULL) {
-            resultCode = UPPM_ERROR_MEMORY_ALLOCATION_FAILURE;
+            resultCode = UPPM_ERROR_MEMORY_ALLOCATE;
             goto clean;
         }
     }

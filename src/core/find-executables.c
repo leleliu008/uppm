@@ -3,21 +3,27 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
-#include "find-executables.h"
+#include "../uppm.h"
 
-int find_executables(ExecuablePathList ** out, const char * commandName, bool findAll) {
-    if (out == NULL) {
-        return FIND_EXECUTABLES_ARG_INVALID;
+int find_executables_in_PATH(char *** listP, size_t * listSize, const char * commandName, bool findAll) {
+    if (listP == NULL) {
+        return UPPM_ERROR_ARG_IS_NULL;
     }
 
-    if ((commandName == NULL) || (strcmp(commandName, "") == 0)) {
-        return FIND_EXECUTABLES_ARG_INVALID;
+    if (commandName == NULL) {
+        return UPPM_ERROR_ARG_IS_NULL;
+    }
+
+    size_t commandNameLength = strlen(commandName);
+
+    if (commandName == NULL) {
+        return UPPM_ERROR_ARG_IS_EMPTY;
     }
 
     char * PATH = getenv("PATH");
 
     if ((PATH == NULL) || (strcmp(PATH, "") == 0)) {
-        return FIND_EXECUTABLES_ENV_PATH_NO_VALUE;
+        return UPPM_ERROR_ENV_PATH_NOT_SET;
     }
 
     size_t PATHLength = strlen(PATH);
@@ -26,62 +32,55 @@ int find_executables(ExecuablePathList ** out, const char * commandName, bool fi
     memset(PATH2, 0, PATH2Length);
     strncpy(PATH2, PATH, PATHLength);
 
-    size_t commandNameLength = strlen(commandName);
+    struct stat st;
 
-    size_t capcity = 0;
-
-    ExecuablePathList * pathList = NULL;
+    char ** stringArrayList = NULL;
+    size_t  stringArrayListCapcity = 0;
+    size_t  stringArrayListSize    = 0;
 
     char * PATHItem = strtok(PATH2, ":");
 
     while (PATHItem != NULL) {
-        struct stat st;
-
         if ((stat(PATHItem, &st) == 0) && S_ISDIR(st.st_mode)) {
             size_t fullPathLength = strlen(PATHItem) + commandNameLength + 2;
             char   fullPath[fullPathLength];
             snprintf(fullPath, fullPathLength, "%s/%s", PATHItem, commandName);
 
             if (access(fullPath, X_OK) == 0) {
-                if (pathList == NULL) {
-                    pathList = (ExecuablePathList*)calloc(1, sizeof(ExecuablePathList));
+                if (stringArrayListCapcity == stringArrayListSize) {
+                    stringArrayListCapcity += 2;
 
-                    if (pathList == NULL) {
-                        return FIND_EXECUTABLES_ERROR;
-                    }
-                }
-
-                if (pathList->size == capcity) {
-                    capcity += 2;
-
-                    char** paths = (char**)realloc(pathList->paths, capcity * sizeof(char*));
+                    char** paths = (char**)realloc(stringArrayList, stringArrayListCapcity * sizeof(char*));
 
                     if (paths == NULL) {
-                        free(pathList->paths);
-                        return FIND_EXECUTABLES_ERROR;
+                        if (stringArrayList != NULL) {
+                            for (size_t i = 0; i < stringArrayListSize; i++) {
+                                free(stringArrayList[i]);
+                                stringArrayList[i] = NULL;
+                            }
+                            free(stringArrayList);
+                        }
+                        return UPPM_ERROR_MEMORY_ALLOCATE;
                     } else {
-                        pathList->paths = paths;
+                        stringArrayList = paths;
                     }
                 }
 
                 char * fullPathDup = strdup(fullPath);
 
                 if (fullPathDup == NULL) {
-                    if (pathList != NULL) {
-                        for (size_t i = 0; i < pathList->size; i++) {
-                            free(pathList->paths[i]);
-                            pathList->paths[i] = NULL;
+                    if (stringArrayList != NULL) {
+                        for (size_t i = 0; i < stringArrayListSize; i++) {
+                            free(stringArrayList[i]);
+                            stringArrayList[i] = NULL;
                         }
+                        free(stringArrayList);
                     }
-
-                    free(pathList->paths);
-                    free(pathList);
-
-                    return FIND_EXECUTABLES_ERROR;
+                    return UPPM_ERROR_MEMORY_ALLOCATE;
                 }
 
-                pathList->paths[pathList->size] = fullPathDup;
-                pathList->size += 1;
+                stringArrayList[stringArrayListSize] = fullPathDup;
+                stringArrayListSize += 1;
 
                 if (!findAll) {
                     break;
@@ -92,10 +91,8 @@ int find_executables(ExecuablePathList ** out, const char * commandName, bool fi
         PATHItem = strtok(NULL, ":");
     }
 
-    if (pathList == NULL) {
-        return FIND_EXECUTABLES_NOT_FOUND;
-    } else {
-        (*out) = pathList;
-        return FIND_EXECUTABLES_FOUND;
-    }
+    (*listP) =    stringArrayList;
+    (*listSize) = stringArrayListSize;
+
+    return UPPM_OK;
 }
