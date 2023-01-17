@@ -146,7 +146,12 @@ target_link_libraries(uppm LIBYAML::LIBYAML)
 target_link_libraries(uppm JANSSON::JANSSON)
 target_link_libraries(uppm JANSSON::JANSSON)
 target_link_libraries(uppm ZLIB::ZLIB)
-target_link_libraries(uppm "-lm")
+
+find_library(LIBM m)
+
+if (LIBM)
+    target_link_libraries(uppm LIBM)
+endif()
 
 if (CMAKE_SYSTEM_NAME STREQUAL OpenBSD)
     target_link_libraries(uppm PCRE2::PCRE2)

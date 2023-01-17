@@ -88,14 +88,14 @@ int uppm_env(bool verbose) {
 
     SysInfo sysinfo = {0};
 
-    if (sysinfo_make(&sysinfo) != 0) {
-        return UPPM_ERROR;
+    int resultCode = sysinfo_make(&sysinfo);
+
+    if (resultCode != UPPM_OK) {
+        return resultCode;
     }
 
     sysinfo_dump(sysinfo);
     sysinfo_free(sysinfo);
-
-    printf("\n");
 
     char * userHomeDir = getenv("HOME");
 
@@ -114,6 +114,7 @@ int uppm_env(bool verbose) {
     memset (uppmHomeDir, 0, uppmHomeDirLength);
     snprintf(uppmHomeDir, uppmHomeDirLength, "%s/.uppm", userHomeDir);
 
+    printf("\n");
     printf("uppm.vers : %s\n", UPPM_VERSION);
     printf("uppm.home : %s\n", uppmHomeDir);
 

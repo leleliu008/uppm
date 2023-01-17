@@ -1,6 +1,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <libgen.h>
+#include <math.h>
 
 #include "core/regex/regex.h"
 #include "core/sysinfo.h"
@@ -127,17 +128,21 @@ int uppm_upgrade_self(bool verbose) {
 
     char osType[31] = {0};
 
-    if (sysinfo_type(osType, 30) != 0) {
-        return UPPM_ERROR;
+    resultCode = sysinfo_type(osType, 30);
+
+    if (resultCode != UPPM_OK) {
+        return resultCode;
     }
 
     char osArch[31] = {0};
 
-    if (sysinfo_arch(osArch, 30) != 0) {
-        return UPPM_ERROR;
+    resultCode = sysinfo_arch(osArch, 30);
+
+    if (resultCode != UPPM_OK) {
+        return resultCode;
     }
 
-    size_t  latestVersionLength = strlen(latestVersion);
+    size_t latestVersionLength = strlen(latestVersion);
 
     size_t  tarballFileNameLength = latestVersionLength + strlen(osType) + strlen(osArch) + 15;
     char    tarballFileName[tarballFileNameLength];
@@ -156,7 +161,7 @@ int uppm_upgrade_self(bool verbose) {
 
     resultCode = http_fetch_to_file(tarballUrl, tarballFilePath, verbose, verbose);
 
-    if ( resultCode != UPPM_OK) {
+    if (resultCode != UPPM_OK) {
         return resultCode;
     }
 
@@ -170,7 +175,7 @@ int uppm_upgrade_self(bool verbose) {
     resultCode = untar_extract(tarballExtractDir, tarballFilePath, 0, verbose, 1);
 
     if (resultCode != 0) {
-        return resultCode;
+        return abs(resultCode) + UPPM_ERROR_ARCHIVE_BASE;
     }
 
     size_t  upgradableExecutableFilePathLength = tarballExtractDirLength + 10;

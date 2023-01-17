@@ -35,14 +35,18 @@ int uppm_formula_repo_list_update() {
         if (!officalCoreIsThere) {
             char osType[31] = {0};
 
-            if (sysinfo_type(osType, 30) != 0) {
-                return UPPM_ERROR;
+            resultCode = sysinfo_type(osType, 30);
+
+            if (resultCode != UPPM_OK) {
+                return resultCode;
             }
 
             char osArch[31] = {0};
 
-            if (sysinfo_arch(osArch, 30) != 0) {
-                return UPPM_ERROR;
+            resultCode = sysinfo_arch(osArch, 30);
+
+            if (resultCode != UPPM_OK) {
+                return resultCode;
             }
 
             size_t formulaRepoUrlLength = strlen(osType) + strlen(osArch) + 56;

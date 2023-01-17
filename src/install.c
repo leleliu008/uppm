@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <time.h>
+#include <math.h>
 #include <libgen.h>
 #include <sys/stat.h>
 
@@ -237,16 +238,18 @@ int uppm_install(const char * packageName, bool verbose) {
     if (formula->install == NULL) {
         resultCode = untar_extract(packageInstalledDir, binFilePath, ARCHIVE_EXTRACT_TIME, verbose, 1);
 
-        if (resultCode != UPPM_OK) {
+        if (resultCode != 0) {
             uppm_formula_free(formula);
-            return resultCode;
+            return abs(resultCode) + UPPM_ERROR_ARCHIVE_BASE;
         }
     } else {
         SysInfo sysinfo = {0};
 
-        if (sysinfo_make(&sysinfo) != 0) {
+        resultCode = sysinfo_make(&sysinfo);
+
+        if (resultCode != UPPM_OK) {
             uppm_formula_free(formula);
-            return UPPM_ERROR;
+            return resultCode;
         }
 
         char * libcName = NULL;
@@ -322,6 +325,10 @@ int uppm_install(const char * packageName, bool verbose) {
 
         resultCode = system(shellCode);
 
+        if (resultCode == -1) {
+            perror(NULL);
+        }
+
         if (resultCode != 0) {
             uppm_formula_free(formula);
             return UPPM_ERROR;
@@ -331,6 +338,7 @@ int uppm_install(const char * packageName, bool verbose) {
     //////////////////////////////////////////////////////////////////////
 
     if (mkdir(packageInstalledMetaInfoDir, S_IRWXU) != 0) {
+        perror(packageInstalledMetaInfoDir);
         uppm_formula_free(formula);
         return UPPM_ERROR;
     }
@@ -379,7 +387,7 @@ int uppm_install(const char * packageName, bool verbose) {
 
     fclose(receiptFile);
 
-    fprintf(stderr, "package [%s] successfully installed.\n", packageName);
+    fprintf(stderr, "\npackage [%s] successfully installed.\n", packageName);
 
     return UPPM_OK;
 }
