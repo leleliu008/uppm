@@ -1,5 +1,7 @@
-# uppm [Work In Progress]
+# uppm
 Universal Prebuild Package Manager for Unix-like systems.
+
+**Note:** This project is being actively developed. It's in beta stage and may not be stable. Some features are subject to change without notice.
 
 ## dependences
 |dependency|required?|purpose|

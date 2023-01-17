@@ -41,7 +41,7 @@ int uppm_tree(const char * packageName, size_t argc, char* argv[]) {
     snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", packageInstalledDir);
 
     if (stat(receiptFilePath, &st) != 0 || (!S_ISREG(st.st_mode))) {
-        return UPPM_ERROR_PACKAGE_BROKEN;
+        return UPPM_ERROR_PACKAGE_IS_BROKEN;
     }
 
     resultCode = uppm_check_if_the_given_package_is_installed("tree");

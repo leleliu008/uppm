@@ -105,10 +105,10 @@ int uppm_check_if_the_given_package_is_installed(const char * packageName) {
         if (S_ISREG(st.st_mode)) {
             return UPPM_OK;
         } else {
-            return UPPM_ERROR_PACKAGE_BROKEN;
+            return UPPM_ERROR_PACKAGE_IS_BROKEN;
         }
     } else {
-        return UPPM_ERROR_PACKAGE_BROKEN;
+        return UPPM_ERROR_PACKAGE_IS_BROKEN;
     }
 }
 

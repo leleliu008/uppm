@@ -11,7 +11,9 @@ int uppm_search(const char * keyword) {
         return UPPM_ERROR_ARG_IS_NULL;
     }
 
-    if (strcmp(keyword, "") == 0) {
+    size_t keywordLength = strlen(keyword);
+
+    if (keywordLength == 0) {
         return UPPM_ERROR_ARG_IS_EMPTY;
     }
 
@@ -60,7 +62,7 @@ int uppm_search(const char * keyword) {
                 continue;
             }
 
-            size_t  patternLength = strlen(keyword) + 7;
+            size_t  patternLength = keywordLength + 7;
             char    pattern[patternLength];
             memset (pattern, 0, patternLength);
             snprintf(pattern, patternLength, "*%s*.yml", keyword);

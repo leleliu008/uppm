@@ -374,7 +374,7 @@ int uppm_receipt_parse(const char * packageName, UPPMReceipt * * out) {
     snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", packageInstalledDir);
 
     if (stat(receiptFilePath, &st) != 0 || (!S_ISREG(st.st_mode))) {
-        return UPPM_ERROR_PACKAGE_BROKEN;
+        return UPPM_ERROR_PACKAGE_IS_BROKEN;
     }
 
     FILE * file = fopen(receiptFilePath, "r");

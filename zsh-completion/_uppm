@@ -65,7 +65,7 @@ function _uppm() {
         option)
             case $words[1] in
                 formula-repo-del)
-                    _arguments '1:formula-repo-name:($(uppm formula-repo-list | cut -d " " -f1))'
+                    _arguments '1:formula-repo-name:($(uppm formula-repo-list | sed -n "/^name: /p" | cut -c7-))'
                     ;;
                 integrate)
                     _arguments \
