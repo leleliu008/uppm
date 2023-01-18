@@ -19,7 +19,7 @@ int uppm_search(const char * keyword) {
 
     UPPMFormulaRepoList * formulaRepoList = NULL;
 
-    int resultCode = uppm_formula_repo_list_new(&formulaRepoList);
+    int resultCode = uppm_formula_repo_list(&formulaRepoList);
 
     if (resultCode != UPPM_OK) {
         return resultCode;

@@ -4,6 +4,8 @@
     #include <stdio.h>
     #include <stdbool.h>
 
+    #include "../uppm.h"
+
     #ifdef __cplasplas
         extern "C"
     #endif

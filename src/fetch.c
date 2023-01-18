@@ -15,7 +15,7 @@
 int uppm_fetch_all_available_packages(bool verbose) {
     UPPMFormulaRepoList * formulaRepoList = NULL;
 
-    int resultCode = uppm_formula_repo_list_new(&formulaRepoList);
+    int resultCode = uppm_formula_repo_list(&formulaRepoList);
 
     if (resultCode != UPPM_OK) {
         return resultCode;

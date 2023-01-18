@@ -25,7 +25,7 @@ int uppm_formula_find(const char * packageName, char ** out) {
 
     UPPMFormulaRepoList * formulaRepoList = NULL;
 
-    resultCode = uppm_formula_repo_list_new(&formulaRepoList);
+    resultCode = uppm_formula_repo_list(&formulaRepoList);
 
     if (resultCode != UPPM_OK) {
         uppm_formula_repo_list_free(formulaRepoList);

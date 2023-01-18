@@ -3,6 +3,8 @@
 
 #include <stdlib.h>
 
+#include "../uppm.h"
+
 typedef enum {
     LIBC_UNKNOWN,
     LIBC_GLIBC,

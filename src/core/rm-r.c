@@ -5,7 +5,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 
-#include "../uppm.h"
+#include "rm-r.h"
 
 int rm_r(const char * dirPath, bool verbose) {
     if (dirPath == NULL) {

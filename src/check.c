@@ -28,7 +28,7 @@ int uppm_check_if_the_given_package_is_available(const char * packageName) {
 
     UPPMFormulaRepoList * formulaRepoList = NULL;
 
-    resultCode = uppm_formula_repo_list_new(&formulaRepoList);
+    resultCode = uppm_formula_repo_list(&formulaRepoList);
 
     if (resultCode != UPPM_OK) {
         uppm_formula_repo_list_free(formulaRepoList);

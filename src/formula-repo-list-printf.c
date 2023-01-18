@@ -4,7 +4,7 @@
 int uppm_formula_repo_list_printf() {
     UPPMFormulaRepoList * formulaRepoList = NULL;
 
-    int resultCode = uppm_formula_repo_list_new(&formulaRepoList);
+    int resultCode = uppm_formula_repo_list(&formulaRepoList);
 
     if (resultCode == UPPM_OK) {
         for (size_t i = 0; i < formulaRepoList->size; i++) {

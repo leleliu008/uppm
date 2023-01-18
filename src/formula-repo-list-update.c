@@ -7,7 +7,7 @@
 int uppm_formula_repo_list_update() {
     UPPMFormulaRepoList * formulaRepoList = NULL;
 
-    int resultCode = uppm_formula_repo_list_new(&formulaRepoList);
+    int resultCode = uppm_formula_repo_list(&formulaRepoList);
 
     if (resultCode == UPPM_OK) {
         bool officalCoreIsThere = false;

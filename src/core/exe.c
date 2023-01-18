@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
-#include "../uppm.h"
+#include "exe.h"
 
 int exe_search(const char * commandName, char *** listP, size_t * listSize, bool findAll) {
     if (commandName == NULL) {

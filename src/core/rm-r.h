@@ -3,6 +3,8 @@
 
 #include<stdbool.h>
 
+#include "../uppm.h"
+
 int rm_r(const char * dirPath, bool verbose);
 
 #endif

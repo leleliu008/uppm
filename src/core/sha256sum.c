@@ -3,7 +3,6 @@
 #include <openssl/sha.h>
 
 #include "sha256sum.h"
-#include "../uppm.h"
 
 static inline void tohex(char buf[65], unsigned char * sha256Bytes) {
     const char * table = "0123456789abcdef";

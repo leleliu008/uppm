@@ -8,8 +8,6 @@
 
 #include "sysinfo.h"
 
-#include "../uppm.h"
-
 int sysinfo_kind(char * buf, size_t bufSize) {
 #if defined (_WIN32)
     strncpy(buf, "windows", bufSize > 7 ? 7 : bufSize);

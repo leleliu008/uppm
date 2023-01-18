@@ -6,7 +6,7 @@
 #include "core/zlib-flate.h"
 #include "uppm.h"
 
-int uppm_formula_repo_list_new(UPPMFormulaRepoList * * out) {
+int uppm_formula_repo_list(UPPMFormulaRepoList * * out) {
     char * userHomeDir = getenv("HOME");
 
     if (userHomeDir == NULL) {

@@ -102,7 +102,7 @@ void uppm_formula_repo_free(UPPMFormulaRepo * formulaRepo);
 void uppm_formula_repo_dump(UPPMFormulaRepo * formulaRepo);
 int  uppm_formula_repo_update(UPPMFormulaRepo * formulaRepo);
 
-int  uppm_formula_repo_list_new (UPPMFormulaRepoList * * p);
+int  uppm_formula_repo_list     (UPPMFormulaRepoList * * p);
 void uppm_formula_repo_list_free(UPPMFormulaRepoList   * p);
 
 int  uppm_formula_repo_list_printf();
