@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "core/find-executables.h"
+#include "core/exe.h"
 
 static void show_help(const char * programName) {
     printf("USAGE: %s <COMMAND-NAME> [-a]\n", programName);
@@ -28,22 +28,18 @@ int main2(int argc, char* argv[]) {
     char ** pathList = NULL;
     size_t  pathListSize;
 
-    int resultCode = find_executables_in_PATH(&pathList, &pathListSize, argv[1], findAll);
+    int resultCode = exe_search(argv[1], &pathList, &pathListSize, findAll);
 
     if (resultCode == 0) {
-        if (pathListSize == 0) {
-            return 1;
-        } else {
-            for (size_t i = 0; i < pathListSize; i++) {
-                printf("%s\n", pathList[i]);
+        for (size_t i = 0; i < pathListSize; i++) {
+            printf("%s\n", pathList[i]);
 
-                free(pathList[i]);
-                pathList[i] = NULL;
-            }
-
-            free(pathList);
-            pathList = NULL;
+            free(pathList[i]);
+            pathList[i] = NULL;
         }
+
+        free(pathList);
+        pathList = NULL;
     }
 
     return resultCode;

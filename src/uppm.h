@@ -24,6 +24,8 @@
 #define UPPM_ERROR_ENV_HOME_NOT_SET 8
 #define UPPM_ERROR_ENV_PATH_NOT_SET 9
 
+#define UPPM_ERROR_EXE_NOT_FOUND    10
+
 #define UPPM_ERROR_PACKAGE_NOT_AVAILABLE 25
 #define UPPM_ERROR_PACKAGE_NOT_INSTALLED 26
 #define UPPM_ERROR_PACKAGE_NOT_OUTDATED  27
@@ -185,5 +187,7 @@ int uppm_list_the_outdated__packages();
 int uppm_fetch_via_git(const char * gitRepositoryDirPath, const char * remoteUrl, const char * refspec, const char * checkoutToBranchName);
 
 int uppm_url_transform(const char * inUrl, char * * outUrlPointer, bool verbose);
+
+int uppm_examine_file_extension_from_url(char buf[], size_t maxSize, const char * url);
 
 #endif

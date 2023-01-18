@@ -7,7 +7,6 @@
 #include <libgen.h>
 #include <sys/stat.h>
 
-#include "core/util.h"
 #include "core/http.h"
 #include "core/sysinfo.h"
 #include "core/sha256sum.h"
@@ -131,7 +130,7 @@ int uppm_install(const char * packageName, bool verbose) {
 
     char binFileNameExtension[21] = {0};
 
-    resultCode = get_file_extension_from_url(binFileNameExtension, 20, formula->bin_url);
+    resultCode = uppm_examine_file_extension_from_url(binFileNameExtension, 20, formula->bin_url);
 
     if (resultCode != UPPM_OK) {
         uppm_formula_free(formula);

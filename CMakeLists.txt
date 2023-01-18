@@ -55,7 +55,7 @@ check_if_have_header_files(linux/limits.h)
 
 ########################################################################################
 
-string(TIMESTAMP BUILD_TIMESTAMP "%Y-%m-%d %H:%M:%S UTC" UTC)
+string(TIMESTAMP BUILD_TIMESTAMP "%Y-%m-%d %H:%M:%S" UTC)
 
 ########################################################################################
 

@@ -75,10 +75,9 @@ int uppm_tree(const char * packageName, size_t argc, char* argv[]) {
     p[n-2] = packageInstalledDir;
     p[n-1]   = NULL;
 
-    if (execv(treeCommandPath, p) == -1) {
-        perror(treeCommandPath);
-        return UPPM_ERROR;
-    } else {
-        return UPPM_OK;
-    }
+    execv(treeCommandPath, p);
+
+    perror(treeCommandPath);
+
+    return UPPM_ERROR;
 }

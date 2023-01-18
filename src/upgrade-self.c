@@ -7,7 +7,6 @@
 #include "core/sysinfo.h"
 #include "core/untar.h"
 #include "core/http.h"
-#include "core/util.h"
 #include "core/log.h"
 #include "uppm.h"
 

@@ -4,7 +4,6 @@
 #include <stdbool.h>
 #include <sys/stat.h>
 
-#include "core/util.h"
 #include "core/regex/regex.h"
 #include "uppm.h"
 

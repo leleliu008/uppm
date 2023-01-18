@@ -1,14 +1,7 @@
-#include <regex.h>
-#include "regex/regex.h"
-#include "find-executables.h"
-#include "util.h"
-#include "../uppm.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
 #include <sys/stat.h>
 
 #if defined (__APPLE__)
@@ -24,102 +17,12 @@
 #include <sys/sysctl.h>
 #endif
 
-int get_file_extension_from_url(char * buf, size_t bufSize, const char * url) {
-    if (url == NULL) {
-        return UPPM_ERROR_ARG_IS_NULL;
-    }
+#include <regex.h>
+#include "regex/regex.h"
 
-    if (buf == NULL) {
-        return UPPM_ERROR_ARG_IS_NULL;
-    }
+#include "self.h"
 
-    if (bufSize == 0) {
-        return UPPM_ERROR_ARG_IS_INVALID;
-    }
-
-    size_t urlLength = 0;
-    char c;
-
-    for (;;) {
-        c = url[urlLength];
-
-        if (c == '?' || c == '\0') {
-            break;
-        } else {
-            urlLength++;
-        }
-    }
-
-    //printf("url=%s\nurlLength=%lu\n", url, urlLength);
-
-    if (urlLength < 3) {
-        return UPPM_ERROR_ARG_IS_INVALID;
-    }
-
-    size_t lastIndex = urlLength - 1;
-
-    if (url[lastIndex] == '.') {
-        return UPPM_ERROR_ARG_IS_INVALID;
-    }
-
-    size_t i = lastIndex;
-
-    const char * p;
-
-    for (; i >= 0; i--) {
-        c = url[i];
-
-        if (c == '.') {
-            p = &url[i];
-
-            if (urlLength - i == 3) {
-                if (strcmp(p, ".gz") == 0) {
-                    if (urlLength > 7) {
-                        if (strncmp(&url[i - 4], ".tar", 4) == 0) {
-                            strncpy(buf, ".tgz", bufSize > 4 ? 4 : bufSize);
-                            return UPPM_OK;
-                        }
-                    }
-                } else if (strcmp(p, ".xz") == 0) {
-                    if (urlLength > 7) {
-                        if (strncmp(&url[i - 4], ".tar", 4) == 0) {
-                            strncpy(buf, ".txz", bufSize > 4 ? 4 : bufSize);
-                            return UPPM_OK;
-                        }
-                    }
-                } else if (strcmp(p, ".lz") == 0) {
-                    if (urlLength > 7) {
-                        if (strncmp(&url[i - 4], ".tar", 4) == 0) {
-                            strncpy(buf, ".tlz", bufSize > 4 ? 4 : bufSize);
-                            return UPPM_OK;
-                        }
-                    }
-                }
-            } else if (urlLength - i == 4) {
-                if (strcmp(p, ".bz2") == 0) {
-                    if (urlLength > 8) {
-                        if (strncmp(&url[i - 4], ".tar", 4) == 0) {
-                            strncpy(buf, ".tbz2", bufSize > 5 ? 5 : bufSize);
-                            return UPPM_OK;
-                        }
-                    }
-                }
-            }
-
-            size_t n = urlLength - i;
-            strncpy(buf, p, bufSize > n ? n : bufSize);
-            return UPPM_OK;
-        }
-
-        if (i == 0) {
-            break;
-        }
-    }
-
-    return UPPM_ERROR_ARG_IS_INVALID;
-}
-
-int get_current_executable_realpath(char * * out) {
+int self_realpath(char * * out) {
 #if defined (__APPLE__)
     char buf[PATH_MAX + 1] = {0};
 

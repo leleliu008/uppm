@@ -3,9 +3,10 @@
 #include <dirent.h>
 
 #include "core/sysinfo.h"
-#include "core/util.h"
+#include "core/self.h"
 #include "uppm.h"
 
+#include <zlib.h>
 #include <git2.h>
 #include <yaml.h>
 #include <jansson.h>
@@ -68,7 +69,7 @@ static int uppm_list_dirs(const char * installedDir, size_t installedDirLength, 
 }
 
 int uppm_env(bool verbose) {
-    printf("build.time: %s\n\n", UPPM_BUILD_TIMESTAMP);
+    printf("build.utctime: %s\n\n", UPPM_BUILD_TIMESTAMP);
 
     //printf("pcre2   : %d.%d\n", PCRE2_MAJOR, PCRE2_MINOR);
     printf("build.libyaml: %s\n", yaml_get_version_string());
@@ -84,7 +85,8 @@ int uppm_env(bool verbose) {
 #endif
 
     printf("build.jansson: %s\n", JANSSON_VERSION);
-    printf("build.archive: %s\n\n", ARCHIVE_VERSION_ONLY_STRING);
+    printf("build.archive: %s\n", ARCHIVE_VERSION_ONLY_STRING);
+    printf("build.zlib:    %s\n\n", ZLIB_VERSION);
 
     SysInfo sysinfo = {0};
 
@@ -120,7 +122,7 @@ int uppm_env(bool verbose) {
 
     char * path = NULL;
 
-    get_current_executable_realpath(&path);
+    self_realpath(&path);
 
     printf("uppm.path : %s\n", path == NULL ? "" : path);
 
