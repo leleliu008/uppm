@@ -1,6 +1,9 @@
+#include <time.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include <unistd.h>
+#include <sys/stat.h>
 #include <curl/curl.h>
 
 #include "uppm.h"
@@ -54,7 +57,7 @@ int uppm_depends_make_dot_items(const char * packageName, char ** outP, size_t *
 
     strncat(*outP, buf, bufLength);
 
-    (*outSize) += bufLength;
+    (*outSize) += bufLength - 1;
 
     size_t depPackageNamesLength = strlen(formula->dep_pkg);
     size_t depPackageNamesCopyLength = depPackageNamesLength + 1;
@@ -65,7 +68,7 @@ int uppm_depends_make_dot_items(const char * packageName, char ** outP, size_t *
     char * depPackageName = strtok(depPackageNamesCopy, " ");
 
     while (depPackageName != NULL) {
-        size_t  bufLength = strlen(packageName) + 3;
+        size_t  bufLength = strlen(depPackageName) + 4;
         char    buf[bufLength];
         snprintf(buf, bufLength, " \"%s\"", depPackageName);
 
@@ -77,7 +80,7 @@ int uppm_depends_make_dot_items(const char * packageName, char ** outP, size_t *
 
         strncat(*outP, buf, bufLength);
 
-        (*outSize) += bufLength;
+        (*outSize) += bufLength - 1;
 
         depPackageName = strtok (NULL, " ");
     }
@@ -195,42 +198,83 @@ static int uppm_depends_make_box(const char * dotScriptStr) {
     return resultCode;
 }
 
-static int uppm_depends_make_png(const char * dotScriptStr) {
-    size_t cmdLength = strlen(dotScriptStr) + 22;
-    char   cmd[cmdLength];
-    memset(cmd, 0, cmdLength);
-    snprintf(cmd, cmdLength, "dot -Tpng <<EOF\n%s\nEOF", dotScriptStr);
+static int uppm_depends_make_xxx(const char * dotScriptStr, size_t len, const char * type) {
+    char * userHomeDir = getenv("HOME");
 
-    int ret = system(cmd);
+    if (userHomeDir == NULL) {
+        return UPPM_ERROR_ENV_HOME_NOT_SET;
+    }
 
-    if (ret == 0) {
-        return UPPM_OK;
-    } else {
-        if (ret == -1) {
-            perror(NULL);
+    size_t userHomeDirLength = strlen(userHomeDir);
+
+    if (userHomeDirLength == 0) {
+        return UPPM_ERROR_ENV_HOME_NOT_SET;
+    }
+
+    ////////////////////////////////////////////////////////////////
+
+    struct stat st;
+
+    size_t  uppmHomeDirLength = userHomeDirLength + 7;
+    char    uppmHomeDir[uppmHomeDirLength];
+    memset (uppmHomeDir, 0, uppmHomeDirLength);
+    snprintf(uppmHomeDir, uppmHomeDirLength, "%s/.uppm", userHomeDir);
+
+    if (stat(uppmHomeDir, &st) == 0) {
+        if (!S_ISDIR(st.st_mode)) {
+            fprintf(stderr, "not a directory: %s\n", uppmHomeDir);
+            return UPPM_ERROR;
         }
+    } else {
+        if (mkdir(uppmHomeDir, S_IRWXU) != 0) {
+            perror(uppmHomeDir);
+            return UPPM_ERROR;
+        }
+    }
 
+    ////////////////////////////////////////////////////////////////
+
+    size_t  uppmTmpDirLength = uppmHomeDirLength + 5;
+    char    uppmTmpDir[uppmTmpDirLength];
+    memset (uppmTmpDir, 0, uppmTmpDirLength);
+    snprintf(uppmTmpDir, uppmTmpDirLength, "%s/tmp", uppmHomeDir);
+
+    if (stat(uppmTmpDir, &st) == 0) {
+        if (!S_ISDIR(st.st_mode)) {
+            fprintf(stderr, "not a directory: %s\n", uppmTmpDir);
+            return UPPM_ERROR;
+        }
+    } else {
+        if (mkdir(uppmTmpDir, S_IRWXU) != 0) {
+            perror(uppmTmpDir);
+            return UPPM_ERROR;
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
+    char ts[11] = {0};
+    snprintf(ts, 11, "%ld", time(NULL));
+
+    size_t filepathLength = uppmTmpDirLength + strlen(ts) + 6;
+    char   filepath[filepathLength];
+    snprintf(filepath, filepathLength, "%s/%s.dot", uppmTmpDir, ts);
+
+    FILE * file = fopen(filepath, "w");
+
+    if (file == NULL) {
+        perror(NULL);
         return UPPM_ERROR;
     }
-}
 
-static int uppm_depends_make_svg(const char * dotScriptStr) {
-    size_t cmdLength = strlen(dotScriptStr) + 22;
-    char   cmd[cmdLength];
-    memset(cmd, 0, cmdLength);
-    snprintf(cmd, cmdLength, "dot -Tsvg <<EOF\n%s\nEOF", dotScriptStr);
+    fwrite(dotScriptStr, 1, len, file);
+    fclose(file);
 
-    int ret = system(cmd);
+    execlp("dot", "dot", type, filepath, NULL);
 
-    if (ret == 0) {
-        return UPPM_OK;
-    } else {
-        if (ret == -1) {
-            perror(NULL);
-        }
+    perror("dot");
 
-        return UPPM_ERROR;
-    }
+    return UPPM_ERROR;
 }
 
 int uppm_depends(const char * packageName, UPPMDependsOutputFormat outputFormat) {
@@ -261,7 +305,7 @@ int uppm_depends(const char * packageName, UPPMDependsOutputFormat outputFormat)
 
         return UPPM_OK;
     } else if (outputFormat == UPPMDependsOutputFormat_BOX) {
-        size_t  dotScriptStrLength = pSize + 15;
+        size_t  dotScriptStrLength = pSize + 14;
         char    dotScriptStr[dotScriptStrLength];
         memset( dotScriptStr, 0, dotScriptStrLength);
         snprintf(dotScriptStr, dotScriptStrLength, "digraph G {\n%s}", p);
@@ -270,23 +314,23 @@ int uppm_depends(const char * packageName, UPPMDependsOutputFormat outputFormat)
 
         return uppm_depends_make_box(dotScriptStr);
     } else if (outputFormat == UPPMDependsOutputFormat_PNG) {
-        size_t  dotScriptStrLength = pSize + 15;
+        size_t  dotScriptStrLength = pSize + 14;
         char    dotScriptStr[dotScriptStrLength];
         memset( dotScriptStr, 0, dotScriptStrLength);
         snprintf(dotScriptStr, dotScriptStrLength, "digraph G {\n%s}", p);
 
         free(p);
 
-        return uppm_depends_make_png(dotScriptStr);
+        return uppm_depends_make_xxx(dotScriptStr, dotScriptStrLength - 1, "-Tpng");
     } else if (outputFormat == UPPMDependsOutputFormat_SVG) {
-        size_t  dotScriptStrLength = pSize + 15;
+        size_t  dotScriptStrLength = pSize + 14;
         char    dotScriptStr[dotScriptStrLength];
         memset( dotScriptStr, 0, dotScriptStrLength);
         snprintf(dotScriptStr, dotScriptStrLength, "digraph G {\n%s}", p);
 
         free(p);
 
-        return uppm_depends_make_svg(dotScriptStr);
+        return uppm_depends_make_xxx(dotScriptStr, dotScriptStrLength - 1, "-Tsvg");
     } else {
         free(p);
 
