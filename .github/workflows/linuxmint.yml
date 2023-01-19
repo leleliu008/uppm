@@ -110,6 +110,6 @@ jobs:
 
       - run:  ~/.ppkg/installed/uppm/bin/uppm formula-repo-list
       - run:  ~/.ppkg/installed/uppm/bin/uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-linux-x86_64
-      - run:  ~/.ppkg/installed/uppm/bin/uppm formula-repo-del my_repo
+      - run:  ~/.ppkg/installed/uppm/bin/uppm formula-repo-remove my_repo
 
       - run:  ~/.ppkg/installed/uppm/bin/uppm cleanup
