@@ -15,10 +15,10 @@
 int uppm_fetch_all_available_packages(bool verbose) {
     UPPMFormulaRepoList * formulaRepoList = NULL;
 
-    int resultCode = uppm_formula_repo_list(&formulaRepoList);
+    int ret = uppm_formula_repo_list(&formulaRepoList);
 
-    if (resultCode != UPPM_OK) {
-        return resultCode;
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
     for (size_t i = 0; i < formulaRepoList->size; i++) {
@@ -55,12 +55,12 @@ int uppm_fetch_all_available_packages(bool verbose) {
                 strncpy(packageName, dir_entry->d_name, fileNameLength - 4);
 
                 //printf("%s\n", packageName);
-                resultCode = uppm_fetch(packageName, verbose);
+                ret = uppm_fetch(packageName, verbose);
 
-                if (resultCode != UPPM_OK) {
+                if (ret != UPPM_OK) {
                     uppm_formula_repo_list_free(formulaRepoList);
                     closedir(dir);
-                    return resultCode;
+                    return ret;
                 }
             } else if(r == FNM_NOMATCH) {
                 ;
@@ -95,10 +95,10 @@ int uppm_fetch(const char * packageName, bool verbose) {
 
     UPPMFormula * formula = NULL;
 
-    int resultCode = uppm_formula_parse(packageName, &formula);
+    int ret = uppm_formula_lookup(packageName, &formula);
 
-    if (resultCode != UPPM_OK) {
-        return resultCode;
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
     char * userHomeDir = getenv("HOME");
@@ -124,7 +124,7 @@ int uppm_fetch(const char * packageName, bool verbose) {
 
     if (stat(downloadDir, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {
-            fprintf(stderr, "not a directory: %s\n", downloadDir);
+            fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", downloadDir);
             return UPPM_ERROR;
         }
     } else {
@@ -137,11 +137,11 @@ int uppm_fetch(const char * packageName, bool verbose) {
 
     char binFileNameExtension[21] = {0};
 
-    resultCode = uppm_examine_file_extension_from_url(binFileNameExtension, 20, formula->bin_url);
+    ret = uppm_examine_file_extension_from_url(binFileNameExtension, 20, formula->bin_url);
 
-    if (resultCode != UPPM_OK) {
+    if (ret != UPPM_OK) {
         uppm_formula_free(formula);
-        return resultCode;
+        return ret;
     }
 
     size_t  binFileNameLength = strlen(formula->bin_sha) + strlen(binFileNameExtension) + 1;
@@ -157,11 +157,11 @@ int uppm_fetch(const char * packageName, bool verbose) {
     if (stat(binFilePath, &st) == 0 && S_ISREG(st.st_mode)) {
         char actualSHA256SUM[65] = {0};
 
-        resultCode = sha256sum_of_file(actualSHA256SUM, binFilePath);
+        ret = sha256sum_of_file(actualSHA256SUM, binFilePath);
 
-        if (resultCode != 0) {
+        if (ret != 0) {
             uppm_formula_free(formula);
-            return resultCode;
+            return ret;
         }
 
         if (strcmp(actualSHA256SUM, formula->bin_sha) == 0) {
@@ -171,20 +171,20 @@ int uppm_fetch(const char * packageName, bool verbose) {
         }
     }
 
-    resultCode = http_fetch_to_file(formula->bin_url, binFilePath, verbose, verbose);
+    ret = http_fetch_to_file(formula->bin_url, binFilePath, verbose, verbose);
 
-    if (resultCode != UPPM_OK) {
+    if (ret != UPPM_OK) {
         uppm_formula_free(formula);
-        return resultCode;
+        return ret;
     }
 
     char actualSHA256SUM[65] = {0};
 
-    resultCode = sha256sum_of_file(actualSHA256SUM, binFilePath);
+    ret = sha256sum_of_file(actualSHA256SUM, binFilePath);
 
-    if (resultCode != 0) {
+    if (ret != 0) {
         uppm_formula_free(formula);
-        return resultCode;
+        return ret;
     }
 
     if (strcmp(actualSHA256SUM, formula->bin_sha) == 0) {

@@ -4,11 +4,11 @@
 
 #include "uppm.h"
 
-int uppm_formula_find(const char * packageName, char ** out) {
-    int resultCode = uppm_check_if_the_given_argument_matches_package_name_pattern(packageName);
+int uppm_formula_locate(const char * packageName, char ** out) {
+    int ret = uppm_check_if_the_given_argument_matches_package_name_pattern(packageName);
 
-    if (resultCode != UPPM_OK) {
-        return resultCode;
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
     char * userHomeDir = getenv("HOME");
@@ -25,23 +25,25 @@ int uppm_formula_find(const char * packageName, char ** out) {
 
     UPPMFormulaRepoList * formulaRepoList = NULL;
 
-    resultCode = uppm_formula_repo_list(&formulaRepoList);
+    ret = uppm_formula_repo_list(&formulaRepoList);
 
-    if (resultCode != UPPM_OK) {
+    if (ret != UPPM_OK) {
         uppm_formula_repo_list_free(formulaRepoList);
-        return resultCode;
+        return ret;
     }
 
     struct stat st;
+
+    size_t packageNameLength = strlen(packageName);
 
     for (size_t i = 0; i < formulaRepoList->size; i++) {
         if (!(formulaRepoList->repos[i]->enabled)) {
             continue;
         }
 
-        char *  formulaRepoPath = formulaRepoList->repos[i]->path;
+        char * formulaRepoPath = formulaRepoList->repos[i]->path;
 
-        size_t formulaFilePathLength =  strlen(formulaRepoPath) + strlen(packageName) + 15;
+        size_t formulaFilePathLength =  strlen(formulaRepoPath) + packageNameLength + 15;
         char   formulaFilePath[formulaFilePathLength];
         memset(formulaFilePath, 0, formulaFilePathLength);
         snprintf(formulaFilePath, formulaFilePathLength, "%s/formula/%s.yml", formulaRepoPath, packageName);

@@ -34,7 +34,7 @@ int uppm_upgrade_self(bool verbose) {
 
     if (stat(uppmHomeDir, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {
-            fprintf(stderr, "not a directory: %s\n", uppmHomeDir);
+            fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", uppmHomeDir);
             return UPPM_ERROR;
         }
     } else {
@@ -53,7 +53,7 @@ int uppm_upgrade_self(bool verbose) {
 
     if (stat(uppmTmpDir, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {
-            fprintf(stderr, "not a directory: %s\n", uppmTmpDir);
+            fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", uppmTmpDir);
             return UPPM_ERROR;
         }
     } else {
@@ -72,10 +72,10 @@ int uppm_upgrade_self(bool verbose) {
     memset (githubApiResultJsonFilePath, 0, githubApiResultJsonFilePathLength);
     snprintf(githubApiResultJsonFilePath, githubApiResultJsonFilePathLength, "%s/latest.json", uppmTmpDir);
 
-    int resultCode = http_fetch_to_file(githubApiUrl, githubApiResultJsonFilePath, verbose, verbose);
+    int ret = http_fetch_to_file(githubApiUrl, githubApiResultJsonFilePath, verbose, verbose);
 
-    if (resultCode != UPPM_OK) {
-        return resultCode;
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
     FILE * file = fopen(githubApiResultJsonFilePath, "r");
@@ -127,18 +127,18 @@ int uppm_upgrade_self(bool verbose) {
 
     char osType[31] = {0};
 
-    resultCode = sysinfo_type(osType, 30);
+    ret = sysinfo_type(osType, 30);
 
-    if (resultCode != UPPM_OK) {
-        return resultCode;
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
     char osArch[31] = {0};
 
-    resultCode = sysinfo_arch(osArch, 30);
+    ret = sysinfo_arch(osArch, 30);
 
-    if (resultCode != UPPM_OK) {
-        return resultCode;
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
     size_t latestVersionLength = strlen(latestVersion);
@@ -158,10 +158,10 @@ int uppm_upgrade_self(bool verbose) {
     memset (tarballFilePath, 0, tarballFilePathLength);
     snprintf(tarballFilePath, tarballFilePathLength, "%s/%s", uppmTmpDir, tarballFileName);
 
-    resultCode = http_fetch_to_file(tarballUrl, tarballFilePath, verbose, verbose);
+    ret = http_fetch_to_file(tarballUrl, tarballFilePath, verbose, verbose);
 
-    if (resultCode != UPPM_OK) {
-        return resultCode;
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -171,10 +171,10 @@ int uppm_upgrade_self(bool verbose) {
     memset (tarballExtractDir, 0, tarballExtractDirLength);
     snprintf(tarballExtractDir, tarballExtractDirLength, "%s.d", tarballFilePath);
 
-    resultCode = untar_extract(tarballExtractDir, tarballFilePath, 0, verbose, 1);
+    ret = untar_extract(tarballExtractDir, tarballFilePath, 0, verbose, 1);
 
-    if (resultCode != 0) {
-        return abs(resultCode) + UPPM_ERROR_ARCHIVE_BASE;
+    if (ret != 0) {
+        return abs(ret) + UPPM_ERROR_ARCHIVE_BASE;
     }
 
     size_t  upgradableExecutableFilePathLength = tarballExtractDirLength + 10;

@@ -6,7 +6,7 @@
 #include "core/rm-r.h"
 #include "uppm.h"
 
-int uppm_formula_repo_del(const char * formulaRepoName) {
+int uppm_formula_repo_remove(const char * formulaRepoName) {
     if (formulaRepoName == NULL) {
         return UPPM_ERROR_ARG_IS_NULL;
     }

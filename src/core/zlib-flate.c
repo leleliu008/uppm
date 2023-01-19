@@ -15,10 +15,10 @@ int zlib_deflate_string_to_file(const char * inputBuf, size_t inputBufSizeInByte
     zStream.zfree  = Z_NULL;
     zStream.opaque = Z_NULL;
 
-    int resultCode = deflateInit(&zStream, 1);
+    int ret = deflateInit(&zStream, 1);
 
-    if (resultCode != Z_OK) {
-        return resultCode;
+    if (ret != Z_OK) {
+        return ret;
     }
 
     unsigned char outputBuf[CHUNK];
@@ -32,7 +32,7 @@ int zlib_deflate_string_to_file(const char * inputBuf, size_t inputBufSizeInByte
         zStream.avail_out = CHUNK;
         zStream.next_out  = outputBuf;
 
-        resultCode = deflate(&zStream, Z_FINISH);
+        ret = deflate(&zStream, Z_FINISH);
 
         have = CHUNK - zStream.avail_out;
 

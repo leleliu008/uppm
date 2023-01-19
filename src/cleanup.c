@@ -32,7 +32,7 @@ int uppm_cleanup(bool verbose) {
     }
 
     if (!S_ISDIR(st.st_mode)) {
-        fprintf(stderr, "not a directory: %s\n", uppmTmpDir);
+        fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", uppmTmpDir);
         return UPPM_ERROR;
     }
 

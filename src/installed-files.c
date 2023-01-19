@@ -79,9 +79,9 @@ int record_installed_files(const char * installedDirPath) {
         return UPPM_ERROR;
     }
 
-    int resultCode = record_installed_files_r(installedDirPath, installedDirLength + 1, installedManifestFile);
+    int ret = record_installed_files_r(installedDirPath, installedDirLength + 1, installedManifestFile);
 
     fclose(installedManifestFile);
 
-    return resultCode;
+    return ret;
 }

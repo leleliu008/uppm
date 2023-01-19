@@ -112,9 +112,9 @@ int sha256sum_of_file(char outputBuffer[65], const char * filepath) {
         return UPPM_ERROR;
     }
 
-    int resultCode = sha256sum_of_stream(outputBuffer, file);
+    int ret = sha256sum_of_stream(outputBuffer, file);
 
     fclose(file);
 
-    return resultCode;
+    return ret;
 }

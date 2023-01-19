@@ -5,11 +5,12 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <git2.h>
 
 #include "uppm.h"
 #include "core/zlib-flate.h"
 
-int uppm_formula_repo_add(const char * formulaRepoName, const char * formulaRepoUrl, const char * branchName) {
+int uppm_formula_repo_create(const char * formulaRepoName, const char * formulaRepoUrl, const char * branchName) {
     if (formulaRepoName == NULL) {
         return UPPM_ERROR_ARG_IS_NULL;
     }
@@ -109,16 +110,52 @@ int uppm_formula_repo_add(const char * formulaRepoName, const char * formulaRepo
 
     ////////////////////////////////////////////////////////////////////////////////////////
 
-    printf("Adding formula repo : %s => %s\n", formulaRepoName, formulaRepoUrl);
+    size_t subDirLength = formulaRepoDirLength + 9;
+    char   subDir[subDirLength];
+    snprintf(subDir, subDirLength, "%s/formula", formulaRepoDir);
 
-    size_t  refspecLength = (branchNameLength << 1) + 33;
-    char    refspec[refspecLength];
-    memset (refspec, 0, refspecLength);
-    snprintf(refspec, refspecLength, "refs/heads/%s:refs/remotes/origin/%s", branchName, branchName);
-
-    if (uppm_fetch_via_git(formulaRepoDir, formulaRepoUrl, refspec, branchName) != 0) {
+    if (mkdir(subDir, S_IRWXU) != 0) {
+        perror(subDir);
         return UPPM_ERROR;
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////
+
+    git_repository   * gitRepo   = NULL;
+    git_remote       * gitRemote = NULL;
+    const git_error * gitError   = NULL;
+
+    git_libgit2_init();
+
+    int ret = git_repository_init(&gitRepo, formulaRepoDir, false);
+
+    if (ret != GIT_OK) {
+        gitError = git_error_last();
+        fprintf(stderr, "%s\n", gitError->message);
+        git_repository_state_cleanup(gitRepo);
+        git_repository_free(gitRepo);
+        git_libgit2_shutdown();
+        return abs(ret) + UPPM_ERROR_LIBGIT2_BASE;
+    }
+
+    //https://libgit2.org/libgit2/#HEAD/group/remote/git_remote_create
+    ret = git_remote_create(&gitRemote, gitRepo, "origin", formulaRepoUrl);
+
+    if (ret != GIT_OK) {
+        gitError = git_error_last();
+        fprintf(stderr, "%s\n", gitError->message);
+        git_repository_state_cleanup(gitRepo);
+        git_repository_free(gitRepo);
+        git_libgit2_shutdown();
+        return abs(ret) + UPPM_ERROR_LIBGIT2_BASE;
+    }
+
+    git_repository_state_cleanup(gitRepo);
+    git_repository_free(gitRepo);
+    git_remote_free(gitRemote);
+    git_libgit2_shutdown();
+
+    ////////////////////////////////////////////////////////////////////////////////////////
 
     size_t formulaRepoConfigFilePathLength = formulaRepoDirLength + 24;
     char   formulaRepoConfigFilePath[formulaRepoConfigFilePathLength];
@@ -136,10 +173,9 @@ int uppm_formula_repo_add(const char * formulaRepoName, const char * formulaRepo
     memset(ts, 0, 11);
     snprintf(ts, 11, "%ld", time(NULL));
 
-    size_t  strLength = formulaRepoUrlLength + branchNameLength + strlen(ts) + 58;
-    char    str[strLength];
-    memset (str, 0, strLength);
-    snprintf(str, strLength, "url: %s\nbranch: %s\npinned: no\nenabled: yes\ntimestamp-added: %s\n", formulaRepoUrl, branchName, ts);
+    size_t strLength = formulaRepoUrlLength + branchNameLength + strlen(ts) + 59;
+    char   str[strLength];
+    snprintf(str, strLength, "url: %s\nbranch: %s\npinned: yes\nenabled: yes\ntimestamp-added: %s\n", formulaRepoUrl, branchName, ts);
 
     if (zlib_deflate_string_to_file(str, strLength - 1, file) != 0) {
         fclose(file);
@@ -151,6 +187,7 @@ int uppm_formula_repo_add(const char * formulaRepoName, const char * formulaRepo
         return UPPM_ERROR;
     } else {
         fclose(file);
+        printf("new formula repo created: \nname: %s\n%s", formulaRepoName, str);
         return UPPM_OK;
     }
 }

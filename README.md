@@ -350,9 +350,34 @@ all relevant dirs and files are located in `~/.uppm` directory.
         
     **Note:** this software supports multiple formula repositories.
 
+*   **create a new formula repository**
+
+        uppm formula-repo-create my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo
+        uppm formula-repo-create my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo master
+        uppm formula-repo-create my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo main
+
+    **Note:** the created formula repository is pinned by default.
+
 *   **delete a existing formula repository**
 
-        uppm formula-repo-del my_repo
+        uppm formula-repo-remove my_repo
+
+*   **update a existing formula repository**
+
+        uppm formula-repo-update my_repo
+
+*   **show infomation of a existing formula repository**
+
+        uppm formula-repo-info my_repo
+
+*   **change the config of a existing formula repository**
+
+        uppm formula-repo-change my_repo --url=https://github.com/leleliu008/uppm-formula-repository-my_repo
+        uppm formula-repo-change my_repo --branch=main
+        uppm formula-repo-change my_repo --pin
+        uppm formula-repo-change my_repo --unpin
+        uppm formula-repo-change my_repo --enable
+        uppm formula-repo-change my_repo --disable
 
 *   **list the available packages**
         

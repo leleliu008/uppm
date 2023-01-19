@@ -34,10 +34,10 @@ static int _my_realloc(char ** outP, size_t * outSize, size_t * outCapcity, size
 int uppm_depends_make_dot_items(const char * packageName, char ** outP, size_t * outSize, size_t * outCapcity) {
     UPPMFormula * formula = NULL;
 
-    int resultCode = uppm_formula_parse(packageName, &formula);
+    int ret = uppm_formula_lookup(packageName, &formula);
 
-    if (resultCode != UPPM_OK) {
-        return resultCode;
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
     if (formula->dep_pkg == NULL) {
@@ -49,10 +49,10 @@ int uppm_depends_make_dot_items(const char * packageName, char ** outP, size_t *
     char    buf[bufLength];
     snprintf(buf, bufLength, "    \"%s\" -> {", packageName);
 
-    resultCode = _my_realloc(outP, outSize, outCapcity, bufLength);
+    ret = _my_realloc(outP, outSize, outCapcity, bufLength);
 
-    if (resultCode != UPPM_OK) {
-        return resultCode;
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
     strncat(*outP, buf, bufLength);
@@ -72,10 +72,10 @@ int uppm_depends_make_dot_items(const char * packageName, char ** outP, size_t *
         char    buf[bufLength];
         snprintf(buf, bufLength, " \"%s\"", depPackageName);
 
-        resultCode = _my_realloc(outP, outSize, outCapcity, bufLength);
+        ret = _my_realloc(outP, outSize, outCapcity, bufLength);
 
-        if (resultCode != UPPM_OK) {
-            return resultCode;
+        if (ret != UPPM_OK) {
+            return ret;
         }
 
         strncat(*outP, buf, bufLength);
@@ -85,10 +85,10 @@ int uppm_depends_make_dot_items(const char * packageName, char ** outP, size_t *
         depPackageName = strtok (NULL, " ");
     }
 
-    resultCode = _my_realloc(outP, outSize, outCapcity, 3);
+    ret = _my_realloc(outP, outSize, outCapcity, 3);
 
-    if (resultCode != UPPM_OK) {
-        return resultCode;
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
     char buff[3] = { ' ', '}', '\n' };
@@ -115,9 +115,9 @@ int uppm_depends_make_dot_items(const char * packageName, char ** outP, size_t *
                 //printf("%lu\n", n);
                 //printf("str=%s\n", str);
 
-                resultCode = uppm_depends_make_dot_items(depPackageName, outP, outSize, outCapcity);
+                ret = uppm_depends_make_dot_items(depPackageName, outP, outSize, outCapcity);
 
-                if (resultCode != UPPM_OK) {
+                if (ret != UPPM_OK) {
                     goto clean;
                 }
             }
@@ -143,7 +143,7 @@ int uppm_depends_make_dot_items(const char * packageName, char ** outP, size_t *
 clean:
     uppm_formula_free(formula);
 
-    return resultCode;
+    return ret;
 }
 
 static int uppm_depends_make_box(const char * dotScriptStr) {
@@ -183,11 +183,11 @@ static int uppm_depends_make_box(const char * dotScriptStr) {
 
     CURLcode curlcode = curl_easy_perform(curl);
 
-    int resultCode = UPPM_OK;
+    int ret = UPPM_OK;
 
     if (curlcode != CURLE_OK) {
         fprintf(stderr, "%s\n", curl_easy_strerror(curlcode));
-        resultCode = UPPM_ERROR_NETWORK_BASE + curlcode;
+        ret = UPPM_ERROR_NETWORK_BASE + curlcode;
     }
 
     curl_free(dataUrlEncoded);
@@ -195,7 +195,7 @@ static int uppm_depends_make_box(const char * dotScriptStr) {
 
     curl_global_cleanup();
 
-    return resultCode;
+    return ret;
 }
 
 static int uppm_depends_make_xxx(const char * dotScriptStr, size_t len, const char * type) {
@@ -222,7 +222,7 @@ static int uppm_depends_make_xxx(const char * dotScriptStr, size_t len, const ch
 
     if (stat(uppmHomeDir, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {
-            fprintf(stderr, "not a directory: %s\n", uppmHomeDir);
+            fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", uppmHomeDir);
             return UPPM_ERROR;
         }
     } else {
@@ -241,7 +241,7 @@ static int uppm_depends_make_xxx(const char * dotScriptStr, size_t len, const ch
 
     if (stat(uppmTmpDir, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {
-            fprintf(stderr, "not a directory: %s\n", uppmTmpDir);
+            fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", uppmTmpDir);
             return UPPM_ERROR;
         }
     } else {
@@ -278,20 +278,20 @@ static int uppm_depends_make_xxx(const char * dotScriptStr, size_t len, const ch
 }
 
 int uppm_depends(const char * packageName, UPPMDependsOutputFormat outputFormat) {
-    int resultCode = uppm_check_if_the_given_argument_matches_package_name_pattern(packageName);
+    int ret = uppm_check_if_the_given_argument_matches_package_name_pattern(packageName);
 
-    if (resultCode != UPPM_OK) {
-        return resultCode;
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
     char * p = NULL;
     size_t pSize = 0;
     size_t pCapcity = 0;
 
-    resultCode = uppm_depends_make_dot_items(packageName, &p, &pSize, &pCapcity);
+    ret = uppm_depends_make_dot_items(packageName, &p, &pSize, &pCapcity);
 
-    if (resultCode != UPPM_OK) {
-        return resultCode;
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
     if (pSize == 0) {

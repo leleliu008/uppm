@@ -16,18 +16,18 @@ static size_t write_callback(void * ptr, size_t size, size_t nmemb, void * strea
 int http_fetch_to_stream(const char * url, FILE * outputFile, bool verbose, bool showProgress) {
     char * transformedUrl = NULL;
 
-    int resultCode = uppm_url_transform(url, &transformedUrl, verbose);
+    int ret = uppm_url_transform(url, &transformedUrl, verbose);
 
-    if (resultCode == UPPM_OK) {
+    if (ret == UPPM_OK) {
         ;
-    } else if (resultCode == UPPM_ERROR_URL_TRANSFORM_ENV_NOT_SET) {
+    } else if (ret == UPPM_ERROR_URL_TRANSFORM_ENV_NOT_SET) {
         transformedUrl = strdup(url);
 
         if (transformedUrl == NULL) {
             return UPPM_ERROR_URL_TRANSFORM_RUN_NO_RESULT;
         }
     } else {
-        return resultCode;
+        return ret;
     }
 
     if (outputFile == NULL) {
@@ -126,9 +126,9 @@ int http_fetch_to_file(const char * url, const char * outputFilePath, bool verbo
         return UPPM_ERROR;
     }
 
-    int resultCode = http_fetch_to_stream(url, file, verbose, showProgress);
+    int ret = http_fetch_to_stream(url, file, verbose, showProgress);
 
     fclose(file);
 
-    return resultCode;
+    return ret;
 }

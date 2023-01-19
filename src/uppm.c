@@ -31,99 +31,99 @@ int uppm_main(int argc, char* argv[]) {
     }
 
     if (strcmp(argv[1], "env") == 0) {
-        int resultCode = uppm_env(verbose);
+        int ret = uppm_env(verbose);
 
-        if (resultCode == UPPM_ERROR_ENV_HOME_NOT_SET) {
+        if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
             fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
-        } else if (resultCode == UPPM_ERROR_ENV_PATH_NOT_SET) {
+        } else if (ret == UPPM_ERROR_ENV_PATH_NOT_SET) {
             fprintf(stderr, "%s\n", "PATH environment variable is not set.\n");
-        } else if (resultCode == UPPM_ERROR) {
+        } else if (ret == UPPM_ERROR) {
             fprintf(stderr, "occurs error.\n");
         }
 
-        return resultCode;
+        return ret;
     }
 
     if (strcmp(argv[1], "update") == 0) {
-        int resultCode = uppm_formula_repo_list_update();
+        int ret = uppm_formula_repo_list_update();
 
-        if (resultCode == UPPM_ERROR_ENV_HOME_NOT_SET) {
+        if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
             fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
-        } else if (resultCode == UPPM_ERROR_ENV_PATH_NOT_SET) {
+        } else if (ret == UPPM_ERROR_ENV_PATH_NOT_SET) {
             fprintf(stderr, "%s\n", "PATH environment variable is not set.\n");
-        } else if (resultCode == UPPM_ERROR) {
+        } else if (ret == UPPM_ERROR) {
             fprintf(stderr, "occurs error.\n");
         }
 
-        return resultCode;
+        return ret;
     }
 
     if (strcmp(argv[1], "search") == 0) {
-        int resultCode = uppm_search(argv[2]);
+        int ret = uppm_search(argv[2]);
 
-        if (resultCode == UPPM_ERROR_ARG_IS_NULL) {
+        if (ret == UPPM_ERROR_ARG_IS_NULL) {
             fprintf(stderr, "Usage: %s search <KEYWORD>, <KEYWORD> is not given.\n", argv[0]);
-        } else if (resultCode == UPPM_ERROR_ARG_IS_EMPTY) {
+        } else if (ret == UPPM_ERROR_ARG_IS_EMPTY) {
             fprintf(stderr, "Usage: %s search <KEYWORD>, <KEYWORD> is empty string.\n", argv[0]);
-        } else if (resultCode == UPPM_ERROR_ENV_HOME_NOT_SET) {
+        } else if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
             fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
-        } else if (resultCode == UPPM_ERROR_ENV_PATH_NOT_SET) {
+        } else if (ret == UPPM_ERROR_ENV_PATH_NOT_SET) {
             fprintf(stderr, "%s\n", "PATH environment variable is not set.\n");
-        } else if (resultCode == UPPM_ERROR) {
+        } else if (ret == UPPM_ERROR) {
             fprintf(stderr, "occurs error.\n");
         }
 
-        return resultCode;
+        return ret;
     }
 
     if (strcmp(argv[1], "info") == 0) {
-        int resultCode = uppm_info(argv[2], argv[3]);
+        int ret = uppm_info(argv[2], argv[3]);
 
-        if (resultCode == UPPM_ERROR_ARG_IS_NULL) {
+        if (ret == UPPM_ERROR_ARG_IS_NULL) {
             fprintf(stderr, "Usage: %s info <PACKAGE-NAME> [KEY], <PACKAGE-NAME> is not given.\n", argv[0]);
-        } else if (resultCode == UPPM_ERROR_ARG_IS_EMPTY) {
+        } else if (ret == UPPM_ERROR_ARG_IS_EMPTY) {
             fprintf(stderr, "Usage: %s info <PACKAGE-NAME> [KEY], <PACKAGE-NAME> is empty string.\n", argv[0]);
-        } else if (resultCode == UPPM_ERROR_ARG_IS_INVALID) {
+        } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
             fprintf(stderr, "Usage: %s info <PACKAGE-NAME> [KEY], <PACKAGE-NAME> is not match pattern %s\n", argv[0], UPPM_PACKAGE_NAME_PATTERN);
-        } else if (resultCode == UPPM_ERROR_ARG_IS_UNKNOWN) {
+        } else if (ret == UPPM_ERROR_ARG_IS_UNKNOWN) {
             fprintf(stderr, "Usage: %s info <PACKAGE-NAME> [KEY], unrecognized KEY: %s\n", argv[0], argv[3]);
-        } else if (resultCode == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
+        } else if (ret == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
             fprintf(stderr, "package [%s] is not available.\n", argv[2]);
-        } else if (resultCode == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
+        } else if (ret == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
             fprintf(stderr, "package [%s] is not installed.\n", argv[2]);
-        } else if (resultCode == UPPM_ERROR_ENV_HOME_NOT_SET) {
+        } else if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
             fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
-        } else if (resultCode == UPPM_ERROR_ENV_PATH_NOT_SET) {
+        } else if (ret == UPPM_ERROR_ENV_PATH_NOT_SET) {
             fprintf(stderr, "%s\n", "PATH environment variable is not set.\n");
-        } else if (resultCode == UPPM_ERROR) {
+        } else if (ret == UPPM_ERROR) {
             fprintf(stderr, "occurs error.\n");
         }
 
-        return resultCode;
+        return ret;
     }
 
     if (strcmp(argv[1], "tree") == 0) {
-        int resultCode = uppm_tree(argv[2], argc - 3, &argv[3]);
+        int ret = uppm_tree(argv[2], argc - 3, &argv[3]);
 
-        if (resultCode == UPPM_ERROR_ARG_IS_NULL) {
+        if (ret == UPPM_ERROR_ARG_IS_NULL) {
             fprintf(stderr, "Usage: %s tree <PACKAGE-NAME> [KEY], <PACKAGE-NAME> is not given.\n", argv[0]);
-        } else if (resultCode == UPPM_ERROR_ARG_IS_EMPTY) {
+        } else if (ret == UPPM_ERROR_ARG_IS_EMPTY) {
             fprintf(stderr, "Usage: %s tree <PACKAGE-NAME> [KEY], <PACKAGE-NAME> is empty string.\n", argv[0]);
-        } else if (resultCode == UPPM_ERROR_ARG_IS_INVALID) {
+        } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
             fprintf(stderr, "Usage: %s tree <PACKAGE-NAME> [KEY], <PACKAGE-NAME> is not match pattern %s\n", argv[0], UPPM_PACKAGE_NAME_PATTERN);
-        } else if (resultCode == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
+        } else if (ret == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
             fprintf(stderr, "package [%s] is not available.\n", argv[2]);
-        } else if (resultCode == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
+        } else if (ret == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
             fprintf(stderr, "package [%s] is not installed.\n", argv[2]);
-        } else if (resultCode == UPPM_ERROR_ENV_HOME_NOT_SET) {
+        } else if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
             fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
-        } else if (resultCode == UPPM_ERROR_ENV_PATH_NOT_SET) {
+        } else if (ret == UPPM_ERROR_ENV_PATH_NOT_SET) {
             fprintf(stderr, "%s\n", "PATH environment variable is not set.\n");
-        } else if (resultCode == UPPM_ERROR) {
+        } else if (ret == UPPM_ERROR) {
             fprintf(stderr, "occurs error.\n");
         }
 
-        return resultCode;
+        return ret;
     }
 
     if (strcmp(argv[1], "depends") == 0) {
@@ -146,51 +146,51 @@ int uppm_main(int argc, char* argv[]) {
             }
         }
 
-        int resultCode = uppm_depends(argv[2], outputFormat);
+        int ret = uppm_depends(argv[2], outputFormat);
 
-        if (resultCode == UPPM_ERROR_ARG_IS_NULL) {
+        if (ret == UPPM_ERROR_ARG_IS_NULL) {
             fprintf(stderr, "Usage: %s depends <PACKAGE-NAME>, <PACKAGE-NAME> is not given.\n", argv[0]);
-        } else if (resultCode == UPPM_ERROR_ARG_IS_EMPTY) {
+        } else if (ret == UPPM_ERROR_ARG_IS_EMPTY) {
             fprintf(stderr, "Usage: %s depends <PACKAGE-NAME>, <PACKAGE-NAME> is empty string.\n", argv[0]);
-        } else if (resultCode == UPPM_ERROR_ARG_IS_INVALID) {
+        } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
             fprintf(stderr, "Usage: %s depends <PACKAGE-NAME>, <PACKAGE-NAME> is not match pattern %s\n", argv[0], UPPM_PACKAGE_NAME_PATTERN);
-        } else if (resultCode == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
+        } else if (ret == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
             fprintf(stderr, "package [%s] is not available.\n", argv[2]);
-        } else if (resultCode == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
+        } else if (ret == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
             fprintf(stderr, "package [%s] is not installed.\n", argv[2]);
-        } else if (resultCode == UPPM_ERROR_ENV_HOME_NOT_SET) {
+        } else if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
             fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
-        } else if (resultCode == UPPM_ERROR_ENV_PATH_NOT_SET) {
+        } else if (ret == UPPM_ERROR_ENV_PATH_NOT_SET) {
             fprintf(stderr, "%s\n", "PATH environment variable is not set.\n");
-        } else if (resultCode == UPPM_ERROR) {
+        } else if (ret == UPPM_ERROR) {
             fprintf(stderr, "occurs error.\n");
         }
 
-        return resultCode;
+        return ret;
     }
 
     if (strcmp(argv[1], "fetch") == 0) {
-        int resultCode = uppm_fetch(argv[2], verbose);
+        int ret = uppm_fetch(argv[2], verbose);
 
-        if (resultCode == UPPM_ERROR_ARG_IS_NULL) {
+        if (ret == UPPM_ERROR_ARG_IS_NULL) {
             fprintf(stderr, "Usage: %s fetch <PACKAGE-NAME>, <PACKAGE-NAME> is not given.\n", argv[0]);
-        } else if (resultCode == UPPM_ERROR_ARG_IS_EMPTY) {
+        } else if (ret == UPPM_ERROR_ARG_IS_EMPTY) {
             fprintf(stderr, "Usage: %s fetch <PACKAGE-NAME>, <PACKAGE-NAME> is empty string.\n", argv[0]);
-        } else if (resultCode == UPPM_ERROR_ARG_IS_INVALID) {
+        } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
             fprintf(stderr, "Usage: %s fetch <PACKAGE-NAME>, <PACKAGE-NAME> is not match pattern %s\n", argv[0], UPPM_PACKAGE_NAME_PATTERN);
-        } else if (resultCode == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
+        } else if (ret == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
             fprintf(stderr, "package [%s] is not available.\n", argv[2]);
-        } else if (resultCode == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
+        } else if (ret == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
             fprintf(stderr, "package [%s] is not installed.\n", argv[2]);
-        } else if (resultCode == UPPM_ERROR_ENV_HOME_NOT_SET) {
+        } else if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
             fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
-        } else if (resultCode == UPPM_ERROR_ENV_PATH_NOT_SET) {
+        } else if (ret == UPPM_ERROR_ENV_PATH_NOT_SET) {
             fprintf(stderr, "%s\n", "PATH environment variable is not set.\n");
-        } else if (resultCode == UPPM_ERROR) {
+        } else if (ret == UPPM_ERROR) {
             fprintf(stderr, "occurs error.\n");
         }
 
-        return resultCode;
+        return ret;
     }
 
     if (strcmp(argv[1], "install") == 0) {
@@ -206,19 +206,19 @@ int uppm_main(int argc, char* argv[]) {
             if (strcmp(argv[i], "-v") == 0) {
                 verbose = true;
             } else {
-                int resultCode = uppm_check_if_the_given_package_is_available(argv[i]);
+                int ret = uppm_check_if_the_given_package_is_available(argv[i]);
 
-                if (resultCode == UPPM_OK) {
+                if (ret == UPPM_OK) {
                     packageNameIndexArray[packageNameIndexArraySize] = i;
                     packageNameIndexArraySize++;
-                } else if (resultCode == UPPM_ERROR_ARG_IS_INVALID) {
+                } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
                     LOG_ERROR4("package name [", argv[i], "] is not match pattern ", UPPM_PACKAGE_NAME_PATTERN);
-                } else if (resultCode == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
+                } else if (ret == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
                     LOG_ERROR3("package [", argv[i], "] is not available.");
                 }
 
-                if (resultCode != UPPM_OK) {
-                    return resultCode;
+                if (ret != UPPM_OK) {
+                    return ret;
                 }
             }
         }
@@ -231,28 +231,28 @@ int uppm_main(int argc, char* argv[]) {
         for (int i = 0; i < packageNameIndexArraySize; i++) {
             char * packageName = argv[packageNameIndexArray[i]];
 
-            int resultCode = uppm_install(packageName, verbose);
+            int ret = uppm_install(packageName, verbose);
 
-            if (resultCode == UPPM_ERROR_ARG_IS_NULL) {
+            if (ret == UPPM_ERROR_ARG_IS_NULL) {
                 fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> is not given.\n", argv[0], argv[1]);
-            } else if (resultCode == UPPM_ERROR_ARG_IS_EMPTY) {
+            } else if (ret == UPPM_ERROR_ARG_IS_EMPTY) {
                 fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> is empty string.\n", argv[0], argv[1]);
-            } else if (resultCode == UPPM_ERROR_ARG_IS_INVALID) {
+            } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
                 fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> is not match pattern %s\n", argv[0], argv[1], UPPM_PACKAGE_NAME_PATTERN);
-            } else if (resultCode == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
+            } else if (ret == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
                 fprintf(stderr, "package [%s] is not available.\n", packageName);
-            } else if (resultCode == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
+            } else if (ret == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
                 fprintf(stderr, "package [%s] is not installed.\n", packageName);
-            } else if (resultCode == UPPM_ERROR_ENV_HOME_NOT_SET) {
+            } else if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
                 fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
-            } else if (resultCode == UPPM_ERROR_ENV_PATH_NOT_SET) {
+            } else if (ret == UPPM_ERROR_ENV_PATH_NOT_SET) {
                 fprintf(stderr, "%s\n", "PATH environment variable is not set.\n");
-            } else if (resultCode == UPPM_ERROR) {
+            } else if (ret == UPPM_ERROR) {
                 fprintf(stderr, "occurs error.\n");
             }
 
-            if (resultCode != UPPM_OK) {
-                return resultCode;
+            if (ret != UPPM_OK) {
+                return ret;
             }
         }
 
@@ -272,19 +272,19 @@ int uppm_main(int argc, char* argv[]) {
             if (strcmp(argv[i], "-v") == 0) {
                 verbose = true;
             } else {
-                int resultCode = uppm_check_if_the_given_package_is_installed(argv[i]);
+                int ret = uppm_check_if_the_given_package_is_installed(argv[i]);
 
-                if (resultCode == UPPM_OK) {
+                if (ret == UPPM_OK) {
                     packageNameIndexArray[packageNameIndexArraySize] = i;
                     packageNameIndexArraySize++;
-                } else if (resultCode == UPPM_ERROR_ARG_IS_INVALID) {
+                } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
                     LOG_ERROR4("package name [", argv[i], "] is not match pattern ", UPPM_PACKAGE_NAME_PATTERN);
-                } else if (resultCode == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
+                } else if (ret == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
                     LOG_ERROR3("package [", argv[i], "] is not installed.");
                 }
 
-                if (resultCode != UPPM_OK) {
-                    return resultCode;
+                if (ret != UPPM_OK) {
+                    return ret;
                 }
             }
         }
@@ -297,28 +297,28 @@ int uppm_main(int argc, char* argv[]) {
         for (int i = 0; i < packageNameIndexArraySize; i++) {
             char * packageName = argv[packageNameIndexArray[i]];
 
-            int resultCode = uppm_uninstall(packageName, verbose);
+            int ret = uppm_uninstall(packageName, verbose);
 
-            if (resultCode == UPPM_ERROR_ARG_IS_NULL) {
+            if (ret == UPPM_ERROR_ARG_IS_NULL) {
                 fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> is not given.\n", argv[0], argv[1]);
-            } else if (resultCode == UPPM_ERROR_ARG_IS_EMPTY) {
+            } else if (ret == UPPM_ERROR_ARG_IS_EMPTY) {
                 fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> is empty string.\n", argv[0], argv[1]);
-            } else if (resultCode == UPPM_ERROR_ARG_IS_INVALID) {
+            } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
                 fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> is not match pattern %s\n", argv[0], argv[1], UPPM_PACKAGE_NAME_PATTERN);
-            } else if (resultCode == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
+            } else if (ret == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
                 fprintf(stderr, "package [%s] is not available.\n", packageName);
-            } else if (resultCode == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
+            } else if (ret == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
                 fprintf(stderr, "package [%s] is not installed.\n", packageName);
-            } else if (resultCode == UPPM_ERROR_ENV_HOME_NOT_SET) {
+            } else if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
                 fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
-            } else if (resultCode == UPPM_ERROR_ENV_PATH_NOT_SET) {
+            } else if (ret == UPPM_ERROR_ENV_PATH_NOT_SET) {
                 fprintf(stderr, "%s\n", "PATH environment variable is not set.\n");
-            } else if (resultCode == UPPM_ERROR) {
+            } else if (ret == UPPM_ERROR) {
                 fprintf(stderr, "occurs error.\n");
             }
 
-            if (resultCode != UPPM_OK) {
-                return resultCode;
+            if (ret != UPPM_OK) {
+                return ret;
             }
         }
 
@@ -338,31 +338,31 @@ int uppm_main(int argc, char* argv[]) {
             if (strcmp(argv[i], "-v") == 0) {
                 verbose = true;
             } else {
-                int resultCode = uppm_check_if_the_given_package_is_available(argv[i]);
+                int ret = uppm_check_if_the_given_package_is_available(argv[i]);
 
-                if (resultCode == UPPM_ERROR_ARG_IS_INVALID) {
+                if (ret == UPPM_ERROR_ARG_IS_INVALID) {
                     LOG_ERROR4("package name [", argv[i], "] is not match pattern ", UPPM_PACKAGE_NAME_PATTERN);
-                } else if (resultCode == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
+                } else if (ret == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
                     LOG_ERROR3("package [", argv[i], "] is not available.");
                 }
 
-                if (resultCode != UPPM_OK) {
-                    return resultCode;
+                if (ret != UPPM_OK) {
+                    return ret;
                 }
 
-                resultCode = uppm_check_if_the_given_package_is_installed(argv[i]);
+                ret = uppm_check_if_the_given_package_is_installed(argv[i]);
 
-                if (resultCode == UPPM_OK) {
+                if (ret == UPPM_OK) {
                     packageNameIndexArray[packageNameIndexArraySize] = i;
                     packageNameIndexArraySize++;
-                } else if (resultCode == UPPM_ERROR_ARG_IS_INVALID) {
+                } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
                     LOG_ERROR4("package name [", argv[i], "] is not match pattern ", UPPM_PACKAGE_NAME_PATTERN);
-                } else if (resultCode == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
+                } else if (ret == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
                     LOG_ERROR3("package [", argv[i], "] is not available.");
                 }
 
-                if (resultCode != UPPM_OK) {
-                    return resultCode;
+                if (ret != UPPM_OK) {
+                    return ret;
                 }
             }
         }
@@ -375,28 +375,28 @@ int uppm_main(int argc, char* argv[]) {
         for (int i = 0; i < packageNameIndexArraySize; i++) {
             char * packageName = argv[packageNameIndexArray[i]];
 
-            int resultCode = uppm_reinstall(packageName, verbose);
+            int ret = uppm_reinstall(packageName, verbose);
 
-            if (resultCode == UPPM_ERROR_ARG_IS_NULL) {
+            if (ret == UPPM_ERROR_ARG_IS_NULL) {
                 fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> is not given.\n", argv[0], argv[1]);
-            } else if (resultCode == UPPM_ERROR_ARG_IS_EMPTY) {
+            } else if (ret == UPPM_ERROR_ARG_IS_EMPTY) {
                 fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> is empty string.\n", argv[0], argv[1]);
-            } else if (resultCode == UPPM_ERROR_ARG_IS_INVALID) {
+            } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
                 fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> is not match pattern %s\n", argv[0], argv[1], UPPM_PACKAGE_NAME_PATTERN);
-            } else if (resultCode == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
+            } else if (ret == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
                 fprintf(stderr, "package [%s] is not available.\n", packageName);
-            } else if (resultCode == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
+            } else if (ret == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
                 fprintf(stderr, "package [%s] is not installed.\n", packageName);
-            } else if (resultCode == UPPM_ERROR_ENV_HOME_NOT_SET) {
+            } else if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
                 fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
-            } else if (resultCode == UPPM_ERROR_ENV_PATH_NOT_SET) {
+            } else if (ret == UPPM_ERROR_ENV_PATH_NOT_SET) {
                 fprintf(stderr, "%s\n", "PATH environment variable is not set.\n");
-            } else if (resultCode == UPPM_ERROR) {
+            } else if (ret == UPPM_ERROR) {
                 fprintf(stderr, "occurs error.\n");
             }
 
-            if (resultCode != UPPM_OK) {
-                return resultCode;
+            if (ret != UPPM_OK) {
+                return ret;
             }
         }
 
@@ -411,23 +411,23 @@ int uppm_main(int argc, char* argv[]) {
             if (strcmp(argv[i], "-v") == 0) {
                 verbose = true;
             } else {
-                int resultCode = uppm_check_if_the_given_package_is_outdated(argv[i]);
+                int ret = uppm_check_if_the_given_package_is_outdated(argv[i]);
 
-                if (resultCode == UPPM_OK) {
+                if (ret == UPPM_OK) {
                     packageNameIndexArray[packageNameIndexArraySize] = i;
                     packageNameIndexArraySize++;
-                } else if (resultCode == UPPM_ERROR_ARG_IS_INVALID) {
+                } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
                     LOG_ERROR4("package name [", argv[i], "] is not match pattern ", UPPM_PACKAGE_NAME_PATTERN);
-                } else if (resultCode == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
+                } else if (ret == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
                     LOG_ERROR3("package [", argv[i], "] is not available.");
-                } else if (resultCode == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
+                } else if (ret == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
                     LOG_ERROR3("package [", argv[i], "] is not installed.");
-                } else if (resultCode == UPPM_ERROR_PACKAGE_NOT_OUTDATED) {
+                } else if (ret == UPPM_ERROR_PACKAGE_NOT_OUTDATED) {
                     LOG_ERROR3("package [", argv[i], "] is not outdated.");
                 }
 
-                if (resultCode != UPPM_OK) {
-                    return resultCode;
+                if (ret != UPPM_OK) {
+                    return ret;
                 }
             }
         }
@@ -435,30 +435,30 @@ int uppm_main(int argc, char* argv[]) {
         for (int i = 0; i < packageNameIndexArraySize; i++) {
             char * packageName = argv[packageNameIndexArray[i]];
 
-            int resultCode = uppm_upgrade(packageName, verbose);
+            int ret = uppm_upgrade(packageName, verbose);
 
-            if (resultCode == UPPM_ERROR_ARG_IS_NULL) {
+            if (ret == UPPM_ERROR_ARG_IS_NULL) {
                 fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> is not given.\n", argv[0], argv[1]);
-            } else if (resultCode == UPPM_ERROR_ARG_IS_EMPTY) {
+            } else if (ret == UPPM_ERROR_ARG_IS_EMPTY) {
                 fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> is empty string.\n", argv[0], argv[1]);
-            } else if (resultCode == UPPM_ERROR_ARG_IS_INVALID) {
+            } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
                 fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> is not match pattern %s\n", argv[0], argv[1], UPPM_PACKAGE_NAME_PATTERN);
-            } else if (resultCode == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
+            } else if (ret == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
                 fprintf(stderr, "package [%s] is not available.\n", packageName);
-            } else if (resultCode == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
+            } else if (ret == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
                 fprintf(stderr, "package [%s] is not installed.\n", packageName);
-            } else if (resultCode == UPPM_ERROR_PACKAGE_NOT_OUTDATED) {
+            } else if (ret == UPPM_ERROR_PACKAGE_NOT_OUTDATED) {
                 fprintf(stderr, "package [%s] is not outdated.\n", packageName);
-            } else if (resultCode == UPPM_ERROR_ENV_HOME_NOT_SET) {
+            } else if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
                 fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
-            } else if (resultCode == UPPM_ERROR_ENV_PATH_NOT_SET) {
+            } else if (ret == UPPM_ERROR_ENV_PATH_NOT_SET) {
                 fprintf(stderr, "%s\n", "PATH environment variable is not set.\n");
-            } else if (resultCode == UPPM_ERROR) {
+            } else if (ret == UPPM_ERROR) {
                 fprintf(stderr, "occurs error.\n");
             }
 
-            if (resultCode != UPPM_OK) {
-                return resultCode;
+            if (ret != UPPM_OK) {
+                return ret;
             }
         }
 
@@ -466,117 +466,117 @@ int uppm_main(int argc, char* argv[]) {
     }
 
     if (strcmp(argv[1], "ls-available") == 0) {
-        int resultCode = uppm_list_the_available_packages();
+        int ret = uppm_list_the_available_packages();
 
-        if (resultCode == UPPM_ERROR_ENV_HOME_NOT_SET) {
+        if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
             fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
-        } else if (resultCode == UPPM_ERROR_ENV_PATH_NOT_SET) {
+        } else if (ret == UPPM_ERROR_ENV_PATH_NOT_SET) {
             fprintf(stderr, "%s\n", "PATH environment variable is not set.\n");
-        } else if (resultCode == UPPM_ERROR) {
+        } else if (ret == UPPM_ERROR) {
             fprintf(stderr, "occurs error.\n");
         }
 
-        return resultCode;
+        return ret;
     }
 
     if (strcmp(argv[1], "ls-installed") == 0) {
-        int resultCode = uppm_list_the_installed_packages();
+        int ret = uppm_list_the_installed_packages();
 
-        if (resultCode == UPPM_ERROR_ENV_HOME_NOT_SET) {
+        if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
             fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
-        } else if (resultCode == UPPM_ERROR_ENV_PATH_NOT_SET) {
+        } else if (ret == UPPM_ERROR_ENV_PATH_NOT_SET) {
             fprintf(stderr, "%s\n", "PATH environment variable is not set.\n");
-        } else if (resultCode == UPPM_ERROR) {
+        } else if (ret == UPPM_ERROR) {
             fprintf(stderr, "occurs error.\n");
         }
 
-        return resultCode;
+        return ret;
     }
 
     if (strcmp(argv[1], "ls-outdated") == 0) {
-        int resultCode = uppm_list_the_outdated__packages();
+        int ret = uppm_list_the_outdated__packages();
 
-        if (resultCode == UPPM_ERROR_ENV_HOME_NOT_SET) {
+        if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
             fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
-        } else if (resultCode == UPPM_ERROR_ENV_PATH_NOT_SET) {
+        } else if (ret == UPPM_ERROR_ENV_PATH_NOT_SET) {
             fprintf(stderr, "%s\n", "PATH environment variable is not set.\n");
-        } else if (resultCode == UPPM_ERROR) {
+        } else if (ret == UPPM_ERROR) {
             fprintf(stderr, "occurs error.\n");
         }
 
-        return resultCode;
+        return ret;
     }
 
     if (strcmp(argv[1], "is-available") == 0) {
-        int resultCode = uppm_check_if_the_given_package_is_available(argv[2]);
+        int ret = uppm_check_if_the_given_package_is_available(argv[2]);
 
-        if (resultCode == UPPM_ERROR_ARG_IS_NULL) {
+        if (ret == UPPM_ERROR_ARG_IS_NULL) {
             fprintf(stderr, "Usage: %s is-available <PACKAGE-NAME>, <PACKAGE-NAME> is not given.\n", argv[0]);
-        } else if (resultCode == UPPM_ERROR_ARG_IS_EMPTY) {
+        } else if (ret == UPPM_ERROR_ARG_IS_EMPTY) {
             fprintf(stderr, "Usage: %s is-available <PACKAGE-NAME>, <PACKAGE-NAME> is empty string.\n", argv[0]);
-        } else if (resultCode == UPPM_ERROR_ARG_IS_INVALID) {
+        } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
             fprintf(stderr, "Usage: %s is-available <PACKAGE-NAME>, <PACKAGE-NAME> is not match pattern %s\n", argv[0], UPPM_PACKAGE_NAME_PATTERN);
-        } else if (resultCode == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
+        } else if (ret == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
             fprintf(stderr, "package [%s] is not available.\n", argv[2]);
-        } else if (resultCode == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
+        } else if (ret == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
             fprintf(stderr, "package [%s] is not installed.\n", argv[2]);
-        } else if (resultCode == UPPM_ERROR_ENV_HOME_NOT_SET) {
+        } else if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
             fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
-        } else if (resultCode == UPPM_ERROR_ENV_PATH_NOT_SET) {
+        } else if (ret == UPPM_ERROR_ENV_PATH_NOT_SET) {
             fprintf(stderr, "%s\n", "PATH environment variable is not set.\n");
-        } else if (resultCode == UPPM_ERROR) {
+        } else if (ret == UPPM_ERROR) {
             fprintf(stderr, "occurs error.\n");
         }
 
-        return resultCode;
+        return ret;
     }
 
     if (strcmp(argv[1], "is-installed") == 0) {
-        int resultCode = uppm_check_if_the_given_package_is_installed(argv[2]);
+        int ret = uppm_check_if_the_given_package_is_installed(argv[2]);
 
-        if (resultCode == UPPM_ERROR_ARG_IS_NULL) {
+        if (ret == UPPM_ERROR_ARG_IS_NULL) {
             fprintf(stderr, "Usage: %s is-installed <PACKAGE-NAME>, <PACKAGE-NAME> is not given.\n", argv[0]);
-        } else if (resultCode == UPPM_ERROR_ARG_IS_EMPTY) {
+        } else if (ret == UPPM_ERROR_ARG_IS_EMPTY) {
             fprintf(stderr, "Usage: %s is-installed <PACKAGE-NAME>, <PACKAGE-NAME> is empty string.\n", argv[0]);
-        } else if (resultCode == UPPM_ERROR_ARG_IS_INVALID) {
+        } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
             fprintf(stderr, "Usage: %s is-installed <PACKAGE-NAME>, <PACKAGE-NAME> is not match pattern %s\n", argv[0], UPPM_PACKAGE_NAME_PATTERN);
-        } else if (resultCode == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
+        } else if (ret == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
             fprintf(stderr, "package [%s] is not available.\n", argv[2]);
-        } else if (resultCode == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
+        } else if (ret == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
             fprintf(stderr, "package [%s] is not installed.\n", argv[2]);
-        } else if (resultCode == UPPM_ERROR_ENV_HOME_NOT_SET) {
+        } else if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
             fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
-        } else if (resultCode == UPPM_ERROR_ENV_PATH_NOT_SET) {
+        } else if (ret == UPPM_ERROR_ENV_PATH_NOT_SET) {
             fprintf(stderr, "%s\n", "PATH environment variable is not set.\n");
-        } else if (resultCode == UPPM_ERROR) {
+        } else if (ret == UPPM_ERROR) {
             fprintf(stderr, "occurs error.\n");
         }
 
-        return resultCode;
+        return ret;
     }
 
     if (strcmp(argv[1], "is-outdated") == 0) {
-        int resultCode = uppm_check_if_the_given_package_is_outdated(argv[2]);
+        int ret = uppm_check_if_the_given_package_is_outdated(argv[2]);
 
-        if (resultCode == UPPM_ERROR_ARG_IS_NULL) {
+        if (ret == UPPM_ERROR_ARG_IS_NULL) {
             fprintf(stderr, "Usage: %s is-outdated <PACKAGE-NAME>, <PACKAGE-NAME> is not given.\n", argv[0]);
-        } else if (resultCode == UPPM_ERROR_ARG_IS_EMPTY) {
+        } else if (ret == UPPM_ERROR_ARG_IS_EMPTY) {
             fprintf(stderr, "Usage: %s is-outdated <PACKAGE-NAME>, <PACKAGE-NAME> is empty string.\n", argv[0]);
-        } else if (resultCode == UPPM_ERROR_ARG_IS_INVALID) {
+        } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
             fprintf(stderr, "Usage: %s is-outdated <PACKAGE-NAME>, <PACKAGE-NAME> is not match pattern %s\n", argv[0], UPPM_PACKAGE_NAME_PATTERN);
-        } else if (resultCode == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
+        } else if (ret == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
             fprintf(stderr, "package [%s] is not available.\n", argv[2]);
-        } else if (resultCode == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
+        } else if (ret == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
             fprintf(stderr, "package [%s] is not installed.\n", argv[2]);
-        } else if (resultCode == UPPM_ERROR_ENV_HOME_NOT_SET) {
+        } else if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
             fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
-        } else if (resultCode == UPPM_ERROR_ENV_PATH_NOT_SET) {
+        } else if (ret == UPPM_ERROR_ENV_PATH_NOT_SET) {
             fprintf(stderr, "%s\n", "PATH environment variable is not set.\n");
-        } else if (resultCode == UPPM_ERROR) {
+        } else if (ret == UPPM_ERROR) {
             fprintf(stderr, "occurs error.\n");
         }
 
-        return resultCode;
+        return ret;
     }
 
     if (strcmp(argv[1], "formula-repo-list") == 0) {
@@ -597,13 +597,96 @@ int uppm_main(int argc, char* argv[]) {
         return uppm_formula_repo_add(argv[2], argv[3], argv[4]);
     }
 
-    if (strcmp(argv[1], "formula-repo-del") == 0) {
+    if (strcmp(argv[1], "formula-repo-create") == 0) {
+        if (argv[2] == NULL) {
+            fprintf(stderr, "Usage: %s %s <FORMULA-REPO-NAME> <FORMULA-REPO-URL> <FORMULA-REPO-BRANCH>\n", argv[0], argv[1]);
+            return UPPM_ERROR_ARG_IS_NULL;
+        }
+
+        if (argv[3] == NULL) {
+            fprintf(stderr, "Usage: %s %s <FORMULA-REPO-NAME> <FORMULA-REPO-URL> <FORMULA-REPO-BRANCH>\n", argv[0], argv[1]);
+            return UPPM_ERROR_ARG_IS_NULL;
+        }
+
+        return uppm_formula_repo_create(argv[2], argv[3], argv[4]);
+    }
+
+    if (strcmp(argv[1], "formula-repo-remove") == 0) {
         if (argv[2] == NULL) {
             fprintf(stderr, "Usage: %s %s <FORMULA-REPO-NAME>\n", argv[0], argv[1]);
             return UPPM_ERROR_ARG_IS_NULL;
         }
 
-        return uppm_formula_repo_del(argv[2]);
+        return uppm_formula_repo_remove(argv[2]);
+    }
+
+    if (strcmp(argv[1], "formula-repo-update") == 0) {
+        if (argv[2] == NULL) {
+            fprintf(stderr, "Usage: %s %s <FORMULA-REPO-NAME>\n", argv[0], argv[1]);
+            return UPPM_ERROR_ARG_IS_NULL;
+        }
+
+        return uppm_formula_repo_update(argv[2]);
+    }
+
+    if (strcmp(argv[1], "formula-repo-change") == 0) {
+        if (argv[2] == NULL) {
+            fprintf(stderr, "Usage: %s %s <FORMULA-REPO-NAME> <OPTION>...\n", argv[0], argv[1]);
+            return UPPM_ERROR_ARG_IS_NULL;
+        }
+
+        if (argv[3] == NULL) {
+            fprintf(stderr, "Usage: %s %s <FORMULA-REPO-NAME> <OPTION>...\n", argv[0], argv[1]);
+            return UPPM_ERROR_ARG_IS_NULL;
+        }
+
+        const char * pinned  = NULL;
+        const char * enabled = NULL;
+        const char * branch = NULL;
+        const char * url = NULL;
+
+        const char * const yes = "yes";
+        const char * const no  = "no";
+
+        for (int i = 3; i < argc; i++) {
+            if (strncmp(argv[i], "--pin", 5) == 0) {
+                pinned = yes;
+            } else if (strncmp(argv[i], "--unpin", 5) == 0) {
+                pinned = no;
+            } else if (strncmp(argv[i], "--enable", 8) == 0) {
+                enabled = yes;
+            } else if (strncmp(argv[i], "--disable", 9) == 0) {
+                enabled = no;
+            } else if (strncmp(argv[i], "--url=", 6) == 0) {
+                if (argv[i][6] == '\0') {
+                    fprintf(stderr, "--url option should have value.\n");
+                    return UPPM_ERROR_ARG_IS_INVALID;
+                } else {
+                    url = &argv[i][6];
+                }
+            } else if (strncmp(argv[i], "--branch=", 9) == 0) {
+                if (argv[i][9] == '\0') {
+                    fprintf(stderr, "--branch option should have value.\n");
+                    return UPPM_ERROR_ARG_IS_INVALID;
+                } else {
+                    branch = &argv[i][9];
+                }
+            } else {
+                fprintf(stderr, "unrecognized option: %s\n", argv[i]);
+                return UPPM_ERROR_ARG_IS_UNKNOWN;
+            }
+        }
+
+        return uppm_formula_repo_change(argv[2], url, branch, pinned, enabled);
+    }
+
+    if (strcmp(argv[1], "formula-repo-info") == 0) {
+        if (argv[2] == NULL) {
+            fprintf(stderr, "Usage: %s %s <FORMULA-REPO-NAME>\n", argv[0], argv[1]);
+            return UPPM_ERROR_ARG_IS_NULL;
+        }
+
+        return uppm_formula_repo_printf(argv[2]);
     }
 
     if (strcmp(argv[1], "integrate") == 0) {

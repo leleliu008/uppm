@@ -20,19 +20,19 @@ int uppm_check_if_the_given_argument_matches_package_name_pattern(const char * a
 }
 
 int uppm_check_if_the_given_package_is_available(const char * packageName) {
-    int resultCode = uppm_check_if_the_given_argument_matches_package_name_pattern(packageName);
+    int ret = uppm_check_if_the_given_argument_matches_package_name_pattern(packageName);
 
-    if (resultCode != UPPM_OK) {
-        return resultCode;
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
     UPPMFormulaRepoList * formulaRepoList = NULL;
 
-    resultCode = uppm_formula_repo_list(&formulaRepoList);
+    ret = uppm_formula_repo_list(&formulaRepoList);
 
-    if (resultCode != UPPM_OK) {
+    if (ret != UPPM_OK) {
         uppm_formula_repo_list_free(formulaRepoList);
-        return resultCode;
+        return ret;
     }
 
     struct stat st;
@@ -56,10 +56,10 @@ int uppm_check_if_the_given_package_is_available(const char * packageName) {
 }
 
 int uppm_check_if_the_given_package_is_installed(const char * packageName) {
-    int resultCode = uppm_check_if_the_given_argument_matches_package_name_pattern(packageName);
+    int ret = uppm_check_if_the_given_argument_matches_package_name_pattern(packageName);
 
-    if (resultCode != UPPM_OK) {
-        return resultCode;
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
     char * userHomeDir = getenv("HOME");
@@ -88,7 +88,7 @@ int uppm_check_if_the_given_package_is_installed(const char * packageName) {
 
     if (stat(packageInstalledDir, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {
-            fprintf(stderr, "not a directory: %s\n", uppmHomeDir);
+            fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", packageInstalledDir);
             return UPPM_ERROR;
         }
     } else {
@@ -115,24 +115,24 @@ int uppm_check_if_the_given_package_is_outdated(const char * packageName) {
     UPPMFormula * formula = NULL;
     UPPMReceipt * receipt = NULL;
 
-    int resultCode = uppm_formula_parse(packageName, &formula);
+    int ret = uppm_formula_lookup(packageName, &formula);
 
-    if (resultCode != UPPM_OK) {
+    if (ret != UPPM_OK) {
         goto clean;
     }
 
-    resultCode = uppm_receipt_parse(packageName, &receipt);
+    ret = uppm_receipt_parse(packageName, &receipt);
 
-    if (resultCode != UPPM_OK) {
+    if (ret != UPPM_OK) {
         goto clean;
     }
 
     if (strcmp(receipt->version, formula->version) == 0) {
-        resultCode = UPPM_ERROR_PACKAGE_NOT_OUTDATED;
+        ret = UPPM_ERROR_PACKAGE_NOT_OUTDATED;
     }
 
 clean:
     uppm_formula_free(formula);
     uppm_receipt_free(receipt);
-    return resultCode;
+    return ret;
 }

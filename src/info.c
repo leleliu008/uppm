@@ -15,10 +15,10 @@
 int uppm_info_all_available_packages(const char * key) {
     UPPMFormulaRepoList * formulaRepoList = NULL;
 
-    int resultCode = uppm_formula_repo_list(&formulaRepoList);
+    int ret = uppm_formula_repo_list(&formulaRepoList);
 
-    if (resultCode != UPPM_OK) {
-        return resultCode;
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
     bool isFirst = true;
@@ -63,12 +63,12 @@ int uppm_info_all_available_packages(const char * key) {
                 }
 
                 //printf("%s\n", packageName);
-                resultCode = uppm_info(packageName, key);
+                ret = uppm_info(packageName, key);
 
-                if (resultCode != UPPM_OK) {
+                if (ret != UPPM_OK) {
                     uppm_formula_repo_list_free(formulaRepoList);
                     closedir(dir);
-                    return resultCode;
+                    return ret;
                 }
             } else if(r == FNM_NOMATCH) {
                 ;
@@ -101,19 +101,19 @@ int uppm_info(const char * packageName, const char * key) {
         return uppm_info_all_available_packages(key);
     }
 
-    int resultCode = uppm_check_if_the_given_argument_matches_package_name_pattern(packageName);
+    int ret = uppm_check_if_the_given_argument_matches_package_name_pattern(packageName);
 
-    if (resultCode != UPPM_OK) {
-        return resultCode;
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
     if ((key == NULL) || (strcmp(key, "") == 0) || (strcmp(key, "--yaml") == 0)) {
         char * formulaFilePath = NULL;
 
-        resultCode = uppm_formula_find(packageName, &formulaFilePath);
+        ret = uppm_formula_locate(packageName, &formulaFilePath);
 
-        if (resultCode != UPPM_OK) {
-            return resultCode;
+        if (ret != UPPM_OK) {
+            return ret;
         }
 
         FILE * formulaFile = fopen(formulaFilePath, "r");
@@ -148,10 +148,10 @@ int uppm_info(const char * packageName, const char * key) {
     } else if (strcmp(key, "--json") == 0) {
         UPPMFormula * formula = NULL;
 
-        resultCode = uppm_formula_parse(packageName, &formula);
+        ret = uppm_formula_lookup(packageName, &formula);
 
-        if (resultCode != UPPM_OK) {
-            return resultCode;
+        if (ret != UPPM_OK) {
+            return ret;
         }
 
         json_t * root = json_object();
@@ -169,7 +169,7 @@ int uppm_info(const char * packageName, const char * key) {
         char * jsonStr = json_dumps(root, 0);
 
         if (jsonStr == NULL) {
-            resultCode = UPPM_ERROR;
+            ret = UPPM_ERROR;
         } else {
             printf("%s\n", jsonStr);
             free(jsonStr);
@@ -181,10 +181,10 @@ int uppm_info(const char * packageName, const char * key) {
     } else if (strcmp(key, "--shell") == 0) {
         UPPMFormula * formula = NULL;
 
-        resultCode = uppm_formula_parse(packageName, &formula);
+        ret = uppm_formula_lookup(packageName, &formula);
 
-        if (resultCode != UPPM_OK) {
-            return resultCode;
+        if (ret != UPPM_OK) {
+            return ret;
         }
 
         printf("UPPM_PKG_PKGNAME='%s'\n", packageName);
@@ -199,10 +199,10 @@ int uppm_info(const char * packageName, const char * key) {
     } else if (strcmp(key, "formula") == 0) {
         char * formulaFilePath = NULL;
 
-        resultCode = uppm_formula_find(packageName, &formulaFilePath);
+        ret = uppm_formula_locate(packageName, &formulaFilePath);
 
-        if (resultCode != UPPM_OK) {
-            return resultCode;
+        if (ret != UPPM_OK) {
+            return ret;
         }
 
         FILE * file = fopen(formulaFilePath, "r");
@@ -228,10 +228,10 @@ int uppm_info(const char * packageName, const char * key) {
     } else if (strcmp(key, "summary") == 0) {
         UPPMFormula * formula = NULL;
 
-        resultCode = uppm_formula_parse(packageName, &formula);
+        ret = uppm_formula_lookup(packageName, &formula);
 
-        if (resultCode != UPPM_OK) {
-            return resultCode;
+        if (ret != UPPM_OK) {
+            return ret;
         }
 
         if (formula->summary != NULL) {
@@ -242,10 +242,10 @@ int uppm_info(const char * packageName, const char * key) {
     } else if (strcmp(key, "webpage") == 0) {
         UPPMFormula * formula = NULL;
 
-        resultCode = uppm_formula_parse(packageName, &formula);
+        ret = uppm_formula_lookup(packageName, &formula);
 
-        if (resultCode != UPPM_OK) {
-            return resultCode;
+        if (ret != UPPM_OK) {
+            return ret;
         }
 
         if (formula->webpage != NULL) {
@@ -256,10 +256,10 @@ int uppm_info(const char * packageName, const char * key) {
     } else if (strcmp(key, "version") == 0) {
         UPPMFormula * formula = NULL;
 
-        resultCode = uppm_formula_parse(packageName, &formula);
+        ret = uppm_formula_lookup(packageName, &formula);
 
-        if (resultCode != UPPM_OK) {
-            return resultCode;
+        if (ret != UPPM_OK) {
+            return ret;
         }
 
         if (formula->version != NULL) {
@@ -270,10 +270,10 @@ int uppm_info(const char * packageName, const char * key) {
     } else if (strcmp(key, "license") == 0) {
         UPPMFormula * formula = NULL;
 
-        resultCode = uppm_formula_parse(packageName, &formula);
+        ret = uppm_formula_lookup(packageName, &formula);
 
-        if (resultCode != UPPM_OK) {
-            return resultCode;
+        if (ret != UPPM_OK) {
+            return ret;
         }
 
         if (formula->license != NULL) {
@@ -284,10 +284,10 @@ int uppm_info(const char * packageName, const char * key) {
     } else if (strcmp(key, "bin-url") == 0) {
         UPPMFormula * formula = NULL;
 
-        resultCode = uppm_formula_parse(packageName, &formula);
+        ret = uppm_formula_lookup(packageName, &formula);
 
-        if (resultCode != UPPM_OK) {
-            return resultCode;
+        if (ret != UPPM_OK) {
+            return ret;
         }
 
         if (formula->bin_url != NULL) {
@@ -298,10 +298,10 @@ int uppm_info(const char * packageName, const char * key) {
     } else if (strcmp(key, "bin-sha") == 0) {
         UPPMFormula * formula = NULL;
 
-        resultCode = uppm_formula_parse(packageName, &formula);
+        ret = uppm_formula_lookup(packageName, &formula);
 
-        if (resultCode != UPPM_OK) {
-            return resultCode;
+        if (ret != UPPM_OK) {
+            return ret;
         }
 
         if (formula->bin_sha != NULL) {
@@ -312,10 +312,10 @@ int uppm_info(const char * packageName, const char * key) {
     } else if (strcmp(key, "dep-pkg") == 0) {
         UPPMFormula * formula = NULL;
 
-        resultCode = uppm_formula_parse(packageName, &formula);
+        ret = uppm_formula_lookup(packageName, &formula);
 
-        if (resultCode != UPPM_OK) {
-            return resultCode;
+        if (ret != UPPM_OK) {
+            return ret;
         }
 
         if (formula->dep_pkg != NULL) {
@@ -326,10 +326,10 @@ int uppm_info(const char * packageName, const char * key) {
     } else if (strcmp(key, "install") == 0) {
         UPPMFormula * formula = NULL;
 
-        resultCode = uppm_formula_parse(packageName, &formula);
+        ret = uppm_formula_lookup(packageName, &formula);
 
-        if (resultCode != UPPM_OK) {
-            return resultCode;
+        if (ret != UPPM_OK) {
+            return ret;
         }
 
         if (formula->install != NULL) {
@@ -535,10 +535,10 @@ int uppm_info(const char * packageName, const char * key) {
     } else if (strcmp(key, "installed-receipt-json") == 0) {
         UPPMReceipt * receipt = NULL;
 
-        int resultCode = uppm_receipt_parse(packageName, &receipt);
+        int ret = uppm_receipt_parse(packageName, &receipt);
 
-        if (resultCode != UPPM_OK) {
-            return resultCode;
+        if (ret != UPPM_OK) {
+            return ret;
         }
 
         json_t * root = json_object();
@@ -558,7 +558,7 @@ int uppm_info(const char * packageName, const char * key) {
         char * jsonStr = json_dumps(root, 0);
 
         if (jsonStr == NULL) {
-            resultCode = UPPM_ERROR;
+            ret = UPPM_ERROR;
         } else {
             printf("%s\n", jsonStr);
             free(jsonStr);
@@ -570,10 +570,10 @@ int uppm_info(const char * packageName, const char * key) {
     } else if (strcmp(key, "installed-version") == 0) {
         UPPMReceipt * receipt = NULL;
 
-        int resultCode = uppm_receipt_parse(packageName, &receipt);
+        int ret = uppm_receipt_parse(packageName, &receipt);
 
-        if (resultCode != UPPM_OK) {
-            return resultCode;
+        if (ret != UPPM_OK) {
+            return ret;
         }
 
         printf("%s\n", receipt->version);
@@ -582,10 +582,10 @@ int uppm_info(const char * packageName, const char * key) {
     } else if (strcmp(key, "installed-timestamp-unix") == 0) {
         UPPMReceipt * receipt = NULL;
 
-        int resultCode = uppm_receipt_parse(packageName, &receipt);
+        int ret = uppm_receipt_parse(packageName, &receipt);
 
-        if (resultCode != UPPM_OK) {
-            return resultCode;
+        if (ret != UPPM_OK) {
+            return ret;
         }
 
         printf("%s\n", receipt->timestamp);
@@ -594,10 +594,10 @@ int uppm_info(const char * packageName, const char * key) {
     } else if (strcmp(key, "installed-timestamp-rfc-3339") == 0) {
         UPPMReceipt * receipt = NULL;
 
-        int resultCode = uppm_receipt_parse(packageName, &receipt);
+        int ret = uppm_receipt_parse(packageName, &receipt);
 
-        if (resultCode != UPPM_OK) {
-            return resultCode;
+        if (ret != UPPM_OK) {
+            return ret;
         }
 
         time_t tt = (time_t)atol(receipt->timestamp);
@@ -616,10 +616,10 @@ int uppm_info(const char * packageName, const char * key) {
     } else if (strcmp(key, "installed-timestamp-iso-8601") == 0) {
         UPPMReceipt * receipt = NULL;
 
-        int resultCode = uppm_receipt_parse(packageName, &receipt);
+        int ret = uppm_receipt_parse(packageName, &receipt);
 
-        if (resultCode != UPPM_OK) {
-            return resultCode;
+        if (ret != UPPM_OK) {
+            return ret;
         }
 
         time_t tt = (time_t)atol(receipt->timestamp);
@@ -639,5 +639,5 @@ int uppm_info(const char * packageName, const char * key) {
         return UPPM_ERROR_ARG_IS_UNKNOWN;
     }
 
-    return resultCode;
+    return ret;
 }

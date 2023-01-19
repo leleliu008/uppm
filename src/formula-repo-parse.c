@@ -274,13 +274,13 @@ int uppm_formula_repo_parse(const char * formulaRepoConfigFilePath, UPPMFormulaR
 
     int lastTokenType = 0;
 
-    int resultCode = UPPM_OK;
+    int ret = UPPM_OK;
 
     do {
         // https://libyaml.docsforge.com/master/api/yaml_parser_scan/
         if (yaml_parser_scan(&parser, &token) == 0) {
             fprintf(stderr, "syntax error in formula repo config file: %s\n", formulaRepoConfigFilePath);
-            resultCode = UPPM_ERROR_FORMULA_REPO_CONFIG_SYNTAX;
+            ret = UPPM_ERROR_FORMULA_REPO_CONFIG_SYNTAX;
             goto clean;
         }
 
@@ -299,16 +299,16 @@ int uppm_formula_repo_parse(const char * formulaRepoConfigFilePath, UPPMFormulaR
                         formulaRepo = (UPPMFormulaRepo*)calloc(1, sizeof(UPPMFormulaRepo));
 
                         if (formulaRepo == NULL) {
-                            resultCode = UPPM_ERROR_MEMORY_ALLOCATE;
+                            ret = UPPM_ERROR_MEMORY_ALLOCATE;
                             goto clean;
                         }
 
                         formulaRepo->enabled = true;
                     }
 
-                    resultCode = uppm_formula_repo_set_value(formulaRepoKeyCode, (char*)token.data.scalar.value, formulaRepo);
+                    ret = uppm_formula_repo_set_value(formulaRepoKeyCode, (char*)token.data.scalar.value, formulaRepo);
 
-                    if (resultCode != UPPM_OK) {
+                    if (ret != UPPM_OK) {
                         goto clean;
                     }
                 }
@@ -330,17 +330,17 @@ clean:
 
     fclose(file);
 
-    if (resultCode == UPPM_OK) {
-        resultCode = uppm_formula_repo_check(formulaRepo, formulaRepoConfigFilePath);
+    if (ret == UPPM_OK) {
+        ret = uppm_formula_repo_check(formulaRepo, formulaRepoConfigFilePath);
     }
 
     //uppm_formula_repo_dump(formulaRepo);
 
-    if (resultCode == UPPM_OK) {
+    if (ret == UPPM_OK) {
         (*out) = formulaRepo;
         return UPPM_OK;
     } else {
         uppm_formula_repo_free(formulaRepo);
-        return resultCode;
+        return ret;
     }
 }

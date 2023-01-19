@@ -28,9 +28,9 @@ int main2(int argc, char* argv[]) {
     char ** pathList = NULL;
     size_t  pathListSize;
 
-    int resultCode = exe_search(argv[1], &pathList, &pathListSize, findAll);
+    int ret = exe_search(argv[1], &pathList, &pathListSize, findAll);
 
-    if (resultCode == 0) {
+    if (ret == 0) {
         for (size_t i = 0; i < pathListSize; i++) {
             printf("%s\n", pathList[i]);
 
@@ -42,5 +42,5 @@ int main2(int argc, char* argv[]) {
         pathList = NULL;
     }
 
-    return resultCode;
+    return ret;
 }

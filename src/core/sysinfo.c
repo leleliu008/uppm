@@ -351,76 +351,76 @@ int sysinfo_make(SysInfo * sysinfo) {
         return UPPM_ERROR_ARG_IS_NULL;
     }
 
-    int resultCode;
+    int ret;
 
     ///////////////////////////////////////
 
     char osArch[31] = {0};
 
-    resultCode = sysinfo_arch(osArch, 30);
+    ret = sysinfo_arch(osArch, 30);
 
-    if (resultCode != UPPM_OK) {
-        return resultCode;
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
     ///////////////////////////////////////
 
     char osKind[31] = {0};
 
-    resultCode = sysinfo_kind(osKind, 30);
+    ret = sysinfo_kind(osKind, 30);
 
-    if (resultCode != UPPM_OK) {
-        return resultCode;
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
     ///////////////////////////////////////
 
     char osType[31] = {0};
 
-    resultCode = sysinfo_type(osType, 30);
+    ret = sysinfo_type(osType, 30);
 
-    if (resultCode != UPPM_OK) {
-        return resultCode;
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
     ///////////////////////////////////////
 
     char osName[31] = {0};
 
-    resultCode = sysinfo_name(osName, 30);
+    ret = sysinfo_name(osName, 30);
 
-    if (resultCode != UPPM_OK) {
-        return resultCode;
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
     ///////////////////////////////////////
 
     char osVers[31] = {0};
 
-    resultCode = sysinfo_vers(osVers, 30);
+    ret = sysinfo_vers(osVers, 30);
 
-    if (resultCode != UPPM_OK) {
-        return resultCode;
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
     ///////////////////////////////////////
 
     LIBC libc = LIBC_UNKNOWN;
 
-    resultCode = sysinfo_libc(&libc);
+    ret = sysinfo_libc(&libc);
 
-    if (resultCode != UPPM_OK) {
-        return resultCode;
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
     ///////////////////////////////////////
 
     size_t ncpu = 0;
     
-    resultCode = sysinfo_ncpu(&ncpu);
+    ret = sysinfo_ncpu(&ncpu);
 
-    if (resultCode != UPPM_OK) {
-        return resultCode;
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
     ///////////////////////////////////////

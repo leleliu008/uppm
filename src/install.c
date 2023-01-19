@@ -20,10 +20,10 @@ int uppm_install_the_given_packages(const char * packageNames[], size_t size) {
 
         UPPMFormula * formula = NULL;
 
-        int resultCode = uppm_formula_parse(packageName, &formula);
+        int ret = uppm_formula_lookup(packageName, &formula);
 
-        if (resultCode != UPPM_OK) {
-            return resultCode;
+        if (ret != UPPM_OK) {
+            return ret;
         }
     }
     return 0;
@@ -34,10 +34,10 @@ extern int record_installed_files(const char * installedDirPath);
 int uppm_install(const char * packageName, bool verbose) {
     UPPMFormula * formula = NULL;
 
-    int resultCode = uppm_formula_parse(packageName, &formula);
+    int ret = uppm_formula_lookup(packageName, &formula);
 
-    if (resultCode != UPPM_OK) {
-        return resultCode;
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -61,11 +61,11 @@ int uppm_install(const char * packageName, bool verbose) {
         }
 
         for (size_t i = 0; i < depPackageNameArrayListSize; i++) {
-            resultCode = uppm_install(depPackageNameArrayList[i], verbose);
+            ret = uppm_install(depPackageNameArrayList[i], verbose);
 
-            if (resultCode != UPPM_OK) {
+            if (ret != UPPM_OK) {
                 uppm_formula_free(formula);
-                return resultCode;
+                return ret;
             }
         }
     }
@@ -118,7 +118,7 @@ int uppm_install(const char * packageName, bool verbose) {
 
     if (stat(uppmDownloadDir, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {
-            fprintf(stderr, "not a directory: %s\n", uppmDownloadDir);
+            fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", uppmDownloadDir);
             return UPPM_ERROR;
         }
     } else {
@@ -130,11 +130,11 @@ int uppm_install(const char * packageName, bool verbose) {
 
     char binFileNameExtension[21] = {0};
 
-    resultCode = uppm_examine_file_extension_from_url(binFileNameExtension, 20, formula->bin_url);
+    ret = uppm_examine_file_extension_from_url(binFileNameExtension, 20, formula->bin_url);
 
-    if (resultCode != UPPM_OK) {
+    if (ret != UPPM_OK) {
         uppm_formula_free(formula);
-        return resultCode;
+        return ret;
     }
 
     size_t  binFileNameLength = strlen(formula->bin_sha) + strlen(binFileNameExtension) + 1;
@@ -153,11 +153,11 @@ int uppm_install(const char * packageName, bool verbose) {
         if (S_ISREG(st.st_mode)) {
             char actualSHA256SUM[65] = {0};
 
-            resultCode = sha256sum_of_file(actualSHA256SUM, binFilePath);
+            ret = sha256sum_of_file(actualSHA256SUM, binFilePath);
 
-            if (resultCode != 0) {
+            if (ret != 0) {
                 uppm_formula_free(formula);
-                return resultCode;
+                return ret;
             }
 
             if (strcmp(actualSHA256SUM, formula->bin_sha) == 0) {
@@ -167,20 +167,20 @@ int uppm_install(const char * packageName, bool verbose) {
     }
 
     if (needFetch) {
-        resultCode = http_fetch_to_file(formula->bin_url, binFilePath, verbose, verbose);
+        ret = http_fetch_to_file(formula->bin_url, binFilePath, verbose, verbose);
 
-        if (resultCode != UPPM_OK) {
+        if (ret != UPPM_OK) {
             uppm_formula_free(formula);
-            return resultCode;
+            return ret;
         }
 
         char actualSHA256SUM[65] = {0};
 
-        resultCode = sha256sum_of_file(actualSHA256SUM, binFilePath);
+        ret = sha256sum_of_file(actualSHA256SUM, binFilePath);
 
-        if (resultCode != 0) {
+        if (ret != 0) {
             uppm_formula_free(formula);
-            return resultCode;
+            return ret;
         }
 
         if (strcmp(actualSHA256SUM, formula->bin_sha) == 0) {
@@ -235,20 +235,20 @@ int uppm_install(const char * packageName, bool verbose) {
     }
 
     if (formula->install == NULL) {
-        resultCode = untar_extract(packageInstalledDir, binFilePath, ARCHIVE_EXTRACT_TIME, verbose, 1);
+        ret = untar_extract(packageInstalledDir, binFilePath, ARCHIVE_EXTRACT_TIME, verbose, 1);
 
-        if (resultCode != 0) {
+        if (ret != 0) {
             uppm_formula_free(formula);
-            return abs(resultCode) + UPPM_ERROR_ARCHIVE_BASE;
+            return abs(ret) + UPPM_ERROR_ARCHIVE_BASE;
         }
     } else {
         SysInfo sysinfo = {0};
 
-        resultCode = sysinfo_make(&sysinfo);
+        ret = sysinfo_make(&sysinfo);
 
-        if (resultCode != UPPM_OK) {
+        if (ret != UPPM_OK) {
             uppm_formula_free(formula);
-            return resultCode;
+            return ret;
         }
 
         char * libcName = NULL;
@@ -322,13 +322,13 @@ int uppm_install(const char * packageName, bool verbose) {
 
         printf("run shell code:\n%s\n", shellCode);
 
-        resultCode = system(shellCode);
+        ret = system(shellCode);
 
-        if (resultCode == -1) {
+        if (ret == -1) {
             perror(NULL);
         }
 
-        if (resultCode != 0) {
+        if (ret != 0) {
             uppm_formula_free(formula);
             return UPPM_ERROR;
         }
@@ -344,9 +344,9 @@ int uppm_install(const char * packageName, bool verbose) {
 
     //////////////////////////////////////////////////////////////////////
 
-    resultCode = record_installed_files(packageInstalledDir);
+    ret = record_installed_files(packageInstalledDir);
 
-    if (resultCode != UPPM_OK) {
+    if (ret != UPPM_OK) {
         uppm_formula_free(formula);
         return UPPM_ERROR;
     }

@@ -21,8 +21,12 @@ _commands=(
     'integrate:integrate zsh completions.'
     'compare-versions:compare package versions with brew.'
     'formula-repo-add:add a new formula-repo.'
-    'formula-repo-del:delete a formula-repo.'
-    'formula-repo-list:list the formula-repos.'
+    'formula-repo-create:create a new formula-repo.'
+    'formula-repo-remove:remove the given formula-repo.'
+    'formula-repo-update:update the given formula-repo.'
+    'formula-repo-change:change the config of the given formula-repo.'
+    'formula-repo-info:show infomation of the given formula-repo.'
+    'formula-repo-list:list all available formula-repos.'
     'ls-available:list the available packages.'
     'ls-installed:list the installed packages.'
     'ls-outdated:list the installed packages that can be upgraded.'
@@ -64,7 +68,25 @@ function _uppm() {
     case $state in
         option)
             case $words[1] in
-                formula-repo-del)
+                formula-repo-change)
+                    _arguments \
+                        '1:formula-repo-name:($(uppm formula-repo-list | sed -n "/^name: /p" | cut -c7-))' \
+                        '--url=-[change the formula repo url]' \
+                        '--branch=-[change the formula repo branch]' \
+                        + '(pin)' \
+                        '--pin[set pinned to yes]' \
+                        '--unpin[set pinned to no]' \
+                        + '(enable)' \
+                        '--enable[set enabled to yes]' \
+                        '--disable[set enabled to no]'
+                    ;;
+                formula-repo-remove)
+                    _arguments '1:formula-repo-name:($(uppm formula-repo-list | sed -n "/^name: /p" | cut -c7-))'
+                    ;;
+                formula-repo-update)
+                    _arguments '1:formula-repo-name:($(uppm formula-repo-list | sed -n "/^name: /p" | cut -c7-))'
+                    ;;
+                formula-repo-info)
                     _arguments '1:formula-repo-name:($(uppm formula-repo-list | sed -n "/^name: /p" | cut -c7-))'
                     ;;
                 integrate)

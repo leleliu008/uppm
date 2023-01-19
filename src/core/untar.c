@@ -18,20 +18,20 @@ int untar_list(const char * inputFilePath, int flags) {
 
     struct archive_entry *entry = NULL;
 
-    int resultCode = 0;
+    int ret = 0;
 
-	if ((resultCode = archive_read_open_filename(ar, inputFilePath, 10240))) {
+	if ((ret = archive_read_open_filename(ar, inputFilePath, 10240))) {
         goto clean;
     }
 
 	for (;;) {
-		resultCode = archive_read_next_header(ar, &entry);
+		ret = archive_read_next_header(ar, &entry);
 
-		if (resultCode == ARCHIVE_EOF) {
+		if (ret == ARCHIVE_EOF) {
 			break;
         }
 
-		if (resultCode == ARCHIVE_OK) {
+		if (ret == ARCHIVE_OK) {
 		    printf("%s\n", archive_entry_pathname(entry));
         } else {
             goto clean;
@@ -39,7 +39,7 @@ int untar_list(const char * inputFilePath, int flags) {
 	}
 
 clean:
-    if (resultCode != ARCHIVE_OK) {
+    if (ret != ARCHIVE_OK) {
         fprintf(stdout, "%s\n", archive_error_string(ar));
     }
 
@@ -49,7 +49,7 @@ clean:
 	archive_write_close(aw);
   	archive_write_free(aw);
 
-    return resultCode;
+    return ret;
 }
 
 int untar_extract(const char * outputDir, const char * inputFilePath, int flags, bool verbose, size_t stripComponentsNumber) {
@@ -70,21 +70,21 @@ int untar_extract(const char * outputDir, const char * inputFilePath, int flags,
 
 	struct archive_entry *entry = NULL;
 
-	int resultCode = 0;
+	int ret = 0;
 
-	if ((resultCode = archive_read_open_filename(ar, inputFilePath, 10240))) {
+	if ((ret = archive_read_open_filename(ar, inputFilePath, 10240))) {
         goto clean;
     }
 
 	for (;;) {
-		resultCode = archive_read_next_header(ar, &entry);
+		ret = archive_read_next_header(ar, &entry);
 
-		if (resultCode == ARCHIVE_EOF) {
-            resultCode =  ARCHIVE_OK;
+		if (ret == ARCHIVE_EOF) {
+            ret =  ARCHIVE_OK;
 			break;
         }
 
-		if (resultCode != ARCHIVE_OK) {
+		if (ret != ARCHIVE_OK) {
             goto clean;
         }
 
@@ -151,9 +151,9 @@ int untar_extract(const char * outputDir, const char * inputFilePath, int flags,
 
         ////////////////////////////////////////////////////////////////////////////////////
 
-        resultCode = archive_write_header(aw, entry);
+        ret = archive_write_header(aw, entry);
 
-        if (resultCode != ARCHIVE_OK) {
+        if (ret != ARCHIVE_OK) {
             goto clean;
         }
 
@@ -166,32 +166,32 @@ int untar_extract(const char * outputDir, const char * inputFilePath, int flags,
 #endif
 
         for (;;) {
-            resultCode = archive_read_data_block(ar, &dataBuff, &dataSize, &offset);
+            ret = archive_read_data_block(ar, &dataBuff, &dataSize, &offset);
 
-            if (resultCode == ARCHIVE_EOF) {
+            if (ret == ARCHIVE_EOF) {
                 break;
             }
 
-            if (resultCode != ARCHIVE_OK) {
+            if (ret != ARCHIVE_OK) {
                 goto clean;
             }
 
-            resultCode = archive_write_data_block(aw, dataBuff, dataSize, offset);
+            ret = archive_write_data_block(aw, dataBuff, dataSize, offset);
 
-            if (resultCode != ARCHIVE_OK) {
+            if (ret != ARCHIVE_OK) {
                 goto clean;
             }
         }
 
-        resultCode = archive_write_finish_entry(aw);
+        ret = archive_write_finish_entry(aw);
 
-        if (resultCode != ARCHIVE_OK) {
+        if (ret != ARCHIVE_OK) {
             goto clean;
         }
 	}
 
 clean:
-    if (resultCode != ARCHIVE_OK) {
+    if (ret != ARCHIVE_OK) {
         fprintf(stdout, "%s\n", archive_error_string(ar));
     }
 
@@ -201,5 +201,5 @@ clean:
 	archive_write_close(aw);
   	archive_write_free(aw);
 
-    return resultCode;
+    return ret;
 }

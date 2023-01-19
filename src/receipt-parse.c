@@ -339,10 +339,10 @@ static int uppm_receipt_check(UPPMReceipt * receipt, const char * receiptFilePat
 
 
 int uppm_receipt_parse(const char * packageName, UPPMReceipt * * out) {
-    int resultCode = uppm_check_if_the_given_argument_matches_package_name_pattern(packageName);
+    int ret = uppm_check_if_the_given_argument_matches_package_name_pattern(packageName);
 
-    if (resultCode != UPPM_OK) {
-        return resultCode;
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
     char * userHomeDir = getenv("HOME");
@@ -405,7 +405,7 @@ int uppm_receipt_parse(const char * packageName, UPPMReceipt * * out) {
         // https://libyaml.docsforge.com/master/api/yaml_parser_scan/
         if (yaml_parser_scan(&parser, &token) == 0) {
             fprintf(stderr, "syntax error in receipt file: %s\n", receiptFilePath);
-            resultCode = UPPM_ERROR_RECEIPT_SYNTAX;
+            ret = UPPM_ERROR_RECEIPT_SYNTAX;
             goto clean;
         }
 
@@ -424,14 +424,14 @@ int uppm_receipt_parse(const char * packageName, UPPMReceipt * * out) {
                         receipt = (UPPMReceipt*)calloc(1, sizeof(UPPMReceipt));
 
                         if (receipt == NULL) {
-                            resultCode = UPPM_ERROR_MEMORY_ALLOCATE;
+                            ret = UPPM_ERROR_MEMORY_ALLOCATE;
                             goto clean;
                         }
                     }
 
-                    resultCode = uppm_receipt_set_value(receiptKeyCode, (char*)token.data.scalar.value, receipt);
+                    ret = uppm_receipt_set_value(receiptKeyCode, (char*)token.data.scalar.value, receipt);
 
-                    if (resultCode != UPPM_OK) {
+                    if (ret != UPPM_OK) {
                         goto clean;
                     }
                 }
@@ -453,15 +453,15 @@ clean:
 
     fclose(file);
 
-    if (resultCode == UPPM_OK) {
-        resultCode = uppm_receipt_check(receipt, receiptFilePath);
+    if (ret == UPPM_OK) {
+        ret = uppm_receipt_check(receipt, receiptFilePath);
     }
 
-    if (resultCode == UPPM_OK) {
+    if (ret == UPPM_OK) {
         (*out) = receipt;
         return UPPM_OK;
     } else {
         uppm_receipt_free(receipt);
-        return resultCode;
+        return ret;
     }
 }

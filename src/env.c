@@ -90,10 +90,10 @@ int uppm_env(bool verbose) {
 
     SysInfo sysinfo = {0};
 
-    int resultCode = sysinfo_make(&sysinfo);
+    int ret = sysinfo_make(&sysinfo);
 
-    if (resultCode != UPPM_OK) {
-        return resultCode;
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
     sysinfo_dump(sysinfo);
@@ -143,7 +143,7 @@ int uppm_env(bool verbose) {
 
     if (stat(installedDir, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {
-            fprintf(stderr, "not a directory: %s\n", installedDir);
+            fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", installedDir);
             return UPPM_ERROR;
         }
     } else {

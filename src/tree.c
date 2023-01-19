@@ -6,10 +6,10 @@
 #include "uppm.h"
 
 int uppm_tree(const char * packageName, size_t argc, char* argv[]) {
-    int resultCode = uppm_check_if_the_given_argument_matches_package_name_pattern(packageName);
+    int ret = uppm_check_if_the_given_argument_matches_package_name_pattern(packageName);
 
-    if (resultCode != UPPM_OK) {
-        return resultCode;
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
     char * userHomeDir = getenv("HOME");
@@ -44,16 +44,16 @@ int uppm_tree(const char * packageName, size_t argc, char* argv[]) {
         return UPPM_ERROR_PACKAGE_IS_BROKEN;
     }
 
-    resultCode = uppm_check_if_the_given_package_is_installed("tree");
+    ret = uppm_check_if_the_given_package_is_installed("tree");
 
-    if (resultCode == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
-        resultCode = uppm_install("tree", false);
+    if (ret == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
+        ret = uppm_install("tree", false);
 
-        if (resultCode != UPPM_OK) {
-            return resultCode;
+        if (ret != UPPM_OK) {
+            return ret;
         }
-    } else if (resultCode != UPPM_OK) {
-        return resultCode;
+    } else if (ret != UPPM_OK) {
+        return ret;
     }
 
     size_t  treeCommandPathLength = userHomeDirLength + 31;

@@ -55,20 +55,20 @@ int uppm_list_the_outdated__packages() {
 
             UPPMReceipt * receipt = NULL;
 
-            int resultCode = uppm_receipt_parse(dir_entry->d_name, &receipt);
+            int ret = uppm_receipt_parse(dir_entry->d_name, &receipt);
 
-            if (resultCode != UPPM_OK) {
+            if (ret != UPPM_OK) {
                 closedir(dir);
                 uppm_receipt_free(receipt);
                 receipt = NULL;
-                return resultCode;
+                return ret;
             }
 
             UPPMFormula * formula = NULL;
 
-            resultCode = uppm_formula_parse(dir_entry->d_name, &formula);
+            ret = uppm_formula_lookup(dir_entry->d_name, &formula);
 
-            if (resultCode == UPPM_OK) {
+            if (ret == UPPM_OK) {
                 if (strcmp(receipt->version, formula->version) != 0) {
                     printf("%s %s => %s\n", dir_entry->d_name, receipt->version, formula->version);
                 }

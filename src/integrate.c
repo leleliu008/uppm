@@ -30,7 +30,7 @@ int uppm_integrate_zsh_completion(const char * outputDir, bool verbose) {
 
     if (stat(uppmHomeDir, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {
-            fprintf(stderr, "not a directory: %s\n", uppmHomeDir);
+            fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", uppmHomeDir);
             return UPPM_ERROR;
         }
     } else {
@@ -49,7 +49,7 @@ int uppm_integrate_zsh_completion(const char * outputDir, bool verbose) {
 
     if (stat(zshCompletionDir, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {
-            fprintf(stderr, "not a directory: %s\n", zshCompletionDir);
+            fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", zshCompletionDir);
             return UPPM_ERROR;
         }
     } else {

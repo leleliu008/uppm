@@ -7,9 +7,9 @@
 int uppm_formula_repo_list_update() {
     UPPMFormulaRepoList * formulaRepoList = NULL;
 
-    int resultCode = uppm_formula_repo_list(&formulaRepoList);
+    int ret = uppm_formula_repo_list(&formulaRepoList);
 
-    if (resultCode == UPPM_OK) {
+    if (ret == UPPM_OK) {
         bool officalCoreIsThere = false;
 
         for (size_t i = 0; i < formulaRepoList->size; i++) {
@@ -22,9 +22,9 @@ int uppm_formula_repo_list_update() {
             if (formulaRepo->pinned) {
                 fprintf(stderr, "[%s] formula repo was pinned, skipped.\n", formulaRepo->name);
             } else {
-                resultCode = uppm_formula_repo_update(formulaRepo);
+                ret = uppm_formula_repo_sync(formulaRepo);
 
-                if (resultCode != UPPM_OK) {
+                if (ret != UPPM_OK) {
                     break;
                 }
             }
@@ -35,18 +35,18 @@ int uppm_formula_repo_list_update() {
         if (!officalCoreIsThere) {
             char osType[31] = {0};
 
-            resultCode = sysinfo_type(osType, 30);
+            ret = sysinfo_type(osType, 30);
 
-            if (resultCode != UPPM_OK) {
-                return resultCode;
+            if (ret != UPPM_OK) {
+                return ret;
             }
 
             char osArch[31] = {0};
 
-            resultCode = sysinfo_arch(osArch, 30);
+            ret = sysinfo_arch(osArch, 30);
 
-            if (resultCode != UPPM_OK) {
-                return resultCode;
+            if (ret != UPPM_OK) {
+                return ret;
             }
 
             size_t formulaRepoUrlLength = strlen(osType) + strlen(osArch) + 56;
@@ -54,9 +54,9 @@ int uppm_formula_repo_list_update() {
             memset(formulaRepoUrl, 0, formulaRepoUrlLength);
             snprintf(formulaRepoUrl, formulaRepoUrlLength, "https://github.com/leleliu008/uppm-formula-repository-%s-%s", osType, osArch);
 
-            resultCode = uppm_formula_repo_add("offical-core", formulaRepoUrl, "master");
+            ret = uppm_formula_repo_add("offical-core", formulaRepoUrl, "master");
         }
     }
 
-    return resultCode;
+    return ret;
 }

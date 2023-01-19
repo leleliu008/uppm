@@ -19,10 +19,10 @@ int uppm_search(const char * keyword) {
 
     UPPMFormulaRepoList * formulaRepoList = NULL;
 
-    int resultCode = uppm_formula_repo_list(&formulaRepoList);
+    int ret = uppm_formula_repo_list(&formulaRepoList);
 
-    if (resultCode != UPPM_OK) {
-        return resultCode;
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
     bool isFirst = true;
@@ -82,12 +82,12 @@ int uppm_search(const char * keyword) {
                 }
 
                 //printf("%s\n", packageName);
-                resultCode = uppm_info(packageName, NULL);
+                ret = uppm_info(packageName, NULL);
 
-                if (resultCode != UPPM_OK) {
+                if (ret != UPPM_OK) {
                     uppm_formula_repo_list_free(formulaRepoList);
                     closedir(dir);
-                    return resultCode;
+                    return ret;
                 }
             } else if(r == FNM_NOMATCH) {
                 ;

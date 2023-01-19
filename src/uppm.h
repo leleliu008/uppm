@@ -26,13 +26,16 @@
 
 #define UPPM_ERROR_EXE_NOT_FOUND    10
 
-#define UPPM_ERROR_PACKAGE_NOT_AVAILABLE 25
-#define UPPM_ERROR_PACKAGE_NOT_INSTALLED 26
-#define UPPM_ERROR_PACKAGE_NOT_OUTDATED  27
-#define UPPM_ERROR_PACKAGE_IS_BROKEN     28
+#define UPPM_ERROR_PACKAGE_NOT_AVAILABLE 20
+#define UPPM_ERROR_PACKAGE_NOT_INSTALLED 21
+#define UPPM_ERROR_PACKAGE_NOT_OUTDATED  22
+#define UPPM_ERROR_PACKAGE_IS_BROKEN     23
 
-#define UPPM_ERROR_FORMULA_REPO_CONFIG_SYNTAX 30
-#define UPPM_ERROR_FORMULA_REPO_CONFIG_SCHEME 31
+#define UPPM_ERROR_FORMULA_REPO_NOT_FOUND 30
+#define UPPM_ERROR_FORMULA_REPO_HAS_EXIST 31
+#define UPPM_ERROR_FORMULA_REPO_IS_BROKEN 32
+#define UPPM_ERROR_FORMULA_REPO_CONFIG_SYNTAX 34
+#define UPPM_ERROR_FORMULA_REPO_CONFIG_SCHEME 35
 
 #define UPPM_ERROR_FORMULA_SYNTAX     40
 #define UPPM_ERROR_FORMULA_SCHEME     41
@@ -54,10 +57,43 @@
 // libcurl's error [1, 99]
 #define UPPM_ERROR_NETWORK_BASE    150
 
-#define UPPM_CHECK_IF_MEMORY_ALLOCATION_FAILURE(ptr) if ((ptr) == NULL) { return UPPM_ERROR_MEMORY_ALLOCATE; }
+/*
+ * This macro should be employed only if there is no memory should be freed before returing.
+ */
+#define UPPM_RETURN_IF_MEMORY_ALLOCATION_FAILED(ptr) if ((ptr) == NULL) { return UPPM_ERROR_MEMORY_ALLOCATE; }
 
-
-void uppm_show_error_message(int errorCode, const char * str);
+#define UPPM_PERROR(ret, packageName, ...) \
+    if (ret == UPPM_ERROR) { \
+        fprintf(stderr, "occurs error.\n"); \
+    } else if (ret == UPPM_ERROR_ARG_IS_NULL) { \
+        fprintf(stderr, "package name not specified.\n"); \
+    } else if (ret == UPPM_ERROR_ARG_IS_EMPTY) { \
+        fprintf(stderr, "package name should be a non-empty string.\n"); \
+    } else if (ret == UPPM_ERROR_ARG_IS_INVALID) { \
+        fprintf(stderr, "package name not match pattern: %s, %s\n", packageName, UPPM_PACKAGE_NAME_PATTERN); \
+    } else if (ret == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) { \
+        fprintf(stderr, "package not available: %s\n", packageName); \
+    } else if (ret == UPPM_ERROR_PACKAGE_NOT_INSTALLED) { \
+        fprintf(stderr, "package not installed: %s\n", packageName); \
+    } else if (ret == UPPM_ERROR_PACKAGE_NOT_OUTDATED) { \
+        fprintf(stderr, "package not outdated: %s\n", packageName); \
+    } else if (ret == UPPM_ERROR_PACKAGE_IS_BROKEN) { \
+        fprintf(stderr, "package is broken: %s\n", packageName); \
+    } else if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) { \
+        fprintf(stderr, "%s\n", "HOME environment variable not set.\n"); \
+    } else if (ret == UPPM_ERROR_ENV_PATH_NOT_SET) { \
+        fprintf(stderr, "%s\n", "PATH environment variable not set.\n"); \
+    } else if (ret == UPPM_ERROR_URL_TRANSFORM_ENV_NOT_SET) { \
+        fprintf(stderr, "%s\n", "UPPM_URL_TRANSFORM environment variable not set.\n"); \
+    } else if (ret == UPPM_ERROR_URL_TRANSFORM_ENV_VALUE_IS_EMPTY) { \
+        fprintf(stderr, "%s\n", "UPPM_URL_TRANSFORM environment variable's value should be a non-empty string.\n"); \
+    } else if (ret == UPPM_ERROR_URL_TRANSFORM_ENV_POINT_TO_PATH_NOT_EXIST) { \
+        fprintf(stderr, "%s\n", "UPPM_URL_TRANSFORM environment variable's value point to path not exist.\n"); \
+    } else if (ret == UPPM_ERROR_URL_TRANSFORM_RUN_NO_RESULT) { \
+        fprintf(stderr, "%s\n", "UPPM_URL_TRANSFORM environment variable's value point to path runs no result.\n"); \
+    } else if (ret > UPPM_ERROR_NETWORK_BASE) { \
+        fprintf(stderr, "network error.\n"); \
+    }
 
 typedef struct {
     char * summary;
@@ -71,8 +107,8 @@ typedef struct {
     char * path;
 } UPPMFormula;
 
-int  uppm_formula_parse (const char * packageName, UPPMFormula * * formula);
-int  uppm_formula_find  (const char * packageName, char * * out);
+int  uppm_formula_lookup(const char * packageName, UPPMFormula * * formula);
+int  uppm_formula_locate(const char * packageName, char * * out);
 int  uppm_formula_cat   (const char * packageName);
 int  uppm_formula_bat   (const char * packageName);
 
@@ -97,19 +133,23 @@ typedef struct {
     size_t size;
 } UPPMFormulaRepoList ;
 
-int  uppm_formula_repo_parse(const char * formulaRepoConfigFilePath, UPPMFormulaRepo * * formulaRepo);
+int  uppm_formula_repo_create(const char * formulaRepoName, const char * formulaRepoUrl, const char * branchName);
+int  uppm_formula_repo_add   (const char * formulaRepoName, const char * formulaRepoUrl, const char * branchName);
+int  uppm_formula_repo_remove(const char * formulaRepoName);
+int  uppm_formula_repo_update(const char * formulaRepoName);
+int  uppm_formula_repo_printf(const char * formulaRepoName);
+int  uppm_formula_repo_change(const char * formulaRepoName, const char * formulaRepoUrl, const char * branchName, const char * pinned, const char * enabled);
+int  uppm_formula_repo_lookup(const char * formulaRepoName, UPPMFormulaRepo * * formulaRepo);
+int  uppm_formula_repo_parse (const char * formulaRepoConfigFilePath, UPPMFormulaRepo * * formulaRepo);
+int  uppm_formula_repo_sync(UPPMFormulaRepo * formulaRepo);
 void uppm_formula_repo_free(UPPMFormulaRepo * formulaRepo);
 void uppm_formula_repo_dump(UPPMFormulaRepo * formulaRepo);
-int  uppm_formula_repo_update(UPPMFormulaRepo * formulaRepo);
 
 int  uppm_formula_repo_list     (UPPMFormulaRepoList * * p);
 void uppm_formula_repo_list_free(UPPMFormulaRepoList   * p);
 
 int  uppm_formula_repo_list_printf();
 int  uppm_formula_repo_list_update();
-
-int   uppm_formula_repo_add(const char * formulaRepoName, const char * formulaRepoUrl, const char * branchName);
-int   uppm_formula_repo_del(const char * formulaRepoName);
 
 //////////////////////////////////////////////////////////////////////
 

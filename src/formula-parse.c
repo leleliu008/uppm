@@ -415,7 +415,7 @@ static int uppm_formula_check(UPPMFormula * formula, const char * formulaFilePat
     return UPPM_OK;
 }
 
-int uppm_formula_parse(const char * packageName, UPPMFormula * * out) {
+int uppm_formula_lookup(const char * packageName, UPPMFormula * * out) {
     bool isLinuxMuslLibc = false;
 
     LIBC libc = LIBC_UNKNOWN;
@@ -428,10 +428,10 @@ int uppm_formula_parse(const char * packageName, UPPMFormula * * out) {
 
     char * formulaFilePath = NULL;
 
-    int resultCode = uppm_formula_find(packageName, &formulaFilePath);
+    int ret = uppm_formula_locate(packageName, &formulaFilePath);
 
-    if (resultCode != UPPM_OK) {
-        return resultCode;
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
     FILE * formulaFile = fopen(formulaFilePath, "r");
@@ -464,7 +464,7 @@ int uppm_formula_parse(const char * packageName, UPPMFormula * * out) {
         // https://libyaml.docsforge.com/master/api/yaml_parser_scan/
         if (yaml_parser_scan(&parser, &token) == 0) {
             fprintf(stderr, "syntax error in formula file: %s\n", formulaFilePath);
-            resultCode = UPPM_ERROR_FORMULA_SYNTAX;
+            ret = UPPM_ERROR_FORMULA_SYNTAX;
             goto clean;
         }
 
@@ -483,16 +483,16 @@ int uppm_formula_parse(const char * packageName, UPPMFormula * * out) {
                         formula = (UPPMFormula*)calloc(1, sizeof(UPPMFormula));
 
                         if (formula == NULL) {
-                            resultCode = UPPM_ERROR_MEMORY_ALLOCATE;
+                            ret = UPPM_ERROR_MEMORY_ALLOCATE;
                             goto clean;
                         }
 
                         formula->path = formulaFilePath;
                     }
 
-                    resultCode = uppm_formula_set_value(formulaKeyCode, (char*)token.data.scalar.value, formula);
+                    ret = uppm_formula_set_value(formulaKeyCode, (char*)token.data.scalar.value, formula);
 
-                    if (resultCode != UPPM_OK) {
+                    if (ret != UPPM_OK) {
                         goto clean;
                     }
                 }
@@ -514,11 +514,11 @@ clean:
 
     fclose(formulaFile);
 
-    if (resultCode == UPPM_OK) {
-        resultCode = uppm_formula_check(formula, formulaFilePath);
+    if (ret == UPPM_OK) {
+        ret = uppm_formula_check(formula, formulaFilePath);
     }
 
-    if (resultCode == UPPM_OK) {
+    if (ret == UPPM_OK) {
         (*out) = formula;
         return UPPM_OK;
     }
@@ -529,5 +529,5 @@ clean:
         uppm_formula_free(formula);
     }
 
-    return resultCode;
+    return ret;
 }

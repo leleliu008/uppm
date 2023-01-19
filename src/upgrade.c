@@ -1,16 +1,16 @@
 #include "uppm.h"
 
 int uppm_upgrade(const char * packageName, bool verbose) {
-    int resultCode = uppm_check_if_the_given_package_is_outdated(packageName);
+    int ret = uppm_check_if_the_given_package_is_outdated(packageName);
 
-    if (resultCode != UPPM_OK) {
-        return resultCode;
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
-    resultCode = uppm_uninstall(packageName, verbose);
+    ret = uppm_uninstall(packageName, verbose);
 
-    if (resultCode != UPPM_OK) {
-        return resultCode;
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
     return uppm_install(packageName, verbose);

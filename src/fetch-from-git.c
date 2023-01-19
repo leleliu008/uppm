@@ -136,18 +136,18 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
 
     char * transformedUrl = NULL;
 
-    int resultCode = uppm_url_transform(remoteUrl, &transformedUrl, true);
+    int ret = uppm_url_transform(remoteUrl, &transformedUrl, true);
 
-    if (resultCode == UPPM_OK) {
+    if (ret == UPPM_OK) {
         ;
-    } else if (resultCode == UPPM_ERROR_URL_TRANSFORM_ENV_NOT_SET) {
+    } else if (ret == UPPM_ERROR_URL_TRANSFORM_ENV_NOT_SET) {
         transformedUrl = strdup(remoteUrl);
 
         if (transformedUrl == NULL) {
             return UPPM_ERROR_MEMORY_ALLOCATE;
         }
     } else {
-        return resultCode;
+        return ret;
     }
 
     bool needInitGitRepo = false;
@@ -158,9 +158,9 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
         if (S_ISDIR(st.st_mode)) {
             bool isAEmptyDir = false;
 
-            resultCode = check_if_is_a_empty_dir(repositoryDIR, &isAEmptyDir);
+            ret = check_if_is_a_empty_dir(repositoryDIR, &isAEmptyDir);
 
-            if (resultCode != UPPM_OK) {
+            if (ret != UPPM_OK) {
                 return UPPM_ERROR;
             }
 
@@ -190,13 +190,13 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
     const char * refspecDst = NULL;
 
     if ((refspec != NULL) && strcmp(refspec, "") != 0) {
-        resultCode = git_refspec_parse(&gitRefSpec, refspec, true);
+        ret = git_refspec_parse(&gitRefSpec, refspec, true);
 
-        if (resultCode != GIT_OK) {
+        if (ret != GIT_OK) {
             const git_error * gitError = git_error_last();
             fprintf(stderr, "%s\n", gitError->message);
             git_libgit2_shutdown();
-            return abs(resultCode) + UPPM_ERROR_LIBGIT2_BASE;
+            return abs(ret) + UPPM_ERROR_LIBGIT2_BASE;
         }
 
         refspecSrc = git_refspec_src(gitRefSpec);
@@ -228,57 +228,57 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     if (needInitGitRepo) {
-        resultCode = git_repository_init(&gitRepo, repositoryDIR, false);
+        ret = git_repository_init(&gitRepo, repositoryDIR, false);
 
-        if (resultCode != GIT_OK) {
+        if (ret != GIT_OK) {
             gitError = git_error_last();
             fprintf(stderr, "%s\n", gitError->message);
             git_repository_state_cleanup(gitRepo);
             git_repository_free(gitRepo);
             git_libgit2_shutdown();
-            return abs(resultCode) + UPPM_ERROR_LIBGIT2_BASE;
+            return abs(ret) + UPPM_ERROR_LIBGIT2_BASE;
         }
 
         //https://libgit2.org/libgit2/#HEAD/group/remote/git_remote_create
-        resultCode = git_remote_create(&gitRemote, gitRepo, "origin", transformedUrl);
+        ret = git_remote_create(&gitRemote, gitRepo, "origin", transformedUrl);
 
-        if (resultCode != GIT_OK) {
+        if (ret != GIT_OK) {
             gitError = git_error_last();
             fprintf(stderr, "%s\n", gitError->message);
             git_repository_state_cleanup(gitRepo);
             git_repository_free(gitRepo);
             git_libgit2_shutdown();
-            return abs(resultCode) + UPPM_ERROR_LIBGIT2_BASE;
+            return abs(ret) + UPPM_ERROR_LIBGIT2_BASE;
         }
     } else {
-        resultCode = git_repository_open_ext(&gitRepo, repositoryDIR, GIT_REPOSITORY_OPEN_NO_SEARCH, NULL);
+        ret = git_repository_open_ext(&gitRepo, repositoryDIR, GIT_REPOSITORY_OPEN_NO_SEARCH, NULL);
 
-        if (resultCode != GIT_OK) {
+        if (ret != GIT_OK) {
             gitError = git_error_last();
             fprintf(stderr, "%s\n", gitError->message);
             git_repository_state_cleanup(gitRepo);
             git_repository_free(gitRepo);
             git_libgit2_shutdown();
-            return abs(resultCode) + UPPM_ERROR_LIBGIT2_BASE;
+            return abs(ret) + UPPM_ERROR_LIBGIT2_BASE;
         }
 
         // https://libgit2.org/libgit2/#HEAD/group/remote/git_remote_lookup
-        resultCode = git_remote_lookup(&gitRemote, gitRepo, "origin");
+        ret = git_remote_lookup(&gitRemote, gitRepo, "origin");
 
-        if (resultCode == GIT_ENOTFOUND) {
+        if (ret == GIT_ENOTFOUND) {
             //https://libgit2.org/libgit2/#HEAD/group/remote/git_remote_create
-            resultCode = git_remote_create(&gitRemote, gitRepo, "origin", transformedUrl);
-        } else if (resultCode == GIT_OK) {
-            resultCode = git_remote_set_instance_url(gitRemote, transformedUrl);
+            ret = git_remote_create(&gitRemote, gitRepo, "origin", transformedUrl);
+        } else if (ret == GIT_OK) {
+            ret = git_remote_set_instance_url(gitRemote, transformedUrl);
         }
 
-        if (resultCode != GIT_OK) {
+        if (ret != GIT_OK) {
             gitError = git_error_last();
             fprintf(stderr, "%s\n", gitError->message);
             git_repository_state_cleanup(gitRepo);
             git_repository_free(gitRepo);
             git_libgit2_shutdown();
-            return abs(resultCode) + UPPM_ERROR_LIBGIT2_BASE;
+            return abs(ret) + UPPM_ERROR_LIBGIT2_BASE;
         }
     }
 
@@ -309,31 +309,31 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
     gitCheckoutOptions.progress_payload     = &progressPayload;
 
     if (refspecSrc == NULL) {
-        resultCode = git_remote_fetch(gitRemote, NULL, &gitFetchOptions, NULL);
+        ret = git_remote_fetch(gitRemote, NULL, &gitFetchOptions, NULL);
     } else {
         git_strarray refspecArray = {.count = 1};
         char* strings[1] = {(char*)refspec};
         refspecArray.strings = strings;
-        resultCode = git_remote_fetch(gitRemote, &refspecArray, &gitFetchOptions, NULL);
+        ret = git_remote_fetch(gitRemote, &refspecArray, &gitFetchOptions, NULL);
     }
 
-    if (resultCode != GIT_OK) {
+    if (ret != GIT_OK) {
         gitError = git_error_last();
         goto clean;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-    resultCode = git_branch_lookup(&remoteTrackingBranchRef, gitRepo, &refspecDst[13], GIT_BRANCH_REMOTE);
+    ret = git_branch_lookup(&remoteTrackingBranchRef, gitRepo, &refspecDst[13], GIT_BRANCH_REMOTE);
 
-    if (resultCode != GIT_OK) {
+    if (ret != GIT_OK) {
         gitError = git_error_last();
         goto clean;
     }
 
     remoteTrackingBranchHeadOid = git_reference_target(remoteTrackingBranchRef);
 
-    if (resultCode != GIT_OK) {
+    if (ret != GIT_OK) {
         gitError = git_error_last();
         goto clean;
     }
@@ -341,9 +341,9 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
     {
         git_oid HEADOid  = {0};
 
-        resultCode = git_reference_name_to_id(&HEADOid, gitRepo, "HEAD");
+        ret = git_reference_name_to_id(&HEADOid, gitRepo, "HEAD");
 
-        if (resultCode == GIT_OK) {
+        if (ret == GIT_OK) {
             //print_git_oid((*remoteTrackingBranchHeadOid), "remoteTrackingBranchHeadOid");
             //print_git_oid(HEADOid, "HEADOid");
             // HEAD SHA-1 is equal to remote tracking branch's HEAD SHA-1, means no need to perform merge
@@ -356,27 +356,27 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
     {
         git_oid localeTrackingBranchHeadOid  = {0};
 
-        resultCode = git_reference_name_to_id(&localeTrackingBranchHeadOid, gitRepo, localeTrackingBranchRefString);
+        ret = git_reference_name_to_id(&localeTrackingBranchHeadOid, gitRepo, localeTrackingBranchRefString);
 
-        if (resultCode == GIT_OK) {
+        if (ret == GIT_OK) {
             //print_git_oid((*remoteTrackingBranchHeadOid), "remoteTrackingBranchHeadOid");
             //print_git_oid(localeTrackingBranchHeadOid, "localeTrackingBranchHeadOid");
             // remote tracking branch's SHA-1 is equal to remote tracking branch's HEAD SHA-1, means no need to perform merge
             if (memcmp(remoteTrackingBranchHeadOid->id, localeTrackingBranchHeadOid.id, 20) == 0) {
-                resultCode = git_repository_set_head(gitRepo, localeTrackingBranchRefString);
+                ret = git_repository_set_head(gitRepo, localeTrackingBranchRefString);
 
-                if (resultCode != GIT_OK) {
+                if (ret != GIT_OK) {
                     gitError = git_error_last();
                     goto clean;
                 }
             }
-        } else if (resultCode == GIT_ENOTFOUND) {
+        } else if (ret == GIT_ENOTFOUND) {
             git_reference * localeTrackingBranchRef = NULL;
 
-            resultCode = git_reference_create(&localeTrackingBranchRef, gitRepo, localeTrackingBranchRefString, remoteTrackingBranchHeadOid, false, NULL);
+            ret = git_reference_create(&localeTrackingBranchRef, gitRepo, localeTrackingBranchRefString, remoteTrackingBranchHeadOid, false, NULL);
             git_reference_free(localeTrackingBranchRef);
 
-            if (resultCode != GIT_OK) {
+            if (ret != GIT_OK) {
                 gitError = git_error_last();
                 goto clean;
             }
@@ -395,44 +395,44 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
     // optimized
 
     // https://libgit2.org/libgit2/#HEAD/group/reference/git_reference_peel
-    resultCode = git_reference_peel(&remoteTrackingBranchHeadCommit, remoteTrackingBranchRef, GIT_OBJ_COMMIT);
+    ret = git_reference_peel(&remoteTrackingBranchHeadCommit, remoteTrackingBranchRef, GIT_OBJ_COMMIT);
 
-    if (resultCode != GIT_OK) {
+    if (ret != GIT_OK) {
         gitError = git_error_last();
         goto clean;
     }
 
     // https://libgit2.org/libgit2/#HEAD/group/commit/git_commit_tree
-    resultCode = git_commit_tree(&remoteTrackingBranchHeadTree, (git_commit*)remoteTrackingBranchHeadCommit);
+    ret = git_commit_tree(&remoteTrackingBranchHeadTree, (git_commit*)remoteTrackingBranchHeadCommit);
 
-    if (resultCode != GIT_OK) {
+    if (ret != GIT_OK) {
         gitError = git_error_last();
         goto clean;
     }
 
     // https://libgit2.org/libgit2/#HEAD/group/checkout/git_checkout_tree
-    resultCode = git_checkout_tree(gitRepo, (git_object*)remoteTrackingBranchHeadTree, &gitCheckoutOptions);
+    ret = git_checkout_tree(gitRepo, (git_object*)remoteTrackingBranchHeadTree, &gitCheckoutOptions);
 
-    if (resultCode != GIT_OK) {
+    if (ret != GIT_OK) {
         gitError = git_error_last();
         goto clean;
     }
 
     // https://libgit2.org/libgit2/#HEAD/group/reference/git_reference_set_target
-    resultCode = git_reference_set_target(&localeTrackingBranchRef, localeTrackingBranchRef, git_commit_id((git_commit*)remoteTrackingBranchHeadCommit), NULL);
+    ret = git_reference_set_target(&localeTrackingBranchRef, localeTrackingBranchRef, git_commit_id((git_commit*)remoteTrackingBranchHeadCommit), NULL);
 
-    if (resultCode != GIT_OK) {
+    if (ret != GIT_OK) {
         gitError = git_error_last();
     }
 
-    resultCode = git_repository_set_head(gitRepo, localeTrackingBranchRefString);
+    ret = git_repository_set_head(gitRepo, localeTrackingBranchRefString);
 
-    if (resultCode != GIT_OK) {
+    if (ret != GIT_OK) {
         gitError = git_error_last();
     }
 
 clean:
-    if (resultCode == GIT_OK) {
+    if (ret == GIT_OK) {
         printf("%s\n", "Already up to date.");
     } else {
         if (gitError != NULL) {
@@ -456,5 +456,5 @@ clean:
 
     git_libgit2_shutdown();
 
-    return resultCode == GIT_OK ? UPPM_OK : abs(resultCode) + UPPM_ERROR_LIBGIT2_BASE;
+    return ret == GIT_OK ? UPPM_OK : abs(ret) + UPPM_ERROR_LIBGIT2_BASE;
 }
