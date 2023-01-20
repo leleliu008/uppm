@@ -99,17 +99,17 @@ jobs:
 
       - run:  ./output/bin/uppm formula-repo-list
 
-      - run:  ./output/bin/uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-linux-x86_64
-      - run:  ./output/bin/uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-linux-x86_64 --branch=master
-      - run:  ./output/bin/uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-linux-x86_64 --unpin
-      - run:  ./output/bin/uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-linux-x86_64 --unpin --disable
+      - run:  ./output/bin/uppm formula-repo-add my_repo1 https://github.com/leleliu008/uppm-formula-repository-linux-x86_64
+      - run:  ./output/bin/uppm formula-repo-add my_repo2 https://github.com/leleliu008/uppm-formula-repository-linux-x86_64 --branch=master
+      - run:  ./output/bin/uppm formula-repo-add my_repo3 https://github.com/leleliu008/uppm-formula-repository-linux-x86_64 --unpin
+      - run:  ./output/bin/uppm formula-repo-add my_repo4 https://github.com/leleliu008/uppm-formula-repository-linux-x86_64 --unpin --disable
 
       - run:  ./output/bin/uppm formula-repo-list
 
-      - run:  ./output/bin/uppm formula-repo-create my_repo1 https://github.com/leleliu008/uppm-formula-repository-linux-x86_64
-      - run:  ./output/bin/uppm formula-repo-create my_repo2 https://github.com/leleliu008/uppm-formula-repository-linux-x86_64 --branch=master
-      - run:  ./output/bin/uppm formula-repo-create my_repo3 https://github.com/leleliu008/uppm-formula-repository-linux-x86_64 --unpin
-      - run:  ./output/bin/uppm formula-repo-create my_repo4 https://github.com/leleliu008/uppm-formula-repository-linux-x86_64 --unpin --disable
+      - run:  ./output/bin/uppm formula-repo-create my_repo10 https://github.com/leleliu008/uppm-formula-repository-linux-x86_64
+      - run:  ./output/bin/uppm formula-repo-create my_repo11 https://github.com/leleliu008/uppm-formula-repository-linux-x86_64 --branch=master
+      - run:  ./output/bin/uppm formula-repo-create my_repo12 https://github.com/leleliu008/uppm-formula-repository-linux-x86_64 --unpin
+      - run:  ./output/bin/uppm formula-repo-create my_repo13 https://github.com/leleliu008/uppm-formula-repository-linux-x86_64 --unpin --disable
 
       - run:  ./output/bin/uppm formula-repo-list
 
@@ -124,6 +124,6 @@ jobs:
 
       - run:  ./output/bin/uppm formula-repo-info   my_repo2
 
-      - run:  ./output/bin/uppm formula-repo-remove my_repo
+      - run:  ./output/bin/uppm formula-repo-remove my_repo1
 
       - run:  ./output/bin/uppm cleanup
