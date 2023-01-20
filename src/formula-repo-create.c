@@ -34,8 +34,6 @@ int uppm_formula_repo_create(const char * formulaRepoName, const char * formulaR
         branchName = (char*)"master";
     }
 
-    size_t branchNameLength = strlen(branchName);
-
     ///////////////////////////////////////////////////////////////////////////////////////
 
     char * userHomeDir = getenv("HOME");
@@ -119,7 +117,7 @@ int uppm_formula_repo_create(const char * formulaRepoName, const char * formulaR
 
     git_repository   * gitRepo   = NULL;
     git_remote       * gitRemote = NULL;
-    const git_error * gitError   = NULL;
+    const git_error  * gitError  = NULL;
 
     git_libgit2_init();
 
@@ -156,31 +154,5 @@ int uppm_formula_repo_create(const char * formulaRepoName, const char * formulaR
     char ts[11];
     snprintf(ts, 11, "%ld", time(NULL));
 
-    size_t strLength = formulaRepoUrlLength + branchNameLength + 65;
-    char   str[strLength];
-    snprintf(str, strLength, "url: %s\nbranch: %s\npinned: %1d\nenabled: %1d\ntimestamp-added: %10s\n", formulaRepoUrl, branchName, pinned, enabled, ts);
-
-    ////////////////////////////////////////////////////////////////////////////////////////
-
-    size_t formulaRepoConfigFilePathLength = formulaRepoDirLength + 24;
-    char   formulaRepoConfigFilePath[formulaRepoConfigFilePathLength];
-    snprintf(formulaRepoConfigFilePath, formulaRepoConfigFilePathLength, "%s/.uppm-formula-repo.yml", formulaRepoDir);
-
-    FILE * file = fopen(formulaRepoConfigFilePath, "w");
-
-    if (file == NULL) {
-        perror(formulaRepoConfigFilePath);
-        return UPPM_ERROR;
-    }
-
-    if (fwrite(str, 1, strLength, file) != strLength || ferror(file)) {
-        perror(formulaRepoConfigFilePath);
-        fclose(file);
-        return UPPM_ERROR;
-    }
-
-    fclose(file);
-
-    printf("new formula repo created: \nname: %s\n%s", formulaRepoName, str);
-    return UPPM_OK;
+    return uppm_formula_repo_config_write(formulaRepoDir, formulaRepoUrl, branchName, pinned, enabled, ts, NULL);
 }

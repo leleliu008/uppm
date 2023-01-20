@@ -139,6 +139,7 @@ int  uppm_formula_repo_remove(const char * formulaRepoName);
 int  uppm_formula_repo_update(const char * formulaRepoName);
 int  uppm_formula_repo_printf(const char * formulaRepoName);
 int  uppm_formula_repo_config(const char * formulaRepoName, const char * formulaRepoUrl, const char * branchName, int pinned, int enabled);
+int  uppm_formula_repo_config_write(const char * formulaRepoDirPath, const char * formulaRepoUrl, const char * branchName, int pinned, int enabled, const char * timestamp_added, const char * timestamp_last_updated);
 int  uppm_formula_repo_lookup(const char * formulaRepoName, UPPMFormulaRepo * * formulaRepo);
 int  uppm_formula_repo_parse (const char * formulaRepoConfigFilePath, UPPMFormulaRepo * * formulaRepo);
 int  uppm_formula_repo_sync(UPPMFormulaRepo * formulaRepo);

@@ -39,30 +39,5 @@ int uppm_formula_repo_sync(UPPMFormulaRepo * formulaRepo) {
     char ts[11];
     snprintf(ts, 11, "%ld", time(NULL));
 
-    size_t strLength = strlen(formulaRepo->url) + strlen(formulaRepo->branch) + 99;
-    char   str[strLength];
-    snprintf(str, strLength, "url: %s\nbranch: %s\npinned: %1d\nenabled: %1d\ntimestamp-added: %10s\ntimestamp-last-updated: %10s\n", formulaRepo->url, formulaRepo->branch, formulaRepo->pinned, formulaRepo->enabled, formulaRepo->timestamp_added, ts);
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    size_t formulaRepoConfigFilePathLength = strlen(formulaRepo->path) + 24;
-    char   formulaRepoConfigFilePath[formulaRepoConfigFilePathLength];
-    snprintf(formulaRepoConfigFilePath, formulaRepoConfigFilePathLength, "%s/.uppm-formula-repo.yml", formulaRepo->path);
-
-    FILE * file = fopen(formulaRepoConfigFilePath, "w");
-
-    if (file == NULL) {
-        perror(formulaRepoConfigFilePath);
-        return UPPM_ERROR;
-    }
-
-    if (fwrite(str, 1, strLength, file) != strLength || ferror(file)) {
-        perror(formulaRepoConfigFilePath);
-        fclose(file);
-        return UPPM_ERROR;
-    }
-
-    fclose(file);
-
-    return UPPM_OK;
+    return uppm_formula_repo_config_write(formulaRepo->path, formulaRepo->url, formulaRepo->branch, formulaRepo->pinned, formulaRepo->enabled, formulaRepo->timestamp_added, ts);
 }

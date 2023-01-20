@@ -111,8 +111,10 @@ int uppm_formula_repo_add(const char * formulaRepoName, const char * formulaRepo
     char   refspec[refspecLength];
     snprintf(refspec, refspecLength, "refs/heads/%s:refs/remotes/origin/%s", branchName, branchName);
 
-    if (uppm_fetch_via_git(formulaRepoDir, formulaRepoUrl, refspec, branchName) != 0) {
-        return UPPM_ERROR;
+    int ret = uppm_fetch_via_git(formulaRepoDir, formulaRepoUrl, refspec, branchName);
+
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////
@@ -120,29 +122,5 @@ int uppm_formula_repo_add(const char * formulaRepoName, const char * formulaRepo
     char ts[11];
     snprintf(ts, 11, "%ld", time(NULL));
 
-    size_t strLength = formulaRepoUrlLength + branchNameLength + 65;
-    char   str[strLength];
-    snprintf(str, strLength, "url: %s\nbranch: %s\npinned: %1d\nenabled: %1d\ntimestamp-added: %10s\n", formulaRepoUrl, branchName, pinned, enabled, ts);
-
-    ////////////////////////////////////////////////////////////////////////////////////////
-
-    size_t formulaRepoConfigFilePathLength = formulaRepoDirLength + 24;
-    char   formulaRepoConfigFilePath[formulaRepoConfigFilePathLength];
-    snprintf(formulaRepoConfigFilePath, formulaRepoConfigFilePathLength, "%s/.uppm-formula-repo.yml", formulaRepoDir);
-
-    FILE * file = fopen(formulaRepoConfigFilePath, "w");
-
-    if (file == NULL) {
-        perror(formulaRepoConfigFilePath);
-        return UPPM_ERROR;
-    }
-
-    if (fwrite(str, 1, strLength, file) != strLength || ferror(file)) {
-        perror(formulaRepoConfigFilePath);
-        fclose(file);
-        return UPPM_ERROR;
-    }
-
-    fclose(file);
-    return UPPM_OK;
+    return uppm_formula_repo_config_write(formulaRepoDir, formulaRepoUrl, branchName, pinned, enabled, ts, NULL);
 }
