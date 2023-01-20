@@ -345,18 +345,20 @@ all relevant dirs and files are located in `~/.uppm` directory.
 *   **add a new formula repository**
 
         uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo
-        uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo master
-        uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo main
+        uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --branch=master
+        uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --branch=main --pin
+        uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --unpin --disable
+        uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --enable
         
     **Note:** this software supports multiple formula repositories.
 
 *   **create a new formula repository**
 
         uppm formula-repo-create my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo
-        uppm formula-repo-create my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo master
-        uppm formula-repo-create my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo main
-
-    **Note:** the created formula repository is pinned by default.
+        uppm formula-repo-create my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --branch=master
+        uppm formula-repo-create my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --branch=main --pin
+        uppm formula-repo-create my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --unpin --disable
+        uppm formula-repo-create my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --enable
 
 *   **delete a existing formula repository**
 
@@ -372,12 +374,12 @@ all relevant dirs and files are located in `~/.uppm` directory.
 
 *   **change the config of a existing formula repository**
 
-        uppm formula-repo-change my_repo --url=https://github.com/leleliu008/uppm-formula-repository-my_repo
-        uppm formula-repo-change my_repo --branch=main
-        uppm formula-repo-change my_repo --pin
-        uppm formula-repo-change my_repo --unpin
-        uppm formula-repo-change my_repo --enable
-        uppm formula-repo-change my_repo --disable
+        uppm formula-repo-config my_repo --url=https://github.com/leleliu008/uppm-formula-repository-my_repo
+        uppm formula-repo-config my_repo --branch=main
+        uppm formula-repo-config my_repo --pin
+        uppm formula-repo-config my_repo --unpin
+        uppm formula-repo-config my_repo --enable
+        uppm formula-repo-config my_repo --disable
 
 *   **list the available packages**
         
@@ -480,15 +482,20 @@ a uppm formula repository's root dir should have a `formula` named sub dir, this
 
 a uppm formula repository's local path is `~/.uppm/repos.d/${UPPMFormulaRepoName}`
 
-After a uppm formula repository is successfully fetched from server to local, a config file for this repository would be created, this config file's path is `~/.uppm/repos.d/${UPPMFormulaRepoName}/.uppm-formula-repo.dat`, this config file is zlib deflated, and you're able to uncompress it via `zlib-flate -uncompress < ~/.uppm/repos.d/${UPPMFormulaRepoName}/.uppm-formula-repo.dat`.
+**Note:**
+ - please do NOT directly modify the formulas since your changes may be lost after the formula repository is updated!
+ - uppm supports multiple formula repositories.
 
-a typical uppm formula repository's uncompressed config as following:
+## uppm formula repository's config
+After a uppm formula repository is successfully fetched from server to local, a config file for this repository would be created at `~/.uppm/repos.d/${UPPMFormulaRepoName}/.uppm-formula-repo.yml`
+
+a typical uppm formula repository's config as following:
 
 ```
 url: https://github.com/leleliu008/uppm-formula-repository-linux-x86_64
 branch: master
-pinned: no
-enabled: yes
+pinned: 0
+enabled: 1
 timestamp-added: 1673684639
 timestamp-last-updated: 1673684767
 ```
@@ -497,16 +504,9 @@ If a uppm formula repository is pinned, which means it would not be updated.
 
 If a uppm formula repository is disabled, which means uppm would not search formula in this formula repository.
 
-**Note:**
- - please do NOT directly modify the formulas since your changes may be lost after the formula repository is updated!
- - uppm supports multiple formula repositories.
-
-
 ## uppm offical formula repository
 
-There is a special uppm formula repository whose name is `offical-core`.
-
-`offical-core` formula repository's url:
+uppm offical formula repository's url:
 - https://github.com/leleliu008/uppm-formula-repository-android-aarch64
 - https://github.com/leleliu008/uppm-formula-repository-linux-x86_64
 - https://github.com/leleliu008/uppm-formula-repository-linux-aarch64
@@ -516,5 +516,6 @@ There is a special uppm formula repository whose name is `offical-core`.
 - https://github.com/leleliu008/uppm-formula-repository-openbsd-amd64
 - https://github.com/leleliu008/uppm-formula-repository-netbsd-amd64
 
-If you find that a package is not in `offical-core` formula repository yet, PR is welcomed.
+**Note:** If you find that a package is not in uppm offical formula repository yet, PR is welcomed.
 
+These formula repositories would be automatically fetched to local cache as name `offical-core` when you run `uppm update` command.

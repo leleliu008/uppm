@@ -3,7 +3,6 @@
 #include <dirent.h>
 #include <sys/stat.h>
 
-#include "core/zlib-flate.h"
 #include "uppm.h"
 
 int uppm_formula_repo_list(UPPMFormulaRepoList * * out) {
@@ -64,110 +63,76 @@ int uppm_formula_repo_list(UPPMFormulaRepoList * * out) {
 
         size_t formulaRepoConfigFilePathLength = formulaRepoPathLength + 24;
         char   formulaRepoConfigFilePath[formulaRepoConfigFilePathLength];
-        snprintf(formulaRepoConfigFilePath, formulaRepoConfigFilePathLength, "%s/.uppm-formula-repo.dat", formulaRepoPath);
+        snprintf(formulaRepoConfigFilePath, formulaRepoConfigFilePathLength, "%s/.uppm-formula-repo.yml", formulaRepoPath);
 
-        if ((stat(formulaRepoConfigFilePath, &st) == 0) && S_ISREG(st.st_mode)) {
-            UPPMFormulaRepo * formulaRepo = NULL;
-
-            size_t formulaRepoConfigFilePath2Length = formulaRepoPathLength + 24;
-            char   formulaRepoConfigFilePath2[formulaRepoConfigFilePath2Length];
-            snprintf(formulaRepoConfigFilePath2, formulaRepoConfigFilePath2Length, "%s/.uppm-formula-repo.yml", formulaRepoPath);
-
-            FILE * inputFile  = NULL;
-            FILE * outputFile = NULL;
-
-            inputFile = fopen(formulaRepoConfigFilePath, "rb");
-
-            if (inputFile == NULL) {
-                perror(formulaRepoConfigFilePath);
-                uppm_formula_repo_list_free(formulaRepoList);
-                goto clean;
-            }
-
-            outputFile = fopen(formulaRepoConfigFilePath2, "w");
-
-            if (outputFile == NULL) {
-                perror(formulaRepoConfigFilePath2);
-                uppm_formula_repo_list_free(formulaRepoList);
-                fclose(inputFile);
-                goto clean;
-            }
-
-            ret = zlib_inflate_file_to_file(inputFile, outputFile);
-
-            fclose(inputFile);
-            fclose(outputFile);
-
-            if (ret != 0) {
-                uppm_formula_repo_list_free(formulaRepoList);
-                goto clean;
-            }
-
-            ret = uppm_formula_repo_parse(formulaRepoConfigFilePath2, &formulaRepo);
-
-            if (ret != UPPM_OK) {
-                uppm_formula_repo_free(formulaRepo);
-                uppm_formula_repo_list_free(formulaRepoList);
-                goto clean;
-            }
-
-            if (formulaRepoList == NULL) {
-                formulaRepoList = (UPPMFormulaRepoList*)calloc(1, sizeof(UPPMFormulaRepoList));
-
-                if (formulaRepoList == NULL) {
-                    uppm_formula_repo_free(formulaRepo);
-                    uppm_formula_repo_list_free(formulaRepoList);
-                    ret = UPPM_ERROR_MEMORY_ALLOCATE;
-                    goto clean;
-                }
-
-                formulaRepoList->repos = (UPPMFormulaRepo**)calloc(capcity, sizeof(UPPMFormulaRepo*));
-
-                if (formulaRepoList->repos == NULL) {
-                    uppm_formula_repo_free(formulaRepo);
-                    uppm_formula_repo_list_free(formulaRepoList);
-                    ret = UPPM_ERROR_MEMORY_ALLOCATE;
-                    goto clean;
-                }
-            }
-
-            if (capcity == formulaRepoList->size) {
-                capcity += 5;
-                UPPMFormulaRepo ** formulaRepoArray = (UPPMFormulaRepo**)realloc(formulaRepoList->repos, capcity * sizeof(UPPMFormulaRepo*));
-
-                if (formulaRepoArray == NULL) {
-                    uppm_formula_repo_free(formulaRepo);
-                    uppm_formula_repo_list_free(formulaRepoList);
-                    ret = UPPM_ERROR_MEMORY_ALLOCATE;
-                    goto clean;
-                } else {
-                    formulaRepoList->repos = formulaRepoArray;
-                }
-            }
-
-            formulaRepo->name = strdup(dir_entry->d_name);
-
-            if (formulaRepo->name == NULL) {
-                uppm_formula_repo_free(formulaRepo);
-                uppm_formula_repo_list_free(formulaRepoList);
-                ret = UPPM_ERROR_MEMORY_ALLOCATE;
-                goto clean;
-            }
-
-            formulaRepo->path = strdup(formulaRepoPath);
-
-            if (formulaRepo->path == NULL) {
-                uppm_formula_repo_free(formulaRepo);
-                uppm_formula_repo_list_free(formulaRepoList);
-                ret = UPPM_ERROR_MEMORY_ALLOCATE;
-                goto clean;
-            }
-
-            formulaRepoList->repos[formulaRepoList->size] = formulaRepo;
-            formulaRepoList->size += 1;
-        } else {
+        if (stat(formulaRepoConfigFilePath, &st) != 0) {
             continue;
         }
+
+        UPPMFormulaRepo * formulaRepo = NULL;
+
+        ret = uppm_formula_repo_parse(formulaRepoConfigFilePath, &formulaRepo);
+
+        if (ret != UPPM_OK) {
+            uppm_formula_repo_free(formulaRepo);
+            uppm_formula_repo_list_free(formulaRepoList);
+            goto clean;
+        }
+
+        if (formulaRepoList == NULL) {
+            formulaRepoList = (UPPMFormulaRepoList*)calloc(1, sizeof(UPPMFormulaRepoList));
+
+            if (formulaRepoList == NULL) {
+                uppm_formula_repo_free(formulaRepo);
+                uppm_formula_repo_list_free(formulaRepoList);
+                ret = UPPM_ERROR_MEMORY_ALLOCATE;
+                goto clean;
+            }
+
+            formulaRepoList->repos = (UPPMFormulaRepo**)calloc(capcity, sizeof(UPPMFormulaRepo*));
+
+            if (formulaRepoList->repos == NULL) {
+                uppm_formula_repo_free(formulaRepo);
+                uppm_formula_repo_list_free(formulaRepoList);
+                ret = UPPM_ERROR_MEMORY_ALLOCATE;
+                goto clean;
+            }
+        }
+
+        if (capcity == formulaRepoList->size) {
+            capcity += 5;
+            UPPMFormulaRepo ** formulaRepoArray = (UPPMFormulaRepo**)realloc(formulaRepoList->repos, capcity * sizeof(UPPMFormulaRepo*));
+
+            if (formulaRepoArray == NULL) {
+                uppm_formula_repo_free(formulaRepo);
+                uppm_formula_repo_list_free(formulaRepoList);
+                ret = UPPM_ERROR_MEMORY_ALLOCATE;
+                goto clean;
+            } else {
+                formulaRepoList->repos = formulaRepoArray;
+            }
+        }
+
+        formulaRepo->name = strdup(dir_entry->d_name);
+
+        if (formulaRepo->name == NULL) {
+            uppm_formula_repo_free(formulaRepo);
+            uppm_formula_repo_list_free(formulaRepoList);
+            ret = UPPM_ERROR_MEMORY_ALLOCATE;
+            goto clean;
+        }
+
+        formulaRepo->path = strdup(formulaRepoPath);
+
+        if (formulaRepo->path == NULL) {
+            uppm_formula_repo_free(formulaRepo);
+            uppm_formula_repo_list_free(formulaRepoList);
+            ret = UPPM_ERROR_MEMORY_ALLOCATE;
+            goto clean;
+        }
+
+        formulaRepoList->repos[formulaRepoList->size] = formulaRepo;
+        formulaRepoList->size += 1;
     }
 
     if (formulaRepoList == NULL) {

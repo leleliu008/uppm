@@ -8,9 +8,8 @@
 #include <git2.h>
 
 #include "uppm.h"
-#include "core/zlib-flate.h"
 
-int uppm_formula_repo_create(const char * formulaRepoName, const char * formulaRepoUrl, const char * branchName) {
+int uppm_formula_repo_create(const char * formulaRepoName, const char * formulaRepoUrl, const char * branchName, int pinned, int enabled) {
     if (formulaRepoName == NULL) {
         return UPPM_ERROR_ARG_IS_NULL;
     }
@@ -154,35 +153,34 @@ int uppm_formula_repo_create(const char * formulaRepoName, const char * formulaR
 
     ////////////////////////////////////////////////////////////////////////////////////////
 
+    char ts[11];
+    snprintf(ts, 11, "%ld", time(NULL));
+
+    size_t strLength = formulaRepoUrlLength + branchNameLength + 65;
+    char   str[strLength];
+    snprintf(str, strLength, "url: %s\nbranch: %s\npinned: %1d\nenabled: %1d\ntimestamp-added: %10s\n", formulaRepoUrl, branchName, pinned, enabled, ts);
+
+    ////////////////////////////////////////////////////////////////////////////////////////
+
     size_t formulaRepoConfigFilePathLength = formulaRepoDirLength + 24;
     char   formulaRepoConfigFilePath[formulaRepoConfigFilePathLength];
-    snprintf(formulaRepoConfigFilePath, formulaRepoConfigFilePathLength, "%s/.uppm-formula-repo.dat", formulaRepoDir);
+    snprintf(formulaRepoConfigFilePath, formulaRepoConfigFilePathLength, "%s/.uppm-formula-repo.yml", formulaRepoDir);
 
-    FILE * file = fopen(formulaRepoConfigFilePath, "wb");
+    FILE * file = fopen(formulaRepoConfigFilePath, "w");
 
     if (file == NULL) {
         perror(formulaRepoConfigFilePath);
         return UPPM_ERROR;
     }
 
-    char ts[11];
-    snprintf(ts, 11, "%ld", time(NULL));
-
-    size_t strLength = formulaRepoUrlLength + branchNameLength + strlen(ts) + 59;
-    char   str[strLength];
-    snprintf(str, strLength, "url: %s\nbranch: %s\npinned: yes\nenabled: yes\ntimestamp-added: %s\n", formulaRepoUrl, branchName, ts);
-
-    if (zlib_deflate_string_to_file(str, strLength - 1, file) != 0) {
+    if (fwrite(str, 1, strLength, file) != strLength || ferror(file)) {
+        perror(formulaRepoConfigFilePath);
         fclose(file);
-
-        if (unlink(formulaRepoConfigFilePath) != 0) {
-            perror(formulaRepoConfigFilePath);
-        }
-
         return UPPM_ERROR;
-    } else {
-        fclose(file);
-        printf("new formula repo created: \nname: %s\n%s", formulaRepoName, str);
-        return UPPM_OK;
     }
+
+    fclose(file);
+
+    printf("new formula repo created: \nname: %s\n%s", formulaRepoName, str);
+    return UPPM_OK;
 }

@@ -585,30 +585,84 @@ int uppm_main(int argc, char* argv[]) {
 
     if (strcmp(argv[1], "formula-repo-add") == 0) {
         if (argv[2] == NULL) {
-            fprintf(stderr, "Usage: %s %s <FORMULA-REPO-NAME> <FORMULA-REPO-URL> <FORMULA-REPO-BRANCH>\n", argv[0], argv[1]);
+            fprintf(stderr, "Usage: %s %s <FORMULA-REPO-NAME> <FORMULA-REPO-URL> [--branch=VALUE --pin/--unpin --enable/--disable]\n", argv[0], argv[1]);
             return UPPM_ERROR_ARG_IS_NULL;
         }
 
         if (argv[3] == NULL) {
-            fprintf(stderr, "Usage: %s %s <FORMULA-REPO-NAME> <FORMULA-REPO-URL> <FORMULA-REPO-BRANCH>\n", argv[0], argv[1]);
+            fprintf(stderr, "Usage: %s %s <FORMULA-REPO-NAME> <FORMULA-REPO-URL> [--branch=VALUE --pin/--unpin --enable/--disable]\n", argv[0], argv[1]);
             return UPPM_ERROR_ARG_IS_NULL;
         }
 
-        return uppm_formula_repo_add(argv[2], argv[3], argv[4]);
+        int pinned  = 0;
+        int enabled = 1;
+
+        const char * branch = NULL;
+
+        for (int i = 4; i < argc; i++) {
+            if (strcmp(argv[i], "--pin") == 0) {
+                pinned = 1;
+            } else if (strcmp(argv[i], "--unpin") == 0) {
+                pinned = 0;
+            } else if (strcmp(argv[i], "--enable") == 0) {
+                enabled = 1;
+            } else if (strcmp(argv[i], "--disable") == 0) {
+                enabled = 0;
+            } else if (strncmp(argv[i], "--branch=", 9) == 0) {
+                if (argv[i][9] == '\0') {
+                    fprintf(stderr, "--branch option should have value.\n");
+                    return UPPM_ERROR_ARG_IS_INVALID;
+                } else {
+                    branch = &argv[i][9];
+                }
+            } else {
+                fprintf(stderr, "unrecognized option: %s\n", argv[i]);
+                return UPPM_ERROR_ARG_IS_UNKNOWN;
+            }
+        }
+
+        return uppm_formula_repo_add(argv[2], argv[3], branch, pinned, enabled);
     }
 
     if (strcmp(argv[1], "formula-repo-create") == 0) {
         if (argv[2] == NULL) {
-            fprintf(stderr, "Usage: %s %s <FORMULA-REPO-NAME> <FORMULA-REPO-URL> <FORMULA-REPO-BRANCH>\n", argv[0], argv[1]);
+            fprintf(stderr, "Usage: %s %s <FORMULA-REPO-NAME> <FORMULA-REPO-URL> [--branch=VALUE --pin/--unpin --enable/--disable]\n", argv[0], argv[1]);
             return UPPM_ERROR_ARG_IS_NULL;
         }
 
         if (argv[3] == NULL) {
-            fprintf(stderr, "Usage: %s %s <FORMULA-REPO-NAME> <FORMULA-REPO-URL> <FORMULA-REPO-BRANCH>\n", argv[0], argv[1]);
+            fprintf(stderr, "Usage: %s %s <FORMULA-REPO-NAME> <FORMULA-REPO-URL> [--branch=VALUE --pin/--unpin --enable/--disable]\n", argv[0], argv[1]);
             return UPPM_ERROR_ARG_IS_NULL;
         }
 
-        return uppm_formula_repo_create(argv[2], argv[3], argv[4]);
+        int pinned  = 1;
+        int enabled = 1;
+
+        char * branch = NULL;
+
+        for (int i = 4; i < argc; i++) {
+            if (strcmp(argv[i], "--pin") == 0) {
+                pinned = 1;
+            } else if (strcmp(argv[i], "--unpin") == 0) {
+                pinned = 0;
+            } else if (strcmp(argv[i], "--enable") == 0) {
+                enabled = 1;
+            } else if (strcmp(argv[i], "--disable") == 0) {
+                enabled = 0;
+            } else if (strncmp(argv[i], "--branch=", 9) == 0) {
+                if (argv[i][9] == '\0') {
+                    fprintf(stderr, "--branch option should have value.\n");
+                    return UPPM_ERROR_ARG_IS_INVALID;
+                } else {
+                    branch = &argv[i][9];
+                }
+            } else {
+                fprintf(stderr, "unrecognized option: %s\n", argv[i]);
+                return UPPM_ERROR_ARG_IS_UNKNOWN;
+            }
+        }
+
+        return uppm_formula_repo_create(argv[2], argv[3], branch, pinned, enabled);
     }
 
     if (strcmp(argv[1], "formula-repo-remove") == 0) {
@@ -629,34 +683,32 @@ int uppm_main(int argc, char* argv[]) {
         return uppm_formula_repo_update(argv[2]);
     }
 
-    if (strcmp(argv[1], "formula-repo-change") == 0) {
+    if (strcmp(argv[1], "formula-repo-config") == 0) {
         if (argv[2] == NULL) {
-            fprintf(stderr, "Usage: %s %s <FORMULA-REPO-NAME> <OPTION>...\n", argv[0], argv[1]);
+            fprintf(stderr, "Usage: %s %s <FORMULA-REPO-NAME> [--url=VALUE --branch=VALUE --pin/--unpin --enable/--disable]\n", argv[0], argv[1]);
             return UPPM_ERROR_ARG_IS_NULL;
         }
 
         if (argv[3] == NULL) {
-            fprintf(stderr, "Usage: %s %s <FORMULA-REPO-NAME> <OPTION>...\n", argv[0], argv[1]);
+            fprintf(stderr, "Usage: %s %s <FORMULA-REPO-NAME> [--url=VALUE --branch=VALUE --pin/--unpin --enable/--disable]\n", argv[0], argv[1]);
             return UPPM_ERROR_ARG_IS_NULL;
         }
 
-        const char * pinned  = NULL;
-        const char * enabled = NULL;
+        int pinned  = -1;
+        int enabled = -1;
+
         const char * branch = NULL;
         const char * url = NULL;
 
-        const char * const yes = "yes";
-        const char * const no  = "no";
-
         for (int i = 3; i < argc; i++) {
-            if (strncmp(argv[i], "--pin", 5) == 0) {
-                pinned = yes;
-            } else if (strncmp(argv[i], "--unpin", 5) == 0) {
-                pinned = no;
-            } else if (strncmp(argv[i], "--enable", 8) == 0) {
-                enabled = yes;
-            } else if (strncmp(argv[i], "--disable", 9) == 0) {
-                enabled = no;
+            if (strcmp(argv[i], "--pin") == 0) {
+                pinned = 1;
+            } else if (strcmp(argv[i], "--unpin") == 0) {
+                pinned = 0;
+            } else if (strcmp(argv[i], "--enable") == 0) {
+                enabled = 1;
+            } else if (strcmp(argv[i], "--disable") == 0) {
+                enabled = 0;
             } else if (strncmp(argv[i], "--url=", 6) == 0) {
                 if (argv[i][6] == '\0') {
                     fprintf(stderr, "--url option should have value.\n");
@@ -677,7 +729,7 @@ int uppm_main(int argc, char* argv[]) {
             }
         }
 
-        return uppm_formula_repo_change(argv[2], url, branch, pinned, enabled);
+        return uppm_formula_repo_config(argv[2], url, branch, pinned, enabled);
     }
 
     if (strcmp(argv[1], "formula-repo-info") == 0) {

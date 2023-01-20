@@ -2,7 +2,6 @@
 #include <string.h>
 #include <sys/stat.h>
 
-#include "core/zlib-flate.h"
 #include "uppm.h"
 
 int uppm_formula_repo_lookup(const char * formulaRepoName, UPPMFormulaRepo * * formulaRepoPP) {
@@ -35,48 +34,17 @@ int uppm_formula_repo_lookup(const char * formulaRepoName, UPPMFormulaRepo * * f
         return UPPM_ERROR_FORMULA_REPO_NOT_FOUND;
     }
 
-    size_t  formulaRepoDatFormatConfigFilePathLength = formulaRepoDirPathLength + 24;
-    char    formulaRepoDatFormatConfigFilePath[formulaRepoDatFormatConfigFilePathLength];
-    snprintf(formulaRepoDatFormatConfigFilePath, formulaRepoDatFormatConfigFilePathLength, "%s/.uppm-formula-repo.dat", formulaRepoDirPath);
+    size_t formulaRepoConfigFilePathLength = formulaRepoDirPathLength + 24;
+    char   formulaRepoConfigFilePath[formulaRepoConfigFilePathLength];
+    snprintf(formulaRepoConfigFilePath, formulaRepoConfigFilePathLength, "%s/.uppm-formula-repo.yml", formulaRepoDirPath);
 
-    if (!((stat(formulaRepoDatFormatConfigFilePath, &st) == 0) && S_ISREG(st.st_mode))) {
+    if (!((stat(formulaRepoConfigFilePath, &st) == 0) && S_ISREG(st.st_mode))) {
         return UPPM_ERROR_FORMULA_REPO_NOT_FOUND;
-    }
-
-    size_t  formulaRepoYmlFormatConfigFilePathLength = formulaRepoDirPathLength + 24;
-    char    formulaRepoYmlFormatConfigFilePath[formulaRepoYmlFormatConfigFilePathLength];
-    snprintf(formulaRepoYmlFormatConfigFilePath, formulaRepoYmlFormatConfigFilePathLength, "%s/.uppm-formula-repo.yml", formulaRepoDirPath);
-
-    FILE * inputFile  = NULL;
-    FILE * outputFile = NULL;
-
-    inputFile = fopen(formulaRepoDatFormatConfigFilePath, "rb");
-
-    if (inputFile == NULL) {
-        perror(formulaRepoDatFormatConfigFilePath);
-        return UPPM_ERROR;
-    }
-
-    outputFile = fopen(formulaRepoYmlFormatConfigFilePath, "w");
-
-    if (outputFile == NULL) {
-        perror(formulaRepoYmlFormatConfigFilePath);
-        fclose(inputFile);
-        return UPPM_ERROR;
-    }
-
-    int ret = zlib_inflate_file_to_file(inputFile, outputFile);
-
-    fclose(inputFile);
-    fclose(outputFile);
-
-    if (ret != 0) {
-        return UPPM_ERROR_FORMULA_REPO_IS_BROKEN;
     }
 
     UPPMFormulaRepo * formulaRepo = NULL;
 
-    ret = uppm_formula_repo_parse(formulaRepoYmlFormatConfigFilePath, &formulaRepo);
+    int ret = uppm_formula_repo_parse(formulaRepoConfigFilePath, &formulaRepo);
 
     if (ret != UPPM_OK) {
         return ret;

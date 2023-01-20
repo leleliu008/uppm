@@ -27,11 +27,23 @@ int uppm_formula_cat(const char * packageName) {
 
     char   buff[1024];
     size_t size;
-    while((size = fread(buff, 1, 1024, file)) != 0) {
-        fwrite(buff, 1, size, stdout);
+
+    for(;;) {
+        size = fread(buff, 1, 1024, file);
+
+        if (ferror(file)) {
+            fclose(file);
+            return UPPM_ERROR;
+        }
+
+        if (fwrite(buff, 1, size, stdout) != size || ferror(stdout)) {
+            fclose(file);
+            return UPPM_ERROR;
+        }
+
+        if (feof(file)) {
+            fclose(file);
+            return UPPM_OK;
+        }
     }
-
-    fclose(file);
-
-    return UPPM_OK;
 }

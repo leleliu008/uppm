@@ -19,14 +19,10 @@ int uppm_formula_repo_list_update() {
                 officalCoreIsThere = true;
             }
 
-            if (formulaRepo->pinned) {
-                fprintf(stderr, "[%s] formula repo was pinned, skipped.\n", formulaRepo->name);
-            } else {
-                ret = uppm_formula_repo_sync(formulaRepo);
+            ret = uppm_formula_repo_sync(formulaRepo);
 
-                if (ret != UPPM_OK) {
-                    break;
-                }
+            if (ret != UPPM_OK) {
+                break;
             }
         }
 
@@ -53,7 +49,7 @@ int uppm_formula_repo_list_update() {
             char   formulaRepoUrl[formulaRepoUrlLength];
             snprintf(formulaRepoUrl, formulaRepoUrlLength, "https://github.com/leleliu008/uppm-formula-repository-%s-%s", osType, osArch);
 
-            ret = uppm_formula_repo_add("offical-core", formulaRepoUrl, "master");
+            ret = uppm_formula_repo_add("offical-core", formulaRepoUrl, "master", false, true);
         }
     }
 

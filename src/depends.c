@@ -265,7 +265,12 @@ static int uppm_depends_make_xxx(const char * dotScriptStr, size_t len, const ch
         return UPPM_ERROR;
     }
 
-    fwrite(dotScriptStr, 1, len, file);
+    if (fwrite(dotScriptStr, 1, len, file) != len || ferror(file)) {
+        perror(filepath);
+        fclose(file);
+        return UPPM_ERROR;
+    }
+
     fclose(file);
 
     execlp("dot", "dot", type, filepath, NULL);

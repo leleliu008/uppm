@@ -41,7 +41,7 @@ jobs:
             run ./ppkg install uppm --link-type=static-only --install-lib=static
             run ./ppkg pack    uppm
 
-      - run:  scp -i $VAGRANT_CWD/.vagrant/machines/default/virtualbox/private_key -o StrictHostKeyChecking=no -r -P 2222 vagrant@127.0.0.1:~/.ppkg/cache.d/bin/uppm-1.0.0-netbsd-amd64.tar.xz .
+      - run:  scp -i $VAGRANT_CWD/.vagrant/machines/default/virtualbox/private_key -o StrictHostKeyChecking=no -r -P 2222 vagrant@127.0.0.1:~/.ppkg/cache.d/bin/uppm-*-netbsd-amd64.tar.xz .
 
       - uses: actions/upload-artifact@v2
         with:
@@ -80,7 +80,7 @@ jobs:
             run ./ppkg install uppm --link-type=static-only --install-lib=static
             run ./ppkg pack    uppm
 
-      - run: scp -i $VAGRANT_CWD/.vagrant/machines/default/virtualbox/private_key -o StrictHostKeyChecking=no -r -P 2222 vagrant@127.0.0.1:~/.ppkg/cache.d/bin/uppm-1.0.0-openbsd-amd64.tar.xz .
+      - run: scp -i $VAGRANT_CWD/.vagrant/machines/default/virtualbox/private_key -o StrictHostKeyChecking=no -r -P 2222 vagrant@127.0.0.1:~/.ppkg/cache.d/bin/uppm-*-openbsd-amd64.tar.xz .
 
       - uses: actions/upload-artifact@v2
         with:
@@ -116,7 +116,7 @@ jobs:
             run ./ppkg install uppm --link-type=static-only --install-lib=static
             run ./ppkg pack    uppm
 
-      - run:  scp -i $VAGRANT_CWD/.vagrant/machines/default/virtualbox/private_key -o StrictHostKeyChecking=no -r -P 2222 vagrant@127.0.0.1:~/.ppkg/cache.d/bin/uppm-1.0.0-freebsd-amd64.tar.xz .
+      - run:  scp -i $VAGRANT_CWD/.vagrant/machines/default/virtualbox/private_key -o StrictHostKeyChecking=no -r -P 2222 vagrant@127.0.0.1:~/.ppkg/cache.d/bin/uppm-*-freebsd-amd64.tar.xz .
 
       - uses: actions/upload-artifact@v2
         with:

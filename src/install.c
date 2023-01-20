@@ -363,12 +363,32 @@ int uppm_install(const char * packageName, bool verbose) {
     fprintf(receiptFile, "pkgname: %s\n", packageName);
 
     char   buff[1024];
-    size_t size = 0;
-    while((size = fread(buff, 1, 1024, formulaFile)) != 0) {
-        fwrite(buff, 1, size, receiptFile);
-    }
+    size_t size;
 
-    fclose(formulaFile);
+    for (;;) {
+        size = fread(buff, 1, 1024, formulaFile);
+
+        if (ferror(formulaFile)) {
+            perror(formula->path);
+            fclose(formulaFile);
+            fclose(receiptFile);
+            return UPPM_ERROR;
+        }
+
+        if (size > 0) {
+            if (fwrite(buff, 1, size, receiptFile) != size || ferror(receiptFile)) {
+                perror(receiptFilePath);
+                fclose(formulaFile);
+                fclose(receiptFile);
+                return UPPM_ERROR;
+            }
+        }
+
+        if (feof(formulaFile)) {
+            fclose(formulaFile);
+            break;
+        }
+    }
 
     fprintf(receiptFile, "\nsignature: %s\ntimestamp: %lu\n", UPPM_VERSION, time(NULL));
 

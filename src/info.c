@@ -131,13 +131,28 @@ int uppm_info(const char * packageName, const char * key) {
             printf("pkgname: %s\n", packageName);
         }
 
-        char buff[1024];
-        int  size = 0;
-        while((size = fread(buff, 1, 1024, formulaFile)) != 0) {
-            fwrite(buff, 1, size, stdout);
-        }
+        char   buff[1024];
+        size_t size;
 
-        fclose(formulaFile);
+        for (;;) {
+            size = fread(buff, 1, 1024, formulaFile);
+
+            if (ferror(formulaFile)) {
+                perror(formulaFilePath);
+                fclose(formulaFile);
+                free(formulaFilePath);
+                return UPPM_ERROR;
+            }
+
+            if (size > 0) {
+                fwrite(buff, 1, size, stdout);
+            }
+
+            if (feof(formulaFile)) {
+                fclose(formulaFile);
+                break;
+            }
+        }
 
         printf("formula: %s\n", formulaFilePath);
 
@@ -202,9 +217,9 @@ int uppm_info(const char * packageName, const char * key) {
             return ret;
         }
 
-        FILE * file = fopen(formulaFilePath, "r");
+        FILE * formulaFile = fopen(formulaFilePath, "r");
 
-        if (file == NULL) {
+        if (formulaFile == NULL) {
             perror(formulaFilePath);
             free(formulaFilePath);
             return UPPM_ERROR;
@@ -215,13 +230,28 @@ int uppm_info(const char * packageName, const char * key) {
         free(formulaFilePath);
         formulaFilePath = NULL;
 
-        char buff[1024];
-        int  size = 0;
-        while((size = fread(buff, 1, 1024, file)) != 0) {
-            fwrite(buff, 1, size, stdout);
-        }
+        char   buff[1024];
+        size_t size;
 
-        fclose(file);
+        for (;;) {
+            size = fread(buff, 1, 1024, formulaFile);
+
+            if (ferror(formulaFile)) {
+                perror(formulaFilePath);
+                fclose(formulaFile);
+                free(formulaFilePath);
+                return UPPM_ERROR;
+            }
+
+            if (size > 0) {
+                fwrite(buff, 1, size, stdout);
+            }
+
+            if (feof(formulaFile)) {
+                fclose(formulaFile);
+                break;
+            }
+        }
     } else if (strcmp(key, "summary") == 0) {
         UPPMFormula * formula = NULL;
 
@@ -424,13 +454,27 @@ int uppm_info(const char * packageName, const char * key) {
             return UPPM_ERROR;
         }
 
-        char buff[1024];
-        int  size = 0;
-        while((size = fread(buff, 1, 1024, installedManifestFile)) != 0) {
-            fwrite(buff, 1, size, stdout);
-        }
+        char   buff[1024];
+        size_t size;
 
-        fclose(installedManifestFile);
+        for (;;) {
+            size = fread(buff, 1, 1024, installedManifestFile);
+
+            if (ferror(installedManifestFile)) {
+                perror(installedManifestFilePath);
+                fclose(installedManifestFile);
+                return UPPM_ERROR;
+            }
+
+            if (size > 0) {
+                fwrite(buff, 1, size, stdout);
+            }
+
+            if (feof(installedManifestFile)) {
+                fclose(installedManifestFile);
+                break;
+            }
+        }
     } else if (strcmp(key, "installed-receipt-path") == 0) {
         char * userHomeDir = getenv("HOME");
 
@@ -513,13 +557,27 @@ int uppm_info(const char * packageName, const char * key) {
             return UPPM_ERROR;
         }
 
-        char buff[1024];
-        int  size = 0;
-        while((size = fread(buff, 1, 1024, receiptFile)) != 0) {
-            fwrite(buff, 1, size, stdout);
-        }
+        char   buff[1024];
+        size_t size;
 
-        fclose(receiptFile);
+        for (;;) {
+            size = fread(buff, 1, 1024, receiptFile);
+
+            if (ferror(receiptFile)) {
+                perror(receiptFilePath);
+                fclose(receiptFile);
+                return UPPM_ERROR;
+            }
+
+            if (size > 0) {
+                fwrite(buff, 1, size, stdout);
+            }
+
+            if (feof(receiptFile)) {
+                fclose(receiptFile);
+                break;
+            }
+        }
     } else if (strcmp(key, "installed-receipt-json") == 0) {
         UPPMReceipt * receipt = NULL;
 

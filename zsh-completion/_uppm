@@ -24,7 +24,7 @@ _commands=(
     'formula-repo-create:create a new formula-repo.'
     'formula-repo-remove:remove the given formula-repo.'
     'formula-repo-update:update the given formula-repo.'
-    'formula-repo-change:change the config of the given formula-repo.'
+    'formula-repo-config:change the config of the given formula-repo.'
     'formula-repo-info:show infomation of the given formula-repo.'
     'formula-repo-list:list all available formula-repos.'
     'ls-available:list the available packages.'
@@ -68,7 +68,31 @@ function _uppm() {
     case $state in
         option)
             case $words[1] in
-                formula-repo-change)
+                formula-repo-add)
+                    _arguments \
+                        '1:formula-repo-name:(name)' \
+                        '2:formula-repo-url:(https://)' \
+                        '--branch=-[change the formula repo branch]' \
+                        + '(pin)' \
+                        '--pin[set pinned to 1]' \
+                        '--unpin[set pinned to 0]' \
+                        + '(enable)' \
+                        '--enable[set enabled to 1]' \
+                        '--disable[set enabled to 0]'
+                    ;;
+                formula-repo-create)
+                    _arguments \
+                        '1:formula-repo-name:(name)' \
+                        '2:formula-repo-url:(https://)' \
+                        '--branch=-[change the formula repo branch]' \
+                        + '(pin)' \
+                        '--pin[set pinned to 1]' \
+                        '--unpin[set pinned to 0]' \
+                        + '(enable)' \
+                        '--enable[set enabled to 1]' \
+                        '--disable[set enabled to 0]'
+                    ;;
+                formula-repo-config)
                     _arguments \
                         '1:formula-repo-name:($(uppm formula-repo-list | sed -n "/^name: /p" | cut -c7-))' \
                         '--url=-[change the formula repo url]' \

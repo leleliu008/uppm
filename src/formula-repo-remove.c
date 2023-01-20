@@ -47,7 +47,7 @@ int uppm_formula_repo_remove(const char * formulaRepoName) {
 
     size_t formulaRepoConfigFilePathLength = formulaRepoPathLength + 24;
     char   formulaRepoConfigFilePath[formulaRepoConfigFilePathLength];
-    snprintf(formulaRepoConfigFilePath, formulaRepoConfigFilePathLength, "%s/.uppm-formula-repo.dat", formulaRepoPath);
+    snprintf(formulaRepoConfigFilePath, formulaRepoConfigFilePathLength, "%s/.uppm-formula-repo.yml", formulaRepoPath);
 
     if (stat(formulaRepoConfigFilePath, &st) == 0 && S_ISREG(st.st_mode)) {
         return rm_r(formulaRepoPath, false);

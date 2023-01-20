@@ -168,15 +168,25 @@ static int uppm_formula_repo_set_value(UPPMFormulaRepoKeyCode keyCode, char * va
 
             return formulaRepo->timestamp_last_updated == NULL ? UPPM_ERROR_MEMORY_ALLOCATE : UPPM_OK;
         case UPPMFormulaRepoKeyCode_pinned:
-            if (strcmp(value, "yes") == 0) {
-                formulaRepo->pinned = true;
+            if (strcmp(value, "1") == 0) {
+                formulaRepo->pinned = 1;
+                return UPPM_OK;
+            } else if (strcmp(value, "0") == 0) {
+                formulaRepo->pinned = 0;
+                return UPPM_OK;
+            } else {
+                return UPPM_ERROR_FORMULA_REPO_CONFIG_SCHEME;
             }
-            return UPPM_OK;
         case UPPMFormulaRepoKeyCode_enabled:
-            if (strcmp(value, "yes") == 0) {
-                formulaRepo->enabled = true;
+            if (strcmp(value, "1") == 0) {
+                formulaRepo->enabled = 1;
+                return UPPM_OK;
+            } else if (strcmp(value, "0") == 0) {
+                formulaRepo->enabled = 0;
+                return UPPM_OK;
+            } else {
+                return UPPM_ERROR_FORMULA_REPO_CONFIG_SCHEME;
             }
-            return UPPM_OK;
         case UPPMFormulaRepoKeyCode_unknown:
         default:
             return UPPM_OK;
@@ -303,7 +313,7 @@ int uppm_formula_repo_parse(const char * formulaRepoConfigFilePath, UPPMFormulaR
                             goto clean;
                         }
 
-                        formulaRepo->enabled = true;
+                        formulaRepo->enabled = 1;
                     }
 
                     ret = uppm_formula_repo_set_value(formulaRepoKeyCode, (char*)token.data.scalar.value, formulaRepo);

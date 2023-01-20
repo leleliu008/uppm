@@ -78,11 +78,24 @@ int sha256sum_of_stream(char outputBuffer[65], FILE * file) {
     SHA256_CTX ctx;
     SHA256_Init(&ctx);
 
-    unsigned char buffer[1024] = {0};
-    size_t size = 0;
+    unsigned char buffer[1024];
+    size_t size;
 
-    while ((size = fread(buffer, 1, 1024, file)) != 0) {
-        SHA256_Update(&ctx, buffer, size);
+    for (;;) {
+        size = fread(buffer, 1, 1024, file);
+
+        if (ferror(file)) {
+            perror(NULL);
+            return UPPM_ERROR;
+        }
+
+        if (size > 0) {
+            SHA256_Update(&ctx, buffer, size);
+        }
+
+        if (feof(file)) {
+            break;
+        }
     }
 
     SHA256_Final(sha256Bytes, &ctx);

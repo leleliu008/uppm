@@ -124,8 +124,8 @@ typedef struct {
     char * path;
     char * timestamp_added;
     char * timestamp_last_updated;
-    bool   pinned;
-    bool   enabled;
+    int    pinned;
+    int    enabled;
 } UPPMFormulaRepo ;
 
 typedef struct {
@@ -133,12 +133,12 @@ typedef struct {
     size_t size;
 } UPPMFormulaRepoList ;
 
-int  uppm_formula_repo_create(const char * formulaRepoName, const char * formulaRepoUrl, const char * branchName);
-int  uppm_formula_repo_add   (const char * formulaRepoName, const char * formulaRepoUrl, const char * branchName);
+int  uppm_formula_repo_create(const char * formulaRepoName, const char * formulaRepoUrl, const char * branchName, int pinned, int enabled);
+int  uppm_formula_repo_add   (const char * formulaRepoName, const char * formulaRepoUrl, const char * branchName, int pinned, int enabled);
 int  uppm_formula_repo_remove(const char * formulaRepoName);
 int  uppm_formula_repo_update(const char * formulaRepoName);
 int  uppm_formula_repo_printf(const char * formulaRepoName);
-int  uppm_formula_repo_change(const char * formulaRepoName, const char * formulaRepoUrl, const char * branchName, const char * pinned, const char * enabled);
+int  uppm_formula_repo_config(const char * formulaRepoName, const char * formulaRepoUrl, const char * branchName, int pinned, int enabled);
 int  uppm_formula_repo_lookup(const char * formulaRepoName, UPPMFormulaRepo * * formulaRepo);
 int  uppm_formula_repo_parse (const char * formulaRepoConfigFilePath, UPPMFormulaRepo * * formulaRepo);
 int  uppm_formula_repo_sync(UPPMFormulaRepo * formulaRepo);

@@ -23,7 +23,7 @@ int uppm_help() {
         COLOR_GREEN
         "uppm update\n"
         COLOR_OFF
-        "    update the formula repositories.\n\n"
+        "    update all available formula repositories.\n\n"
         COLOR_GREEN
         "uppm search  <keyword>\n"
         COLOR_OFF
@@ -91,15 +91,31 @@ int uppm_help() {
         COLOR_GREEN
         "uppm formula-repo-list\n"
         COLOR_OFF
-        "    list formula repositories.\n\n"
+        "    list all available formula repositories.\n\n"
         COLOR_GREEN
-        "uppm formula-repo-add <FORMULA-REPO-NAME> <FORMULA-REPO-URL> <BRANCH>\n"
+        "uppm formula-repo-add    <FORMULA-REPO-NAME> <FORMULA-REPO-URL> [--branch=VALUE --pin/--unpin --enable/--disable]\n"
         COLOR_OFF
-        "    add a new formula-repo.\n\n"
+        "    add a new formula repository.\n\n"
         COLOR_GREEN
-        "uppm formula-repo-del <FORMULA-REPO-NAME>\n"
+        "uppm formula-repo-create <FORMULA-REPO-NAME> <FORMULA-REPO-URL> [--branch=VALUE --pin/--unpin --enable/--disable]\n"
         COLOR_OFF
-        "    delete a existing formula-repo.\n";
+        "    create a new empty formula repository.\n\n"
+        COLOR_GREEN
+        "uppm formula-repo-config <FORMULA-REPO-NAME>      [--url=VALUE | --branch=VALUE --pin/--unpin --enable/--disable]\n"
+        COLOR_OFF
+        "    change the config of a existing formula repository.\n\n"
+        COLOR_GREEN
+        "uppm formula-repo-remove <FORMULA-REPO-NAME>\n"
+        COLOR_OFF
+        "    delete a existing formula repository.\n\n"
+        COLOR_GREEN
+        "uppm formula-repo-update <FORMULA-REPO-NAME>\n"
+        COLOR_OFF
+        "    update a existing formula repository.\n\n"
+        COLOR_GREEN
+        "uppm formula-repo-info <FORMULA-REPO-NAME>\n"
+        COLOR_OFF
+        "    show infomation of a existing formula repository.\n";
 
         printf("%s\n", str);
     } else {
@@ -115,7 +131,7 @@ int uppm_help() {
         "uppm env\n"
         "    show current machine os info.\n\n"
         "uppm update\n"
-        "    update the formula repositories.\n\n"
+        "    update all available formula repositories.\n\n"
         "uppm search  <keyword>\n"
         "    search packages whose name match the given keyword.\n\n"
         "uppm info    <PACKAGE-NAME|@all>\n"
@@ -149,11 +165,19 @@ int uppm_help() {
         "uppm cleanup\n"
         "    cleanup the unused cache.\n\n"
         "uppm formula-repo-list\n"
-        "    list formula repositories.\n\n"
-        "uppm formula-repo-add <FORMULA-REPO-NAME> <FORMULA-REPO-URL> <BRANCH>\n"
-        "    add a new formula-repo.\n\n"
-        "uppm formula-repo-del <FORMULA-REPO-NAME>\n"
-        "    delete a existing formula-repo.\n";
+        "    list all available formula repositories.\n\n"
+        "uppm formula-repo-add    <FORMULA-REPO-NAME> <FORMULA-REPO-URL> [--branch=VALUE --pin/--unpin --enable/--disable]\n"
+        "    add a new formula repository.\n\n"
+        "uppm formula-repo-create <FORMULA-REPO-NAME> <FORMULA-REPO-URL> [--branch=VALUE --pin/--unpin --enable/--disable]\n"
+        "    create a new empty formula repository.\n\n"
+        "uppm formula-repo-config <FORMULA-REPO-NAME>      [--url=VALUE | --branch=VALUE --pin/--unpin --enable/--disable]\n"
+        "    change the config of a existing formula repository.\n\n"
+        "uppm formula-repo-remove <FORMULA-REPO-NAME>\n"
+        "    delete a existing formula repository.\n\n"
+        "uppm formula-repo-update <FORMULA-REPO-NAME>\n"
+        "    update a existing formula repository.\n\n"
+        "uppm formula-repo-info <FORMULA-REPO-NAME>\n"
+        "    show infomation of a existing formula repository.\n";
 
         printf("%s\n", str);
     }

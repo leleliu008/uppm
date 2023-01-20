@@ -3,13 +3,21 @@
 #include <unistd.h>
 #include <time.h>
 
-#include "core/zlib-flate.h"
 #include "core/log.h"
 #include "uppm.h"
 
 int uppm_formula_repo_sync(UPPMFormulaRepo * formulaRepo) {
+    if (formulaRepo == NULL) {
+        return UPPM_ERROR_ARG_IS_NULL;
+    }
+
+    if (formulaRepo->pinned) {
+        fprintf(stderr, "'%s' formula repo was pinned, skipped.\n", formulaRepo->name);
+        return UPPM_OK;
+    }
+
     if (isatty(STDOUT_FILENO)) {
-        printf("%s%s%s\n", COLOR_PURPLE, "=== Updating formula repo", COLOR_OFF);
+        printf("%s%s%s\n", COLOR_PURPLE, "==> Updating formula repo", COLOR_OFF);
     } else {
         printf("=== Updating formula repo\n");
     }
@@ -31,50 +39,30 @@ int uppm_formula_repo_sync(UPPMFormulaRepo * formulaRepo) {
     char ts[11];
     snprintf(ts, 11, "%ld", time(NULL));
 
-    const char * pinnedValue;
-    size_t       pinnedValueLength;
-
-    if (formulaRepo->pinned) {
-        pinnedValue = "yes";
-        pinnedValueLength = 3;
-    } else {
-        pinnedValue = "no";
-        pinnedValueLength = 2;
-    }
-
-    const char * enabledValue;
-    size_t       enabledValueLength;
-
-    if (formulaRepo->enabled) {
-        enabledValue = "yes";
-        enabledValueLength = 3;
-    } else {
-        enabledValue = "no";
-        enabledValueLength = 2;
-    }
-
-    size_t strLength = strlen(formulaRepo->url) + strlen(formulaRepo->branch) + strlen(formulaRepo->timestamp_added) + strlen(ts) + pinnedValueLength + enabledValueLength + 78;
+    size_t strLength = strlen(formulaRepo->url) + strlen(formulaRepo->branch) + 99;
     char   str[strLength];
-    snprintf(str, strLength, "url: %s\nbranch: %s\npinned: %s\nenabled: %s\ntimestamp-added: %s\ntimestamp-last-updated: %s\n", formulaRepo->url, formulaRepo->branch, pinnedValue, enabledValue, formulaRepo->timestamp_added, ts);
+    snprintf(str, strLength, "url: %s\nbranch: %s\npinned: %1d\nenabled: %1d\ntimestamp-added: %10s\ntimestamp-last-updated: %10s\n", formulaRepo->url, formulaRepo->branch, formulaRepo->pinned, formulaRepo->enabled, formulaRepo->timestamp_added, ts);
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     size_t formulaRepoConfigFilePathLength = strlen(formulaRepo->path) + 24;
     char   formulaRepoConfigFilePath[formulaRepoConfigFilePathLength];
-    snprintf(formulaRepoConfigFilePath, formulaRepoConfigFilePathLength, "%s/.uppm-formula-repo.dat", formulaRepo->path);
+    snprintf(formulaRepoConfigFilePath, formulaRepoConfigFilePathLength, "%s/.uppm-formula-repo.yml", formulaRepo->path);
 
-    FILE * file = fopen(formulaRepoConfigFilePath, "wb");
+    FILE * file = fopen(formulaRepoConfigFilePath, "w");
 
     if (file == NULL) {
         perror(formulaRepoConfigFilePath);
         return UPPM_ERROR;
     }
 
-    if (zlib_deflate_string_to_file(str, strLength - 1, file) == 0) {
-        fclose(file);
-        return UPPM_OK;
-    } else {
+    if (fwrite(str, 1, strLength, file) != strLength || ferror(file)) {
+        perror(formulaRepoConfigFilePath);
         fclose(file);
         return UPPM_ERROR;
     }
+
+    fclose(file);
+
+    return UPPM_OK;
 }
