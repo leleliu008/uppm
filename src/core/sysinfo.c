@@ -146,7 +146,7 @@ int sysinfo_name(char * buf, size_t bufSize) {
         char line[50];
 
         while (fgets(line, 50, file) != NULL) {
-            if (regex_matched(line, "^ID=.*")) {
+            if (strncmp(line, "ID=", 3) == 0) {
                 char * p = &line[3];
 
                 if (p[0] == '"' || p[0] == '\'') {
@@ -241,7 +241,7 @@ int sysinfo_vers(char * buf, size_t bufSize) {
         char line[50];
 
         while (fgets(line, 50, file) != NULL) {
-            if (regex_matched(line, "^VERSION_ID=.*")) {
+            if (strncmp(line, "VERSION_ID=", 11) == 0) {
                 char * p = &line[11];
 
                 if (p[0] == '"' || p[0] == '\'') {

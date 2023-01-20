@@ -17,9 +17,6 @@
 #include <sys/sysctl.h>
 #endif
 
-#include <regex.h>
-#include "regex/regex.h"
-
 #include "self.h"
 
 int self_realpath(char * * out) {

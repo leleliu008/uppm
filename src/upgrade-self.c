@@ -1,9 +1,7 @@
+#include <math.h>
 #include <string.h>
 #include <sys/stat.h>
-#include <libgen.h>
-#include <math.h>
 
-#include "core/regex/regex.h"
 #include "core/sysinfo.h"
 #include "core/untar.h"
 #include "core/http.h"
@@ -84,34 +82,65 @@ int uppm_upgrade_self(bool verbose) {
 
     char * latestVersion = NULL;
 
-    char buf[30];
+    char * p = NULL;
 
-    size_t j = 0;
+    char line[30];
 
-    while ((fgets(buf, 30, file)) != NULL) {
-        if (regex_matched(buf, "^[[:space:]]*\"tag_name\"")) {
-            size_t length = strlen(buf);
-            for (size_t i = 10; i < length; i++) {
-                if (j == 0) {
-                    if (buf[i] >= '0' && buf[i] <= '9') {
-                        j = i;
-                    }
+    while ((fgets(line, 30, file)) != NULL) {
+        p = line;
+
+        for (;;) {
+            if (p[0] <= 32) { // non-printable ASCII characters and space
+                p++;
+            } else {
+                break;
+            }
+        }
+
+        if (strncmp(p, "\"tag_name\"", 10) == 0) {
+            p += 10;
+
+            for (;;) {
+                if (p[0] == '\0') {
+                    fprintf(stderr, "%s return invalid json.\n", githubApiUrl);
+                    return UPPM_ERROR;
+                }
+
+                if (p[0] == '"') { // found left double quote
+                    p++;
+                    break;
                 } else {
-                    if (buf[i] == '"') {
-                        buf[i] = '\0';
-                        latestVersion = &buf[j];
-                        break;
-                    }
+                    p++;
                 }
             }
-            break;
+
+            size_t n = 0;
+            char * q = p;
+
+            for (;;) {
+                if (q[n] == '\0') {
+                    fprintf(stderr, "%s return invalid json.\n", githubApiUrl);
+                    return UPPM_ERROR;
+                }
+
+                if (q[n] == '"') { // found right double quote
+                    q[n] = '\0';
+                    latestVersion = &q[0];
+                    goto finally;
+                } else {
+                    n++;
+                }
+            }
         }
     }
 
+finally:
     fclose(file);
 
+    printf("latestVersion=%s\n", latestVersion);
+
     if (latestVersion == NULL) {
-        fprintf(stderr, "can not get latest version.\n");
+        fprintf(stderr, "%s return json has no tag_name key.\n", githubApiUrl);
         return UPPM_ERROR;
     }
 
