@@ -283,9 +283,8 @@ int sysinfo_libc(LIBC * out) {
     if (strcmp(uts.sysname, "Linux") == 0) {
         size_t osArchLength = strlen(uts.machine);
 
-        size_t  dynamicLoaderPathLength = osArchLength + 19;
-        char    dynamicLoaderPath[dynamicLoaderPathLength];
-        memset( dynamicLoaderPath, 0, dynamicLoaderPathLength);
+        size_t dynamicLoaderPathLength = osArchLength + 19;
+        char   dynamicLoaderPath[dynamicLoaderPathLength];
         snprintf(dynamicLoaderPath, dynamicLoaderPathLength, "/lib/ld-musl-%s.so.1", uts.machine);
 
         struct stat sb;
@@ -304,9 +303,8 @@ int sysinfo_libc(LIBC * out) {
                     (*out) = LIBC_UNKNOWN;
                 }
             } else {
-                size_t  dynamicLoaderPathLength = osArchLength + 22;
-                char    dynamicLoaderPath[dynamicLoaderPathLength];
-                memset( dynamicLoaderPath, 0, dynamicLoaderPathLength);
+                size_t dynamicLoaderPathLength = osArchLength + 22;
+                char   dynamicLoaderPath[dynamicLoaderPathLength];
                 snprintf(dynamicLoaderPath, dynamicLoaderPathLength, "/lib64/ld-linux-%s.so.2", uts.machine);
 
                 if ((stat(dynamicLoaderPath, &sb) == 0) && (S_ISREG(sb.st_mode) || S_ISLNK(sb.st_mode))) {

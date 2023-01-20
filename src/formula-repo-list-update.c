@@ -51,7 +51,6 @@ int uppm_formula_repo_list_update() {
 
             size_t formulaRepoUrlLength = strlen(osType) + strlen(osArch) + 56;
             char   formulaRepoUrl[formulaRepoUrlLength];
-            memset(formulaRepoUrl, 0, formulaRepoUrlLength);
             snprintf(formulaRepoUrl, formulaRepoUrlLength, "https://github.com/leleliu008/uppm-formula-repository-%s-%s", osType, osArch);
 
             ret = uppm_formula_repo_add("offical-core", formulaRepoUrl, "master");

@@ -28,11 +28,10 @@ int uppm_search(const char * keyword) {
     bool isFirst = true;
 
     for (size_t i = 0; i < formulaRepoList->size; i++) {
-        char *  formulaRepoPath  = formulaRepoList->repos[i]->path;
+        char * formulaRepoPath  = formulaRepoList->repos[i]->path;
 
-        size_t  formulaDirLength = strlen(formulaRepoPath) + 10;
-        char    formulaDir[formulaDirLength];
-        memset (formulaDir, 0, formulaDirLength);
+        size_t formulaDirLength = strlen(formulaRepoPath) + 10;
+        char   formulaDir[formulaDirLength];
         snprintf(formulaDir, formulaDirLength, "%s/formula", formulaRepoPath);
 
         struct stat status;
@@ -62,18 +61,16 @@ int uppm_search(const char * keyword) {
                 continue;
             }
 
-            size_t  patternLength = keywordLength + 7;
-            char    pattern[patternLength];
-            memset (pattern, 0, patternLength);
+            size_t patternLength = keywordLength + 7;
+            char   pattern[patternLength];
             snprintf(pattern, patternLength, "*%s*.yml", keyword);
 
             int r = fnmatch(pattern, dir_entry->d_name, 0);
 
             if (r == 0) {
                 size_t  fileNameLength = strlen(dir_entry->d_name);
-                char    packageName[fileNameLength];
-                memset (packageName, 0, fileNameLength);
-                strncpy(packageName, dir_entry->d_name, fileNameLength - 4);
+
+                dir_entry->d_name[fileNameLength - 4] = '\0';
 
                 if (isFirst) {
                     isFirst = false;
@@ -81,8 +78,7 @@ int uppm_search(const char * keyword) {
                     printf("\n");
                 }
 
-                //printf("%s\n", packageName);
-                ret = uppm_info(packageName, NULL);
+                ret = uppm_info(dir_entry->d_name, NULL);
 
                 if (ret != UPPM_OK) {
                     uppm_formula_repo_list_free(formulaRepoList);

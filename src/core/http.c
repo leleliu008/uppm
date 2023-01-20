@@ -32,10 +32,10 @@ int http_fetch_to_stream(const char * url, FILE * outputFile, bool verbose, bool
 
     if (outputFile == NULL) {
         size_t  urlLength = strlen(transformedUrl);
+
         size_t  urlCopyLength = urlLength + 1;
         char    urlCopy[urlCopyLength];
-        memset (urlCopy, 0, urlCopyLength);
-        strncpy(urlCopy, url, urlLength);
+        strncpy(urlCopy, url, urlCopyLength);
 
         const char * filename = basename(urlCopy);
 

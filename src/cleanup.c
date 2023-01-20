@@ -24,7 +24,6 @@ int uppm_cleanup(bool verbose) {
 
     size_t  uppmTmpDirLength = userHomeDirLength + 11;
     char    uppmTmpDir[uppmTmpDirLength];
-    memset (uppmTmpDir, 0, uppmTmpDirLength);
     snprintf(uppmTmpDir, uppmTmpDirLength, "%s/.uppm/tmp", userHomeDir);
 
     if (stat(uppmTmpDir, &st) != 0) {

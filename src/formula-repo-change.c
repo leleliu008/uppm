@@ -29,7 +29,6 @@ int uppm_formula_repo_change(const char * formulaRepoName, const char * url, con
 
     size_t formulaRepoConfigFilePathLength = strlen(formulaRepo->path) + 24;
     char   formulaRepoConfigFilePath[formulaRepoConfigFilePathLength];
-    memset(formulaRepoConfigFilePath, 0, formulaRepoConfigFilePathLength);
     snprintf(formulaRepoConfigFilePath, formulaRepoConfigFilePathLength, "%s/.uppm-formula-repo.dat", formulaRepo->path);
 
     FILE * file = fopen(formulaRepoConfigFilePath, "wb");
@@ -63,9 +62,8 @@ int uppm_formula_repo_change(const char * formulaRepoName, const char * url, con
         timestamp_last_updated = formulaRepo->timestamp_last_updated;
     }
 
-    size_t  strLength = strlen(url) + strlen(branch) + strlen(formulaRepo->timestamp_added) + strlen(timestamp_last_updated) + strlen(pinned) + strlen(enabled) + 78;
-    char    str[strLength];
-    memset (str, 0, strLength);
+    size_t strLength = strlen(url) + strlen(branch) + strlen(formulaRepo->timestamp_added) + strlen(timestamp_last_updated) + strlen(pinned) + strlen(enabled) + 78;
+    char   str[strLength];
     snprintf(str, strLength, "url: %s\nbranch: %s\npinned: %s\nenabled: %s\ntimestamp-added: %s\ntimestamp-last-updated: %s\n", url, branch, pinned, enabled, formulaRepo->timestamp_added, timestamp_last_updated);
 
     uppm_formula_repo_free(formulaRepo);

@@ -22,7 +22,6 @@ int uppm_formula_repo_lookup(const char * formulaRepoName, UPPMFormulaRepo * * f
 
     size_t formulaRepoDirPathLength = userHomeDirLength + formulaRepoNameLength + 16;
     char   formulaRepoDirPath[formulaRepoDirPathLength];
-    memset(formulaRepoDirPath, 0, formulaRepoDirPathLength);
     snprintf(formulaRepoDirPath, formulaRepoDirPathLength, "%s/.uppm/repos.d/%s", userHomeDir, formulaRepoName);
 
     struct stat st;

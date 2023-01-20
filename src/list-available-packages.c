@@ -15,11 +15,10 @@ int uppm_list_the_available_packages() {
     }
 
     for (size_t i = 0; i < formulaRepoList->size; i++) {
-        char *  formulaRepoPath = formulaRepoList->repos[i]->path;
+        char * formulaRepoPath = formulaRepoList->repos[i]->path;
 
-        size_t  formulaDirLength = strlen(formulaRepoPath) + 10;
-        char    formulaDir[formulaDirLength];
-        memset (formulaDir, 0, formulaDirLength);
+        size_t formulaDirLength = strlen(formulaRepoPath) + 10;
+        char   formulaDir[formulaDirLength];
         snprintf(formulaDir, formulaDirLength, "%s/formula", formulaRepoPath);
 
         DIR           * dir;
@@ -43,11 +42,11 @@ int uppm_list_the_available_packages() {
             int r = fnmatch("*.yml", dir_entry->d_name, 0);
 
             if (r == 0) {
-                int fileNameLength = strlen(dir_entry->d_name);
-                char packageName[fileNameLength];
-                memset(packageName, 0, fileNameLength);
-                strncpy(packageName, dir_entry->d_name, fileNameLength - 4);
-                printf("%s\n", packageName);
+                size_t fileNameLength = strlen(dir_entry->d_name);
+
+                dir_entry->d_name[fileNameLength - 4] = '\0';
+
+                printf("%s\n", dir_entry->d_name);
             } else if(r == FNM_NOMATCH) {
                 ;
             } else {

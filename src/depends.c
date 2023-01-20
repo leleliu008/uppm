@@ -45,8 +45,8 @@ int uppm_depends_make_dot_items(const char * packageName, char ** outP, size_t *
         return UPPM_OK;
     }
 
-    size_t  bufLength = strlen(packageName) + 12;
-    char    buf[bufLength];
+    size_t bufLength = strlen(packageName) + 12;
+    char   buf[bufLength];
     snprintf(buf, bufLength, "    \"%s\" -> {", packageName);
 
     ret = _my_realloc(outP, outSize, outCapcity, bufLength);
@@ -60,10 +60,10 @@ int uppm_depends_make_dot_items(const char * packageName, char ** outP, size_t *
     (*outSize) += bufLength - 1;
 
     size_t depPackageNamesLength = strlen(formula->dep_pkg);
+
     size_t depPackageNamesCopyLength = depPackageNamesLength + 1;
     char   depPackageNamesCopy[depPackageNamesCopyLength];
-    memset(depPackageNamesCopy, 0, depPackageNamesCopyLength);
-    strncpy(depPackageNamesCopy, formula->dep_pkg, depPackageNamesLength);
+    strncpy(depPackageNamesCopy, formula->dep_pkg, depPackageNamesCopyLength);
 
     char * depPackageName = strtok(depPackageNamesCopy, " ");
 
@@ -109,8 +109,9 @@ int uppm_depends_make_dot_items(const char * packageName, char ** outP, size_t *
             if (n > 0) {
                 size_t  depPackageNameLength = n + 1;
                 char    depPackageName[depPackageNameLength];
-                memset( depPackageName, 0, depPackageNameLength);
                 strncpy(depPackageName, ptr, n);
+
+                depPackageName[n] = '\0';
 
                 //printf("%lu\n", n);
                 //printf("str=%s\n", str);
@@ -153,9 +154,8 @@ static int uppm_depends_make_box(const char * dotScriptStr) {
 
     char * dataUrlEncoded = curl_easy_escape(curl, dotScriptStr, strlen(dotScriptStr));
 
-    size_t  urlLength = strlen(dataUrlEncoded) + 66;
-    char    url[urlLength];
-    memset (url, 0, urlLength);
+    size_t urlLength = strlen(dataUrlEncoded) + 66;
+    char   url[urlLength];
     snprintf(url, urlLength, "https://dot-to-ascii.ggerganov.com/dot-to-ascii.php?boxart=1&src=%s", dataUrlEncoded);
 
     //printf("url=%s\n", url);
@@ -215,9 +215,8 @@ static int uppm_depends_make_xxx(const char * dotScriptStr, size_t len, const ch
 
     struct stat st;
 
-    size_t  uppmHomeDirLength = userHomeDirLength + 7;
-    char    uppmHomeDir[uppmHomeDirLength];
-    memset (uppmHomeDir, 0, uppmHomeDirLength);
+    size_t uppmHomeDirLength = userHomeDirLength + 7;
+    char   uppmHomeDir[uppmHomeDirLength];
     snprintf(uppmHomeDir, uppmHomeDirLength, "%s/.uppm", userHomeDir);
 
     if (stat(uppmHomeDir, &st) == 0) {
@@ -234,9 +233,8 @@ static int uppm_depends_make_xxx(const char * dotScriptStr, size_t len, const ch
 
     ////////////////////////////////////////////////////////////////
 
-    size_t  uppmTmpDirLength = uppmHomeDirLength + 5;
-    char    uppmTmpDir[uppmTmpDirLength];
-    memset (uppmTmpDir, 0, uppmTmpDirLength);
+    size_t uppmTmpDirLength = uppmHomeDirLength + 5;
+    char   uppmTmpDir[uppmTmpDirLength];
     snprintf(uppmTmpDir, uppmTmpDirLength, "%s/tmp", uppmHomeDir);
 
     if (stat(uppmTmpDir, &st) == 0) {
@@ -305,27 +303,24 @@ int uppm_depends(const char * packageName, UPPMDependsOutputFormat outputFormat)
 
         return UPPM_OK;
     } else if (outputFormat == UPPMDependsOutputFormat_BOX) {
-        size_t  dotScriptStrLength = pSize + 14;
-        char    dotScriptStr[dotScriptStrLength];
-        memset( dotScriptStr, 0, dotScriptStrLength);
+        size_t dotScriptStrLength = pSize + 14;
+        char   dotScriptStr[dotScriptStrLength];
         snprintf(dotScriptStr, dotScriptStrLength, "digraph G {\n%s}", p);
 
         free(p);
 
         return uppm_depends_make_box(dotScriptStr);
     } else if (outputFormat == UPPMDependsOutputFormat_PNG) {
-        size_t  dotScriptStrLength = pSize + 14;
-        char    dotScriptStr[dotScriptStrLength];
-        memset( dotScriptStr, 0, dotScriptStrLength);
+        size_t dotScriptStrLength = pSize + 14;
+        char   dotScriptStr[dotScriptStrLength];
         snprintf(dotScriptStr, dotScriptStrLength, "digraph G {\n%s}", p);
 
         free(p);
 
         return uppm_depends_make_xxx(dotScriptStr, dotScriptStrLength - 1, "-Tpng");
     } else if (outputFormat == UPPMDependsOutputFormat_SVG) {
-        size_t  dotScriptStrLength = pSize + 14;
-        char    dotScriptStr[dotScriptStrLength];
-        memset( dotScriptStr, 0, dotScriptStrLength);
+        size_t dotScriptStrLength = pSize + 14;
+        char   dotScriptStr[dotScriptStrLength];
         snprintf(dotScriptStr, dotScriptStrLength, "digraph G {\n%s}", p);
 
         free(p);

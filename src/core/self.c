@@ -108,15 +108,19 @@ int self_realpath(char * * out) {
     } else {
         char * PATH = getenv("PATH");
 
-        if ((PATH == NULL) || (strcmp(PATH, "") == 0)) {
+        if (PATH == NULL) {
             return UPPM_ERROR_ENV_PATH_NOT_SET;
         }
 
         size_t PATHLength = strlen(PATH);
-        size_t PATH2Length = PATHLength + 1;
-        char   PATH2[PATH2Length];
-        memset(PATH2, 0, PATH2Length);
-        strncpy(PATH2, PATH, PATHLength);
+
+        if (PATHLength == 0) {
+            return UPPM_ERROR_ENV_PATH_NOT_SET;
+        }
+
+        size_t  PATH2Length = PATHLength + 1;
+        char    PATH2[PATH2Length];
+        strncpy(PATH2, PATH, PATH2Length);
 
         size_t commandNameLength = strlen(argv[0]);
 
@@ -128,7 +132,6 @@ int self_realpath(char * * out) {
             if ((stat(PATHItem, &st) == 0) && S_ISDIR(st.st_mode)) {
                 size_t  fullPathLength = strlen(PATHItem) + commandNameLength + 2;
                 char    fullPath[fullPathLength];
-                memset( fullPath, 0, fullPathLength);
                 snprintf(fullPath, fullPathLength, "%s/%s", PATHItem, argv[0]);
 
                 if (access(fullPath, X_OK) == 0) {

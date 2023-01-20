@@ -37,7 +37,6 @@ int rm_r(const char * dirPath, bool verbose) {
 
         size_t filePathLength = dirPathLength + strlen(dir_entry->d_name) + 2;
         char   filePath[filePathLength];
-        memset(filePath, 0, filePathLength);
         snprintf(filePath, filePathLength, "%s/%s", dirPath, dir_entry->d_name);
 
         if (verbose) printf("rm %s\n", filePath);

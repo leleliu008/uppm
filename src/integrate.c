@@ -23,9 +23,8 @@ int uppm_integrate_zsh_completion(const char * outputDir, bool verbose) {
 
     struct stat st;
 
-    size_t  uppmHomeDirLength = userHomeDirLength + 7;
-    char    uppmHomeDir[uppmHomeDirLength];
-    memset (uppmHomeDir, 0, uppmHomeDirLength);
+    size_t uppmHomeDirLength = userHomeDirLength + 7;
+    char   uppmHomeDir[uppmHomeDirLength];
     snprintf(uppmHomeDir, uppmHomeDirLength, "%s/.uppm", userHomeDir);
 
     if (stat(uppmHomeDir, &st) == 0) {
@@ -42,9 +41,8 @@ int uppm_integrate_zsh_completion(const char * outputDir, bool verbose) {
 
     ////////////////////////////////////////////////////////////////
 
-    size_t  zshCompletionDirLength = uppmHomeDirLength + 16;
-    char    zshCompletionDir[zshCompletionDirLength];
-    memset (zshCompletionDir, 0, zshCompletionDirLength);
+    size_t zshCompletionDirLength = uppmHomeDirLength + 16;
+    char   zshCompletionDir[zshCompletionDirLength];
     snprintf(zshCompletionDir, zshCompletionDirLength, "%s/zsh_completion", uppmHomeDir);
 
     if (stat(zshCompletionDir, &st) == 0) {
@@ -61,9 +59,8 @@ int uppm_integrate_zsh_completion(const char * outputDir, bool verbose) {
 
     ////////////////////////////////////////////////////////////////
 
-    size_t  zshCompletionFilePathLength = zshCompletionDirLength + 7;
-    char    zshCompletionFilePath[zshCompletionFilePathLength];
-    memset (zshCompletionFilePath, 0, zshCompletionFilePathLength);
+    size_t zshCompletionFilePathLength = zshCompletionDirLength + 7;
+    char   zshCompletionFilePath[zshCompletionFilePathLength];
     snprintf(zshCompletionFilePath, zshCompletionFilePathLength, "%s/_uppm", zshCompletionDir);
 
     return http_fetch_to_file(url, zshCompletionFilePath, verbose, verbose);

@@ -34,9 +34,8 @@ int uppm_formula_repo_remove(const char * formulaRepoName) {
         return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
-    size_t  formulaRepoPathLength = userHomeDirLength + formulaRepoNameLength + 16;
-    char    formulaRepoPath[formulaRepoPathLength];
-    memset (formulaRepoPath, 0, formulaRepoPathLength);
+    size_t formulaRepoPathLength = userHomeDirLength + formulaRepoNameLength + 16;
+    char   formulaRepoPath[formulaRepoPathLength];
     snprintf(formulaRepoPath, formulaRepoPathLength, "%s/.uppm/repos.d/%s", userHomeDir, formulaRepoName);
 
     struct stat st;
@@ -46,9 +45,8 @@ int uppm_formula_repo_remove(const char * formulaRepoName) {
         return UPPM_ERROR;
     }
 
-    size_t  formulaRepoConfigFilePathLength = formulaRepoPathLength + 24;
-    char    formulaRepoConfigFilePath[formulaRepoConfigFilePathLength];
-    memset (formulaRepoConfigFilePath, 0, formulaRepoConfigFilePathLength);
+    size_t formulaRepoConfigFilePathLength = formulaRepoPathLength + 24;
+    char   formulaRepoConfigFilePath[formulaRepoConfigFilePathLength];
     snprintf(formulaRepoConfigFilePath, formulaRepoConfigFilePathLength, "%s/.uppm-formula-repo.dat", formulaRepoPath);
 
     if (stat(formulaRepoConfigFilePath, &st) == 0 && S_ISREG(st.st_mode)) {

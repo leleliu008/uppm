@@ -24,9 +24,8 @@ int uppm_uninstall(const char * packageName, bool verbose) {
         return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
-    size_t  packageInstalledDirLength = userHomeDirLength + strlen(packageName) + 20;
-    char    packageInstalledDir[packageInstalledDirLength];
-    memset (packageInstalledDir, 0, packageInstalledDirLength);
+    size_t packageInstalledDirLength = userHomeDirLength + strlen(packageName) + 20;
+    char   packageInstalledDir[packageInstalledDirLength];
     snprintf(packageInstalledDir, packageInstalledDirLength, "%s/.uppm/installed/%s", userHomeDir, packageName);
 
     struct stat st;
@@ -35,9 +34,8 @@ int uppm_uninstall(const char * packageName, bool verbose) {
         return UPPM_ERROR_PACKAGE_NOT_INSTALLED;
     }
 
-    size_t  receiptFilePathLength = packageInstalledDirLength + 20;
-    char    receiptFilePath[receiptFilePathLength];
-    memset (receiptFilePath, 0, receiptFilePathLength);
+    size_t receiptFilePathLength = packageInstalledDirLength + 20;
+    char   receiptFilePath[receiptFilePathLength];
     snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", packageInstalledDir);
 
     if (stat(receiptFilePath, &st) == 0 && S_ISREG(st.st_mode)) {

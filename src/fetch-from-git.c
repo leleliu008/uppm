@@ -59,9 +59,8 @@ int git_credential_acquire_callback(git_credential **credential, const char *url
         return 1;
     }
 
-    size_t  sshPrivateKeyFilePathLength = userHomeDirLength + 20;
-    char    sshPrivateKeyFilePath[sshPrivateKeyFilePathLength];
-    memset( sshPrivateKeyFilePath, 0, sshPrivateKeyFilePathLength);
+    size_t sshPrivateKeyFilePathLength = userHomeDirLength + 20;
+    char   sshPrivateKeyFilePath[sshPrivateKeyFilePathLength];
     snprintf(sshPrivateKeyFilePath, sshPrivateKeyFilePathLength, "%s/.ssh/id_rsa", userHomeDir);
 
     struct stat st;
@@ -286,7 +285,6 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
 
     size_t localeTrackingBranchRefStringLength = strlen(localeTrackingBranchName) + 12;
     char   localeTrackingBranchRefString[localeTrackingBranchRefStringLength];
-    memset(localeTrackingBranchRefString, 0, localeTrackingBranchRefStringLength);
     snprintf(localeTrackingBranchRefString, localeTrackingBranchRefStringLength, "refs/heads/%s", localeTrackingBranchName);
 
     //////////////////////////////////////////////////////////////////////////////////////////////

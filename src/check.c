@@ -38,11 +38,10 @@ int uppm_check_if_the_given_package_is_available(const char * packageName) {
     struct stat st;
 
     for (size_t i = 0; i < formulaRepoList->size; i++) {
-        char *  formulaRepoPath = formulaRepoList->repos[i]->path;
+        char * formulaRepoPath = formulaRepoList->repos[i]->path;
 
-        size_t  formulaFilePathLength = strlen(formulaRepoPath) + strlen(packageName) + 15;
-        char    formulaFilePath[formulaFilePathLength];
-        memset (formulaFilePath, 0, formulaFilePathLength);
+        size_t formulaFilePathLength = strlen(formulaRepoPath) + strlen(packageName) + 15;
+        char   formulaFilePath[formulaFilePathLength];
         snprintf(formulaFilePath, formulaFilePathLength, "%s/formula/%s.yml", formulaRepoPath, packageName);
 
         if (stat(formulaFilePath, &st) == 0 && S_ISREG(st.st_mode)) {
@@ -76,14 +75,12 @@ int uppm_check_if_the_given_package_is_installed(const char * packageName) {
 
     struct stat st;
 
-    size_t  uppmHomeDirLength = userHomeDirLength + 7; 
-    char    uppmHomeDir[uppmHomeDirLength];
-    memset (uppmHomeDir, 0, uppmHomeDirLength);
+    size_t uppmHomeDirLength = userHomeDirLength + 7;
+    char   uppmHomeDir[uppmHomeDirLength];
     snprintf(uppmHomeDir, uppmHomeDirLength, "%s/.uppm", userHomeDir);
 
-    size_t  packageInstalledDirLength = userHomeDirLength + strlen(packageName) + 20;
-    char    packageInstalledDir[packageInstalledDirLength];
-    memset (packageInstalledDir, 0, packageInstalledDirLength);
+    size_t packageInstalledDirLength = userHomeDirLength + strlen(packageName) + 20;
+    char   packageInstalledDir[packageInstalledDirLength];
     snprintf(packageInstalledDir, packageInstalledDirLength, "%s/.uppm/installed/%s", userHomeDir, packageName);
 
     if (stat(packageInstalledDir, &st) == 0) {
@@ -95,9 +92,8 @@ int uppm_check_if_the_given_package_is_installed(const char * packageName) {
         return UPPM_ERROR_PACKAGE_NOT_INSTALLED;
     }
 
-    size_t  receiptFilePathLength = uppmHomeDirLength + packageInstalledDirLength + 19;
-    char    receiptFilePath[receiptFilePathLength];
-    memset (receiptFilePath, 0, receiptFilePathLength);
+    size_t receiptFilePathLength = uppmHomeDirLength + packageInstalledDirLength + 19;
+    char   receiptFilePath[receiptFilePathLength];
     snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", packageInstalledDir);
 
     if (stat(receiptFilePath, &st) == 0) {

@@ -26,9 +26,8 @@ int uppm_info_all_available_packages(const char * key) {
     for (size_t i = 0; i < formulaRepoList->size; i++) {
         char *  formulaRepoPath  = formulaRepoList->repos[i]->path;
 
-        size_t  formulaDirLength = strlen(formulaRepoPath) + 10;
-        char    formulaDir[formulaDirLength];
-        memset (formulaDir, 0, formulaDirLength);
+        size_t formulaDirLength = strlen(formulaRepoPath) + 10;
+        char   formulaDir[formulaDirLength];
         snprintf(formulaDir, formulaDirLength, "%s/formula", formulaRepoPath);
 
         DIR           * dir;
@@ -52,9 +51,8 @@ int uppm_info_all_available_packages(const char * key) {
 
             if (r == 0) {
                 size_t  fileNameLength = strlen(dir_entry->d_name);
-                char    packageName[fileNameLength];
-                memset (packageName, 0, fileNameLength);
-                strncpy(packageName, dir_entry->d_name, fileNameLength - 4);
+
+                dir_entry->d_name[fileNameLength - 4] = '\0';
 
                 if (isFirst) {
                     isFirst = false;
@@ -62,8 +60,7 @@ int uppm_info_all_available_packages(const char * key) {
                     printf("\n");
                 }
 
-                //printf("%s\n", packageName);
-                ret = uppm_info(packageName, key);
+                ret = uppm_info(dir_entry->d_name, key);
 
                 if (ret != UPPM_OK) {
                     uppm_formula_repo_list_free(formulaRepoList);
@@ -352,9 +349,8 @@ int uppm_info(const char * packageName, const char * key) {
 
         struct stat st;
 
-        size_t  installedDirLength = userHomeDirLength + strlen(packageName) + 20;
-        char    installedDir[installedDirLength];
-        memset (installedDir, 0, installedDirLength);
+        size_t installedDirLength = userHomeDirLength + strlen(packageName) + 20;
+        char   installedDir[installedDirLength];
         snprintf(installedDir, installedDirLength, "%s/.uppm/installed/%s", userHomeDir, packageName);
 
         if (stat(installedDir, &st) == 0) {
@@ -365,9 +361,8 @@ int uppm_info(const char * packageName, const char * key) {
             return UPPM_ERROR_PACKAGE_NOT_INSTALLED;
         }
 
-        size_t  receiptFilePathLength = installedDirLength + 20;
-        char    receiptFilePath[receiptFilePathLength];
-        memset (receiptFilePath, 0, receiptFilePathLength);
+        size_t receiptFilePathLength = installedDirLength + 20;
+        char   receiptFilePath[receiptFilePathLength];
         snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", installedDir);
 
         if (stat(receiptFilePath, &st) == 0) {
@@ -394,9 +389,8 @@ int uppm_info(const char * packageName, const char * key) {
 
         struct stat st;
 
-        size_t  installedDirLength = userHomeDirLength + strlen(packageName) + 20;
-        char    installedDir[installedDirLength];
-        memset (installedDir, 0, installedDirLength);
+        size_t installedDirLength = userHomeDirLength + strlen(packageName) + 20;
+        char   installedDir[installedDirLength];
         snprintf(installedDir, installedDirLength, "%s/.uppm/installed/%s", userHomeDir, packageName);
 
         if (stat(installedDir, &st) == 0) {
@@ -407,18 +401,16 @@ int uppm_info(const char * packageName, const char * key) {
             return UPPM_ERROR_PACKAGE_NOT_INSTALLED;
         }
 
-        size_t  receiptFilePathLength = installedDirLength + 20;
-        char    receiptFilePath[receiptFilePathLength];
-        memset (receiptFilePath, 0, receiptFilePathLength);
+        size_t receiptFilePathLength = installedDirLength + 20;
+        char   receiptFilePath[receiptFilePathLength];
         snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", installedDir);
 
         if (stat(receiptFilePath, &st) != 0 || (!S_ISREG(st.st_mode))) {
             return UPPM_ERROR_PACKAGE_IS_BROKEN;
         }
 
-        size_t  installedManifestFilePathLength = installedDirLength + 20;
-        char    installedManifestFilePath[installedManifestFilePathLength];
-        memset (installedManifestFilePath, 0, installedManifestFilePathLength);
+        size_t installedManifestFilePathLength = installedDirLength + 20;
+        char   installedManifestFilePath[installedManifestFilePathLength];
         snprintf(installedManifestFilePath, installedManifestFilePathLength, "%s/.uppm/manifest.txt", installedDir);
 
         if (stat(installedManifestFilePath, &st) != 0 || (!S_ISREG(st.st_mode))) {
@@ -454,9 +446,8 @@ int uppm_info(const char * packageName, const char * key) {
 
         struct stat st;
 
-        size_t  installedDirLength = userHomeDirLength + strlen(packageName) + 20;
-        char    installedDir[installedDirLength];
-        memset (installedDir, 0, installedDirLength);
+        size_t installedDirLength = userHomeDirLength + strlen(packageName) + 20;
+        char   installedDir[installedDirLength];
         snprintf(installedDir, installedDirLength, "%s/.uppm/installed/%s", userHomeDir, packageName);
 
         if (stat(installedDir, &st) == 0) {
@@ -467,9 +458,8 @@ int uppm_info(const char * packageName, const char * key) {
             return UPPM_ERROR_PACKAGE_NOT_INSTALLED;
         }
 
-        size_t  receiptFilePathLength = installedDirLength + 20;
-        char    receiptFilePath[receiptFilePathLength];
-        memset (receiptFilePath, 0, receiptFilePathLength);
+        size_t receiptFilePathLength = installedDirLength + 20;
+        char   receiptFilePath[receiptFilePathLength];
         snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", installedDir);
 
         if (stat(receiptFilePath, &st) == 0) {
@@ -496,9 +486,8 @@ int uppm_info(const char * packageName, const char * key) {
 
         struct stat st;
 
-        size_t  installedDirLength = userHomeDirLength + strlen(packageName) + 20;
-        char    installedDir[installedDirLength];
-        memset (installedDir, 0, installedDirLength);
+        size_t installedDirLength = userHomeDirLength + strlen(packageName) + 20;
+        char   installedDir[installedDirLength];
         snprintf(installedDir, installedDirLength, "%s/.uppm/installed/%s", userHomeDir, packageName);
 
         if (stat(installedDir, &st) == 0) {
@@ -509,9 +498,8 @@ int uppm_info(const char * packageName, const char * key) {
             return UPPM_ERROR_PACKAGE_NOT_INSTALLED;
         }
 
-        size_t  receiptFilePathLength = installedDirLength + 20;
-        char    receiptFilePath[receiptFilePathLength];
-        memset (receiptFilePath, 0, receiptFilePathLength);
+        size_t receiptFilePathLength = installedDirLength + 20;
+        char   receiptFilePath[receiptFilePathLength];
         snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", installedDir);
 
         if (stat(receiptFilePath, &st) != 0 || (!S_ISREG(st.st_mode))) {

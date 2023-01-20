@@ -22,11 +22,10 @@ int uppm_fetch_all_available_packages(bool verbose) {
     }
 
     for (size_t i = 0; i < formulaRepoList->size; i++) {
-        char *  formulaRepoPath  = formulaRepoList->repos[i]->path;
+        char * formulaRepoPath  = formulaRepoList->repos[i]->path;
 
-        size_t  formulaDirLength = strlen(formulaRepoPath) + 10;
-        char    formulaDir[formulaDirLength];
-        memset (formulaDir, 0, formulaDirLength);
+        size_t formulaDirLength = strlen(formulaRepoPath) + 10;
+        char   formulaDir[formulaDirLength];
         snprintf(formulaDir, formulaDirLength, "%s/formula", formulaRepoPath);
 
         DIR           * dir;
@@ -50,12 +49,10 @@ int uppm_fetch_all_available_packages(bool verbose) {
 
             if (r == 0) {
                 size_t  fileNameLength = strlen(dir_entry->d_name);
-                char    packageName[fileNameLength];
-                memset (packageName, 0, fileNameLength);
-                strncpy(packageName, dir_entry->d_name, fileNameLength - 4);
 
-                //printf("%s\n", packageName);
-                ret = uppm_fetch(packageName, verbose);
+                dir_entry->d_name[fileNameLength - 4] = '\0';
+
+                ret = uppm_fetch(dir_entry->d_name, verbose);
 
                 if (ret != UPPM_OK) {
                     uppm_formula_repo_list_free(formulaRepoList);
@@ -117,14 +114,14 @@ int uppm_fetch(const char * packageName, bool verbose) {
 
     struct stat st;
 
-    size_t  downloadDirLength = userHomeDirLength + 18;
-    char    downloadDir[downloadDirLength];
-    memset (downloadDir, 0, downloadDirLength);
+    size_t downloadDirLength = userHomeDirLength + 18;
+    char   downloadDir[downloadDirLength];
     snprintf(downloadDir, downloadDirLength, "%s/.uppm/downloads", userHomeDir);
 
     if (stat(downloadDir, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {
             fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", downloadDir);
+            uppm_formula_free(formula);
             return UPPM_ERROR;
         }
     } else {
@@ -144,14 +141,12 @@ int uppm_fetch(const char * packageName, bool verbose) {
         return ret;
     }
 
-    size_t  binFileNameLength = strlen(formula->bin_sha) + strlen(binFileNameExtension) + 1;
-    char    binFileName[binFileNameLength];
-    memset( binFileName, 0, binFileNameLength);
+    size_t binFileNameLength = strlen(formula->bin_sha) + strlen(binFileNameExtension) + 1;
+    char   binFileName[binFileNameLength];
     snprintf(binFileName, binFileNameLength, "%s%s", formula->bin_sha, binFileNameExtension);
 
-    size_t  binFilePathLength = downloadDirLength + binFileNameLength + 1;
-    char    binFilePath[binFilePathLength];
-    memset (binFilePath, 0, binFilePathLength);
+    size_t binFilePathLength = downloadDirLength + binFileNameLength + 1;
+    char   binFilePath[binFilePathLength];
     snprintf(binFilePath, binFilePathLength, "%s/%s", downloadDir, binFileName);
 
     if (stat(binFilePath, &st) == 0 && S_ISREG(st.st_mode)) {

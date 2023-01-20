@@ -37,23 +37,20 @@ static int uppm_list_dirs(const char * installedDir, size_t installedDirLength, 
             continue;
         }
 
-        size_t  packageInstalledDirLength = installedDirLength + strlen(dir_entry->d_name) + 2;
-        char    packageInstalledDir[packageInstalledDirLength];
-        memset (packageInstalledDir, 0, packageInstalledDirLength);
+        size_t packageInstalledDirLength = installedDirLength + strlen(dir_entry->d_name) + 2;
+        char   packageInstalledDir[packageInstalledDirLength];
         snprintf(packageInstalledDir, packageInstalledDirLength, "%s/%s", installedDir, dir_entry->d_name);
 
-        size_t  receiptFilePathLength = packageInstalledDirLength + 20;
-        char    receiptFilePath[receiptFilePathLength];
-        memset (receiptFilePath, 0, receiptFilePathLength);
+        size_t receiptFilePathLength = packageInstalledDirLength + 20;
+        char   receiptFilePath[receiptFilePathLength];
         snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", packageInstalledDir);
 
         if (stat(receiptFilePath, &st) == 0 && S_ISREG(st.st_mode)) {
             if ((sub == NULL) || (strcmp(sub, "") == 0)) {
                 printf("%s\n", packageInstalledDir);
             } else {
-                size_t  subDirLength = packageInstalledDirLength + strlen(sub) + 2;
-                char    subDir[subDirLength];
-                memset (subDir, 0, subDirLength);
+                size_t subDirLength = packageInstalledDirLength + strlen(sub) + 2;
+                char   subDir[subDirLength];
                 snprintf(subDir, subDirLength, "%s/%s", packageInstalledDir, sub);
 
                 if (stat(subDir, &st) == 0 && S_ISDIR(st.st_mode)) {
@@ -105,15 +102,14 @@ int uppm_env(bool verbose) {
         return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
-    size_t  userHomeDirLength = strlen(userHomeDir);
+    size_t userHomeDirLength = strlen(userHomeDir);
 
     if (userHomeDirLength == 0) {
         return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
-    size_t  uppmHomeDirLength = userHomeDirLength + 7;
-    char    uppmHomeDir[uppmHomeDirLength];
-    memset (uppmHomeDir, 0, uppmHomeDirLength);
+    size_t uppmHomeDirLength = userHomeDirLength + 7;
+    char   uppmHomeDir[uppmHomeDirLength];
     snprintf(uppmHomeDir, uppmHomeDirLength, "%s/.uppm", userHomeDir);
 
     printf("\n");
@@ -136,9 +132,8 @@ int uppm_env(bool verbose) {
 
     struct stat st;
 
-    size_t  installedDirLength = uppmHomeDirLength + 11;
-    char    installedDir[installedDirLength];
-    memset (installedDir, 0, installedDirLength);
+    size_t installedDirLength = uppmHomeDirLength + 11;
+    char   installedDir[installedDirLength];
     snprintf(installedDir, installedDirLength, "%s/installed", uppmHomeDir);
 
     if (stat(installedDir, &st) == 0) {

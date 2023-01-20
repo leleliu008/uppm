@@ -19,9 +19,8 @@ int uppm_list_the_outdated__packages() {
         return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
-    size_t  installedDirLength = userHomeDirLength + 17; 
-    char    installedDir[installedDirLength];
-    memset (installedDir, 0, installedDirLength);
+    size_t installedDirLength = userHomeDirLength + 17;
+    char   installedDir[installedDirLength];
     snprintf(installedDir, installedDirLength, "%s/.uppm/installed", userHomeDir);
 
     struct stat st;
@@ -45,9 +44,8 @@ int uppm_list_the_outdated__packages() {
             continue;
         }
 
-        size_t  receiptFilePathLength = installedDirLength + strlen(dir_entry->d_name) + 20;
-        char    receiptFilePath[receiptFilePathLength];
-        memset (receiptFilePath, 0, receiptFilePathLength);
+        size_t receiptFilePathLength = installedDirLength + strlen(dir_entry->d_name) + 20;
+        char   receiptFilePath[receiptFilePathLength];
         snprintf(receiptFilePath, receiptFilePathLength, "%s/%s/.uppm/receipt.yml", installedDir, dir_entry->d_name);
 
         if (stat(receiptFilePath, &st) == 0 && S_ISREG(st.st_mode)) {

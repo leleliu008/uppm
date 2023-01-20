@@ -270,10 +270,10 @@ static int uppm_formula_check(UPPMFormula * formula, const char * formulaFilePat
 
     if (formula->version == NULL) {
         size_t urlLength = strlen(formula->bin_url);
+
         size_t urlCopyLength = urlLength + 1;
         char   urlCopy[urlCopyLength];
-        memset(urlCopy, 0, urlCopyLength);
-        strncpy(urlCopy, formula->bin_url, urlLength);
+        strncpy(urlCopy, formula->bin_url, urlCopyLength);
 
         char * srcFileName = basename(urlCopy);
 

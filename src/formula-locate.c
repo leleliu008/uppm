@@ -45,7 +45,6 @@ int uppm_formula_locate(const char * packageName, char ** out) {
 
         size_t formulaFilePathLength =  strlen(formulaRepoPath) + packageNameLength + 15;
         char   formulaFilePath[formulaFilePathLength];
-        memset(formulaFilePath, 0, formulaFilePathLength);
         snprintf(formulaFilePath, formulaFilePathLength, "%s/formula/%s.yml", formulaRepoPath, packageName);
 
         if (stat(formulaFilePath, &st) == 0 && S_ISREG(st.st_mode)) {

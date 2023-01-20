@@ -18,9 +18,8 @@ int uppm_formula_repo_sync(UPPMFormulaRepo * formulaRepo) {
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    size_t  refspecLength = (strlen(formulaRepo->branch) << 1) + 33;
-    char    refspec[refspecLength];
-    memset (refspec, 0, refspecLength);
+    size_t refspecLength = (strlen(formulaRepo->branch) << 1) + 33;
+    char   refspec[refspecLength];
     snprintf(refspec, refspecLength, "refs/heads/%s:refs/remotes/origin/%s", formulaRepo->branch, formulaRepo->branch);
 
     if (uppm_fetch_via_git(formulaRepo->path, formulaRepo->url, refspec, formulaRepo->branch) != 0) {
@@ -30,7 +29,6 @@ int uppm_formula_repo_sync(UPPMFormulaRepo * formulaRepo) {
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     char ts[11];
-    memset(ts, 0, 11);
     snprintf(ts, 11, "%ld", time(NULL));
 
     const char * pinnedValue;
@@ -55,16 +53,14 @@ int uppm_formula_repo_sync(UPPMFormulaRepo * formulaRepo) {
         enabledValueLength = 2;
     }
 
-    size_t  strLength = strlen(formulaRepo->url) + strlen(formulaRepo->branch) + strlen(formulaRepo->timestamp_added) + strlen(ts) + pinnedValueLength + enabledValueLength + 78;
-    char    str[strLength];
-    memset (str, 0, strLength);
+    size_t strLength = strlen(formulaRepo->url) + strlen(formulaRepo->branch) + strlen(formulaRepo->timestamp_added) + strlen(ts) + pinnedValueLength + enabledValueLength + 78;
+    char   str[strLength];
     snprintf(str, strLength, "url: %s\nbranch: %s\npinned: %s\nenabled: %s\ntimestamp-added: %s\ntimestamp-last-updated: %s\n", formulaRepo->url, formulaRepo->branch, pinnedValue, enabledValue, formulaRepo->timestamp_added, ts);
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     size_t formulaRepoConfigFilePathLength = strlen(formulaRepo->path) + 24;
     char   formulaRepoConfigFilePath[formulaRepoConfigFilePathLength];
-    memset(formulaRepoConfigFilePath, 0, formulaRepoConfigFilePathLength);
     snprintf(formulaRepoConfigFilePath, formulaRepoConfigFilePathLength, "%s/.uppm-formula-repo.dat", formulaRepo->path);
 
     FILE * file = fopen(formulaRepoConfigFilePath, "wb");

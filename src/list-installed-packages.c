@@ -22,9 +22,8 @@ int uppm_list_the_installed_packages() {
 
     struct stat st;
 
-    size_t  uppmInstalledDirLength = userHomeDirLength + 17; 
-    char    uppmInstalledDir[uppmInstalledDirLength];
-    memset (uppmInstalledDir, 0, uppmInstalledDirLength);
+    size_t uppmInstalledDirLength = userHomeDirLength + 17; 
+    char   uppmInstalledDir[uppmInstalledDirLength];
     snprintf(uppmInstalledDir, uppmInstalledDirLength, "%s/.uppm/installed", userHomeDir);
 
     if (stat(uppmInstalledDir, &st) != 0 || (!S_ISDIR(st.st_mode))) {
@@ -46,9 +45,8 @@ int uppm_list_the_installed_packages() {
             continue;
         }
 
-        size_t  receiptFilePathLength = uppmInstalledDirLength + strlen(dir_entry->d_name) + 20;
-        char    receiptFilePath[receiptFilePathLength];
-        memset (receiptFilePath, 0, receiptFilePathLength);
+        size_t receiptFilePathLength = uppmInstalledDirLength + strlen(dir_entry->d_name) + 20;
+        char   receiptFilePath[receiptFilePathLength];
         snprintf(receiptFilePath, receiptFilePathLength, "%s/%s/.uppm/receipt.yml", uppmInstalledDir, dir_entry->d_name);
 
         if (stat(receiptFilePath, &st) == 0 && S_ISREG(st.st_mode)) {

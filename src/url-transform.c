@@ -27,9 +27,8 @@ int uppm_url_transform(const char * url, char ** out, bool verbose) {
 
     size_t urlLength = strlen(url);
 
-    size_t  cmdLength = urlLength + strlen(urlTransformCommandPath) + 2;
-    char    cmd[cmdLength];
-    memset( cmd, 0, cmdLength);
+    size_t cmdLength = urlLength + strlen(urlTransformCommandPath) + 2;
+    char   cmd[cmdLength];
     snprintf(cmd, cmdLength, "%s %s", urlTransformCommandPath, url);
 
     FILE * file = popen(cmd, "r");

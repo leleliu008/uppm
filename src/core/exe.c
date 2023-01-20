@@ -36,10 +36,9 @@ int exe_search(const char * commandName, char *** listP, size_t * listSize, bool
         return UPPM_ERROR_ENV_PATH_NOT_SET;
     }
 
-    size_t PATH2Length = PATHLength + 1;
-    char   PATH2[PATH2Length];
-    memset(PATH2, 0, PATH2Length);
-    strncpy(PATH2, PATH, PATHLength);
+    size_t  PATH2Length = PATHLength + 1;
+    char    PATH2[PATH2Length];
+    strncpy(PATH2, PATH, PATH2Length);
 
     struct stat st;
 
@@ -133,10 +132,9 @@ int exe_lookup(const char * commandName, char ** pathP, size_t * pathLength) {
         return UPPM_ERROR_ENV_PATH_NOT_SET;
     }
 
-    size_t PATH2Length = PATHLength + 1;
-    char   PATH2[PATH2Length];
-    memset(PATH2, 0, PATH2Length);
-    strncpy(PATH2, PATH, PATHLength);
+    size_t  PATH2Length = PATHLength + 1;
+    char    PATH2[PATH2Length];
+    strncpy(PATH2, PATH, PATH2Length);
 
     struct stat st;
 
@@ -202,10 +200,9 @@ int exe_lookup2(const char * commandName, char buf[], size_t * writtenSize, size
         return UPPM_ERROR_ENV_PATH_NOT_SET;
     }
 
-    size_t PATH2Length = PATHLength + 1;
-    char   PATH2[PATH2Length];
-    memset(PATH2, 0, PATH2Length);
-    strncpy(PATH2, PATH, PATHLength);
+    size_t  PATH2Length = PATHLength + 1;
+    char    PATH2[PATH2Length];
+    strncpy(PATH2, PATH, PATH2Length);
 
     struct stat st;
 

@@ -55,9 +55,8 @@ int uppm_formula_repo_create(const char * formulaRepoName, const char * formulaR
 
     struct stat st;
 
-    size_t  uppmHomeDirLength = userHomeDirLength + 7;
-    char    uppmHomeDir[uppmHomeDirLength];
-    memset (uppmHomeDir, 0, uppmHomeDirLength);
+    size_t uppmHomeDirLength = userHomeDirLength + 7;
+    char   uppmHomeDir[uppmHomeDirLength];
     snprintf(uppmHomeDir, uppmHomeDirLength, "%s/.uppm", userHomeDir);
 
     if (stat(uppmHomeDir, &st) == 0) {
@@ -74,9 +73,8 @@ int uppm_formula_repo_create(const char * formulaRepoName, const char * formulaR
 
     ////////////////////////////////////////////////////////////////////////////////////////
 
-    size_t  formulaRepoRootDirLength = uppmHomeDirLength + 9;
-    char    formulaRepoRootDir[formulaRepoRootDirLength];
-    memset (formulaRepoRootDir, 0, formulaRepoRootDirLength);
+    size_t formulaRepoRootDirLength = uppmHomeDirLength + 9;
+    char   formulaRepoRootDir[formulaRepoRootDirLength];
     snprintf(formulaRepoRootDir, formulaRepoRootDirLength, "%s/repos.d", uppmHomeDir);
 
     if (stat(formulaRepoRootDir, &st) == 0) {
@@ -93,9 +91,8 @@ int uppm_formula_repo_create(const char * formulaRepoName, const char * formulaR
 
     ////////////////////////////////////////////////////////////////////////////////////////
 
-    size_t  formulaRepoDirLength = formulaRepoRootDirLength + formulaRepoNameLength + 2;
-    char    formulaRepoDir[formulaRepoDirLength];
-    memset (formulaRepoDir, 0, formulaRepoDirLength);
+    size_t formulaRepoDirLength = formulaRepoRootDirLength + formulaRepoNameLength + 2;
+    char   formulaRepoDir[formulaRepoDirLength];
     snprintf(formulaRepoDir, formulaRepoDirLength, "%s/%s", formulaRepoRootDir, formulaRepoName);
 
     if (stat(formulaRepoDir, &st) == 0) {
@@ -159,7 +156,6 @@ int uppm_formula_repo_create(const char * formulaRepoName, const char * formulaR
 
     size_t formulaRepoConfigFilePathLength = formulaRepoDirLength + 24;
     char   formulaRepoConfigFilePath[formulaRepoConfigFilePathLength];
-    memset(formulaRepoConfigFilePath, 0, formulaRepoConfigFilePathLength);
     snprintf(formulaRepoConfigFilePath, formulaRepoConfigFilePathLength, "%s/.uppm-formula-repo.dat", formulaRepoDir);
 
     FILE * file = fopen(formulaRepoConfigFilePath, "wb");
@@ -170,7 +166,6 @@ int uppm_formula_repo_create(const char * formulaRepoName, const char * formulaR
     }
 
     char ts[11];
-    memset(ts, 0, 11);
     snprintf(ts, 11, "%ld", time(NULL));
 
     size_t strLength = formulaRepoUrlLength + branchNameLength + strlen(ts) + 59;
