@@ -746,7 +746,25 @@ int uppm_main(int argc, char* argv[]) {
             fprintf(stderr, "Usage: %s integrate <zsh|bash|fish>\n", argv[0]);
             return UPPM_ERROR_ARG_IS_NULL;
         } else if (strcmp(argv[2], "zsh") == 0) {
-            return uppm_integrate_zsh_completion (NULL, verbose);
+            char * outputDirPath = NULL;
+
+            for (int i = 3; i < argc; i++) {
+                if (strncmp(argv[i], "--output-dir=", 13) == 0) {
+                    if (argv[i][13] == '\0') {
+                        fprintf(stderr, "--output-dir=VALUE, VALUE should be a non-empty string.\n");
+                        return UPPM_ERROR_ARG_IS_INVALID;
+                    } else {
+                        outputDirPath = &argv[i][13];
+                    }
+                } else if (strcmp(argv[i], "-v") == 0) {
+                    verbose = true;
+                } else {
+                    fprintf(stderr, "unrecognized option: %s\n", argv[i]);
+                    return UPPM_ERROR_ARG_IS_UNKNOWN;
+                }
+            }
+
+            return uppm_integrate_zsh_completion (outputDirPath, verbose);
         } else if (strcmp(argv[2], "bash") == 0) {
             return uppm_integrate_bash_completion(NULL, verbose);
         } else if (strcmp(argv[2], "fish") == 0) {

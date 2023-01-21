@@ -100,7 +100,7 @@ jobs:
       - run:  ./output/bin/uppm formula-repo-list
 
       - run:  ./output/bin/uppm formula-repo-add my_repo1 https://github.com/leleliu008/uppm-formula-repository-linux-x86_64
-      - run:  ./output/bin/uppm formula-repo-add my_repo2 https://github.com/leleliu008/uppm-formula-repository-linux-x86_64 --branch=main
+      - run:  ./output/bin/uppm formula-repo-add my_repo2 https://github.com/leleliu008/uppm-formula-repository-linux-x86_64 --branch=master
       - run:  ./output/bin/uppm formula-repo-add my_repo3 https://github.com/leleliu008/uppm-formula-repository-linux-x86_64 --unpin
       - run:  ./output/bin/uppm formula-repo-add my_repo4 https://github.com/leleliu008/uppm-formula-repository-linux-x86_64 --unpin --disable
 

@@ -37,10 +37,6 @@ int uppm_formula_locate(const char * packageName, char ** out) {
     size_t packageNameLength = strlen(packageName);
 
     for (size_t i = 0; i < formulaRepoList->size; i++) {
-        if (!(formulaRepoList->repos[i]->enabled)) {
-            continue;
-        }
-
         char * formulaRepoPath = formulaRepoList->repos[i]->path;
 
         size_t formulaFilePathLength =  strlen(formulaRepoPath) + packageNameLength + 15;

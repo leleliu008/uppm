@@ -1,8 +1,8 @@
+#include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
 
 #include "uppm.h"
-#include "core/log.h"
 #include "core/rm-r.h"
 
 int uppm_cleanup(bool verbose) {
@@ -22,18 +22,18 @@ int uppm_cleanup(bool verbose) {
 
     struct stat st;
 
-    size_t  uppmTmpDirLength = userHomeDirLength + 11;
-    char    uppmTmpDir[uppmTmpDirLength];
+    size_t uppmTmpDirLength = userHomeDirLength + 11;
+    char   uppmTmpDir[uppmTmpDirLength];
     snprintf(uppmTmpDir, uppmTmpDirLength, "%s/.uppm/tmp", userHomeDir);
 
-    if (stat(uppmTmpDir, &st) != 0) {
+    if (stat(uppmTmpDir, &st) == 0) {
+        if (S_ISDIR(st.st_mode)) {
+            return rm_r(uppmTmpDir, verbose);
+        } else {
+            fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", uppmTmpDir);
+            return UPPM_ERROR;
+        }
+    } else {
         return UPPM_OK;
     }
-
-    if (!S_ISDIR(st.st_mode)) {
-        fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", uppmTmpDir);
-        return UPPM_ERROR;
-    }
-
-    return rm_r(uppmTmpDir, verbose);
 }
