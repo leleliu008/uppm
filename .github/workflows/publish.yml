@@ -181,8 +181,8 @@ jobs:
       - run: git config --global --add safe.directory /__w/uppm/uppm
 
       - run: |
-        printf '```\n%s```\n' "$(sha256sum uppm-*.tar.xz)" > notes.txt
+          printf '```\n%s```\n' "$(sha256sum uppm-*.tar.xz)" > notes.txt
 
-        V=$(ls uppm-*-linux-x86_64.tar.xz | cut -d- -f2)
+          V=$(ls uppm-*-linux-x86_64.tar.xz | cut -d- -f2)
 
-        ~/.ppkg/installed/gh/bin/gh release create $V ~/.ppkg/packed/* --notes-file notes.txt
+          ~/.ppkg/installed/gh/bin/gh release create $V ~/.ppkg/packed/* --notes-file notes.txt
