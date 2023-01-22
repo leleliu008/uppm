@@ -30,14 +30,6 @@ jobs:
             run chmod a+x ppkg
             run ./ppkg setup --use-system-package-manager
             run ./ppkg update
-
-
-            V=$(sed -n '/set(PROJECT_VERSION /p' CMakeLists.txt | sed 's|set(PROJECT_VERSION[[:space:]]*\(.*\))|\1|')
-
-            printf '%s\n' "git-sha: ${{ github.sha }}" >> ~/.ppkg/repos.d/offical-core/formula/uppm.yml
-            printf '%s\n' "src-url: dir://$PWD"        >> ~/.ppkg/repos.d/offical-core/formula/uppm.yml
-            printf '%s\n' "version: $V"                >> ~/.ppkg/repos.d/offical-core/formula/uppm.yml
-
             run ./ppkg install uppm --link-type=static-only --install-lib=static
             run ./ppkg pack    uppm
 
@@ -45,10 +37,11 @@ jobs:
 
       - uses: actions/upload-artifact@v2
         with:
-          name: uppm-netbsd-tar-xz
-          path: ${{ github.workspace }}/uppm-*.tar.xz
+          name: uppm-netbsd-amd64-tar-xz
+          path: ${{ github.workspace }}/uppm-*-netbsd-amd64.tar.xz
 
   openbsd:
+    if: false
     needs: netbsd
     runs-on: macos-12
 
@@ -64,19 +57,12 @@ jobs:
 
             export LD_LIBRARY_PATH=/usr/local/lib
 
+            run sudo ln -sf /usr/local/bin/pkgconf /usr/bin/pkg-config
+
             run curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/bin/ppkg
             run chmod a+x ppkg
             run ./ppkg setup --use-system-package-manager
             run ./ppkg update
-
-            run sudo ln -sf /usr/local/bin/pkgconf /usr/bin/pkg-config
-
-            V=$(sed -n '/set(PROJECT_VERSION /p' CMakeLists.txt | sed 's|set(PROJECT_VERSION[[:space:]]*\(.*\))|\1|')
-
-            printf '%s\n' "git-sha: ${{ github.sha }}" >> ~/.ppkg/repos.d/offical-core/formula/uppm.yml
-            printf '%s\n' "src-url: dir://$PWD"        >> ~/.ppkg/repos.d/offical-core/formula/uppm.yml
-            printf '%s\n' "version: $V"                >> ~/.ppkg/repos.d/offical-core/formula/uppm.yml
-
             run ./ppkg install uppm --link-type=static-only --install-lib=static
             run ./ppkg pack    uppm
 
@@ -84,11 +70,11 @@ jobs:
 
       - uses: actions/upload-artifact@v2
         with:
-          name: uppm-openbsd-tar-xz
-          path: ${{ github.workspace }}/uppm-*.tar.xz
+          name: uppm-openbsd-amd64-tar-xz
+          path: ${{ github.workspace }}/uppm-*-openbsd-amd64.tar.xz
 
   freebsd:
-    needs: openbsd
+    #needs: openbsd
     runs-on: macos-12
 
     steps:
@@ -105,14 +91,6 @@ jobs:
             run chmod a+x ppkg
             run ./ppkg setup --use-system-package-manager
             run ./ppkg update
-
-
-            V=$(sed -n '/set(PROJECT_VERSION /p' CMakeLists.txt | sed 's|set(PROJECT_VERSION[[:space:]]*\(.*\))|\1|')
-
-            printf '%s\n' "git-sha: ${{ github.sha }}" >> ~/.ppkg/repos.d/offical-core/formula/uppm.yml
-            printf '%s\n' "src-url: dir://$PWD"        >> ~/.ppkg/repos.d/offical-core/formula/uppm.yml
-            printf '%s\n' "version: $V"                >> ~/.ppkg/repos.d/offical-core/formula/uppm.yml
-
             run ./ppkg install uppm --link-type=static-only --install-lib=static
             run ./ppkg pack    uppm
 
@@ -120,8 +98,8 @@ jobs:
 
       - uses: actions/upload-artifact@v2
         with:
-          name: uppm-freebsd-tar-xz
-          path: ${{ github.workspace }}/uppm-*.tar.xz
+          name: uppm-freebsd-amd64-tar-xz
+          path: ${{ github.workspace }}/uppm-*-freebsd-amd64.tar.xz
 
 
   macos:
@@ -144,22 +122,13 @@ jobs:
       - run: chmod a+x ppkg
       - run: ./ppkg setup --use-system-package-manager
       - run: ./ppkg update
-
-      - run: |
-          V=$(sed -n '/set(PROJECT_VERSION /p' CMakeLists.txt | sed 's|set(PROJECT_VERSION[[:space:]]*\(.*\))|\1|')
-          cat >> ~/.ppkg/repos.d/offical-core/formula/uppm.yml <<EOF
-          git-sha: ${{ github.sha }}
-          src-url: dir://$PWD
-          version: $V
-          EOF
-
       - run: ./ppkg install uppm --link-type=static-prefered --install-lib=static
       - run: ./ppkg pack    uppm
 
       - uses: actions/upload-artifact@v2
         with:
-          name: uppm-macos-tar-xz
-          path: ~/.ppkg/packed/*.tar.xz
+          name: uppm-macos-x86_64-tar-xz
+          path: ~/.ppkg/packed/uppm-*-macos-x86_64.tar.xz
 
   linux:
     needs: macos
@@ -181,36 +150,27 @@ jobs:
       - run: chmod a+x ppkg
       - run: ./ppkg setup --use-system-package-manager
       - run: ./ppkg update
-
-      - run: |
-          V=$(sed -n '/set(PROJECT_VERSION /p' CMakeLists.txt | sed 's|set(PROJECT_VERSION[[:space:]]*\(.*\))|\1|')
-          cat >> ~/.ppkg/repos.d/offical-core/formula/uppm.yml <<EOF
-          git-sha: ${{ github.sha }}
-          src-url: dir://$PWD
-          version: $V
-          EOF
-
       - run: ./ppkg install uppm gh --link-type=static-only --install-lib=static
       - run: ./ppkg pack    uppm
 
       - uses: actions/download-artifact@v2
         with:
-          name: uppm-netbsd-tar-xz
+          name: uppm-netbsd-amd64-tar-xz
           path: ~/.ppkg/packed/
 
       - uses: actions/download-artifact@v2
         with:
-          name: uppm-openbsd-tar-xz
+          name: uppm-openbsd-amd64-tar-xz
           path: ~/.ppkg/packed/
 
       - uses: actions/download-artifact@v2
         with:
-          name: uppm-freebsd-tar-xz
+          name: uppm-freebsd-amd64-tar-xz
           path: ~/.ppkg/packed/
 
       - uses: actions/download-artifact@v2
         with:
-          name: uppm-macos-tar-xz
+          name: uppm-macos-x86_64-tar-xz
           path: ~/.ppkg/packed/
 
       - run: ls -a
@@ -220,4 +180,13 @@ jobs:
 
       - run: git config --global --add safe.directory /__w/uppm/uppm
 
-      - run: ~/.ppkg/installed/gh/bin/gh release create $(./ppkg info uppm version) ~/.ppkg/packed/*
+      - run: |
+        cat > notes.txt <<EOF
+        ```
+        $(sha256sum uppm-*.tar.xz)
+        ```
+        EOF
+
+        V=$(ls uppm-*-linux-x86_64.tar.xz | cut -d- -f2)
+
+        ~/.ppkg/installed/gh/bin/gh release create $V ~/.ppkg/packed/* --notes-file notes.txt

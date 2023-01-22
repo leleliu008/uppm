@@ -238,15 +238,15 @@ all relevant dirs and files are located in `~/.uppm` directory.
         uppm integrate zsh --output-dir=/usr/local/share/zsh/site-functions
         uppm integrate zsh -v
         
-    I have provide a zsh-completion script for `uppm`. when you've typed `uppm` then type `TAB` key, it will auto complete the rest for you.
+    I have provide a zsh-completion script for `uppm`. when you've typed `uppm` then type `TAB` key, the rest of the arguments will be automatically complete for you.
 
     **Note**: to apply this feature, you may need to run the command `autoload -U compinit && compinit`
 
-*   **update formula repositories**
+*   **update all available formula repositories**
 
         uppm update
         
-*   **search packages**
+*   **search all available packages whose name matches the given ragular express partten**
         
         uppm search curl
         uppm search lib
@@ -304,7 +304,7 @@ all relevant dirs and files are located in `~/.uppm` directory.
         uppm depends curl --format=png > xx.png
         uppm depends curl --format=svg > xx.svg
         
-*   **download formula resources of the given package to the local cache**
+*   **download resources of the given package to the local cache**
         
         uppm fetch curl
         uppm fetch @all
@@ -338,7 +338,7 @@ all relevant dirs and files are located in `~/.uppm` directory.
         uppm upgrade-self
         uppm upgrade-self -v
         
-*   **list the avaliable formula repositories**
+*   **list all avaliable formula repositories**
 
         uppm formula-repo-list
 
@@ -350,9 +350,8 @@ all relevant dirs and files are located in `~/.uppm` directory.
         uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --unpin --disable
         uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --enable
         
-    **Note:** this software supports multiple formula repositories.
 
-*   **create a new formula repository**
+*   **create a new empty formula repository**
 
         uppm formula-repo-create my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo
         uppm formula-repo-create my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --branch=master
@@ -381,36 +380,36 @@ all relevant dirs and files are located in `~/.uppm` directory.
         uppm formula-repo-config my_repo --enable
         uppm formula-repo-config my_repo --disable
 
-*   **list the available packages**
+*   **list all available packages**
         
         uppm ls-available
         
-*   **list the installed packages**
+*   **list all installed packages**
         
         uppm ls-installed
         
-*   **list the outdated packages**
+*   **list all outdated packages**
         
         uppm ls-outdated
         
-*   **is the given package available ?**
+*   **check if the given package is available ?**
         
         uppm is-available curl
         
-*   **is the given package installed ?**
+*   **check if the given package is installed ?**
         
         uppm is-installed curl
         
-*   **is the given package outdated ?**
+*   **check if the given package is outdated ?**
         
         uppm is-outdated  curl
         
-*   **list files of the given installed package in a tree-like format**
+*   **list the installed files of the given installed package in a tree-like format**
         
         uppm tree curl
         uppm tree curl -L 3
         
-*   **cleanup the unused cached files**
+*   **delete the unused cached files**
         
         uppm cleanup
         
