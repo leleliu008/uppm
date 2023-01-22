@@ -181,11 +181,7 @@ jobs:
       - run: git config --global --add safe.directory /__w/uppm/uppm
 
       - run: |
-        cat > notes.txt <<EOF
-        ```
-        $(sha256sum uppm-*.tar.xz)
-        ```
-        EOF
+        printf '```\n%s```\n' "$(sha256sum uppm-*.tar.xz)" > notes.txt
 
         V=$(ls uppm-*-linux-x86_64.tar.xz | cut -d- -f2)
 

@@ -16,8 +16,7 @@ Universal Prebuild Package Manager for Unix-like systems.
 |[libcurl](https://curl.se/)|required|for http requesting support.|
 |[openssl](https://www.openssl.org/)|required|for https requesting support and SHA-256 sum checking support.|
 |[libarchive](https://www.libarchive.org/)|required|for uncompressing .zip and .tar.* files.|
-|[zlib](https://www.zlib.net/)|required|for compress and uncompress data.|
-|[pcre2](https://www.pcre.org/)||for Regular Expressions support. only required on OpenBSD.|
+|[pcre2](https://www.pcre.org/)||for Regular Expressions support.<br>only required on OpenBSD.|
 
 
 ## build and install uppm via [ppkg](https://github.com/leleliu008/ppkg)
@@ -35,7 +34,7 @@ ppkg install uppm
 git clone https://github.com/microsoft/vcpkg.git
 cd vcpkg
 ./bootstrap-vcpkg.sh
-./vcpkg install curl openssl libgit2 libarchive libyaml jansson zlib
+./vcpkg install curl openssl libgit2 libarchive libyaml jansson
 
 cd -
 
@@ -238,9 +237,9 @@ all relevant dirs and files are located in `~/.uppm` directory.
         uppm integrate zsh --output-dir=/usr/local/share/zsh/site-functions
         uppm integrate zsh -v
         
-    I have provide a zsh-completion script for `uppm`. when you've typed `uppm` then type `TAB` key, the rest of the arguments will be automatically complete for you.
+    I provide a zsh-completion script for `uppm`. when you've typed `uppm` then type `TAB` key, the rest of the arguments will be automatically complete for you.
 
-    **Note**: to apply this feature, you may need to run the command `autoload -U compinit && compinit`
+    **Note**: to apply this feature, you may need to run the command `autoload -U compinit && compinit` in your terminal (your current running shell must be zsh).
 
 *   **update all available formula repositories**
 
