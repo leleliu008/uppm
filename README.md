@@ -227,7 +227,7 @@ all relevant dirs and files are located in `~/.uppm` directory.
         uppm -V
         uppm --version
         
-*   **show current machine os info**
+*   **show your system's infomation**
 
         uppm env
         
@@ -245,7 +245,7 @@ all relevant dirs and files are located in `~/.uppm` directory.
 
         uppm update
         
-*   **search all available packages whose name matches the given ragular express partten**
+*   **search all available packages whose name matches the given regular express partten**
         
         uppm search curl
         uppm search lib

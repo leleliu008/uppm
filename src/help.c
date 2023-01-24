@@ -19,15 +19,15 @@ int uppm_help() {
         COLOR_GREEN
         "uppm env\n"
         COLOR_OFF
-        "    show current machine os info.\n\n"
+        "    show your system's information.\n\n"
         COLOR_GREEN
         "uppm update\n"
         COLOR_OFF
         "    update all available formula repositories.\n\n"
         COLOR_GREEN
-        "uppm search  <keyword>\n"
+        "uppm search  <REGULAR-EXPRESS-PARTTEN>\n"
         COLOR_OFF
-        "    search packages whose name match the given keyword.\n\n"
+        "    search all available packages whose name matches the given regular express partten.\n\n"
         COLOR_GREEN
         "uppm info    <PACKAGE-NAME|@all>\n"
         COLOR_OFF
@@ -129,11 +129,11 @@ int uppm_help() {
         "uppm -V\n"
         "    show version of this command.\n\n"
         "uppm env\n"
-        "    show current machine os info.\n\n"
+        "    show your system's information.\n\n"
         "uppm update\n"
         "    update all available formula repositories.\n\n"
-        "uppm search  <keyword>\n"
-        "    search packages whose name match the given keyword.\n\n"
+        "uppm search  <REGULAR-EXPRESS-PARTTEN>\n"
+        "    search all available packages whose name matches the given regular express partten.\n\n"
         "uppm info    <PACKAGE-NAME|@all>\n"
         "    show information of the given package.\n\n"
         "uppm tree <PACKAGE-NAME> [--dirsfirst | -L N]\n"

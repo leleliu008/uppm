@@ -23,7 +23,7 @@ jobs:
           mem: 2048
           box: generic/freebsd${{ matrix.version }}
           run: |
-            run pkg install -y cmake ninja gcc pkgconf curl openssl libgit2 libarchive libyaml jansson sqlite3
+            run pkg install -y cmake ninja gcc pkgconf curl openssl libgit2 libarchive libyaml jansson sqlite3 libnghttp2
 
             run cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_VERBOSE_MAKEFILE=ON
             run cmake --build   build.d
