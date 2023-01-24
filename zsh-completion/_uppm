@@ -7,6 +7,8 @@ _commands=(
     '--version:show version of this command.'
     'search:search packages whose name match the given keyword.'
     'info:show infomation of the given package or all available packages.'
+    'view:view the formula of the given package.'
+    'edit:edit the formula of the given package.'
     'tree:list files of the given installed package in a tree-like format.'
     'depends:show the packages that are depended by the given package.'
     'fetch:download the prebuild binary archive of the given package to the local cache.'
@@ -137,6 +139,22 @@ function _uppm() {
                         esac
                     fi
                     ;;
+                view)
+                    _arguments \
+                        '1:package-name:_uppm_available_packages' \
+                        '--raw[raw content]'
+                    ;;
+                edit)
+                    _arguments \
+                        '1:package-name:_uppm_available_packages' \
+                        '--editor=-[specify editor]'
+                    ;;
+                tree)
+                    _arguments \
+                        '1:package-name:_uppm_installed_packages' \
+                        '-L[level]:level:(3)' \
+                        '--dirsfirst[show dirs first]'
+                    ;;
                 fetch)
                     _arguments ':package-name:(@all $(uppm ls-available 2>/dev/null))'
                     ;;
@@ -144,12 +162,6 @@ function _uppm() {
                     _arguments \
                         '1:package-name:_uppm_available_packages' \
                         '--format=-[set output format]:format:(dot box png svg)'
-                    ;;
-                tree)
-                    _arguments \
-                        '1:package-name:_uppm_installed_packages' \
-                        '-L[level]:level:(3)' \
-                        '--dirsfirst[show dirs first]'
                     ;;
                 install)
                     _arguments \

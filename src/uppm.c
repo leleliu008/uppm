@@ -102,6 +102,84 @@ int uppm_main(int argc, char* argv[]) {
         return ret;
     }
 
+    if (strcmp(argv[1], "view") == 0) {
+        bool raw = false;
+
+        for (int i = 3; i < argc; i++) {
+            if (strcmp(argv[i], "-v") == 0) {
+                verbose = true;
+            } else if (strcmp(argv[i], "--raw") == 0) {
+                raw = true;
+            } else {
+                LOG_ERROR2("unrecognized argument: ", argv[i]);
+                return UPPM_ERROR_ARG_IS_INVALID;
+            }
+        }
+
+        int ret = uppm_formula_view(argv[2], raw);
+
+        if (ret == UPPM_ERROR_ARG_IS_NULL) {
+            fprintf(stderr, "Usage: %s view <PACKAGE-NAME> [KEY], <PACKAGE-NAME> is not given.\n", argv[0]);
+        } else if (ret == UPPM_ERROR_ARG_IS_EMPTY) {
+            fprintf(stderr, "Usage: %s view <PACKAGE-NAME> [KEY], <PACKAGE-NAME> is empty string.\n", argv[0]);
+        } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
+            fprintf(stderr, "Usage: %s view <PACKAGE-NAME> [KEY], <PACKAGE-NAME> is not match pattern %s\n", argv[0], UPPM_PACKAGE_NAME_PATTERN);
+        } else if (ret == UPPM_ERROR_ARG_IS_UNKNOWN) {
+            fprintf(stderr, "Usage: %s view <PACKAGE-NAME> [KEY], unrecognized KEY: %s\n", argv[0], argv[3]);
+        } else if (ret == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
+            fprintf(stderr, "package [%s] is not available.\n", argv[2]);
+        } else if (ret == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
+            fprintf(stderr, "package [%s] is not installed.\n", argv[2]);
+        } else if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
+            fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
+        } else if (ret == UPPM_ERROR_ENV_PATH_NOT_SET) {
+            fprintf(stderr, "%s\n", "PATH environment variable is not set.\n");
+        } else if (ret == UPPM_ERROR) {
+            fprintf(stderr, "occurs error.\n");
+        }
+
+        return ret;
+    }
+
+    if (strcmp(argv[1], "edit") == 0) {
+        const char * editor = NULL;
+
+        for (int i = 3; i < argc; i++) {
+            if (strcmp(argv[i], "-v") == 0) {
+                verbose = true;
+            } else if (strcmp(argv[i], "--editor=") == 0) {
+                editor = &argv[i][9];
+            } else {
+                LOG_ERROR2("unrecognized argument: ", argv[i]);
+                return UPPM_ERROR_ARG_IS_INVALID;
+            }
+        }
+
+        int ret = uppm_formula_edit(argv[2], editor);
+
+        if (ret == UPPM_ERROR_ARG_IS_NULL) {
+            fprintf(stderr, "Usage: %s edit <PACKAGE-NAME> [KEY], <PACKAGE-NAME> is not given.\n", argv[0]);
+        } else if (ret == UPPM_ERROR_ARG_IS_EMPTY) {
+            fprintf(stderr, "Usage: %s edit <PACKAGE-NAME> [KEY], <PACKAGE-NAME> is empty string.\n", argv[0]);
+        } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
+            fprintf(stderr, "Usage: %s edit <PACKAGE-NAME> [KEY], <PACKAGE-NAME> is not match pattern %s\n", argv[0], UPPM_PACKAGE_NAME_PATTERN);
+        } else if (ret == UPPM_ERROR_ARG_IS_UNKNOWN) {
+            fprintf(stderr, "Usage: %s edit <PACKAGE-NAME> [KEY], unrecognized KEY: %s\n", argv[0], argv[3]);
+        } else if (ret == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
+            fprintf(stderr, "package [%s] is not available.\n", argv[2]);
+        } else if (ret == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
+            fprintf(stderr, "package [%s] is not installed.\n", argv[2]);
+        } else if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
+            fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
+        } else if (ret == UPPM_ERROR_ENV_PATH_NOT_SET) {
+            fprintf(stderr, "%s\n", "PATH environment variable is not set.\n");
+        } else if (ret == UPPM_ERROR) {
+            fprintf(stderr, "occurs error.\n");
+        }
+
+        return ret;
+    }
+
     if (strcmp(argv[1], "tree") == 0) {
         int ret = uppm_tree(argv[2], argc - 3, &argv[3]);
 

@@ -227,7 +227,7 @@ all relevant dirs and files are located in `~/.uppm` directory.
         uppm -V
         uppm --version
         
-*   **show your system's infomation**
+*   **show your system's information**
 
         uppm env
         
@@ -250,7 +250,20 @@ all relevant dirs and files are located in `~/.uppm` directory.
         uppm search curl
         uppm search lib
         
-*   **show infomation of the given package**
+*   **view the formula of the given package**
+        
+        uppm view curl
+        uppm view curl --raw
+        
+*   **edit the formula of the given package**
+        
+        uppm edit curl
+        uppm edit curl --editor=/usr/local/bin/vim
+        
+ 
+    **Note**: uppm do NOT save your changes, which means that your changes may be lost after the formula repository is updated!
+
+*   **show information of the given package**
         
         uppm info curl
         uppm info curl version
@@ -366,7 +379,7 @@ all relevant dirs and files are located in `~/.uppm` directory.
 
         uppm formula-repo-update my_repo
 
-*   **show infomation of a existing formula repository**
+*   **show information of a existing formula repository**
 
         uppm formula-repo-info my_repo
 
@@ -463,7 +476,7 @@ all relevant dirs and files are located in `~/.uppm` directory.
 
 ## uppm formula
 
-a uppm formula is a [YAML](https://yaml.org/spec/1.2.2/) format file which is used to config a uppm package's meta-infomation including one sentence description, package version, installation instructions, etc.
+a uppm formula is a [YAML](https://yaml.org/spec/1.2.2/) format file which is used to config a uppm package's meta-information including one sentence description, package version, installation instructions, etc.
 
 a uppm formula's filename suffix must be `.yml`
 
@@ -480,9 +493,7 @@ a uppm formula repository's root dir should have a `formula` named sub dir, this
 
 a uppm formula repository's local path is `~/.uppm/repos.d/${UPPMFormulaRepoName}`
 
-**Note:**
- - please do NOT directly modify the formulas since your changes may be lost after the formula repository is updated!
- - uppm supports multiple formula repositories.
+**Note:** uppm supports multiple formula repositories.
 
 ## uppm formula repository's config
 After a uppm formula repository is successfully fetched from server to local, a config file for this repository would be created at `~/.uppm/repos.d/${UPPMFormulaRepoName}/.uppm-formula-repo.yml`
@@ -500,7 +511,7 @@ timestamp-last-updated: 1673684767
 
 If a uppm formula repository is pinned, which means it would not be updated.
 
-If a uppm formula repository is disabled, which means uppm would not search formula in this formula repository.
+If a uppm formula repository is disabled, which means uppm would not search formulas in this formula repository.
 
 ## uppm offical formula repository
 
@@ -514,6 +525,6 @@ uppm offical formula repository's url:
 - https://github.com/leleliu008/uppm-formula-repository-openbsd-amd64
 - https://github.com/leleliu008/uppm-formula-repository-netbsd-amd64
 
-**Note:** If you find that a package is not in uppm offical formula repository yet, PR is welcomed.
+uppm offical formula repository would be automatically fetched to local cache as name `offical-core` when you run `uppm update` command.
 
-These formula repositories would be automatically fetched to local cache as name `offical-core` when you run `uppm update` command.
+**Note:** If you find that a package is not in uppm offical formula repository yet, PR is welcomed.

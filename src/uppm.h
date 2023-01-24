@@ -109,8 +109,10 @@ typedef struct {
 
 int  uppm_formula_lookup(const char * packageName, UPPMFormula * * formula);
 int  uppm_formula_locate(const char * packageName, char * * out);
-int  uppm_formula_cat   (const char * packageName);
-int  uppm_formula_bat   (const char * packageName);
+int  uppm_formula_edit(const char * packageName, const char * editor);
+int  uppm_formula_view(const char * packageName, bool raw);
+int  uppm_formula_cat (const char * packageName);
+int  uppm_formula_bat (const char * packageName);
 
 void uppm_formula_free(UPPMFormula * formula);
 void uppm_formula_dump(UPPMFormula * formula);
