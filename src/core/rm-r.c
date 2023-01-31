@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
 #include <dirent.h>
 #include <sys/stat.h>
 
@@ -28,9 +29,32 @@ int rm_r(const char * dirPath, bool verbose) {
         return UPPM_ERROR;
     }
 
-    int r = 0;
+    struct stat st;
 
-    while ((dir_entry = readdir(dir))) {
+    int ret = UPPM_OK;
+
+    for (;;) {
+        errno = 0;
+
+        dir_entry = readdir(dir);
+
+        if (dir_entry == NULL) {
+            if (errno == 0) {
+                closedir(dir);
+
+                if (rmdir(dirPath) == 0) {
+                    break;
+                } else {
+                    perror(dirPath);
+                    return UPPM_ERROR;
+                }
+            } else {
+                perror(dirPath);
+                closedir(dir);
+                return UPPM_ERROR;
+            }
+        }
+
         if ((strcmp(dir_entry->d_name, ".") == 0) || (strcmp(dir_entry->d_name, "..") == 0)) {
             continue;
         }
@@ -41,44 +65,27 @@ int rm_r(const char * dirPath, bool verbose) {
 
         if (verbose) printf("rm %s\n", filePath);
 
-        struct stat st;
-
-        r = stat(filePath, &st);
-
-        if (r == 0) {
+        if (stat(filePath, &st) == 0) {
             if (S_ISDIR(st.st_mode)) {
-                r = rm_r(filePath, verbose);
+                ret = rm_r(filePath, verbose);
 
-                if (r != 0) {
-                    break;
+                if (ret != UPPM_OK) {
+                    closedir(dir);
+                    return UPPM_ERROR;
                 }
             } else {
-                r = unlink(filePath);
-
-                if (r != 0) {
+                if (unlink(filePath) != 0) {
                     perror(filePath);
-                    break;
+                    closedir(dir);
+                    return UPPM_ERROR;
                 }
             }
         } else {
-            r = unlink(filePath);
-
-            if (r != 0) {
-                perror(filePath);
-                break;
-            }
+            perror(filePath);
+            closedir(dir);
+            return UPPM_ERROR;
         }
     }
 
-    closedir(dir);
-
-    if (r == 0) {
-        r = rmdir(dirPath);
-
-        if (r != 0) {
-            perror(dirPath);
-        }
-    }
-
-    return r == 0 ? UPPM_OK : UPPM_ERROR;
+    return UPPM_OK;
 }

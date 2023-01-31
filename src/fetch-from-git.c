@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
 #include <dirent.h>
 #include <sys/stat.h>
 
@@ -103,19 +104,34 @@ int check_if_is_a_empty_dir(const char * dirpath, bool * value) {
         return UPPM_ERROR;
     }
 
-    while ((dir_entry = readdir(dir))) {
+    for (;;) {
+        errno = 0;
+
+        dir_entry = readdir(dir);
+
+        if (dir_entry == NULL) {
+            if (errno == 0) {
+                closedir(dir);
+                break;
+            } else {
+                perror(dirpath);
+                closedir(dir);
+                return UPPM_ERROR;
+            }
+        }
+
         //puts(dir_entry->d_name);
         if ((strcmp(dir_entry->d_name, ".") == 0) || (strcmp(dir_entry->d_name, "..") == 0)) {
             continue;
         }
 
-        (*value) = false;
         closedir(dir);
+
+        (*value) = false;
         return UPPM_OK;
     }
 
     (*value) = true;
-    closedir(dir);
     return UPPM_OK;
 }
 

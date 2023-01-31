@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
 #include <dirent.h>
 
 #include "core/sysinfo.h"
@@ -30,7 +31,22 @@ static int uppm_list_dirs(const char * installedDir, size_t installedDirLength, 
         return UPPM_ERROR;
     }
 
-    while ((dir_entry = readdir(dir))) {
+    for (;;) {
+        errno = 0;
+
+        dir_entry = readdir(dir);
+
+        if (dir_entry == NULL) {
+            if (errno == 0) {
+                closedir(dir);
+                break;
+            } else {
+                perror(installedDir);
+                closedir(dir);
+                return UPPM_ERROR;
+            }
+        }
+
         //puts(dir_entry->d_name);
 
         if ((strcmp(dir_entry->d_name, ".") == 0) || (strcmp(dir_entry->d_name, "..") == 0)) {
@@ -59,8 +75,6 @@ static int uppm_list_dirs(const char * installedDir, size_t installedDirLength, 
             }
         }
     }
-
-    closedir(dir);
 
     return UPPM_OK;
 }

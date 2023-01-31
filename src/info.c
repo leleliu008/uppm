@@ -4,106 +4,20 @@
 #include <time.h>
 #include <errno.h>
 #include <unistd.h>
-#include <dirent.h>
 #include <sys/stat.h>
 #include <jansson.h>
 
 #include "core/log.h"
 #include "uppm.h"
 
-int uppm_info_all_available_packages(const char * key) {
-    UPPMFormulaRepoList * formulaRepoList = NULL;
-
-    int ret = uppm_formula_repo_list(&formulaRepoList);
-
-    if (ret != UPPM_OK) {
-        return ret;
+static int package_name_callback(const char * packageName, size_t i, const void * key) {
+    if (i != 0) {
+        printf("\n");
     }
 
-    bool isFirst = true;
-
-    for (size_t i = 0; i < formulaRepoList->size; i++) {
-        char * formulaRepoPath  = formulaRepoList->repos[i]->path;
-
-        size_t formulaDirLength = strlen(formulaRepoPath) + 10;
-        char   formulaDir[formulaDirLength];
-        snprintf(formulaDir, formulaDirLength, "%s/formula", formulaRepoPath);
-
-        struct stat status;
-
-        if (stat(formulaDir, &status) != 0) {
-            continue;
-        }
-
-        if (!S_ISDIR(status.st_mode)) {
-            continue;
-        }
-
-        DIR           * dir;
-        struct dirent * dir_entry;
-
-        dir = opendir(formulaDir);
-
-        if (dir == NULL) {
-            perror(formulaDir);
-            uppm_formula_repo_list_free(formulaRepoList);
-            return UPPM_ERROR;
-        }
-
-        char * fileName;
-        char * fileNameSuffix;
-        size_t fileNameLength;
-
-        for (;;) {
-            errno = 0;
-
-            dir_entry = readdir(dir);
-
-            if (dir_entry == NULL) {
-                if (errno == 0) {
-                    closedir(dir);
-                    break;
-                } else {
-                    perror(formulaDir);
-                    uppm_formula_repo_list_free(formulaRepoList);
-                    return UPPM_ERROR;
-                }
-            }
-
-            fileName = dir_entry->d_name;
-
-            //puts(fileName);
-
-            fileNameLength = strlen(fileName);
-
-            if (fileNameLength > 4) {
-                fileNameSuffix = fileName + fileNameLength - 4;
-
-                if (strcmp(fileNameSuffix, ".yml") == 0) {
-                    fileName[fileNameLength - 4] = '\0';
-
-                    if (isFirst) {
-                        isFirst = false;
-                    } else {
-                        printf("\n");
-                    }
-
-                    ret = uppm_info(fileName, key);
-
-                    if (ret != UPPM_OK) {
-                        uppm_formula_repo_list_free(formulaRepoList);
-                        closedir(dir);
-                        return ret;
-                    }
-                }
-            }
-        }
-    }
-
-    uppm_formula_repo_list_free(formulaRepoList);
-
-    return UPPM_OK;
+    return uppm_info(packageName, (char*)key);
 }
+
 
 int uppm_info(const char * packageName, const char * key) {
     if (packageName == NULL) {
@@ -115,7 +29,7 @@ int uppm_info(const char * packageName, const char * key) {
     }
 
     if (strcmp(packageName, "@all") == 0) {
-        return uppm_info_all_available_packages(key);
+        return uppm_list_the_available_packages(package_name_callback, key);
     }
 
     int ret = uppm_check_if_the_given_argument_matches_package_name_pattern(packageName);

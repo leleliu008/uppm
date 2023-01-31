@@ -223,9 +223,13 @@ int uppm_check_if_the_given_package_is_available(const char * packageName);
 int uppm_check_if_the_given_package_is_installed(const char * packageName);
 int uppm_check_if_the_given_package_is_outdated (const char * packageName);
 
-int uppm_list_the_available_packages();
+typedef int (*UPPMPackageNameCallbak)(const char * packageName, size_t index, const void * payload);
+
+int uppm_list_the_available_packages(UPPMPackageNameCallbak packageNameCallbak, const void * payload);
 int uppm_list_the_installed_packages();
 int uppm_list_the_outdated__packages();
+
+int uppm_show_the_available_packages();
 
 int uppm_fetch_via_git(const char * gitRepositoryDirPath, const char * remoteUrl, const char * refspec, const char * checkoutToBranchName);
 

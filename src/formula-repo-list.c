@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
 #include <dirent.h>
 #include <sys/stat.h>
 
@@ -51,8 +52,24 @@ int uppm_formula_repo_list(UPPMFormulaRepoList * * out) {
 
     int ret = UPPM_OK;
 
-    while ((dir_entry = readdir(dir))) {
+    for (;;) {
+        errno = 0;
+
+        dir_entry = readdir(dir);
+
+        if (dir_entry == NULL) {
+            if (errno == 0) {
+                break;
+            } else {
+                perror(uppmFormulaRepoDir);
+                closedir(dir);
+                uppm_formula_repo_list_free(formulaRepoList);
+                return UPPM_ERROR;
+            }
+        }
+
         //puts(dir_entry->d_name);
+
         if ((strcmp(dir_entry->d_name, ".") == 0) || (strcmp(dir_entry->d_name, "..") == 0)) {
             continue;
         }

@@ -6,7 +6,7 @@
 
 #include "uppm.h"
 
-int uppm_list_the_available_packages() {
+int uppm_list_the_available_packages(UPPMPackageNameCallbak packageNameCallbak, const void * payload) {
     UPPMFormulaRepoList * formulaRepoList = NULL;
 
     int ret = uppm_formula_repo_list(&formulaRepoList);
@@ -14,6 +14,8 @@ int uppm_list_the_available_packages() {
     if (ret != UPPM_OK) {
         return ret;
     }
+
+    size_t j = 0;
 
     for (size_t i = 0; i < formulaRepoList->size; i++) {
         char * formulaRepoPath  = formulaRepoList->repos[i]->path;
@@ -58,14 +60,15 @@ int uppm_list_the_available_packages() {
                     break;
                 } else {
                     perror(formulaDir);
+                    closedir(dir);
                     uppm_formula_repo_list_free(formulaRepoList);
                     return UPPM_ERROR;
                 }
             }
 
-            fileName = dir_entry->d_name;
+            //puts(dir_entry->d_name);
 
-            //puts(fileName);
+            fileName = dir_entry->d_name;
 
             fileNameLength = strlen(fileName);
 
@@ -74,7 +77,16 @@ int uppm_list_the_available_packages() {
 
                 if (strcmp(fileNameSuffix, ".yml") == 0) {
                     fileName[fileNameLength - 4] = '\0';
-                    printf("%s\n", fileName);
+
+                    ret = packageNameCallbak(fileName, j, payload);
+
+                    j++;
+
+                    if (ret != UPPM_OK) {
+                        closedir(dir);
+                        uppm_formula_repo_list_free(formulaRepoList);
+                        return ret;
+                    }
                 }
             }
         }
@@ -83,4 +95,13 @@ int uppm_list_the_available_packages() {
     uppm_formula_repo_list_free(formulaRepoList);
 
     return UPPM_OK;
+}
+
+static int package_name_callback(const char * packageName, size_t i, const void * payload) {
+    printf("%s\n", packageName);
+    return UPPM_OK;
+}
+
+int uppm_show_the_available_packages() {
+    return uppm_list_the_available_packages(package_name_callback, NULL);
 }

@@ -664,7 +664,7 @@ int uppm_main(int argc, char* argv[]) {
     }
 
     if (strcmp(argv[1], "ls-available") == 0) {
-        int ret = uppm_list_the_available_packages();
+        int ret = uppm_show_the_available_packages();
 
         if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
             fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");

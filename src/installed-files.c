@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
 #include <dirent.h>
 #include <sys/stat.h>
 
@@ -27,9 +28,26 @@ static int record_installed_files_r(const char * dirPath, size_t offset, FILE * 
         return UPPM_ERROR;
     }
 
-    int r = 0;
+    struct stat st;
 
-    while ((dir_entry = readdir(dir))) {
+    int ret = UPPM_OK;
+
+    for (;;) {
+        errno = 0;
+
+        dir_entry = readdir(dir);
+
+        if (dir_entry == NULL) {
+            if (errno == 0) {
+                closedir(dir);
+                break;
+            } else {
+                perror(dirPath);
+                closedir(dir);
+                return UPPM_ERROR;
+            }
+        }
+
         if ((strcmp(dir_entry->d_name, ".") == 0) || (strcmp(dir_entry->d_name, "..") == 0)) {
             continue;
         }
@@ -38,31 +56,27 @@ static int record_installed_files_r(const char * dirPath, size_t offset, FILE * 
         char   filePath[filePathLength];
         snprintf(filePath, filePathLength, "%s/%s", dirPath, dir_entry->d_name);
 
-        struct stat st;
+        if (stat(filePath, &st) != 0) {
+            perror(filePath);
+            closedir(dir);
+            return UPPM_ERROR;
+        }
 
-        r = stat(filePath, &st);
+        if (S_ISDIR(st.st_mode)) {
+            fprintf(installedManifestFile, "d|%s/\n", &filePath[offset]);
 
-        if (r == 0) {
-            if (S_ISDIR(st.st_mode)) {
-                fprintf(installedManifestFile, "d|%s/\n", &filePath[offset]);
+            ret = record_installed_files_r(filePath, offset, installedManifestFile);
 
-                r = record_installed_files_r(filePath, offset, installedManifestFile);
-
-                if (r != 0) {
-                    break;
-                }
-            } else {
-                fprintf(installedManifestFile, "f|%s\n", &filePath[offset]);
+            if (ret != UPPM_OK) {
+                closedir(dir);
+                return ret;
             }
         } else {
-            perror(filePath);
-            break;
+            fprintf(installedManifestFile, "f|%s\n", &filePath[offset]);
         }
     }
 
-    closedir(dir);
-
-    return r;
+    return ret;
 }
 
 int record_installed_files(const char * installedDirPath) {
