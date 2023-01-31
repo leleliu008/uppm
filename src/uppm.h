@@ -177,11 +177,11 @@ void uppm_receipt_dump(UPPMReceipt * receipt);
 //////////////////////////////////////////////////////////////////////
 
 typedef enum {
-    UPPMDependsOutputFormat_DOT,
-    UPPMDependsOutputFormat_BOX,
-    UPPMDependsOutputFormat_SVG,
-    UPPMDependsOutputFormat_PNG,
-} UPPMDependsOutputFormat;
+    UPPMDependsOutputType_DOT,
+    UPPMDependsOutputType_BOX,
+    UPPMDependsOutputType_SVG,
+    UPPMDependsOutputType_PNG,
+} UPPMDependsOutputType;
 
 //////////////////////////////////////////////////////////////////////
 
@@ -191,13 +191,13 @@ int uppm_help();
 
 int uppm_env(bool verbose);
 
-int uppm_search(const char * keyword);
+int uppm_search(const char * regPattern);
 
 int uppm_info(const char * packageName, const char * key);
 
 int uppm_tree(const char * packageName, size_t argc, char* argv[]);
 
-int uppm_depends(const char * packageName, UPPMDependsOutputFormat outputFormat);
+int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, const char * outputFilePath);
 
 int uppm_fetch(const char * packageName, bool verbose);
 

@@ -52,8 +52,8 @@ jobs:
 
       - run:  ~/.ppkg/installed/uppm/bin/uppm depends zip
       - run:  ~/.ppkg/installed/uppm/bin/uppm depends android-sdk
-      - run:  ~/.ppkg/installed/uppm/bin/uppm depends android-sdk --format=box
-      - run:  ~/.ppkg/installed/uppm/bin/uppm depends android-sdk --format=dot
+      - run:  ~/.ppkg/installed/uppm/bin/uppm depends android-sdk -t box
+      - run:  ~/.ppkg/installed/uppm/bin/uppm depends android-sdk -t dot
 
       - run:  ~/.ppkg/installed/uppm/bin/uppm info @all
       - run:  ~/.ppkg/installed/uppm/bin/uppm info gsed

@@ -86,8 +86,8 @@ jobs:
 
       - run:  $VALGRIND ./output/bin/uppm depends   tree
       - run:  $VALGRIND ./output/bin/uppm depends   android-sdk
-      - run:  $VALGRIND ./output/bin/uppm depends   android-sdk --format=box
-      - run:  $VALGRIND ./output/bin/uppm depends   android-sdk --format=box
+      - run:  $VALGRIND ./output/bin/uppm depends   android-sdk -t box
+      - run:  $VALGRIND ./output/bin/uppm depends   android-sdk -t box
 
       - run:  $VALGRIND ./output/bin/uppm fetch gzip
       - run:  $VALGRIND ./output/bin/uppm fetch gsed -v

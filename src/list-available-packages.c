@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
 #include <dirent.h>
-#include <fnmatch.h>
+#include <sys/stat.h>
 
 #include "uppm.h"
 
@@ -15,11 +16,21 @@ int uppm_list_the_available_packages() {
     }
 
     for (size_t i = 0; i < formulaRepoList->size; i++) {
-        char * formulaRepoPath = formulaRepoList->repos[i]->path;
+        char * formulaRepoPath  = formulaRepoList->repos[i]->path;
 
         size_t formulaDirLength = strlen(formulaRepoPath) + 10;
         char   formulaDir[formulaDirLength];
         snprintf(formulaDir, formulaDirLength, "%s/formula", formulaRepoPath);
+
+        struct stat status;
+
+        if (stat(formulaDir, &status) != 0) {
+            continue;
+        }
+
+        if (!S_ISDIR(status.st_mode)) {
+            continue;
+        }
 
         DIR           * dir;
         struct dirent * dir_entry;
@@ -32,32 +43,41 @@ int uppm_list_the_available_packages() {
             return UPPM_ERROR;
         }
 
-        while ((dir_entry = readdir(dir))) {
-            //puts(dir_entry->d_name);
+        char * fileName;
+        char * fileNameSuffix;
+        size_t fileNameLength;
 
-            if ((strcmp(dir_entry->d_name, ".") == 0) || (strcmp(dir_entry->d_name, "..") == 0)) {
-                continue;
+        for (;;) {
+            errno = 0;
+
+            dir_entry = readdir(dir);
+
+            if (dir_entry == NULL) {
+                if (errno == 0) {
+                    closedir(dir);
+                    break;
+                } else {
+                    perror(formulaDir);
+                    uppm_formula_repo_list_free(formulaRepoList);
+                    return UPPM_ERROR;
+                }
             }
 
-            int r = fnmatch("*.yml", dir_entry->d_name, 0);
+            fileName = dir_entry->d_name;
 
-            if (r == 0) {
-                size_t fileNameLength = strlen(dir_entry->d_name);
+            //puts(fileName);
 
-                dir_entry->d_name[fileNameLength - 4] = '\0';
+            fileNameLength = strlen(fileName);
 
-                printf("%s\n", dir_entry->d_name);
-            } else if(r == FNM_NOMATCH) {
-                ;
-            } else {
-                uppm_formula_repo_list_free(formulaRepoList);
-                fprintf(stderr, "fnmatch() error\n");
-                closedir(dir);
-                return UPPM_ERROR;
+            if (fileNameLength > 4) {
+                fileNameSuffix = fileName + fileNameLength - 4;
+
+                if (strcmp(fileNameSuffix, ".yml") == 0) {
+                    fileName[fileNameLength - 4] = '\0';
+                    printf("%s\n", fileName);
+                }
             }
         }
-
-        closedir(dir);
     }
 
     uppm_formula_repo_list_free(formulaRepoList);

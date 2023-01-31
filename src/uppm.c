@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 
 #include "core/log.h"
 #include "uppm.h"
@@ -62,9 +63,9 @@ int uppm_main(int argc, char* argv[]) {
         int ret = uppm_search(argv[2]);
 
         if (ret == UPPM_ERROR_ARG_IS_NULL) {
-            fprintf(stderr, "Usage: %s search <KEYWORD>, <KEYWORD> is not given.\n", argv[0]);
+            fprintf(stderr, "Usage: %s search <REGULAR-EXPRESS_PATTERN>, <REGULAR-EXPRESS_PATTERN> is unspecified.\n", argv[0]);
         } else if (ret == UPPM_ERROR_ARG_IS_EMPTY) {
-            fprintf(stderr, "Usage: %s search <KEYWORD>, <KEYWORD> is empty string.\n", argv[0]);
+            fprintf(stderr, "Usage: %s search <REGULAR-EXPRESS_PATTERN>, <REGULAR-EXPRESS_PATTERN> is empty string.\n", argv[0]);
         } else if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
             fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
         } else if (ret == UPPM_ERROR_ENV_PATH_NOT_SET) {
@@ -80,7 +81,7 @@ int uppm_main(int argc, char* argv[]) {
         int ret = uppm_info(argv[2], argv[3]);
 
         if (ret == UPPM_ERROR_ARG_IS_NULL) {
-            fprintf(stderr, "Usage: %s info <PACKAGE-NAME> [KEY], <PACKAGE-NAME> is not given.\n", argv[0]);
+            fprintf(stderr, "Usage: %s info <PACKAGE-NAME> [KEY], <PACKAGE-NAME> is unspecified.\n", argv[0]);
         } else if (ret == UPPM_ERROR_ARG_IS_EMPTY) {
             fprintf(stderr, "Usage: %s info <PACKAGE-NAME> [KEY], <PACKAGE-NAME> is empty string.\n", argv[0]);
         } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
@@ -119,7 +120,7 @@ int uppm_main(int argc, char* argv[]) {
         int ret = uppm_formula_view(argv[2], raw);
 
         if (ret == UPPM_ERROR_ARG_IS_NULL) {
-            fprintf(stderr, "Usage: %s view <PACKAGE-NAME> [KEY], <PACKAGE-NAME> is not given.\n", argv[0]);
+            fprintf(stderr, "Usage: %s view <PACKAGE-NAME> [KEY], <PACKAGE-NAME> is unspecified.\n", argv[0]);
         } else if (ret == UPPM_ERROR_ARG_IS_EMPTY) {
             fprintf(stderr, "Usage: %s view <PACKAGE-NAME> [KEY], <PACKAGE-NAME> is empty string.\n", argv[0]);
         } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
@@ -158,7 +159,7 @@ int uppm_main(int argc, char* argv[]) {
         int ret = uppm_formula_edit(argv[2], editor);
 
         if (ret == UPPM_ERROR_ARG_IS_NULL) {
-            fprintf(stderr, "Usage: %s edit <PACKAGE-NAME> [KEY], <PACKAGE-NAME> is not given.\n", argv[0]);
+            fprintf(stderr, "Usage: %s edit <PACKAGE-NAME> [KEY], <PACKAGE-NAME> is unspecified.\n", argv[0]);
         } else if (ret == UPPM_ERROR_ARG_IS_EMPTY) {
             fprintf(stderr, "Usage: %s edit <PACKAGE-NAME> [KEY], <PACKAGE-NAME> is empty string.\n", argv[0]);
         } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
@@ -184,7 +185,7 @@ int uppm_main(int argc, char* argv[]) {
         int ret = uppm_tree(argv[2], argc - 3, &argv[3]);
 
         if (ret == UPPM_ERROR_ARG_IS_NULL) {
-            fprintf(stderr, "Usage: %s tree <PACKAGE-NAME> [KEY], <PACKAGE-NAME> is not given.\n", argv[0]);
+            fprintf(stderr, "Usage: %s tree <PACKAGE-NAME> [KEY], <PACKAGE-NAME> is unspecified.\n", argv[0]);
         } else if (ret == UPPM_ERROR_ARG_IS_EMPTY) {
             fprintf(stderr, "Usage: %s tree <PACKAGE-NAME> [KEY], <PACKAGE-NAME> is empty string.\n", argv[0]);
         } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
@@ -205,29 +206,146 @@ int uppm_main(int argc, char* argv[]) {
     }
 
     if (strcmp(argv[1], "depends") == 0) {
-        UPPMDependsOutputFormat outputFormat = UPPMDependsOutputFormat_BOX;
+        int    outputType     = 0;
+
+        char * outputPath     = NULL;
+        char * outputFilePath = NULL;
 
         for (int i = 3; i < argc; i++) {
             if (strcmp(argv[i], "-v") == 0) {
                 verbose = true;
-            } else if (strcmp(argv[i], "--format=dot") == 0) {
-                outputFormat = UPPMDependsOutputFormat_DOT;
-            } else if (strcmp(argv[i], "--format=box") == 0) {
-                outputFormat = UPPMDependsOutputFormat_BOX;
-            } else if (strcmp(argv[i], "--format=png") == 0) {
-                outputFormat = UPPMDependsOutputFormat_PNG;
-            } else if (strcmp(argv[i], "--format=svg") == 0) {
-                outputFormat = UPPMDependsOutputFormat_SVG;
+            } else if (strcmp(argv[i], "-t") == 0) {
+                const char * type = argv[i + 1];
+
+                if (type == NULL) {
+                    fprintf(stderr, "-t option should have value.\n");
+                    return UPPM_ERROR_ARG_IS_INVALID;
+                }
+
+                       if (strcmp(type, "dot") == 0) {
+                    outputType = 1;
+                    i++;
+                } else if (strcmp(type, "box") == 0) {
+                    outputType = 2;
+                    i++;
+                } else if (strcmp(type, "svg") == 0) {
+                    outputType = 3;
+                    i++;
+                } else if (strcmp(type, "png") == 0) {
+                    outputType = 4;
+                    i++;
+                } else {
+                    LOG_ERROR2("unrecognized type: ", type);
+                    return UPPM_ERROR_ARG_IS_INVALID;
+                }
+             } else if (strcmp(argv[i], "-o") == 0) {
+                outputPath = argv[i + 1];
+
+                if (outputPath == NULL) {
+                    fprintf(stderr, "-o option should have value.\n");
+                    return UPPM_ERROR_ARG_IS_INVALID;
+                }
+
+                if (strcmp(outputPath, "") == 0) {
+                    fprintf(stderr, "-o option should have value.\n");
+                    return UPPM_ERROR_ARG_IS_INVALID;
+                }
+
+                i++;
             } else {
                 LOG_ERROR2("unrecognized argument: ", argv[i]);
                 return UPPM_ERROR_ARG_IS_INVALID;
             }
         }
 
-        int ret = uppm_depends(argv[2], outputFormat);
+        if (outputPath != NULL) {
+            struct stat st;
+
+            if (stat(outputPath, &st) == 0 && S_ISDIR(st.st_mode)) {
+                size_t outputFilePathLength = strlen(outputPath) + strlen(argv[2]) + 20;
+
+                outputFilePath = (char*) malloc(outputFilePathLength);
+
+                if (outputFilePath == NULL) {
+                    return UPPM_ERROR_MEMORY_ALLOCATE;
+                }
+
+                const char * outputFileNameSuffix;
+
+                switch (outputType) {
+                    case 0: outputFileNameSuffix = "box"; break;
+                    case 1: outputFileNameSuffix = "dot"; break;
+                    case 2: outputFileNameSuffix = "box"; break;
+                    case 3: outputFileNameSuffix = "svg"; break;
+                    case 4: outputFileNameSuffix = "png"; break;
+                }
+
+                snprintf(outputFilePath, outputFilePathLength, "%s/%s-dependencies.%s", outputPath, argv[2], outputFileNameSuffix);
+            } else {
+                size_t outputPathLength = strlen(outputPath);
+
+                if (outputPath[outputPathLength - 1] == '/') {
+                    size_t outputFilePathLength = strlen(outputPath) + strlen(argv[2]) + 20;
+
+                    outputFilePath = (char*) malloc(outputFilePathLength);
+
+                    if (outputFilePath == NULL) {
+                        return UPPM_ERROR_MEMORY_ALLOCATE;
+                    }
+
+                    const char * outputFileNameSuffix;
+
+                    switch (outputType) {
+                        case 0: outputFileNameSuffix = "box"; break;
+                        case 1: outputFileNameSuffix = "dot"; break;
+                        case 2: outputFileNameSuffix = "box"; break;
+                        case 3: outputFileNameSuffix = "svg"; break;
+                        case 4: outputFileNameSuffix = "png"; break;
+                    }
+
+                    snprintf(outputFilePath, outputFilePathLength, "%s%s-dependencies.%s", outputPath, argv[2], outputFileNameSuffix);
+                } else {
+                    outputFilePath = strdup(outputPath);
+
+                    if (outputFilePath == NULL) {
+                        return UPPM_ERROR_MEMORY_ALLOCATE;
+                    }
+
+                    // if -t option is not given, let's check if is explicitly specified in filename's suffix
+                    if (outputType == 0) {
+                        if (outputPathLength > 4) {
+                            const char * suffix = outputFilePath + outputPathLength - 4;
+
+                                   if (strcmp(suffix, ".dot") == 0) {
+                                outputType = 1;
+                            } else if (strcmp(suffix, ".box") == 0) {
+                                outputType = 2;
+                            } else if (strcmp(suffix, ".svg") == 0) {
+                                outputType = 3;
+                            } else if (strcmp(suffix, ".png") == 0) {
+                                outputType = 4;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        UPPMDependsOutputType outputTypeEnum;
+
+        switch (outputType) {
+            case 0: outputTypeEnum = UPPMDependsOutputType_BOX; break;
+            case 1: outputTypeEnum = UPPMDependsOutputType_DOT; break;
+            case 2: outputTypeEnum = UPPMDependsOutputType_BOX; break;
+            case 3: outputTypeEnum = UPPMDependsOutputType_SVG; break;
+            case 4: outputTypeEnum = UPPMDependsOutputType_PNG; break;
+        }
+
+
+        int ret = uppm_depends(argv[2], outputTypeEnum, outputFilePath);
 
         if (ret == UPPM_ERROR_ARG_IS_NULL) {
-            fprintf(stderr, "Usage: %s depends <PACKAGE-NAME>, <PACKAGE-NAME> is not given.\n", argv[0]);
+            fprintf(stderr, "Usage: %s depends <PACKAGE-NAME>, <PACKAGE-NAME> is unspecified.\n", argv[0]);
         } else if (ret == UPPM_ERROR_ARG_IS_EMPTY) {
             fprintf(stderr, "Usage: %s depends <PACKAGE-NAME>, <PACKAGE-NAME> is empty string.\n", argv[0]);
         } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
@@ -244,6 +362,8 @@ int uppm_main(int argc, char* argv[]) {
             fprintf(stderr, "occurs error.\n");
         }
 
+        free(outputFilePath);
+
         return ret;
     }
 
@@ -251,7 +371,7 @@ int uppm_main(int argc, char* argv[]) {
         int ret = uppm_fetch(argv[2], verbose);
 
         if (ret == UPPM_ERROR_ARG_IS_NULL) {
-            fprintf(stderr, "Usage: %s fetch <PACKAGE-NAME>, <PACKAGE-NAME> is not given.\n", argv[0]);
+            fprintf(stderr, "Usage: %s fetch <PACKAGE-NAME>, <PACKAGE-NAME> is unspecified.\n", argv[0]);
         } else if (ret == UPPM_ERROR_ARG_IS_EMPTY) {
             fprintf(stderr, "Usage: %s fetch <PACKAGE-NAME>, <PACKAGE-NAME> is empty string.\n", argv[0]);
         } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
@@ -312,7 +432,7 @@ int uppm_main(int argc, char* argv[]) {
             int ret = uppm_install(packageName, verbose);
 
             if (ret == UPPM_ERROR_ARG_IS_NULL) {
-                fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> is not given.\n", argv[0], argv[1]);
+                fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> is unspecified.\n", argv[0], argv[1]);
             } else if (ret == UPPM_ERROR_ARG_IS_EMPTY) {
                 fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> is empty string.\n", argv[0], argv[1]);
             } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
@@ -378,7 +498,7 @@ int uppm_main(int argc, char* argv[]) {
             int ret = uppm_uninstall(packageName, verbose);
 
             if (ret == UPPM_ERROR_ARG_IS_NULL) {
-                fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> is not given.\n", argv[0], argv[1]);
+                fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> is unspecified.\n", argv[0], argv[1]);
             } else if (ret == UPPM_ERROR_ARG_IS_EMPTY) {
                 fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> is empty string.\n", argv[0], argv[1]);
             } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
@@ -456,7 +576,7 @@ int uppm_main(int argc, char* argv[]) {
             int ret = uppm_reinstall(packageName, verbose);
 
             if (ret == UPPM_ERROR_ARG_IS_NULL) {
-                fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> is not given.\n", argv[0], argv[1]);
+                fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> is unspecified.\n", argv[0], argv[1]);
             } else if (ret == UPPM_ERROR_ARG_IS_EMPTY) {
                 fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> is empty string.\n", argv[0], argv[1]);
             } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
@@ -516,7 +636,7 @@ int uppm_main(int argc, char* argv[]) {
             int ret = uppm_upgrade(packageName, verbose);
 
             if (ret == UPPM_ERROR_ARG_IS_NULL) {
-                fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> is not given.\n", argv[0], argv[1]);
+                fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> is unspecified.\n", argv[0], argv[1]);
             } else if (ret == UPPM_ERROR_ARG_IS_EMPTY) {
                 fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> is empty string.\n", argv[0], argv[1]);
             } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
@@ -589,7 +709,7 @@ int uppm_main(int argc, char* argv[]) {
         int ret = uppm_check_if_the_given_package_is_available(argv[2]);
 
         if (ret == UPPM_ERROR_ARG_IS_NULL) {
-            fprintf(stderr, "Usage: %s is-available <PACKAGE-NAME>, <PACKAGE-NAME> is not given.\n", argv[0]);
+            fprintf(stderr, "Usage: %s is-available <PACKAGE-NAME>, <PACKAGE-NAME> is unspecified.\n", argv[0]);
         } else if (ret == UPPM_ERROR_ARG_IS_EMPTY) {
             fprintf(stderr, "Usage: %s is-available <PACKAGE-NAME>, <PACKAGE-NAME> is empty string.\n", argv[0]);
         } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
@@ -613,7 +733,7 @@ int uppm_main(int argc, char* argv[]) {
         int ret = uppm_check_if_the_given_package_is_installed(argv[2]);
 
         if (ret == UPPM_ERROR_ARG_IS_NULL) {
-            fprintf(stderr, "Usage: %s is-installed <PACKAGE-NAME>, <PACKAGE-NAME> is not given.\n", argv[0]);
+            fprintf(stderr, "Usage: %s is-installed <PACKAGE-NAME>, <PACKAGE-NAME> is unspecified.\n", argv[0]);
         } else if (ret == UPPM_ERROR_ARG_IS_EMPTY) {
             fprintf(stderr, "Usage: %s is-installed <PACKAGE-NAME>, <PACKAGE-NAME> is empty string.\n", argv[0]);
         } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
@@ -637,7 +757,7 @@ int uppm_main(int argc, char* argv[]) {
         int ret = uppm_check_if_the_given_package_is_outdated(argv[2]);
 
         if (ret == UPPM_ERROR_ARG_IS_NULL) {
-            fprintf(stderr, "Usage: %s is-outdated <PACKAGE-NAME>, <PACKAGE-NAME> is not given.\n", argv[0]);
+            fprintf(stderr, "Usage: %s is-outdated <PACKAGE-NAME>, <PACKAGE-NAME> is unspecified.\n", argv[0]);
         } else if (ret == UPPM_ERROR_ARG_IS_EMPTY) {
             fprintf(stderr, "Usage: %s is-outdated <PACKAGE-NAME>, <PACKAGE-NAME> is empty string.\n", argv[0]);
         } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {

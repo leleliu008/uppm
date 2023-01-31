@@ -147,7 +147,11 @@ clean:
     return ret;
 }
 
-static int uppm_depends_make_box(const char * dotScriptStr) {
+static size_t write_callback(void * ptr, size_t size, size_t nmemb, void * stream) {
+    return fwrite(ptr, size, nmemb, (FILE *)stream);
+}
+
+static int uppm_depends_make_box(const char * dotScriptStr, const char * outputFilePath) {
     curl_global_init(CURL_GLOBAL_ALL);
 
     CURL * curl = curl_easy_init();
@@ -181,9 +185,26 @@ static int uppm_depends_make_box(const char * dotScriptStr) {
         curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);
     }
 
-    CURLcode curlcode = curl_easy_perform(curl);
+    CURLcode curlcode = CURLE_OK;
 
     int ret = UPPM_OK;
+
+    if (outputFilePath != NULL) {
+        FILE * outputFile = fopen(outputFilePath, "wb");
+
+        if (outputFile == NULL) {
+            perror(outputFilePath);
+            ret = UPPM_ERROR;
+            goto clean;
+        }
+
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, outputFile);
+    }
+
+    curlcode = curl_easy_perform(curl);
+
+clean:
 
     if (curlcode != CURLE_OK) {
         fprintf(stderr, "%s\n", curl_easy_strerror(curlcode));
@@ -198,7 +219,7 @@ static int uppm_depends_make_box(const char * dotScriptStr) {
     return ret;
 }
 
-static int uppm_depends_make_xxx(const char * dotScriptStr, size_t len, const char * type) {
+static int uppm_depends_make_xxx(const char * dotScriptStr, size_t len, const char * tOption, const char * oOption) {
     char * userHomeDir = getenv("HOME");
 
     if (userHomeDir == NULL) {
@@ -249,7 +270,7 @@ static int uppm_depends_make_xxx(const char * dotScriptStr, size_t len, const ch
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////
 
     char ts[11] = {0};
     snprintf(ts, 11, "%ld", time(NULL));
@@ -273,19 +294,25 @@ static int uppm_depends_make_xxx(const char * dotScriptStr, size_t len, const ch
 
     fclose(file);
 
-    execlp("dot", "dot", type, filepath, NULL);
+    if (oOption == NULL) {
+        execlp("dot", "dot", tOption,          filepath, NULL);
+    } else {
+        execlp("dot", "dot", tOption, oOption, filepath, NULL);
+    }
 
     perror("dot");
 
     return UPPM_ERROR;
 }
 
-int uppm_depends(const char * packageName, UPPMDependsOutputFormat outputFormat) {
+int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, const char * outputFilePath) {
     int ret = uppm_check_if_the_given_argument_matches_package_name_pattern(packageName);
 
     if (ret != UPPM_OK) {
         return ret;
     }
+
+    ////////////////////////////////////////////////////////////////
 
     char * p = NULL;
     size_t pSize = 0;
@@ -301,36 +328,81 @@ int uppm_depends(const char * packageName, UPPMDependsOutputFormat outputFormat)
         return UPPM_OK;
     }
 
-           if (outputFormat == UPPMDependsOutputFormat_DOT) {
-        printf("digraph G {\n%s}\n", p);
+    ////////////////////////////////////////////////////////////////
 
-        free(p);
+    if (outputFilePath != NULL && strcmp(outputFilePath, "") == 0) {
+        outputFilePath = NULL;
+    }
 
-        return UPPM_OK;
-    } else if (outputFormat == UPPMDependsOutputFormat_BOX) {
+    ////////////////////////////////////////////////////////////////
+
+    if (outputType == UPPMDependsOutputType_DOT) {
+        if (outputFilePath == NULL) {
+            printf("digraph G {\n%s}\n", p);
+            free(p);
+            return UPPM_OK;
+        } else {
+            FILE * outputFile = fopen(outputFilePath, "wb");
+
+            if (outputFile == NULL) {
+                perror(outputFilePath);
+                free(p);
+                return UPPM_ERROR;
+            }
+
+            fprintf(outputFile, "digraph G {\n%s}\n", p);
+
+            free(p);
+
+            if (ferror(outputFile)) {
+                perror(outputFilePath);
+                fclose(outputFile);
+                return UPPM_ERROR;
+            } else {
+                fclose(outputFile);
+                return UPPM_OK;
+            }
+        }
+    } else if (outputType == UPPMDependsOutputType_BOX) {
         size_t dotScriptStrLength = pSize + 14;
         char   dotScriptStr[dotScriptStrLength];
         snprintf(dotScriptStr, dotScriptStrLength, "digraph G {\n%s}", p);
 
         free(p);
 
-        return uppm_depends_make_box(dotScriptStr);
-    } else if (outputFormat == UPPMDependsOutputFormat_PNG) {
+        return uppm_depends_make_box(dotScriptStr, outputFilePath);
+    } else if (outputType == UPPMDependsOutputType_PNG) {
         size_t dotScriptStrLength = pSize + 14;
         char   dotScriptStr[dotScriptStrLength];
         snprintf(dotScriptStr, dotScriptStrLength, "digraph G {\n%s}", p);
 
         free(p);
 
-        return uppm_depends_make_xxx(dotScriptStr, dotScriptStrLength - 1, "-Tpng");
-    } else if (outputFormat == UPPMDependsOutputFormat_SVG) {
+        if (outputFilePath == NULL) {
+            return uppm_depends_make_xxx(dotScriptStr, dotScriptStrLength - 1, "-Tpng", NULL);
+        } else {
+            size_t oOptionLength=strlen(outputFilePath) + 3;
+            char   oOption[oOptionLength];
+            snprintf(oOption, oOptionLength, "-o%s", outputFilePath);
+
+            return uppm_depends_make_xxx(dotScriptStr, dotScriptStrLength - 1, "-Tpng", oOption);
+        }
+    } else if (outputType == UPPMDependsOutputType_SVG) {
         size_t dotScriptStrLength = pSize + 14;
         char   dotScriptStr[dotScriptStrLength];
         snprintf(dotScriptStr, dotScriptStrLength, "digraph G {\n%s}", p);
 
         free(p);
 
-        return uppm_depends_make_xxx(dotScriptStr, dotScriptStrLength - 1, "-Tsvg");
+        if (outputFilePath == NULL) {
+            return uppm_depends_make_xxx(dotScriptStr, dotScriptStrLength - 1, "-Tsvg", NULL);
+        } else {
+            size_t oOptionLength=strlen(outputFilePath) + 3;
+            char   oOption[oOptionLength];
+            snprintf(oOption, oOptionLength, "-o%s", outputFilePath);
+
+            return uppm_depends_make_xxx(dotScriptStr, dotScriptStrLength - 1, "-Tsvg", oOption);
+        }
     } else {
         free(p);
 

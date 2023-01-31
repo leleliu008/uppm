@@ -48,8 +48,8 @@ jobs:
 
       - run:  ./output/bin/uppm depends zip
       - run:  ./output/bin/uppm depends android-sdk
-      - run:  ./output/bin/uppm depends android-sdk --format=box
-      - run:  ./output/bin/uppm depends android-sdk --format=dot
+      - run:  ./output/bin/uppm depends android-sdk -t box
+      - run:  ./output/bin/uppm depends android-sdk -t dot
 
       - run:  ./output/bin/uppm info @all
       - run:  ./output/bin/uppm info unzip

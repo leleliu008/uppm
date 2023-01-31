@@ -1,19 +1,20 @@
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
 #include <dirent.h>
-#include <fnmatch.h>
 #include <sys/stat.h>
 
 #include "uppm.h"
+#include "core/regex/regex.h"
 
-int uppm_search(const char * keyword) {
-    if (keyword == NULL) {
+int uppm_search(const char * regPattern) {
+    if (regPattern == NULL) {
         return UPPM_ERROR_ARG_IS_NULL;
     }
 
-    size_t keywordLength = strlen(keyword);
+    size_t regPatternLength = strlen(regPattern);
 
-    if (keywordLength == 0) {
+    if (regPatternLength == 0) {
         return UPPM_ERROR_ARG_IS_EMPTY;
     }
 
@@ -55,47 +56,56 @@ int uppm_search(const char * keyword) {
             return UPPM_ERROR;
         }
 
-        while ((dir_entry = readdir(dir))) {
-            //puts(dir_entry->d_name);
-            if ((strcmp(dir_entry->d_name, ".") == 0) || (strcmp(dir_entry->d_name, "..") == 0)) {
-                continue;
+        char * fileName;
+        char * fileNameSuffix;
+        size_t fileNameLength;
+
+        for (;;) {
+            errno = 0;
+
+            dir_entry = readdir(dir);
+
+            if (dir_entry == NULL) {
+                if (errno == 0) {
+                    closedir(dir);
+                    break;
+                } else {
+                    perror(formulaDir);
+                    uppm_formula_repo_list_free(formulaRepoList);
+                    return UPPM_ERROR;
+                }
             }
 
-            size_t patternLength = keywordLength + 7;
-            char   pattern[patternLength];
-            snprintf(pattern, patternLength, "*%s*.yml", keyword);
+            fileName = dir_entry->d_name;
 
-            int r = fnmatch(pattern, dir_entry->d_name, 0);
+            //puts(fileName);
 
-            if (r == 0) {
-                size_t  fileNameLength = strlen(dir_entry->d_name);
+            fileNameLength = strlen(fileName);
 
-                dir_entry->d_name[fileNameLength - 4] = '\0';
+            if (fileNameLength > 4) {
+                fileNameSuffix = fileName + fileNameLength - 4;
 
-                if (isFirst) {
-                    isFirst = false;
-                } else {
-                    printf("\n");
+                if (strcmp(fileNameSuffix, ".yml") == 0) {
+                    fileName[fileNameLength - 4] = '\0';
+
+                    if (regex_matched(fileName, regPattern)) {
+                        if (isFirst) {
+                            isFirst = false;
+                        } else {
+                            printf("\n");
+                        }
+
+                        ret = uppm_info(fileName, NULL);
+
+                        if (ret != UPPM_OK) {
+                            uppm_formula_repo_list_free(formulaRepoList);
+                            closedir(dir);
+                            return ret;
+                        }
+                    }
                 }
-
-                ret = uppm_info(dir_entry->d_name, NULL);
-
-                if (ret != UPPM_OK) {
-                    uppm_formula_repo_list_free(formulaRepoList);
-                    closedir(dir);
-                    return ret;
-                }
-            } else if(r == FNM_NOMATCH) {
-                ;
-            } else {
-                uppm_formula_repo_list_free(formulaRepoList);
-                fprintf(stderr, "fnmatch() error\n");
-                closedir(dir);
-                return UPPM_ERROR;
             }
         }
-
-        closedir(dir);
     }
 
     uppm_formula_repo_list_free(formulaRepoList);

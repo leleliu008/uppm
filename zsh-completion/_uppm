@@ -161,7 +161,8 @@ function _uppm() {
                 depends)
                     _arguments \
                         '1:package-name:_uppm_available_packages' \
-                        '--format=-[set output format]:format:(dot box png svg)'
+                        '-t[set output type]:output-type:(dot box png svg)' \
+                        '-o[set output filepath or directory]:output-path:{_files}'
                     ;;
                 install)
                     _arguments \

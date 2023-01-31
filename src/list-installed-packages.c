@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
 #include <dirent.h>
-#include <fnmatch.h>
 #include <sys/stat.h>
 
 #include "core/log.h"
@@ -40,7 +40,22 @@ int uppm_list_the_installed_packages() {
         return UPPM_ERROR;
     }
 
-    while ((dir_entry = readdir(dir))) {
+    for (;;) {
+        errno = 0;
+
+        dir_entry = readdir(dir);
+
+        if (dir_entry == NULL) {
+            if (errno == 0) {
+                closedir(dir);
+                break;
+            } else {
+                perror(uppmInstalledDir);
+                closedir(dir);
+                return UPPM_ERROR;
+            }
+        }
+
         if ((strcmp(dir_entry->d_name, ".") == 0) || (strcmp(dir_entry->d_name, "..") == 0)) {
             continue;
         }
@@ -53,8 +68,6 @@ int uppm_list_the_installed_packages() {
             printf("%s\n", dir_entry->d_name);
         }
     }
-
-    closedir(dir);
 
     return UPPM_OK;
 }

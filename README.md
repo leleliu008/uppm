@@ -1,7 +1,8 @@
 # uppm
 Universal Prebuild Package Manager for Unix-like systems.
 
-**Note:** This project is being actively developed. It's in beta stage and may not be stable. Some features are subject to change without notice.
+## project status
+This project is being actively developed. It's in beta stage and may not be stable. Some features are subject to change without notice.
 
 ## dependences
 |dependency|required?|purpose|
@@ -245,7 +246,7 @@ all relevant dirs and files are located in `~/.uppm` directory.
 
         uppm update
         
-*   **search all available packages whose name matches the given regular express partten**
+*   **search all available packages whose name matches the given regular express pattern**
         
         uppm search curl
         uppm search lib
@@ -306,15 +307,25 @@ all relevant dirs and files are located in `~/.uppm` directory.
         
         uppm depends curl
 
-        uppm depends curl --format=dot
-        uppm depends curl --format=box
-        uppm depends curl --format=png
-        uppm depends curl --format=svg
+        uppm depends curl -t dot
+        uppm depends curl -t box
+        uppm depends curl -t png
+        uppm depends curl -t svg
 
-        uppm depends curl --format=dot > xx.dot
-        uppm depends curl --format=box > xx.txt
-        uppm depends curl --format=png > xx.png
-        uppm depends curl --format=svg > xx.svg
+        uppm depends curl -t dot -o .
+        uppm depends curl -t box -o .
+        uppm depends curl -t png -o .
+        uppm depends curl -t svg -o .
+
+        uppm depends curl -t dot -o a/
+        uppm depends curl -t box -o a/
+        uppm depends curl -t png -o a/
+        uppm depends curl -t svg -o a/
+
+        uppm depends curl -o xx.dot
+        uppm depends curl -o xx.box
+        uppm depends curl -o xx.png
+        uppm depends curl -o xx.svg
         
 *   **download resources of the given package to the local cache**
         
@@ -467,7 +478,7 @@ all relevant dirs and files are located in `~/.uppm` directory.
         https://github.com/*)
             printf 'https://ghproxy.com/%s\n' "$1"
             ;;
-        '') printf '%s\n' 'url-transform <URL>, <URL> is not given.' >&2 ;;
+        '') printf '%s\n' "$0 <URL>, <URL> is unspecified." >&2 ;;
         *)  printf '%s\n' "$1"
     esac
     ```
@@ -482,7 +493,7 @@ a uppm formula's filename suffix must be `.yml`
 
 a uppm formula'a filename prefix would be treated as the package name.
 
-a uppm formula'a filename prefix must match regular expression partten `^[A-Za-z0-9+-._]{1,50}$`
+a uppm formula'a filename prefix must match regular expression pattern `^[A-Za-z0-9+-._]{1,50}$`
 
 a uppm formula's file content must follow [the uppm formula scheme](https://github.com/leleliu008/uppm-formula-repository-linux-x86_64)
 
