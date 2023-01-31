@@ -39,11 +39,7 @@ int uppm_uninstall(const char * packageName, bool verbose) {
     snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", packageInstalledDir);
 
     if (stat(receiptFilePath, &st) == 0 && S_ISREG(st.st_mode)) {
-        if (rm_r(packageInstalledDir, verbose) == 0) {
-            return UPPM_OK;
-        } else {
-            return UPPM_ERROR;
-        }
+        return rm_r(packageInstalledDir, verbose);
     } else {
         // package is broken. is not installed completely?
         return UPPM_ERROR_PACKAGE_NOT_INSTALLED;

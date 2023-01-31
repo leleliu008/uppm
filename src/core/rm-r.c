@@ -81,9 +81,18 @@ int rm_r(const char * dirPath, bool verbose) {
                 }
             }
         } else {
-            perror(filePath);
-            closedir(dir);
-            return UPPM_ERROR;
+            // why does this happened?
+            // Suppose you have following file structure:
+            // bin
+            // ├── gsed
+            // └── sed -> gsed
+            // if bin/gsed was removed, then bin/sed will be treated as a non-existent file.
+
+            if (unlink(filePath) != 0) {
+                perror(filePath);
+                closedir(dir);
+                return UPPM_ERROR;
+            }
         }
     }
 
