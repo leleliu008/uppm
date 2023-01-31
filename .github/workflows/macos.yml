@@ -54,7 +54,7 @@ jobs:
       - run:  ./output/bin/uppm env
       - run:  ./output/bin/uppm env -v
 
-      - run:  ./output/bin/uppm integrate zsh
+      - run:  ./output/bin/uppm integrate zsh -v
 
       - run:  ./output/bin/uppm update
 
@@ -166,7 +166,7 @@ jobs:
       - run:  ./output/bin/uppm env
       - run:  ./output/bin/uppm env -v
 
-      - run:  ./output/bin/uppm integrate zsh
+      - run:  ./output/bin/uppm integrate zsh -v
 
       - run:  ./output/bin/uppm update
 
@@ -282,7 +282,7 @@ jobs:
       - run:  ./output/bin/uppm env
       - run:  ./output/bin/uppm env -v
 
-      - run:  ./output/bin/uppm integrate zsh
+      - run:  ./output/bin/uppm integrate zsh -v
 
       - run:  ./output/bin/uppm update
 
@@ -395,7 +395,7 @@ jobs:
       - run:  ./output/bin/uppm env
       - run:  ./output/bin/uppm env -v
 
-      - run:  ./output/bin/uppm integrate zsh
+      - run:  ./output/bin/uppm integrate zsh -v
 
       - run:  ./output/bin/uppm update
 
