@@ -7,8 +7,8 @@ _commands=(
     '--version:show version of this command.'
     'search:search packages whose name match the given keyword.'
     'info:show infomation of the given package or all available packages.'
-    'view:view the formula of the given package.'
-    'edit:edit the formula of the given package.'
+    'formula-view:view the formula of the given package.'
+    'formula-edit:edit the formula of the given package.'
     'tree:list files of the given installed package in a tree-like format.'
     'depends:show the packages that are depended by the given package.'
     'fetch:download the prebuild binary archive of the given package to the local cache.'
@@ -21,13 +21,14 @@ _commands=(
     'upgrade-self:upgrade this software.'
     'env:show current machine os info.'
     'integrate:integrate zsh completions.'
+    'gen-url-transform-sample: generate url-transform sample'
     'compare-versions:compare package versions with brew.'
-    'formula-repo-add:add a new formula-repo.'
-    'formula-repo-create:create a new formula-repo.'
-    'formula-repo-remove:remove the given formula-repo.'
-    'formula-repo-update:update the given formula-repo.'
-    'formula-repo-config:change the config of the given formula-repo.'
-    'formula-repo-info:show infomation of the given formula-repo.'
+    'formula-repo-add:create a new empty formula repository then sync with server.'
+    'formula-repo-del:delete the given formula repository.'
+    'formula-repo-init:create a new empty formula repository.'
+    'formula-repo-sync:sync the given formula repository with server.'
+    'formula-repo-conf:change the config of the given formula repository.'
+    'formula-repo-info:show infomation of the given formula repository.'
     'formula-repo-list:list all available formula-repos.'
     'ls-available:list the available packages.'
     'ls-installed:list the installed packages.'
@@ -70,6 +71,16 @@ function _uppm() {
     case $state in
         option)
             case $words[1] in
+                formula-view)
+                    _arguments \
+                        '1:package-name:_uppm_available_packages' \
+                        '--no-color[disables color highlighting]'
+                    ;;
+                formula-edit)
+                    _arguments \
+                        '1:package-name:_uppm_available_packages' \
+                        '--editor=-[specify editor]'
+                    ;;
                 formula-repo-add)
                     _arguments \
                         '1:formula-repo-name:(name)' \
@@ -82,7 +93,7 @@ function _uppm() {
                         '--enable[set enabled to 1]' \
                         '--disable[set enabled to 0]'
                     ;;
-                formula-repo-create)
+                formula-repo-init)
                     _arguments \
                         '1:formula-repo-name:(name)' \
                         '2:formula-repo-url:(https://)' \
@@ -94,7 +105,7 @@ function _uppm() {
                         '--enable[set enabled to 1]' \
                         '--disable[set enabled to 0]'
                     ;;
-                formula-repo-config)
+                formula-repo-conf)
                     _arguments \
                         '1:formula-repo-name:($(uppm formula-repo-list | sed -n "/^name: /p" | cut -c7-))' \
                         '--url=-[change the formula repo url]' \
@@ -106,10 +117,10 @@ function _uppm() {
                         '--enable[set enabled to yes]' \
                         '--disable[set enabled to no]'
                     ;;
-                formula-repo-remove)
+                formula-repo-del)
                     _arguments '1:formula-repo-name:($(uppm formula-repo-list | sed -n "/^name: /p" | cut -c7-))'
                     ;;
-                formula-repo-update)
+                formula-repo-sync)
                     _arguments '1:formula-repo-name:($(uppm formula-repo-list | sed -n "/^name: /p" | cut -c7-))'
                     ;;
                 formula-repo-info)
@@ -138,16 +149,6 @@ function _uppm() {
                                     '2:key:(formula summary version license webpage bin-url bin-sha dep-pkg installed-dir installed-receipt-path installed-receipt-json installed-receipt-yaml installed-timestamp-unix installed-timestamp-rfc-3339 installed-timestamp-iso-8601 installed-version installed-files --json --yaml --shell)'
                         esac
                     fi
-                    ;;
-                view)
-                    _arguments \
-                        '1:package-name:_uppm_available_packages' \
-                        '--raw[raw content]'
-                    ;;
-                edit)
-                    _arguments \
-                        '1:package-name:_uppm_available_packages' \
-                        '--editor=-[specify editor]'
                     ;;
                 tree)
                     _arguments \

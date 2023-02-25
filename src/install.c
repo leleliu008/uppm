@@ -14,21 +14,6 @@
 #include "core/rm-r.h"
 #include "uppm.h"
 
-int uppm_install_the_given_packages(const char * packageNames[], size_t size) {
-    for (size_t i = 0; i < size; i++) {
-        const char * packageName = packageNames[i];
-
-        UPPMFormula * formula = NULL;
-
-        int ret = uppm_formula_lookup(packageName, &formula);
-
-        if (ret != UPPM_OK) {
-            return ret;
-        }
-    }
-    return 0;
-}
-
 extern int record_installed_files(const char * installedDirPath);
 
 int uppm_install(const char * packageName, bool verbose) {
@@ -397,4 +382,19 @@ int uppm_install(const char * packageName, bool verbose) {
     fprintf(stderr, "\npackage [%s] successfully installed.\n", packageName);
 
     return UPPM_OK;
+}
+
+int uppm_install_the_given_packages(const char * packageNames[], size_t size) {
+    for (size_t i = 0; i < size; i++) {
+        const char * packageName = packageNames[i];
+
+        UPPMFormula * formula = NULL;
+
+        int ret = uppm_formula_lookup(packageName, &formula);
+
+        if (ret != UPPM_OK) {
+            return ret;
+        }
+    }
+    return 0;
 }

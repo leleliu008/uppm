@@ -8,145 +8,6 @@
 
 #include "uppm.h"
 
-static int _my_realloc(char ** outP, size_t * outSize, size_t * outCapcity, size_t bufLength) {
-    size_t  oldCapcity = (*outCapcity);
-    size_t needCapcity = oldCapcity + bufLength + 1;
-    size_t detaCapcity = needCapcity - oldCapcity;
-
-    if (detaCapcity > 0) {
-        size_t newCapcity = needCapcity + 256;
-
-        char * p = (char*)realloc((*outP), newCapcity * sizeof(char));
-
-        if (p == NULL) {
-            free(*outP);
-            return UPPM_ERROR_MEMORY_ALLOCATE;
-        } else {
-            (*outP) = p;
-            (*outCapcity) = newCapcity;
-            memset(&p[*outSize], 0, 256 + bufLength + 1);
-        }
-    }
-
-    return UPPM_OK;
-}
-
-int uppm_depends_make_dot_items(const char * packageName, char ** outP, size_t * outSize, size_t * outCapcity) {
-    UPPMFormula * formula = NULL;
-
-    int ret = uppm_formula_lookup(packageName, &formula);
-
-    if (ret != UPPM_OK) {
-        return ret;
-    }
-
-    if (formula->dep_pkg == NULL) {
-        uppm_formula_free(formula);
-        return UPPM_OK;
-    }
-
-    size_t bufLength = strlen(packageName) + 12;
-    char   buf[bufLength];
-    snprintf(buf, bufLength, "    \"%s\" -> {", packageName);
-
-    ret = _my_realloc(outP, outSize, outCapcity, bufLength);
-
-    if (ret != UPPM_OK) {
-        return ret;
-    }
-
-    strncat(*outP, buf, bufLength);
-
-    (*outSize) += bufLength - 1;
-
-    size_t depPackageNamesLength = strlen(formula->dep_pkg);
-
-    size_t depPackageNamesCopyLength = depPackageNamesLength + 1;
-    char   depPackageNamesCopy[depPackageNamesCopyLength];
-    strncpy(depPackageNamesCopy, formula->dep_pkg, depPackageNamesCopyLength);
-
-    char * depPackageName = strtok(depPackageNamesCopy, " ");
-
-    while (depPackageName != NULL) {
-        size_t  bufLength = strlen(depPackageName) + 4;
-        char    buf[bufLength];
-        snprintf(buf, bufLength, " \"%s\"", depPackageName);
-
-        ret = _my_realloc(outP, outSize, outCapcity, bufLength);
-
-        if (ret != UPPM_OK) {
-            return ret;
-        }
-
-        strncat(*outP, buf, bufLength);
-
-        (*outSize) += bufLength - 1;
-
-        depPackageName = strtok (NULL, " ");
-    }
-
-    ret = _my_realloc(outP, outSize, outCapcity, 3);
-
-    if (ret != UPPM_OK) {
-        return ret;
-    }
-
-    char buff[3] = { ' ', '}', '\n' };
-    strncat(*outP, buff, 3);
-
-    (*outSize) += 3;
-
-    ////////////////////////////////////////////////////////////////////////////
-
-    size_t n = 0;
-
-    char * ptr = NULL;
-
-    char * p = formula->dep_pkg;
-
-    for (;;) {
-        if (p[0] <= 32) {
-            if (n > 0) {
-                size_t  depPackageNameLength = n + 1;
-                char    depPackageName[depPackageNameLength];
-                strncpy(depPackageName, ptr, n);
-
-                depPackageName[n] = '\0';
-
-                //printf("%lu\n", n);
-                //printf("str=%s\n", str);
-
-                ret = uppm_depends_make_dot_items(depPackageName, outP, outSize, outCapcity);
-
-                if (ret != UPPM_OK) {
-                    goto clean;
-                }
-            }
-
-            if (p[0] == 0) {
-                break;
-            } else {
-                ptr = NULL;
-                n = 0;
-                p++;
-                continue;
-            }
-        } else {
-            if (ptr == NULL) {
-                ptr = p;
-            }
-
-            n++;
-            p++;
-        }
-    }
-
-clean:
-    uppm_formula_free(formula);
-
-    return ret;
-}
-
 static size_t write_callback(void * ptr, size_t size, size_t nmemb, void * stream) {
     return fwrite(ptr, size, nmemb, (FILE *)stream);
 }
@@ -305,12 +166,45 @@ static int uppm_depends_make_xxx(const char * dotScriptStr, size_t len, const ch
     return UPPM_ERROR;
 }
 
-int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, const char * outputFilePath) {
-    int ret = uppm_check_if_the_given_argument_matches_package_name_pattern(packageName);
+static int string_append(char ** outP, size_t * outSize, size_t * outCapcity, const char * buf, size_t bufLength) {
+    size_t  oldCapcity = (*outCapcity);
+    size_t needCapcity = oldCapcity + bufLength + 1;
 
-    if (ret != UPPM_OK) {
-        return ret;
+    if (needCapcity > oldCapcity) {
+        size_t newCapcity = needCapcity + 256;
+
+        char * p = (char*)realloc(*outP, newCapcity * sizeof(char));
+
+        if (p == NULL) {
+            free(*outP);
+            return UPPM_ERROR_MEMORY_ALLOCATE;
+        } else {
+            (*outP) = p;
+            (*outCapcity) = newCapcity;
+            memset(&p[*outSize], 0, 256 + bufLength + 1);
+        }
     }
+
+    strncat(*outP, buf, bufLength);
+        
+    (*outSize) += bufLength;
+
+    return UPPM_OK;
+}
+
+typedef struct {
+    char * packageName;
+    UPPMFormula * formula;
+} UPPMPackage;
+
+typedef struct {
+    char * nodeList;
+    size_t nodeListSize;
+    size_t nodeListCapcity;
+} DirectedPath;
+
+int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, const char * outputFilePath) {
+    int ret = UPPM_OK;
 
     ////////////////////////////////////////////////////////////////
 
@@ -318,11 +212,215 @@ int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, con
     size_t pSize = 0;
     size_t pCapcity = 0;
 
-    ret = uppm_depends_make_dot_items(packageName, &p, &pSize, &pCapcity);
+    ////////////////////////////////////////////////////////////////
+
+    size_t          directedPathArrayListCapcity = 0;
+    size_t          directedPathArrayListSize    = 0;
+    DirectedPath ** directedPathArrayList        = NULL;
+
+    ////////////////////////////////////////////////////////////////
+
+    size_t         packageSetCapcity = 0;
+    size_t         packageSetSize    = 0;
+    UPPMPackage ** packageSet        = NULL;
+
+    ////////////////////////////////////////////////////////////////
+
+    size_t   packageNameStackCapcity = 1;
+    size_t   packageNameStackSize    = 0;
+    char * * packageNameStack = (char**)calloc(1, sizeof(char*));
+
+    if (packageNameStack == NULL) {
+        return UPPM_ERROR_MEMORY_ALLOCATE;
+    }
+
+    packageNameStack[0] = strdup(packageName);
+
+    if (packageNameStack[0] == NULL) {
+        free(packageNameStack);
+        return UPPM_ERROR_MEMORY_ALLOCATE;
+    }
+
+    packageNameStackSize = 1;
+
+    ////////////////////////////////////////////////////////////////
+
+    while (packageNameStackSize > 0) {
+        char * packageName = packageNameStack[packageNameStackSize - 1];
+        packageNameStack[packageNameStackSize - 1] = NULL;
+        packageNameStackSize--;
+
+        UPPMFormula * formula = NULL;
+
+        for (size_t i = 0; i < packageSetSize; i++) {
+            if (strcmp(packageSet[i]->packageName, packageName) == 0) {
+                formula = packageSet[i]->formula;
+                free(packageName);
+                packageName = packageSet[i]->packageName;
+            }
+        }
+
+        if (formula == NULL) {
+            ret = uppm_formula_lookup(packageName, &formula);
+
+            if (ret != UPPM_OK) {
+                free(packageName);
+                goto finally;
+            }
+
+            if (packageSetSize == packageSetCapcity) {
+                UPPMPackage ** p = (UPPMPackage**)realloc(packageSet, (packageSetCapcity + 10) * sizeof(UPPMPackage*));
+
+                if (p == NULL) {
+                    free(packageName);
+                    uppm_formula_free(formula);
+                    ret = UPPM_ERROR_MEMORY_ALLOCATE;
+                    goto finally;
+                }
+
+                memset(p + packageSetCapcity, 0, 10);
+
+                packageSet = p;
+                packageSetCapcity += 10;
+            }
+
+            UPPMPackage * package = (UPPMPackage*)malloc(sizeof(UPPMPackage));
+
+            if (package == NULL) {
+                free(packageName);
+                uppm_formula_free(formula);
+                ret = UPPM_ERROR_MEMORY_ALLOCATE;
+                goto finally;
+            }
+
+            package->formula = formula;
+            package->packageName = strdup(packageName);
+
+            packageSet[packageSetSize] = package;
+            packageSetSize++;
+
+            if (package->packageName == NULL) {
+                free(packageName);
+                ret = UPPM_ERROR_MEMORY_ALLOCATE;
+                goto finally;
+            }
+
+            free(packageName);
+            packageName = package->packageName;
+        }
+
+        if (formula->dep_pkg == NULL) {
+            continue;
+        }
+
+        ////////////////////////////////////////////////////////////////
+
+        size_t bufLength = strlen(packageName) + 12;
+        char   buf[bufLength];
+        snprintf(buf, bufLength, "    \"%s\" -> {", packageName);
+
+        ret = string_append(&p, &pSize, &pCapcity, buf, bufLength - 1);
+
+        if (ret != UPPM_OK) {
+            goto finally;
+        }
+
+        ////////////////////////////////////////////////////////////////
+
+        size_t depPackageNamesLength = strlen(formula->dep_pkg);
+
+        size_t depPackageNamesCopyLength = depPackageNamesLength + 1;
+        char   depPackageNamesCopy[depPackageNamesCopyLength];
+        strncpy(depPackageNamesCopy, formula->dep_pkg, depPackageNamesCopyLength);
+
+        char * depPackageName = strtok(depPackageNamesCopy, " ");
+
+        while (depPackageName != NULL) {
+            if (strcmp(depPackageName, packageName) == 0) {
+                fprintf(stderr, "package '%s' depends itself.\n", packageName);
+                ret = UPPM_ERROR;
+                goto finally;
+            }
+
+            ////////////////////////////////////////////////////////////////
+
+            size_t  bufLength = strlen(depPackageName) + 4;
+            char    buf[bufLength];
+            snprintf(buf, bufLength, " \"%s\"", depPackageName);
+
+            ret = string_append(&p, &pSize, &pCapcity, buf, bufLength - 1);
+
+            if (ret != UPPM_OK) {
+                goto finally;
+            }
+
+            ////////////////////////////////////////////////////////////////
+
+            ////////////////////////////////////////////////////////////////
+
+            if (packageNameStackSize == packageNameStackCapcity) {
+                char ** p = (char**)realloc(packageNameStack, (packageNameStackCapcity + 10) * sizeof(char*));
+
+                if (p == NULL) {
+                    ret = UPPM_ERROR_MEMORY_ALLOCATE;
+                    goto finally;
+                }
+
+                memset(p + packageNameStackCapcity, 0, 10);
+
+                packageNameStack = p;
+                packageNameStackCapcity += 10;
+            }
+
+            char * p = strdup(depPackageName);
+
+            if (p == NULL) {
+                ret = UPPM_ERROR_MEMORY_ALLOCATE;
+                goto finally;
+            }
+
+            packageNameStack[packageNameStackSize] = p;
+            packageNameStackSize++;
+
+            depPackageName = strtok (NULL, " ");
+        }
+
+        ret = string_append(&p, &pSize, &pCapcity, " }\n", 3);
+    }
+
+finally:
+    for (size_t i = 0; i < packageNameStackSize; i++) {
+        free(packageNameStack[i]);
+        packageNameStack[i] = NULL;
+    }
+
+    free(packageNameStack);
+    packageNameStack = NULL;
+
+    //////////////////////////////////////////////////
+
+    for (size_t i = 0; i < packageSetSize; i++) {
+        free(packageSet[i]->packageName);
+        uppm_formula_free(packageSet[i]->formula);
+
+        packageSet[i]->formula = NULL;
+        packageSet[i]->packageName = NULL;
+
+        free(packageSet[i]);
+        packageSet[i] = NULL;
+    }
+
+    free(packageSet);
+    packageSet = NULL;
+
+    //////////////////////////////////////////////////
 
     if (ret != UPPM_OK) {
+        free(p);
         return ret;
     }
+
+    ////////////////////////////////////////////////////////////////
 
     if (pSize == 0) {
         return UPPM_OK;

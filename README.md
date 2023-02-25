@@ -1,8 +1,10 @@
 # uppm
 Universal Prebuild Package Manager for Unix-like systems.
 
-## project status
-This project is being actively developed. It's in beta stage and may not be stable. Some features are subject to change without notice.
+
+<br>
+
+**Note**: This project is being actively developed. It's in beta stage and may not be stable. Some features are subject to change without notice.
 
 ## dependences
 |dependency|required?|purpose|
@@ -216,6 +218,7 @@ cmake --install build.d
 ## ~/.uppm
 all relevant dirs and files are located in `~/.uppm` directory.
 
+**Note**: Please do NOT place your own files in `~/.uppm` directory, as `uppm` will change files in `~/.uppm` directory without notice.
 
 ## uppm command usage
 *   **show help of this command**
@@ -251,19 +254,6 @@ all relevant dirs and files are located in `~/.uppm` directory.
         uppm search curl
         uppm search lib
         
-*   **view the formula of the given package**
-        
-        uppm view curl
-        uppm view curl --raw
-        
-*   **edit the formula of the given package**
-        
-        uppm edit curl
-        uppm edit curl --editor=/usr/local/bin/vim
-        
- 
-    **Note**: uppm do NOT save your changes, which means that your changes may be lost after the formula repository is updated!
-
 *   **show information of the given package**
         
         uppm info curl
@@ -361,11 +351,29 @@ all relevant dirs and files are located in `~/.uppm` directory.
         uppm upgrade-self
         uppm upgrade-self -v
         
+*   **view the formula of the given package**
+
+        uppm formula-view curl
+        uppm formula-view curl --no-color
+
+*   **edit the formula of the given package**
+
+        uppm formula-edit curl
+        uppm formula-edit curl --editor=/usr/local/bin/vim
+
 *   **list all avaliable formula repositories**
 
         uppm formula-repo-list
 
-*   **add a new formula repository**
+*   **create a new empty formula repository**
+
+        uppm formula-repo-init my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo
+        uppm formula-repo-init my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --branch=master
+        uppm formula-repo-init my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --branch=main --pin
+        uppm formula-repo-init my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --unpin --disable
+        uppm formula-repo-init my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --enable
+
+*   **create a new empty formula repository then sync with server**
 
         uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo
         uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --branch=master
@@ -373,35 +381,26 @@ all relevant dirs and files are located in `~/.uppm` directory.
         uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --unpin --disable
         uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --enable
         
+*   **delete the given formula repository**
 
-*   **create a new empty formula repository**
+        uppm formula-repo-del my_repo
 
-        uppm formula-repo-create my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo
-        uppm formula-repo-create my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --branch=master
-        uppm formula-repo-create my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --branch=main --pin
-        uppm formula-repo-create my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --unpin --disable
-        uppm formula-repo-create my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --enable
+*   **sync the given formula repository with server**
 
-*   **delete a existing formula repository**
+        uppm formula-repo-sync my_repo
 
-        uppm formula-repo-remove my_repo
-
-*   **update a existing formula repository**
-
-        uppm formula-repo-update my_repo
-
-*   **show information of a existing formula repository**
+*   **show information of the given formula repository**
 
         uppm formula-repo-info my_repo
 
-*   **change the config of a existing formula repository**
+*   **change the config of the given formula repository**
 
-        uppm formula-repo-config my_repo --url=https://github.com/leleliu008/uppm-formula-repository-my_repo
-        uppm formula-repo-config my_repo --branch=main
-        uppm formula-repo-config my_repo --pin
-        uppm formula-repo-config my_repo --unpin
-        uppm formula-repo-config my_repo --enable
-        uppm formula-repo-config my_repo --disable
+        uppm formula-repo-conf my_repo --url=https://github.com/leleliu008/uppm-formula-repository-my_repo
+        uppm formula-repo-conf my_repo --branch=main
+        uppm formula-repo-conf my_repo --pin
+        uppm formula-repo-conf my_repo --unpin
+        uppm formula-repo-conf my_repo --enable
+        uppm formula-repo-conf my_repo --disable
 
 *   **list all available packages**
         
@@ -432,6 +431,10 @@ all relevant dirs and files are located in `~/.uppm` directory.
         uppm tree curl
         uppm tree curl -L 3
         
+*   **generate url-transform sample**
+
+        uppm gen-url-transform-sample
+
 *   **delete the unused cached files**
         
         uppm cleanup
@@ -466,22 +469,7 @@ all relevant dirs and files are located in `~/.uppm` directory.
 
     `/path/of/url-transform` command must output a `<URL>`
 
-    following is a example of `/path/of/url-transform` command implementation:
-
-    ```bash
-    #!/bin/sh
-
-    case $1 in
-        *githubusercontent.com/*)
-            printf 'https://ghproxy.com/%s\n' "$1"
-            ;;
-        https://github.com/*)
-            printf 'https://ghproxy.com/%s\n' "$1"
-            ;;
-        '') printf '%s\n' "$0 <URL>, <URL> is unspecified." >&2 ;;
-        *)  printf '%s\n' "$1"
-    esac
-    ```
+    you can generate a url-transform sample via `uppm gen-url-transform-sample`
 
     If you want to change the request url, you can set this environment variable. It is very useful for chinese users.
 

@@ -103,13 +103,13 @@ int uppm_main(int argc, char* argv[]) {
         return ret;
     }
 
-    if (strcmp(argv[1], "view") == 0) {
+    if (strcmp(argv[1], "formula-view") == 0) {
         bool raw = false;
 
         for (int i = 3; i < argc; i++) {
             if (strcmp(argv[i], "-v") == 0) {
                 verbose = true;
-            } else if (strcmp(argv[i], "--raw") == 0) {
+            } else if (strcmp(argv[i], "--no-color") == 0) {
                 raw = true;
             } else {
                 LOG_ERROR2("unrecognized argument: ", argv[i]);
@@ -142,7 +142,7 @@ int uppm_main(int argc, char* argv[]) {
         return ret;
     }
 
-    if (strcmp(argv[1], "edit") == 0) {
+    if (strcmp(argv[1], "formula-edit") == 0) {
         const char * editor = NULL;
 
         for (int i = 3; i < argc; i++) {
@@ -827,7 +827,7 @@ int uppm_main(int argc, char* argv[]) {
         return uppm_formula_repo_add(argv[2], argv[3], branch, pinned, enabled);
     }
 
-    if (strcmp(argv[1], "formula-repo-create") == 0) {
+    if (strcmp(argv[1], "formula-repo-init") == 0) {
         if (argv[2] == NULL) {
             fprintf(stderr, "Usage: %s %s <FORMULA-REPO-NAME> <FORMULA-REPO-URL> [--branch=VALUE --pin/--unpin --enable/--disable]\n", argv[0], argv[1]);
             return UPPM_ERROR_ARG_IS_NULL;
@@ -868,7 +868,7 @@ int uppm_main(int argc, char* argv[]) {
         return uppm_formula_repo_create(argv[2], argv[3], branch, pinned, enabled);
     }
 
-    if (strcmp(argv[1], "formula-repo-remove") == 0) {
+    if (strcmp(argv[1], "formula-repo-del") == 0) {
         if (argv[2] == NULL) {
             fprintf(stderr, "Usage: %s %s <FORMULA-REPO-NAME>\n", argv[0], argv[1]);
             return UPPM_ERROR_ARG_IS_NULL;
@@ -877,7 +877,7 @@ int uppm_main(int argc, char* argv[]) {
         return uppm_formula_repo_remove(argv[2]);
     }
 
-    if (strcmp(argv[1], "formula-repo-update") == 0) {
+    if (strcmp(argv[1], "formula-repo-sync") == 0) {
         if (argv[2] == NULL) {
             fprintf(stderr, "Usage: %s %s <FORMULA-REPO-NAME>\n", argv[0], argv[1]);
             return UPPM_ERROR_ARG_IS_NULL;
@@ -886,7 +886,7 @@ int uppm_main(int argc, char* argv[]) {
         return uppm_formula_repo_update(argv[2]);
     }
 
-    if (strcmp(argv[1], "formula-repo-config") == 0) {
+    if (strcmp(argv[1], "formula-repo-conf") == 0) {
         if (argv[2] == NULL) {
             fprintf(stderr, "Usage: %s %s <FORMULA-REPO-NAME> [--url=VALUE --branch=VALUE --pin/--unpin --enable/--disable]\n", argv[0], argv[1]);
             return UPPM_ERROR_ARG_IS_NULL;
@@ -985,6 +985,11 @@ int uppm_main(int argc, char* argv[]) {
     if (strcmp(argv[1], "cleanup") == 0) {
         return uppm_cleanup(verbose);
     }
+
+    if (strcmp(argv[1], "gen-url-transform-sample") == 0) {
+        return uppm_generate_url_transform_sample();
+    }
+
 
     LOG_ERROR2("unrecognized action: ", argv[1]);
     return UPPM_ERROR_ARG_IS_UNKNOWN;

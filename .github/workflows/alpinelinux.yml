@@ -112,24 +112,24 @@ jobs:
 
       - run:  ./output/bin/uppm formula-repo-list
 
-      - run:  ./output/bin/uppm formula-repo-create my_repo10 https://github.com/leleliu008/uppm-formula-repository-linux-x86_64
-      - run:  ./output/bin/uppm formula-repo-create my_repo11 https://github.com/leleliu008/uppm-formula-repository-linux-x86_64 --branch=main
-      - run:  ./output/bin/uppm formula-repo-create my_repo12 https://github.com/leleliu008/uppm-formula-repository-linux-x86_64 --unpin
-      - run:  ./output/bin/uppm formula-repo-create my_repo13 https://github.com/leleliu008/uppm-formula-repository-linux-x86_64 --unpin --disable
+      - run:  ./output/bin/uppm formula-repo-init my_repo10 https://github.com/leleliu008/uppm-formula-repository-linux-x86_64
+      - run:  ./output/bin/uppm formula-repo-init my_repo11 https://github.com/leleliu008/uppm-formula-repository-linux-x86_64 --branch=main
+      - run:  ./output/bin/uppm formula-repo-init my_repo12 https://github.com/leleliu008/uppm-formula-repository-linux-x86_64 --unpin
+      - run:  ./output/bin/uppm formula-repo-init my_repo13 https://github.com/leleliu008/uppm-formula-repository-linux-x86_64 --unpin --disable
 
       - run:  ./output/bin/uppm formula-repo-list
 
-      - run:  ./output/bin/uppm formula-repo-config my_repo1 --url=https://github.com/leleliu008/uppm-formula-repository-linux-x86_64
-      - run:  ./output/bin/uppm formula-repo-config my_repo2 --branch=master --unpin
-      - run:  ./output/bin/uppm formula-repo-config my_repo3 --pin
-      - run:  ./output/bin/uppm formula-repo-config my_repo4 --pin --enable
+      - run:  ./output/bin/uppm formula-repo-conf my_repo1 --url=https://github.com/leleliu008/uppm-formula-repository-linux-x86_64
+      - run:  ./output/bin/uppm formula-repo-conf my_repo2 --branch=master --unpin
+      - run:  ./output/bin/uppm formula-repo-conf my_repo3 --pin
+      - run:  ./output/bin/uppm formula-repo-conf my_repo4 --pin --enable
 
       - run:  ./output/bin/uppm formula-repo-list
 
-      - run:  ./output/bin/uppm formula-repo-update my_repo2
+      - run:  ./output/bin/uppm formula-repo-sync my_repo2
 
       - run:  ./output/bin/uppm formula-repo-info   my_repo2
 
-      - run:  ./output/bin/uppm formula-repo-remove my_repo1
+      - run:  ./output/bin/uppm formula-repo-del my_repo1
 
       - run:  ./output/bin/uppm cleanup

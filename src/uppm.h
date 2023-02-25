@@ -235,6 +235,8 @@ int uppm_fetch_via_git(const char * gitRepositoryDirPath, const char * remoteUrl
 
 int uppm_url_transform(const char * inUrl, char * * outUrlPointer, bool verbose);
 
+int uppm_generate_url_transform_sample();
+
 int uppm_examine_file_extension_from_url(char buf[], size_t maxSize, const char * url);
 
 #endif

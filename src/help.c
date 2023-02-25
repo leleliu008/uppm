@@ -95,33 +95,41 @@ int uppm_help() {
         COLOR_OFF
         "    cleanup the unused cache.\n\n"
         COLOR_GREEN
+        "uppm formula-view <PACKAGE-NAME> [--raw]\n"
+        COLOR_OFF
+        "    view the formula of the given package.\n\n"
+        COLOR_GREEN
+        "uppm formula-edit <PACKAGE-NAME> [--editor=EDITOR]\n"
+        COLOR_OFF
+        "    edit the formula of the given package.\n\n"
+        COLOR_GREEN
         "uppm formula-repo-list\n"
         COLOR_OFF
         "    list all available formula repositories.\n\n"
         COLOR_GREEN
-        "uppm formula-repo-add    <FORMULA-REPO-NAME> <FORMULA-REPO-URL> [--branch=VALUE --pin/--unpin --enable/--disable]\n"
+        "uppm formula-repo-add  <FORMULA-REPO-NAME> <FORMULA-REPO-URL> [--branch=VALUE --pin/--unpin --enable/--disable]\n"
         COLOR_OFF
-        "    add a new formula repository.\n\n"
+        "    create a new empty formula repository then sync with server.\n\n"
         COLOR_GREEN
-        "uppm formula-repo-create <FORMULA-REPO-NAME> <FORMULA-REPO-URL> [--branch=VALUE --pin/--unpin --enable/--disable]\n"
+        "uppm formula-repo-del  <FORMULA-REPO-NAME>\n"
+        COLOR_OFF
+        "    delete the given formula repository.\n\n"
+        COLOR_GREEN
+        "uppm formula-repo-init <FORMULA-REPO-NAME> <FORMULA-REPO-URL> [--branch=VALUE --pin/--unpin --enable/--disable]\n"
         COLOR_OFF
         "    create a new empty formula repository.\n\n"
         COLOR_GREEN
-        "uppm formula-repo-config <FORMULA-REPO-NAME>      [--url=VALUE | --branch=VALUE --pin/--unpin --enable/--disable]\n"
+        "uppm formula-repo-conf <FORMULA-REPO-NAME>      [--url=VALUE | --branch=VALUE --pin/--unpin --enable/--disable]\n"
         COLOR_OFF
-        "    change the config of a existing formula repository.\n\n"
+        "    change the config of the given formula repository.\n\n"
         COLOR_GREEN
-        "uppm formula-repo-remove <FORMULA-REPO-NAME>\n"
+        "uppm formula-repo-sync <FORMULA-REPO-NAME>\n"
         COLOR_OFF
-        "    delete a existing formula repository.\n\n"
-        COLOR_GREEN
-        "uppm formula-repo-update <FORMULA-REPO-NAME>\n"
-        COLOR_OFF
-        "    update a existing formula repository.\n\n"
+        "    sync the given formula repository with server.\n\n"
         COLOR_GREEN
         "uppm formula-repo-info <FORMULA-REPO-NAME>\n"
         COLOR_OFF
-        "    show infomation of a existing formula repository.\n";
+        "    show infomation of the given formula repository.\n";
 
         printf("%s\n", str);
     } else {
@@ -176,20 +184,24 @@ int uppm_help() {
         "    check if the given package is outdated.\n\n"
         "uppm cleanup\n"
         "    cleanup the unused cache.\n\n"
-        "uppm formula-repo-list\n"
-        "    list all available formula repositories.\n\n"
-        "uppm formula-repo-add    <FORMULA-REPO-NAME> <FORMULA-REPO-URL> [--branch=VALUE --pin/--unpin --enable/--disable]\n"
-        "    add a new formula repository.\n\n"
-        "uppm formula-repo-create <FORMULA-REPO-NAME> <FORMULA-REPO-URL> [--branch=VALUE --pin/--unpin --enable/--disable]\n"
+        "uppm formula-view <PACKAGE-NAME> [--raw]\n"
+        "    view the formula of the given package.\n\n"
+        "uppm formula-edit <PACKAGE-NAME> [--editor=EDITOR]\n"
+        "    edit the formula of the given package.\n\n"
+        "uppm formula-repo-add  <FORMULA-REPO-NAME> <FORMULA-REPO-URL> [--branch=VALUE --pin/--unpin --enable/--disable]\n"
+        "    create a new empty formula repository then sync with server.\n\n"
+        "uppm formula-repo-del <FORMULA-REPO-NAME>\n"
+        "    delete the given formula repository.\n\n"
+        "uppm formula-repo-init <FORMULA-REPO-NAME> <FORMULA-REPO-URL> [--branch=VALUE --pin/--unpin --enable/--disable]\n"
         "    create a new empty formula repository.\n\n"
-        "uppm formula-repo-config <FORMULA-REPO-NAME>      [--url=VALUE | --branch=VALUE --pin/--unpin --enable/--disable]\n"
-        "    change the config of a existing formula repository.\n\n"
-        "uppm formula-repo-remove <FORMULA-REPO-NAME>\n"
-        "    delete a existing formula repository.\n\n"
-        "uppm formula-repo-update <FORMULA-REPO-NAME>\n"
-        "    update a existing formula repository.\n\n"
+        "uppm formula-repo-conf <FORMULA-REPO-NAME>      [--url=VALUE | --branch=VALUE --pin/--unpin --enable/--disable]\n"
+        "    change the config of the given formula repository.\n\n"
+        "uppm formula-repo-sync <FORMULA-REPO-NAME>\n"
+        "    sync the given formula repository with server.\n\n"
         "uppm formula-repo-info <FORMULA-REPO-NAME>\n"
-        "    show infomation of a existing formula repository.\n";
+        "    show infomation of the given formula repository.\n\n"
+        "uppm formula-repo-list\n"
+        "    list all available formula repositories.\n\n";
 
         printf("%s\n", str);
     }
