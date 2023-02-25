@@ -17,9 +17,13 @@ int uppm_help() {
         COLOR_OFF
         "    show version of this command.\n\n"
         COLOR_GREEN
-        "uppm env\n"
+        "uppm sysinfo\n"
         COLOR_OFF
         "    show your system's information.\n\n"
+        COLOR_GREEN
+        "uppm env\n"
+        COLOR_OFF
+        "    show your system's information and other information.\n\n"
         COLOR_GREEN
         "uppm update\n"
         COLOR_OFF
@@ -95,7 +99,7 @@ int uppm_help() {
         COLOR_OFF
         "    cleanup the unused cache.\n\n"
         COLOR_GREEN
-        "uppm formula-view <PACKAGE-NAME> [--raw]\n"
+        "uppm formula-view <PACKAGE-NAME> [--no-color]\n"
         COLOR_OFF
         "    view the formula of the given package.\n\n"
         COLOR_GREEN
@@ -142,8 +146,10 @@ int uppm_help() {
         "uppm --version\n"
         "uppm -V\n"
         "    show version of this command.\n\n"
-        "uppm env\n"
+        "uppm sysinfo\n"
         "    show your system's information.\n\n"
+        "uppm env\n"
+        "    show your system's information and other information.\n\n"
         "uppm update\n"
         "    update all available formula repositories.\n\n"
         "uppm search  <REGULAR-EXPRESS-PATTERN>\n"
@@ -184,7 +190,7 @@ int uppm_help() {
         "    check if the given package is outdated.\n\n"
         "uppm cleanup\n"
         "    cleanup the unused cache.\n\n"
-        "uppm formula-view <PACKAGE-NAME> [--raw]\n"
+        "uppm formula-view <PACKAGE-NAME> [--no-color]\n"
         "    view the formula of the given package.\n\n"
         "uppm formula-edit <PACKAGE-NAME> [--editor=EDITOR]\n"
         "    edit the formula of the given package.\n\n"

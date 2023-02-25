@@ -3,6 +3,7 @@
 #include <string.h>
 #include <sys/stat.h>
 
+#include "core/log.h"
 #include "uppm.h"
 
 int uppm_generate_url_transform_sample() {
@@ -74,6 +75,7 @@ int uppm_generate_url_transform_sample() {
     fclose(file);
 
     if (chmod(urlTransformSampleFilePath, S_IRWXU) == 0) {
+        fprintf(stderr, "url-transform sample has been written into %s\n", urlTransformSampleFilePath);
         return UPPM_OK;
     } else {
         perror(urlTransformSampleFilePath);

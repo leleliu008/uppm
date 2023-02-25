@@ -19,6 +19,8 @@ typedef struct {
    char * arch;
    LIBC   libc;
    size_t ncpu;
+   uid_t  euid;
+   gid_t  egid;
 } SysInfo;
 
 int  sysinfo_kind(char * buf, size_t bufSize);

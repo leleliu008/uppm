@@ -456,6 +456,9 @@ int sysinfo_make(SysInfo * sysinfo) {
     sysinfo->libc = libc;
     sysinfo->ncpu = ncpu;
 
+    sysinfo->euid = geteuid();
+    sysinfo->egid = getegid();
+
     return UPPM_OK;
 }
 
@@ -466,6 +469,8 @@ void sysinfo_dump(SysInfo sysinfo) {
     printf("sysinfo.type: %s\n",  sysinfo.type == NULL ? "" : sysinfo.type);
     printf("sysinfo.name: %s\n",  sysinfo.name == NULL ? "" : sysinfo.name);
     printf("sysinfo.vers: %s\n",  sysinfo.vers == NULL ? "" : sysinfo.vers);
+    printf("sysinfo.euid: %u\n",  sysinfo.euid);
+    printf("sysinfo.egid: %u\n",  sysinfo.egid);
 
     switch(sysinfo.libc) {
         case LIBC_GLIBC: printf("sysinfo.libc: glibc\n"); break;

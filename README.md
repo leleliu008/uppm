@@ -233,6 +233,10 @@ all relevant dirs and files are located in `~/.uppm` directory.
         
 *   **show your system's information**
 
+        uppm sysinfo
+
+*   **show your system's information and other information**
+
         uppm env
         
 *   **integrate `zsh-completion` script**

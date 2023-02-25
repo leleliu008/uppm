@@ -19,6 +19,7 @@ _commands=(
     'update:update the formula repositories.'
     'upgrade:upgrade the outdated packages.'
     'upgrade-self:upgrade this software.'
+    'sysinfo:show your system information.'
     'env:show current machine os info.'
     'integrate:integrate zsh completions.'
     'gen-url-transform-sample: generate url-transform sample'
