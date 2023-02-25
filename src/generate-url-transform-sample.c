@@ -75,7 +75,11 @@ int uppm_generate_url_transform_sample() {
     fclose(file);
 
     if (chmod(urlTransformSampleFilePath, S_IRWXU) == 0) {
-        fprintf(stderr, "url-transform sample has been written into %s\n", urlTransformSampleFilePath);
+        fprintf(stderr, "%surl-transform sample has been written into %s%s\n\n", COLOR_GREEN, urlTransformSampleFilePath, COLOR_OFF);
+
+        urlTransformSampleFilePath[urlTransformSampleFilePathLength - 9] = '\0';
+
+        fprintf(stderr, "%sYou can rename url-transform.sample to url-transform then edit it to meet your needs.\n\nTo apply this, you should run 'export UPPM_URL_TRANSFORM=%s' in your terminal.\n%s", COLOR_GREEN, urlTransformSampleFilePath, COLOR_OFF);
         return UPPM_OK;
     } else {
         perror(urlTransformSampleFilePath);

@@ -2,6 +2,7 @@
 #define SYSINFO_H
 
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "../uppm.h"
 
