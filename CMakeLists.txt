@@ -169,6 +169,7 @@ include(GNUInstallDirs)
 
 install(TARGETS uppm RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")
 install(
-    FILES       "${CMAKE_CURRENT_SOURCE_DIR}/zsh-completion/_uppm"
+    FILES       "${CMAKE_CURRENT_SOURCE_DIR}/uppm-zsh-completion"
     DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/zsh/site-functions"
+    RENAME      _uppm
 )
