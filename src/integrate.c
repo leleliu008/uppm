@@ -6,7 +6,7 @@
 #include "uppm.h"
 
 int uppm_integrate_zsh_completion(const char * outputDir, bool verbose) {
-    const char * url = "https://raw.githubusercontent.com/leleliu008/uppm/master/zsh-completion/_uppm";
+    const char * url = "https://raw.githubusercontent.com/leleliu008/uppm/master/uppm-zsh-completion";
 
     char * userHomeDir = getenv("HOME");
 

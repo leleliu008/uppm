@@ -270,6 +270,76 @@ int uppm_info(const char * packageName, const char * key) {
         }
 
         uppm_formula_free(formula);
+    } else if (strcmp(key, "bin-ft") == 0) {
+        UPPMFormula * formula = NULL;
+
+        ret = uppm_formula_lookup(packageName, &formula);
+
+        if (ret != UPPM_OK) {
+            return ret;
+        }
+
+        char * userHomeDir = getenv("HOME");
+
+        if (userHomeDir == NULL) {
+            uppm_formula_free(formula);
+            return UPPM_ERROR_ENV_HOME_NOT_SET;
+        }
+
+        size_t userHomeDirLength = strlen(userHomeDir);
+
+        if (userHomeDirLength == 0) {
+            uppm_formula_free(formula);
+            return UPPM_ERROR_ENV_HOME_NOT_SET;
+        }
+
+        char binFileNameExtension[21] = {0};
+
+        ret = uppm_examine_file_extension_from_url(binFileNameExtension, 20, formula->bin_url);
+
+        if (ret != UPPM_OK) {
+            uppm_formula_free(formula);
+            return ret;
+        }
+
+        printf("%s\n", binFileNameExtension);
+
+        uppm_formula_free(formula);
+    } else if (strcmp(key, "bin-fp") == 0) {
+        UPPMFormula * formula = NULL;
+
+        ret = uppm_formula_lookup(packageName, &formula);
+
+        if (ret != UPPM_OK) {
+            return ret;
+        }
+
+        char * userHomeDir = getenv("HOME");
+
+        if (userHomeDir == NULL) {
+            uppm_formula_free(formula);
+            return UPPM_ERROR_ENV_HOME_NOT_SET;
+        }
+
+        size_t userHomeDirLength = strlen(userHomeDir);
+
+        if (userHomeDirLength == 0) {
+            uppm_formula_free(formula);
+            return UPPM_ERROR_ENV_HOME_NOT_SET;
+        }
+
+        char binFileNameExtension[21] = {0};
+
+        ret = uppm_examine_file_extension_from_url(binFileNameExtension, 20, formula->bin_url);
+
+        if (ret != UPPM_OK) {
+            uppm_formula_free(formula);
+            return ret;
+        }
+
+        printf("%s/.uppm/downloads/%s%s\n", userHomeDir, formula->bin_sha, binFileNameExtension);
+
+        uppm_formula_free(formula);
     } else if (strcmp(key, "dep-pkg") == 0) {
         UPPMFormula * formula = NULL;
 

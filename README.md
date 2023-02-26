@@ -266,6 +266,8 @@ all relevant dirs and files are located in `~/.uppm` directory.
         uppm info curl webpage
         uppm info curl bin-url
         uppm info curl bin-sha
+        uppm info curl bin-ft  # filetype of bin-url
+        uppm info curl bin-fp  # filepath of bin-url
         uppm info curl install
         uppm info curl formula
 
