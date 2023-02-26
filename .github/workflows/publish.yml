@@ -28,7 +28,7 @@ jobs:
                 export SSL_CERT_FILE="$ETCCERTSDIR/ca-certificates.crt"
             fi
 
-            run curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/bin/ppkg
+            run curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
             run chmod a+x ppkg
             run ./ppkg setup --use-system-package-manager
             run ./ppkg update
@@ -61,7 +61,7 @@ jobs:
 
             run sudo ln -sf /usr/local/bin/pkgconf /usr/bin/pkg-config
 
-            run curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/bin/ppkg
+            run curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
             run chmod a+x ppkg
             run ./ppkg setup --use-system-package-manager
             run ./ppkg update
@@ -89,7 +89,7 @@ jobs:
 
             run pkg install -y curl libnghttp2
 
-            run curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/bin/ppkg
+            run curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
             run chmod a+x ppkg
             run ./ppkg setup --use-system-package-manager
             run ./ppkg update
@@ -116,7 +116,7 @@ jobs:
       - run: brew update
       - run: brew install --overwrite python@3.10 python@3.11
 
-      - run: curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/bin/ppkg
+      - run: curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
       - run: chmod a+x ppkg
       - run: ./ppkg setup --use-system-package-manager
       - run: ./ppkg update
@@ -144,7 +144,7 @@ jobs:
 
       - uses: actions/checkout@v3
 
-      - run: wget https://raw.githubusercontent.com/leleliu008/ppkg/master/bin/ppkg
+      - run: wget https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
       - run: chmod a+x ppkg
       - run: ./ppkg setup --use-system-package-manager
       - run: ./ppkg update

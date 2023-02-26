@@ -26,7 +26,7 @@ jobs:
 
       - name: install ppkg
         run: |
-          curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/bin/ppkg
+          curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
           chmod a+x ppkg
           ./ppkg setup
 
@@ -127,7 +127,7 @@ jobs:
 
       - name: install ppkg
         run: |
-          curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/bin/ppkg
+          curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
           chmod a+x ppkg
           ./ppkg setup
 
@@ -234,7 +234,7 @@ jobs:
 
       - name: install ppkg
         run: |
-          curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/bin/ppkg
+          curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
           chmod a+x ppkg
           ./ppkg setup
 
