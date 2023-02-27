@@ -205,7 +205,7 @@ function _uppm() {
                     ;;
                 util)
                     _arguments \
-                        '1:utility:(base16-encode base16-decode base64-encode base64-decode sha256sum zlib-deflate zlib-inflate)' \
+                        '1:utility:(base16-encode base16-decode base64-encode base64-decode sha256sum zlib-deflate zlib-inflate which)' \
                         '*:: :->utility-option'
 
                     if [ "$state" = 'utility-option' ] ; then
@@ -222,6 +222,9 @@ function _uppm() {
                                 _arguments '-L[level]:level:(1 2 3 4 5 6 7 8 9)'
                                 ;;
                             zlib-inflate)
+                                ;;
+                            which)
+                                _arguments '1:cmd:()' '-a[find all]'
                                 ;;
                         esac
                     fi

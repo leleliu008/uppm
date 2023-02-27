@@ -10,7 +10,7 @@
 #include "core/sha256sum.h"
 #include "core/base16.h"
 #include "core/base64.h"
-#include "core/log.h"
+#include "core/exe.h"
 #include "core/log.h"
 #include "uppm.h"
 
@@ -1309,6 +1309,44 @@ int uppm_main(int argc, char* argv[]) {
 
         if (strcmp(argv[2], "zlib-inflate") == 0) {
             return zlib_inflate_file_to_file(stdin, stdout);
+        }
+
+        if (strcmp(argv[2], "which") == 0) {
+            if (argv[3] == NULL) {
+                fprintf(stderr, "USAGE: %s %s %s <COMMAND-NAME> [-a]\n", argv[0], argv[1], argv[2]);
+                return 1;
+            }
+
+            bool findAll = false;
+
+            for (int i = 4; i < argc; i++) {
+                if (strcmp(argv[i], "-a") == 0) {
+                    findAll = true;
+                } else {
+                    fprintf(stderr, "unrecognized argument: %s\n", argv[i]);
+                    fprintf(stderr, "USAGE: %s %s %s <COMMAND-NAME> [-a]\n", argv[0], argv[1], argv[2]);
+                    return 1;
+                }
+            }
+
+            char ** pathList = NULL;
+            size_t  pathListSize;
+
+            int ret = exe_search(argv[3], &pathList, &pathListSize, findAll);
+
+            if (ret == 0) {
+                for (size_t i = 0; i < pathListSize; i++) {
+                    printf("%s\n", pathList[i]);
+
+                    free(pathList[i]);
+                    pathList[i] = NULL;
+                }
+
+                free(pathList);
+                pathList = NULL;
+            }
+
+            return ret;
         }
 
         LOG_ERROR2("unrecognized command: ", argv[2]);

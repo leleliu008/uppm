@@ -460,6 +460,9 @@ all relevant dirs and files are located in `~/.uppm` directory.
 
         uppm util sha256sum   input/file/path
         uppm util sha256sum < input/file/path
+
+        uppm util which tree
+        uppm util which tree -a
         
 *   **delete the unused cached files**
         
