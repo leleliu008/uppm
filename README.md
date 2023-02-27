@@ -441,6 +441,26 @@ all relevant dirs and files are located in `~/.uppm` directory.
 
         uppm gen-url-transform-sample
 
+*   **extra common used utilities**
+        
+        uppm util zlib-deflate -L 6 < input/file/path
+        uppm util zlib-inflate      < input/file/path
+
+        uppm util base16-encode "string to be encoded with base16 algorithm"
+        uppm util base16-encode < input/file/path
+
+        uppm util base16-decode ABCD
+        uppm util base16-decode ABCD > output/file/path
+
+        uppm util base64-encode "string to be encoded with base64 algorithm"
+        uppm util base64-encode < input/file/path
+
+        uppm util base64-decode YQ==
+        uppm util base64-decode YQ== > output/file/path
+
+        uppm util sha256sum   input/file/path
+        uppm util sha256sum < input/file/path
+        
 *   **delete the unused cached files**
         
         uppm cleanup

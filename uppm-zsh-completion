@@ -37,6 +37,7 @@ _commands=(
     'is-available:is the given package available.'
     'is-installed:is the given package installed.'
     'is-outdated:is the given package outdated.'
+    'util:extra utilities.'
 )
 
 function _uppm_commands() {
@@ -201,6 +202,29 @@ function _uppm() {
                 is-outdated)
                     _arguments \
                         '1:package-name:_uppm_outdated_packages'
+                    ;;
+                util)
+                    _arguments \
+                        '1:utility:(base16-encode base16-decode base64-encode base64-decode sha256sum zlib-deflate zlib-inflate)' \
+                        '*:: :->utility-option'
+
+                    if [ "$state" = 'utility-option' ] ; then
+                        case $words[1] in
+                            base16-encode)
+                                ;;
+                            base16-decode)
+                                ;;
+                            base64-encode)
+                                ;;
+                            base64-decode)
+                                ;;
+                            zlib-deflate)
+                                _arguments '-L[level]:level:(1 2 3 4 5 6 7 8 9)'
+                                ;;
+                            zlib-inflate)
+                                ;;
+                        esac
+                    fi
                     ;;
                 *)  ;;
             esac

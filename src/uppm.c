@@ -1,8 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <sys/stat.h>
 
+#include <openssl/evp.h>
+
+#include "core/zlib-flate.h"
+#include "core/sha256sum.h"
+#include "core/base16.h"
+#include "core/base64.h"
+#include "core/log.h"
 #include "core/log.h"
 #include "uppm.h"
 
@@ -994,6 +1002,318 @@ int uppm_main(int argc, char* argv[]) {
         return uppm_generate_url_transform_sample();
     }
 
+    if (strcmp(argv[1], "util") == 0) {
+        if (argv[2] == NULL) {
+            fprintf(stderr, "Usage: %s %s <COMMAND> , <COMMAND> is not given.\n", argv[0], argv[1]);
+            return UPPM_ERROR_ARG_IS_NULL;
+        }
+
+        if (strcmp(argv[2], "base16-encode") == 0) {
+            if (argv[3] == NULL) {
+                unsigned char inputBuff[1024];
+                unsigned int  inputSizeInBytes;
+
+                for (;;) {
+                    inputSizeInBytes = fread(inputBuff, 1, 1024, stdin);
+
+                    if (ferror(stdin)) {
+                        return UPPM_ERROR;
+                    }
+
+                    size_t outputSizeInBytes = inputSizeInBytes << 1;
+                    char   outputBuff[outputSizeInBytes];
+
+                    int ret = base16_encode(outputBuff, inputBuff, inputSizeInBytes, false);
+
+                    if (ret != UPPM_OK) {
+                        return ret;
+                    }
+
+                    if (fwrite(outputBuff, 1, outputSizeInBytes, stdout) != outputSizeInBytes || ferror(stdout)) {
+                        return UPPM_ERROR;
+                    }
+
+                    if (feof(stdin)) {
+                        if (isatty(STDOUT_FILENO)) {
+                            printf("\n");
+                        }
+
+                        return UPPM_OK;
+                    }
+                }
+            } else {
+                unsigned char * inputBuff = (unsigned char *)argv[3];
+                size_t          inputSizeInBytes = strlen(argv[3]);
+
+                if (inputSizeInBytes == 0) {
+                    fprintf(stderr, "Usage: %s %s %s <STR> , <STR> should be non-empty.\n", argv[0], argv[1], argv[2]);
+                    return UPPM_ERROR_ARG_IS_NULL;
+                }
+
+                size_t outputSizeInBytes = inputSizeInBytes << 1;
+                char   outputBuff[outputSizeInBytes];
+
+                int ret = base16_encode(outputBuff, inputBuff, inputSizeInBytes, false);
+
+                if (ret != UPPM_OK) {
+                    return ret;
+                }
+
+                if (fwrite(outputBuff, 1, outputSizeInBytes, stdout) != outputSizeInBytes || ferror(stdout)) {
+                    return UPPM_ERROR;
+                }
+
+                if (isatty(STDOUT_FILENO)) {
+                    printf("\n");
+                }
+
+                return UPPM_OK;
+            }
+        }
+
+        if (strcmp(argv[2], "base16-decode") == 0) {
+            if (argv[3] == NULL) {
+                fprintf(stderr, "Usage: %s %s %s <BASE16-DECODED-STR> , <BASE16-DECODED-STR> is not given.\n", argv[0], argv[1], argv[2]);
+                return UPPM_ERROR_ARG_IS_NULL;
+            }
+
+            size_t inputSizeInBytes = strlen(argv[3]);
+
+            if (inputSizeInBytes == 0) {
+                fprintf(stderr, "Usage: %s %s %s <BASE16-DECODED-STR> , <BASE16-DECODED-STR> should be non-empty.\n", argv[0], argv[1], argv[2]);
+                return UPPM_ERROR_ARG_IS_NULL;
+            }
+
+            if ((inputSizeInBytes & 1) != 0) {
+                fprintf(stderr, "Usage: %s %s %s <BASE16-DECODED-STR> , <BASE16-DECODED-STR> length should be an even number.\n", argv[0], argv[1], argv[2]);
+                return UPPM_ERROR_ARG_IS_INVALID;
+            }
+
+            size_t        outputSizeInBytes = inputSizeInBytes >> 1;
+            unsigned char outputBuff[outputSizeInBytes];
+
+            int ret = base16_decode(outputBuff, argv[3], inputSizeInBytes);
+
+            if (ret == UPPM_OK) {
+                if (fwrite(outputBuff, 1, outputSizeInBytes, stdout) != outputSizeInBytes || ferror(stdout)) {
+                    return UPPM_ERROR;
+                }
+
+                if (isatty(STDOUT_FILENO)) {
+                    printf("\n");
+                }
+
+                return UPPM_OK;
+            } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
+                fprintf(stderr, "%s is invalid base64-encoded string.\n", argv[2]);
+            } else if (ret == UPPM_ERROR) {
+                fprintf(stderr, "occurs error.\n");
+            }
+
+            return ret;
+        }
+
+        if (strcmp(argv[2], "base64-encode") == 0) {
+            if (argv[3] == NULL) {
+                unsigned char inputBuff[1023];
+                unsigned int  inputSizeInBytes;
+
+                for (;;) {
+                    inputSizeInBytes = fread(inputBuff, 1, 1023, stdin);
+
+                    if (ferror(stdin)) {
+                        return UPPM_ERROR;
+                    }
+
+                    unsigned int  x = (inputSizeInBytes % 3) == 0 ? 0 : 1;
+                    unsigned int  outputSizeInBytes = (inputSizeInBytes / 3 + x) << 2;
+                    unsigned char outputBuff[outputSizeInBytes];
+
+                    int ret = EVP_EncodeBlock(outputBuff, inputBuff, inputSizeInBytes);
+
+                    if (ret < 0) {
+                        return ret;
+                    }
+
+                    if (fwrite(outputBuff, 1, outputSizeInBytes, stdout) != outputSizeInBytes || ferror(stdout)) {
+                        return UPPM_ERROR;
+                    }
+
+                    if (feof(stdin)) {
+                        if (isatty(STDOUT_FILENO)) {
+                            printf("\n");
+                        }
+
+                        return UPPM_OK;
+                    }
+                }
+            } else {
+                unsigned char * inputBuff = (unsigned char *)argv[3];
+                unsigned int    inputSizeInBytes = strlen(argv[3]);
+
+                if (inputSizeInBytes == 0) {
+                    fprintf(stderr, "Usage: %s %s %s <STR> , <STR> should be non-empty.\n", argv[0], argv[1], argv[2]);
+                    return UPPM_ERROR_ARG_IS_NULL;
+                }
+
+                unsigned int  x = (inputSizeInBytes % 3) == 0 ? 0 : 1;
+                unsigned int  outputSizeInBytes = (inputSizeInBytes / 3 + x) << 2;
+                unsigned char outputBuff[outputSizeInBytes];
+
+                int ret = EVP_EncodeBlock(outputBuff, inputBuff, inputSizeInBytes);
+
+                if (ret < 0) {
+                    return ret;
+                }
+
+                if (fwrite(outputBuff, 1, outputSizeInBytes, stdout) != outputSizeInBytes || ferror(stdout)) {
+                    return UPPM_ERROR;
+                }
+
+                if (isatty(STDOUT_FILENO)) {
+                    printf("\n");
+                }
+
+                return UPPM_OK;
+            }
+        }
+
+        if (strcmp(argv[2], "base64-decode") == 0) {
+            if (argv[3] == NULL) {
+                unsigned char inputBuff[1024];
+                unsigned int  inputSizeInBytes;
+
+                for (;;) {
+                    inputSizeInBytes = fread(inputBuff, 1, 1024, stdin);
+
+                    if (ferror(stdin)) {
+                        return UPPM_ERROR;
+                    }
+
+                    unsigned int  outputSizeInBytes = (inputSizeInBytes >> 2) * 3;
+                    unsigned char outputBuff[outputSizeInBytes];
+
+                    int ret = EVP_DecodeBlock(outputBuff, inputBuff, inputSizeInBytes);
+
+                    if (ret < 0) {
+                        return ret;
+                    }
+
+                    if (fwrite(outputBuff, 1, ret, stdout) != (size_t)ret || ferror(stdout)) {
+                        return UPPM_ERROR;
+                    }
+
+                    if (feof(stdin)) {
+                        if (isatty(STDOUT_FILENO)) {
+                            printf("\n");
+                        }
+
+                        return UPPM_OK;
+                    }
+                }
+            } else {
+                unsigned char * inputBuff = (unsigned char *)argv[3];
+                unsigned int    inputSizeInBytes = strlen(argv[3]);
+
+                if (inputSizeInBytes == 0) {
+                    fprintf(stderr, "Usage: %s %s %s <BASE64-DECODED-STR> , <BASE64-DECODED-STR> should be non-empty.\n", argv[0], argv[1], argv[2]);
+                    return UPPM_ERROR_ARG_IS_NULL;
+                }
+
+                unsigned int  outputSizeInBytes = (inputSizeInBytes >> 2) * 3;
+                unsigned char outputBuff[outputSizeInBytes];
+
+                int ret = EVP_DecodeBlock(outputBuff, inputBuff, inputSizeInBytes);
+
+                if (ret < 0) {
+                    return ret;
+                }
+
+                if (fwrite(outputBuff, 1, ret, stdout) != (size_t)ret || ferror(stdout)) {
+                    return UPPM_ERROR;
+                }
+
+                if (isatty(STDOUT_FILENO)) {
+                    printf("\n");
+                }
+
+                return UPPM_OK;
+            }
+        }
+
+        if (strcmp(argv[2], "sha256sum") == 0) {
+            if (argv[3] == NULL || strcmp(argv[3], "-") == 0) {
+                char outputBuff[65];
+                outputBuff[64] = '\0';
+
+                int ret = sha256sum_of_stream(outputBuff, stdin);
+
+                if (ret != UPPM_OK) {
+                    return ret;
+                }
+
+                printf("%s\n", outputBuff);
+                return UPPM_OK;
+            } else if (strcmp(argv[3], "-h") == 0 || strcmp(argv[3], "--help") == 0) {
+                fprintf(stderr, "Usage: %s %s %s [FILEPATH]\n", argv[0], argv[1], argv[2]);
+                return UPPM_OK;
+            } else {
+                char outputBuff[65];
+                outputBuff[64] = '\0';
+
+                int ret = sha256sum_of_file(outputBuff, argv[3]);
+
+                if (ret != UPPM_OK) {
+                    return ret;
+                }
+
+                printf("%s\n", outputBuff);
+                return UPPM_OK;
+            }
+        }
+
+        if (strcmp(argv[2], "zlib-deflate") == 0) {
+            int level = 1;
+
+            for (int i = 3; i < argc; i++) {
+                if (strcmp(argv[i], "-L") == 0) {
+                    char * p = argv[i + 1];
+
+                    if (p == NULL) {
+                        fprintf(stderr, "Usage: %s %s %s [-L N] (N>=1 && N <=9) , The smaller the N, the faster the speed and the lower the compression ratio.\n", argv[0], argv[1], argv[2]);
+                        return UPPM_ERROR;
+                    }
+
+                    if (strlen(p) != 1) {
+                        fprintf(stderr, "Usage: %s %s %s [-L N] (N>=1 && N <=9) , The smaller the N, the faster the speed and the lower the compression ratio.\n", argv[0], argv[1], argv[2]);
+                        return UPPM_ERROR;
+                    }
+
+                    if (p[0] < '1' || p[0] > '9') {
+                        fprintf(stderr, "Usage: %s %s %s [-L N] (N>=1 && N <=9) , The smaller the N, the faster the speed and the lower the compression ratio.\n", argv[0], argv[1], argv[2]);
+                        return UPPM_ERROR;
+                    }
+
+                    level = atoi(p);
+
+                    i++;
+                } else {
+                    fprintf(stderr, "unrecognized option: %s", argv[i]);
+                    fprintf(stderr, "Usage: %s %s %s [-L N] (N>=1 && N <=9) , The smaller the N, the faster the speed and the lower the compression ratio.\n", argv[0], argv[1], argv[2]);
+                    return UPPM_ERROR;
+                }
+            }
+
+            return zlib_deflate_file_to_file(stdin, stdout, level);
+        }
+
+        if (strcmp(argv[2], "zlib-inflate") == 0) {
+            return zlib_inflate_file_to_file(stdin, stdout);
+        }
+
+        LOG_ERROR2("unrecognized command: ", argv[2]);
+        return UPPM_ERROR_ARG_IS_UNKNOWN;
+    }
 
     LOG_ERROR2("unrecognized action: ", argv[1]);
     return UPPM_ERROR_ARG_IS_UNKNOWN;
