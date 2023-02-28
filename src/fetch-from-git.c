@@ -94,15 +94,14 @@ void print_git_oid(const git_oid oid, const char * prefix) {
 }
 
 int check_if_is_a_empty_dir(const char * dirpath, bool * value) {
-    DIR           * dir;
-    struct dirent * dir_entry;
-
-    dir = opendir(dirpath);
+    DIR * dir = opendir(dirpath);
 
     if (dir == NULL) {
         perror(dirpath);
         return UPPM_ERROR;
     }
+
+    struct dirent * dir_entry;
 
     for (;;) {
         errno = 0;

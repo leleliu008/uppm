@@ -12,7 +12,7 @@ int uppm_formula_repo_list_printf() {
                 printf("---\n");
             }
 
-            uppm_formula_repo_dump(formulaRepoList->repos[i]);
+            uppm_formula_repo_info(formulaRepoList->repos[i]);
         }
 
         uppm_formula_repo_list_free(formulaRepoList);

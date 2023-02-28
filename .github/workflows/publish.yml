@@ -43,6 +43,7 @@ jobs:
           path: ${{ github.workspace }}/uppm-*-netbsd-amd64.tar.xz
 
   openbsd-amd64:
+    if: false
     needs: netbsd-amd64
     runs-on: macos-12
 
@@ -76,7 +77,7 @@ jobs:
           path: ${{ github.workspace }}/uppm-*-openbsd-amd64.tar.xz
 
   freebsd-amd64:
-    needs: openbsd-amd64
+    needs: netbsd-amd64
     runs-on: macos-12
 
     steps:
@@ -136,7 +137,6 @@ jobs:
 
     env:
       ACLOCAL_PATH: /usr/share/aclocal
-      RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN }}
 
     steps:
       - run: apk update
@@ -174,7 +174,7 @@ jobs:
       - run: ls -a
       - run: ls ~/.ppkg/packed
 
-      - run: printf '%s\n' "$RELEASE_TOKEN" | ~/.ppkg/installed/gh/bin/gh auth login --with-token
+      - run: printf '%s\n' ${{ github.token }} | ~/.ppkg/installed/gh/bin/gh auth login --with-token
 
       - run: git config --global --add safe.directory /__w/uppm/uppm
 

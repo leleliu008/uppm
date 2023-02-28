@@ -19,19 +19,18 @@ int rm_r(const char * dirPath, bool verbose) {
         return UPPM_ERROR_ARG_IS_EMPTY;
     }
 
-    DIR * dir;
-    struct dirent * dir_entry;
-
-    dir = opendir(dirPath);
+    DIR * dir = opendir(dirPath);
 
     if (dir == NULL) {
         perror(dirPath);
         return UPPM_ERROR;
     }
 
+    int ret = UPPM_OK;
+
     struct stat st;
 
-    int ret = UPPM_OK;
+    struct dirent * dir_entry;
 
     for (;;) {
         errno = 0;

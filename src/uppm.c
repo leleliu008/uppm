@@ -895,7 +895,7 @@ int uppm_main(int argc, char* argv[]) {
             return UPPM_ERROR_ARG_IS_NULL;
         }
 
-        return uppm_formula_repo_update(argv[2]);
+        return uppm_formula_repo_sync_(argv[2]);
     }
 
     if (strcmp(argv[1], "formula-repo-conf") == 0) {
@@ -953,7 +953,7 @@ int uppm_main(int argc, char* argv[]) {
             return UPPM_ERROR_ARG_IS_NULL;
         }
 
-        return uppm_formula_repo_printf(argv[2]);
+        return uppm_formula_repo_info_(argv[2]);
     }
 
     if (strcmp(argv[1], "integrate") == 0) {

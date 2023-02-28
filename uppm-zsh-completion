@@ -30,7 +30,7 @@ _commands=(
     'formula-repo-sync:sync the given formula repository with server.'
     'formula-repo-conf:change the config of the given formula repository.'
     'formula-repo-info:show infomation of the given formula repository.'
-    'formula-repo-list:list all available formula-repos.'
+    'formula-repo-list:list all available formula repositories.'
     'ls-available:list the available packages.'
     'ls-installed:list the installed packages.'
     'ls-outdated:list the installed packages that can be upgraded.'

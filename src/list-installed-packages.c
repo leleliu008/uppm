@@ -30,15 +30,14 @@ int uppm_list_the_installed_packages() {
         return UPPM_OK;
     }
 
-    DIR           * dir;
-    struct dirent * dir_entry;
-
-    dir = opendir(uppmInstalledDir);
+    DIR * dir = opendir(uppmInstalledDir);
 
     if (dir == NULL) {
         perror(uppmInstalledDir);
         return UPPM_ERROR;
     }
+
+    struct dirent * dir_entry;
 
     for (;;) {
         errno = 0;

@@ -36,10 +36,7 @@ int uppm_formula_repo_list(UPPMFormulaRepoList * * out) {
         }
     }
 
-    DIR           * dir;
-    struct dirent * dir_entry;
-
-    dir = opendir(uppmFormulaRepoDir);
+    DIR * dir = opendir(uppmFormulaRepoDir);
 
     if (dir == NULL) {
         perror(uppmFormulaRepoDir);
@@ -51,6 +48,8 @@ int uppm_formula_repo_list(UPPMFormulaRepoList * * out) {
     UPPMFormulaRepoList * formulaRepoList = NULL;
 
     int ret = UPPM_OK;
+
+    struct dirent * dir_entry;
 
     for (;;) {
         errno = 0;

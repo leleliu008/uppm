@@ -124,8 +124,8 @@ typedef struct {
     char * url;
     char * branch;
     char * path;
-    char * timestamp_added;
-    char * timestamp_last_updated;
+    char * timestamp_created;
+    char * timestamp_updated;
     int    pinned;
     int    enabled;
 } UPPMFormulaRepo ;
@@ -138,15 +138,17 @@ typedef struct {
 int  uppm_formula_repo_create(const char * formulaRepoName, const char * formulaRepoUrl, const char * branchName, int pinned, int enabled);
 int  uppm_formula_repo_add   (const char * formulaRepoName, const char * formulaRepoUrl, const char * branchName, int pinned, int enabled);
 int  uppm_formula_repo_remove(const char * formulaRepoName);
-int  uppm_formula_repo_update(const char * formulaRepoName);
-int  uppm_formula_repo_printf(const char * formulaRepoName);
+int  uppm_formula_repo_sync_ (const char * formulaRepoName);
+int  uppm_formula_repo_info_ (const char * formulaRepoName);
 int  uppm_formula_repo_config(const char * formulaRepoName, const char * formulaRepoUrl, const char * branchName, int pinned, int enabled);
-int  uppm_formula_repo_config_write(const char * formulaRepoDirPath, const char * formulaRepoUrl, const char * branchName, int pinned, int enabled, const char * timestamp_added, const char * timestamp_last_updated);
+int  uppm_formula_repo_config_write(const char * formulaRepoDirPath, const char * formulaRepoUrl, const char * branchName, int pinned, int enabled, const char * timestamp_created, const char * timestamp_updated);
 int  uppm_formula_repo_lookup(const char * formulaRepoName, UPPMFormulaRepo * * formulaRepo);
 int  uppm_formula_repo_parse (const char * formulaRepoConfigFilePath, UPPMFormulaRepo * * formulaRepo);
-int  uppm_formula_repo_sync(UPPMFormulaRepo * formulaRepo);
+
 void uppm_formula_repo_free(UPPMFormulaRepo * formulaRepo);
 void uppm_formula_repo_dump(UPPMFormulaRepo * formulaRepo);
+int  uppm_formula_repo_info(UPPMFormulaRepo * formulaRepo);
+int  uppm_formula_repo_sync(UPPMFormulaRepo * formulaRepo);
 
 int  uppm_formula_repo_list     (UPPMFormulaRepoList * * p);
 void uppm_formula_repo_list_free(UPPMFormulaRepoList   * p);

@@ -29,15 +29,14 @@ int uppm_list_the_outdated__packages() {
         return UPPM_OK;
     }
 
-    DIR           * dir;
-    struct dirent * dir_entry;
-
-    dir = opendir(installedDir);
+    DIR * dir = opendir(installedDir);
 
     if (dir == NULL) {
         perror(installedDir);
         return UPPM_ERROR;
     }
+
+    struct dirent * dir_entry;
 
     for (;;) {
         errno = 0;

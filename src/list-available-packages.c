@@ -34,10 +34,7 @@ int uppm_list_the_available_packages(UPPMPackageNameCallbak packageNameCallbak, 
             continue;
         }
 
-        DIR           * dir;
-        struct dirent * dir_entry;
-
-        dir = opendir(formulaDir);
+        DIR * dir = opendir(formulaDir);
 
         if (dir == NULL) {
             perror(formulaDir);
@@ -48,6 +45,8 @@ int uppm_list_the_available_packages(UPPMPackageNameCallbak packageNameCallbak, 
         char * fileName;
         char * fileNameSuffix;
         size_t fileNameLength;
+
+        struct dirent * dir_entry;
 
         for (;;) {
             errno = 0;

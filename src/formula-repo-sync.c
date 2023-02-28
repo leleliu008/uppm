@@ -6,6 +6,20 @@
 #include "core/log.h"
 #include "uppm.h"
 
+int uppm_formula_repo_sync_(const char * formulaRepoName) {
+    UPPMFormulaRepo * formulaRepo = NULL;
+
+    int ret = uppm_formula_repo_lookup(formulaRepoName, &formulaRepo);
+
+    if (ret == UPPM_OK) {
+        ret = uppm_formula_repo_sync(formulaRepo);
+    }
+
+    uppm_formula_repo_free(formulaRepo);
+
+    return ret;
+}
+
 int uppm_formula_repo_sync(UPPMFormulaRepo * formulaRepo) {
     if (formulaRepo == NULL) {
         return UPPM_ERROR_ARG_IS_NULL;
@@ -22,7 +36,7 @@ int uppm_formula_repo_sync(UPPMFormulaRepo * formulaRepo) {
         printf("=== Updating formula repo\n");
     }
 
-    uppm_formula_repo_dump(formulaRepo);
+    uppm_formula_repo_info(formulaRepo);
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -39,5 +53,5 @@ int uppm_formula_repo_sync(UPPMFormulaRepo * formulaRepo) {
     char ts[11];
     snprintf(ts, 11, "%ld", time(NULL));
 
-    return uppm_formula_repo_config_write(formulaRepo->path, formulaRepo->url, formulaRepo->branch, formulaRepo->pinned, formulaRepo->enabled, formulaRepo->timestamp_added, ts);
+    return uppm_formula_repo_config_write(formulaRepo->path, formulaRepo->url, formulaRepo->branch, formulaRepo->pinned, formulaRepo->enabled, formulaRepo->timestamp_created, ts);
 }
