@@ -18,7 +18,6 @@ static int package_name_callback(const char * packageName, size_t i, const void 
     return uppm_info(packageName, (char*)key);
 }
 
-
 int uppm_info(const char * packageName, const char * key) {
     if (packageName == NULL) {
         return UPPM_ERROR_ARG_IS_NULL;

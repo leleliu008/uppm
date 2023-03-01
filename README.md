@@ -537,9 +537,9 @@ timestamp-created: 1673684639
 timestamp-updated: 1673684767
 ```
 
-If a uppm formula repository is pinned, which means it would not be updated.
+If a uppm formula repository is `pinned`, which means it would not be updated.
 
-If a uppm formula repository is disabled, which means uppm would not search formulas in this formula repository.
+If a uppm formula repository is `disabled`, which means uppm would not search formulas in this formula repository.
 
 ## uppm offical formula repository
 

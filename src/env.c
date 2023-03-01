@@ -19,17 +19,16 @@
 //#include <pcre2.h>
 
 static int uppm_list_dirs(const char * installedDir, size_t installedDirLength, const char * sub) {
-    struct stat st;
-
-    DIR           * dir;
-    struct dirent * dir_entry;
-
-    dir = opendir(installedDir);
+    DIR * dir = opendir(installedDir);
 
     if (dir == NULL) {
         perror(installedDir);
         return UPPM_ERROR;
     }
+
+    struct stat st;
+
+    struct dirent * dir_entry;
 
     for (;;) {
         errno = 0;
