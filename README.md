@@ -253,7 +253,7 @@ all relevant dirs and files are located in `~/.uppm` directory.
 
         uppm update
         
-*   **search all available packages whose name matches the given regular express pattern**
+*   **search all available packages whose name matches the given regular expression pattern**
         
         uppm search curl
         uppm search lib

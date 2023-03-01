@@ -29,9 +29,9 @@ int uppm_help() {
         COLOR_OFF
         "    update all available formula repositories.\n\n"
         COLOR_GREEN
-        "uppm search  <REGULAR-EXPRESS-PATTERN>\n"
+        "uppm search  <REGULAR-EXPRESSION>\n"
         COLOR_OFF
-        "    search all available packages whose name matches the given regular express pattern.\n\n"
+        "    search all available packages whose name matches the given regular expression pattern.\n\n"
         COLOR_GREEN
         "uppm info    <PACKAGE-NAME|@all>\n"
         COLOR_OFF
@@ -47,9 +47,9 @@ int uppm_help() {
         "    <OUTPUT-TYPE> must be one of <dot|box|svg|png>\n\n"
         "    If -o <OUTPUT-PATH> option is given, the result will be written to file, otherwize, the result will be written to stdout.\n\n"
         "   <OUTPUT-PATH> can be either the filepath or directory. If it is an existing directory or ends with slash, then it will be treated as a directory, otherwize, it will be treated as a filepath.\n\n"
-        "   If <OUTPUT-PATH> is treated as a directory, then it will be expanded to <OUTPUT-PATH>/<PACKAGE-NAME>-dependencies.<OUTPUT-TYPE>\n\n"
-        "   If <OUTPUT-PATH> is treated as a filepath, and if -t <OUTPUT-TYPE> option is not given, if <OUTPUT-PATH> ends with one of .dot|.box|.svg|.png, <OUTPUT-TYPE> will be the <OUTPUT-PATH> suffix, otherwize, <OUTPUT-TYPE> will be box.\n\n"
-        "   If -t <OUTPUT-TYPE> and -o <OUTPUT-PATH> options both are not given, <OUTPU-TYPE> will be box and output to stdout.\n\n"
+        "    If <OUTPUT-PATH> is treated as a directory, then it will be expanded to <OUTPUT-PATH>/<PACKAGE-NAME>-dependencies.<OUTPUT-TYPE>\n\n"
+        "    If <OUTPUT-PATH> is treated as a filepath, and if -t <OUTPUT-TYPE> option is not given, if <OUTPUT-PATH> ends with one of .dot|.box|.svg|.png, <OUTPUT-TYPE> will be the <OUTPUT-PATH> suffix, otherwize, <OUTPUT-TYPE> will be box.\n\n"
+        "    If -t <OUTPUT-TYPE> and -o <OUTPUT-PATH> options both are not given, <OUTPU-TYPE> will be box and output to stdout.\n\n"
         COLOR_GREEN
         "uppm fetch   <PACKAGE-NAME|@all>\n"
         COLOR_OFF
@@ -152,8 +152,8 @@ int uppm_help() {
         "    show your system's information and other information.\n\n"
         "uppm update\n"
         "    update all available formula repositories.\n\n"
-        "uppm search  <REGULAR-EXPRESS-PATTERN>\n"
-        "    search all available packages whose name matches the given regular express pattern.\n\n"
+        "uppm search  <REGULAR-EXPRESSION>\n"
+        "    search all available packages whose name matches the given regular expression pattern.\n\n"
         "uppm info    <PACKAGE-NAME|@all>\n"
         "    show information of the given package.\n\n"
         "uppm tree <PACKAGE-NAME> [--dirsfirst | -L N]\n"
@@ -163,9 +163,9 @@ int uppm_help() {
         "    <OUTPUT-TYPE> must be one of <dot|box|svg|png>\n\n"
         "    If -o <OUTPUT-PATH> option is given, the result will be written to file, otherwize, the result will be written to stdout.\n\n"
         "   <OUTPUT-PATH> can be either the filepath or directory. If it is an existing directory or ends with slash, then it will be treated as a directory, otherwize, it will be treated as a filepath.\n\n"
-        "   If <OUTPUT-PATH> is treated as a directory, then it will be expanded to <OUTPUT-PATH>/<PACKAGE-NAME>-dependencies.<OUTPUT-TYPE>\n\n"
-        "   If <OUTPUT-PATH> is treated as a filepath, and if -t <OUTPUT-TYPE> option is not given, if <OUTPUT-PATH> ends with one of .dot|.box|.svg|.png, <OUTPUT-TYPE> will be the <OUTPUT-PATH> suffix, otherwize, <OUTPUT-TYPE> will be box.\n\n"
-        "   If -t <OUTPUT-TYPE> and -o <OUTPUT-PATH> options both are not given, <OUTPU-TYPE> will be box and output to stdout.\n\n"
+        "    If <OUTPUT-PATH> is treated as a directory, then it will be expanded to <OUTPUT-PATH>/<PACKAGE-NAME>-dependencies.<OUTPUT-TYPE>\n\n"
+        "    If <OUTPUT-PATH> is treated as a filepath, and if -t <OUTPUT-TYPE> option is not given, if <OUTPUT-PATH> ends with one of .dot|.box|.svg|.png, <OUTPUT-TYPE> will be the <OUTPUT-PATH> suffix, otherwize, <OUTPUT-TYPE> will be box.\n\n"
+        "    If -t <OUTPUT-TYPE> and -o <OUTPUT-PATH> options both are not given, <OUTPU-TYPE> will be box and output to stdout.\n\n"
         "uppm fetch   <PACKAGE-NAME|@all>\n"
         "    download the prebuild binary archive file of the given package to the local cache.\n\n"
         "uppm   install <PACKAGE-NAME>\n"
