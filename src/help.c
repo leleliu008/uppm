@@ -25,6 +25,11 @@ int uppm_help() {
         COLOR_OFF
         "    show your system's information and other information.\n\n"
         COLOR_GREEN
+        "uppm integrate zsh [-v] [--output-dir=<DIR>]\n"
+        COLOR_OFF
+        "    download a zsh completion script file to a approprivate location.\n\n"
+        "    to apply this feature, you may need to run the command 'autoload -U compinit && compinit' in your terminal (your current running shell must be zsh).\n\n"
+        COLOR_GREEN
         "uppm update\n"
         COLOR_OFF
         "    update all available formula repositories.\n\n"
@@ -33,7 +38,7 @@ int uppm_help() {
         COLOR_OFF
         "    search all available packages whose name matches the given regular expression pattern.\n\n"
         COLOR_GREEN
-        "uppm info    <PACKAGE-NAME|@all>\n"
+        "uppm info <PACKAGE-NAME|@all>\n"
         COLOR_OFF
         "    show information of the given package.\n\n"
         COLOR_GREEN
@@ -94,10 +99,6 @@ int uppm_help() {
         "uppm is-outdated  <PACKAGE-NAME>\n"
         COLOR_OFF
         "    check if the given package is outdated.\n\n"
-        COLOR_GREEN
-        "uppm cleanup\n"
-        COLOR_OFF
-        "    cleanup the unused cache.\n\n"
         COLOR_GREEN
         "uppm formula-view <PACKAGE-NAME> [--no-color]\n"
         COLOR_OFF
@@ -133,7 +134,70 @@ int uppm_help() {
         COLOR_GREEN
         "uppm formula-repo-info <FORMULA-REPO-NAME>\n"
         COLOR_OFF
-        "    show infomation of the given formula repository.\n";
+        "    show infomation of the given formula repository.\n\n"
+        COLOR_GREEN
+        "uppm gen-url-transform-sample\n"
+        COLOR_OFF
+        "    generate url-transform sample.\n\n"
+        COLOR_GREEN
+        "uppm cleanup\n"
+        COLOR_OFF
+        "    cleanup the unused cache.\n\n\n"
+        COLOR_GREEN
+        "uppm util zlib-deflate -L <LEVEL> < input/file/path\n"
+        COLOR_OFF
+        "    compress data using zlib deflate algorithm.\n\n"
+        "    LEVEL >= 1 && LEVEL <= 9\n\n"
+        "    The smaller the LEVEL, the faster the speed and the lower the compression ratio.\n\n"
+        COLOR_GREEN
+        "uppm util zlib-inflate < input/file/path\n"
+        COLOR_OFF
+        "    decompress data using zlib inflate algorithm.\n\n"
+        COLOR_GREEN
+        "uppm util base16-encode <STR>\n"
+        COLOR_OFF
+        "    encode <STR> using base16 algorithm.\n\n"
+        COLOR_GREEN
+        "uppm util base16-encode < input/file/path\n"
+        COLOR_OFF
+        "    encode data using base16 algorithm.\n\n"
+        COLOR_GREEN
+        "uppm util base16-decode <BASE16-ENCODED-SUM>\n"
+        COLOR_OFF
+        "    decode <BASE16-ENCODED-SUM> using base16 algorithm.\n\n"
+        COLOR_GREEN
+        "uppm util base16-decode < input/file/path\n"
+        COLOR_OFF
+        "    decode data using base16 algorithm.\n\n"
+        COLOR_GREEN
+        "uppm util base64-encode <STR>\n"
+        COLOR_OFF
+        "    encode <STR> using base64 algorithm.\n\n"
+        COLOR_GREEN
+        "uppm util base64-encode < input/file/path\n"
+        COLOR_OFF
+        "    encode data using base64 algorithm.\n\n"
+        COLOR_GREEN
+        "uppm util base64-decode <BASE64-ENCODED-SUM>\n"
+        COLOR_OFF
+        "    decode <BASE64-ENCODED-SUM> using base64 algorithm.\n\n"
+        COLOR_GREEN
+        "uppm util base64-decode < input/file/path\n"
+        COLOR_OFF
+        "    decode data using base64 algorithm.\n\n"
+        COLOR_GREEN
+        "uppm util sha256sum <input/file/path>\n"
+        COLOR_OFF
+        "    calculate sha256sum of file.\n\n"
+        COLOR_GREEN
+        "uppm util sha256sum < input/file/path\n"
+        COLOR_OFF
+        "    calculate sha256sum of file.\n\n"
+        COLOR_GREEN
+        "uppm util which <COMMAND-NAME> [-a]\n"
+        COLOR_OFF
+        "    find <COMMAND-NAME> in PATH.\n"
+        ;
 
         printf("%s\n", str);
     } else {
@@ -150,11 +214,14 @@ int uppm_help() {
         "    show your system's information.\n\n"
         "uppm env\n"
         "    show your system's information and other information.\n\n"
+        "uppm integrate zsh [-v] [--output-dir=<DIR>]\n"
+        "    download a zsh completion script file to a approprivate location.\n\n"
+        "    to apply this feature, you may need to run the command 'autoload -U compinit && compinit' in your terminal (your current running shell must be zsh).\n\n"
         "uppm update\n"
         "    update all available formula repositories.\n\n"
         "uppm search  <REGULAR-EXPRESSION>\n"
         "    search all available packages whose name matches the given regular expression pattern.\n\n"
-        "uppm info    <PACKAGE-NAME|@all>\n"
+        "uppm info <PACKAGE-NAME|@all>\n"
         "    show information of the given package.\n\n"
         "uppm tree <PACKAGE-NAME> [--dirsfirst | -L N]\n"
         "    list files of the given installed package in a tree-like format.\n\n"
@@ -188,8 +255,6 @@ int uppm_help() {
         "    check if the given package is installed.\n\n"
         "uppm is-outdated  <PACKAGE-NAME>\n"
         "    check if the given package is outdated.\n\n"
-        "uppm cleanup\n"
-        "    cleanup the unused cache.\n\n"
         "uppm formula-view <PACKAGE-NAME> [--no-color]\n"
         "    view the formula of the given package.\n\n"
         "uppm formula-edit <PACKAGE-NAME> [--editor=EDITOR]\n"
@@ -207,7 +272,40 @@ int uppm_help() {
         "uppm formula-repo-info <FORMULA-REPO-NAME>\n"
         "    show infomation of the given formula repository.\n\n"
         "uppm formula-repo-list\n"
-        "    list all available formula repositories.\n\n";
+        "    list all available formula repositories.\n\n"
+        "uppm gen-url-transform-sample\n"
+        "    generate url-transform sample.\n\n"
+        "uppm cleanup\n"
+        "    cleanup the unused cache.\n"
+        "uppm util zlib-deflate -L <LEVEL> < input/file/path\n"
+        "    compress data using zlib deflate algorithm.\n\n"
+        "    LEVEL >= 1 && LEVEL <= 9\n\n"
+        "    The smaller the LEVEL, the faster the speed and the lower the compression ratio.\n\n"
+        "uppm util zlib-inflate < input/file/path\n"
+        "    decompress data using zlib inflate algorithm.\n\n"
+        "uppm util base16-encode <STR>\n"
+        "    encode <STR> using base16 algorithm.\n\n"
+        "uppm util base16-encode < input/file/path\n"
+        "    encode data using base16 algorithm.\n\n"
+        "uppm util base16-decode <BASE16-ENCODED-SUM>\n"
+        "    decode <BASE16-ENCODED-SUM> using base16 algorithm.\n\n"
+        "uppm util base16-decode < input/file/path\n"
+        "    decode data using base16 algorithm.\n\n"
+        "uppm util base64-encode <STR>\n"
+        "    encode <STR> using base64 algorithm.\n\n"
+        "uppm util base64-encode < input/file/path\n"
+        "    encode data using base64 algorithm.\n\n"
+        "uppm util base64-decode <BASE64-ENCODED-SUM>\n"
+        "    decode <BASE64-ENCODED-SUM> using base64 algorithm.\n\n"
+        "uppm util base64-decode < input/file/path\n"
+        "    decode data using base64 algorithm.\n\n"
+        "uppm util sha256sum <input/file/path>\n"
+        "    calculate sha256sum of file.\n\n"
+        "uppm util sha256sum < input/file/path\n"
+        "    calculate sha256sum of file.\n\n"
+        "uppm util which <COMMAND-NAME> [-a]\n"
+        "    find <COMMAND-NAME> in PATH.\n"
+        ;
 
         printf("%s\n", str);
     }
