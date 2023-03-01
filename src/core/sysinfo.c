@@ -135,6 +135,7 @@ int sysinfo_name(char * buf, size_t bufSize) {
 #else
     const char * filepath = "/etc/os-release";
     struct stat sb;
+
     if ((stat(filepath, &sb) == 0) && (S_ISREG(sb.st_mode) || S_ISLNK(sb.st_mode))) {
         FILE * file = fopen(filepath, "r");
 
@@ -145,7 +146,18 @@ int sysinfo_name(char * buf, size_t bufSize) {
 
         char line[50];
 
-        while (fgets(line, 50, file) != NULL) {
+        for (;;) {
+            if (fgets(line, 50, file) == NULL) {
+                if (ferror(file)) {
+                    perror(filepath);
+                    fclose(file);
+                    return UPPM_ERROR;
+                } else {
+                    fclose(file);
+                    return UPPM_ERROR;
+                }
+            }
+
             if (strncmp(line, "ID=", 3) == 0) {
                 char * p = &line[3];
 
@@ -164,14 +176,12 @@ int sysinfo_name(char * buf, size_t bufSize) {
                 }
 
                 strncpy(buf, p, bufSize > n ? n : bufSize);
+
+                fclose(file);
                 return UPPM_OK;
             }
         }
-
-        fclose(file);
     }
-
-    return UPPM_ERROR;
 #endif
 }
 
@@ -192,6 +202,7 @@ int sysinfo_vers(char * buf, size_t bufSize) {
 #elif defined (__APPLE__)
     const char * filepath = "/System/Library/CoreServices/SystemVersion.plist";
     struct stat sb;
+
     if ((stat(filepath, &sb) == 0) && (S_ISREG(sb.st_mode) || S_ISLNK(sb.st_mode))) {
         FILE * file = fopen(filepath, "r");
 
@@ -202,34 +213,47 @@ int sysinfo_vers(char * buf, size_t bufSize) {
 
         char line[512];
 
-        while (fgets(line, 512, file) != NULL) {
-            if (regex_matched(line, "ProductVersion")) {
-                if (fgets(line, 512, file) != NULL) {
+        for (;;) {
+            if (fgets(line, 512, file) == NULL) {
+                if (ferror(file)) {
+                    perror(filepath);
                     fclose(file);
+                    return UPPM_ERROR;
+                } else {
+                    fclose(file);
+                    return UPPM_ERROR;
+                }
+            }
 
-                    char * p = regex_extract(line, "[1-9][0-9.]+[0-9]");
-
-                    if (p == NULL) {
+            if (regex_matched(line, "ProductVersion")) {
+                if (fgets(line, 512, file) == NULL) {
+                    if (ferror(file)) {
+                        perror(filepath);
+                        fclose(file);
                         return UPPM_ERROR;
                     } else {
-                        size_t n = strlen(p);
-                        strncpy(buf, p, bufSize > n ? n : bufSize);
-                        free(p);
-                        return UPPM_OK;
+                        fclose(file);
+                        return UPPM_ERROR;
                     }
                 }
 
-                break;
+                char * p = regex_extract(line, "[1-9][0-9.]+[0-9]");
+
+                if (p == NULL) {
+                    return UPPM_ERROR;
+                } else {
+                    size_t n = strlen(p);
+                    strncpy(buf, p, bufSize > n ? n : bufSize);
+                    free(p);
+                    return UPPM_OK;
+                }
             }
         }
-
-        fclose(file);
     }
-
-    return UPPM_ERROR;
 #else
     const char * filepath = "/etc/os-release";
     struct stat sb;
+
     if ((stat(filepath, &sb) == 0) && (S_ISREG(sb.st_mode) || S_ISLNK(sb.st_mode))) {
         FILE * file = fopen(filepath, "r");
 
@@ -240,7 +264,19 @@ int sysinfo_vers(char * buf, size_t bufSize) {
 
         char line[50];
 
-        while (fgets(line, 50, file) != NULL) {
+        for (;;) {
+            if (fgets(line, 50, file) == NULL) {
+                if (ferror(file)) {
+                    perror(filepath);
+                    fclose(file);
+                    return UPPM_ERROR;
+                } else {
+                    fclose(file);
+                    strncpy(buf, "rolling", bufSize > 7 ? 7 : bufSize);
+                    return UPPM_OK;
+                }
+            }
+
             if (strncmp(line, "VERSION_ID=", 11) == 0) {
                 char * p = &line[11];
 
@@ -262,13 +298,7 @@ int sysinfo_vers(char * buf, size_t bufSize) {
                 return UPPM_OK;
             }
         }
-
-        fclose(file);
     }
-
-    strncpy(buf, "rolling", bufSize > 7 ? 7 : bufSize);
-
-    return UPPM_OK;
 #endif
 }
 

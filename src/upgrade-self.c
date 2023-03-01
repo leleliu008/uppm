@@ -86,8 +86,17 @@ int uppm_upgrade_self(bool verbose) {
 
     char line[30];
 
-    while ((fgets(line, 30, file)) != NULL) {
-        p = line;
+    for (;;) {
+        p = fgets(line, 30, file);
+
+        if (p == NULL) {
+            if (ferror(file)) {
+                perror(githubApiResultJsonFilePath);
+                goto finally;
+            } else {
+                break;
+            }
+        }
 
         for (;;) {
             if (p[0] <= 32) { // non-printable ASCII characters and space
