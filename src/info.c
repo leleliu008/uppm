@@ -78,7 +78,12 @@ int uppm_info(const char * packageName, const char * key) {
             }
 
             if (size > 0) {
-                fwrite(buff, 1, size, stdout);
+                if (fwrite(buff, 1, size, stdout) != size || ferror(stdout)) {
+                    perror(NULL);
+                    fclose(formulaFile);
+                    free(formulaFilePath);
+                    return UPPM_ERROR;
+                }
             }
 
             if (feof(formulaFile)) {
@@ -160,9 +165,6 @@ int uppm_info(const char * packageName, const char * key) {
 
         printf("formula: %s\n", formulaFilePath);
 
-        free(formulaFilePath);
-        formulaFilePath = NULL;
-
         char   buff[1024];
         size_t size;
 
@@ -177,12 +179,18 @@ int uppm_info(const char * packageName, const char * key) {
             }
 
             if (size > 0) {
-                fwrite(buff, 1, size, stdout);
+                if (fwrite(buff, 1, size, stdout) != size || ferror(stdout)) {
+                    perror(NULL);
+                    fclose(formulaFile);
+                    free(formulaFilePath);
+                    return UPPM_ERROR;
+                }
             }
 
             if (feof(formulaFile)) {
                 fclose(formulaFile);
-                break;
+                free(formulaFilePath);
+                return UPPM_OK;
             }
         }
     } else if (strcmp(key, "summary") == 0) {
@@ -470,7 +478,11 @@ int uppm_info(const char * packageName, const char * key) {
             }
 
             if (size > 0) {
-                fwrite(buff, 1, size, stdout);
+                if (fwrite(buff, 1, size, stdout) != size || ferror(stdout)) {
+                    perror(NULL);
+                    fclose(installedManifestFile);
+                    return UPPM_ERROR;
+                }
             }
 
             if (feof(installedManifestFile)) {
@@ -573,7 +585,11 @@ int uppm_info(const char * packageName, const char * key) {
             }
 
             if (size > 0) {
-                fwrite(buff, 1, size, stdout);
+                if (fwrite(buff, 1, size, stdout) != size || ferror(stdout)) {
+                    perror(NULL);
+                    fclose(receiptFile);
+                    return UPPM_ERROR;
+                }
             }
 
             if (feof(receiptFile)) {
