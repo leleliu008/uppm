@@ -11,7 +11,7 @@ Universal Prebuild Package Manager for Unix-like systems.
 |----|---------|-------|
 |[cmake](https://cmake.org/)|required |for generating `build.ninja`|
 |[ninja](https://ninja-build.org/)|required |for doing jobs that read from `build.ninja`|
-|[pkg-config>=0.18](https://www.freedesktop.org/wiki/Software/pkg-config/)|required|for finding libraries|
+|[pkg-config>=0.18](https://www.freedesktop.org/wiki/Software/pkg-config/)|required|for finding libraries.|
 ||||
 |[jansson](https://github.com/akheron/jansson)|required|for parsing and creating JSON.|
 |[libyaml](https://github.com/yaml/libyaml/)|required|for parsing formulas whose format is YAML.|
@@ -19,6 +19,7 @@ Universal Prebuild Package Manager for Unix-like systems.
 |[libcurl](https://curl.se/)|required|for http requesting support.|
 |[openssl](https://www.openssl.org/)|required|for https requesting support and SHA-256 sum checking support.|
 |[libarchive](https://www.libarchive.org/)|required|for uncompressing .zip and .tar.* files.|
+|[zlib](https://www.zlib.net/)|required|for compressing and uncompressing.|
 |[pcre2](https://www.pcre.org/)||for Regular Expressions support.<br>only required on OpenBSD.|
 
 
