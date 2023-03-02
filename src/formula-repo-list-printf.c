@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <unistd.h>
 #include "uppm.h"
 
 int uppm_formula_repo_list_printf() {
@@ -9,7 +10,11 @@ int uppm_formula_repo_list_printf() {
     if (ret == UPPM_OK) {
         for (size_t i = 0; i < formulaRepoList->size; i++) {
             if (i > 0) {
-                printf("---\n");
+                if (isatty(STDOUT_FILENO)) {
+                    printf("\n");
+                } else {
+                    printf("---\n");
+                }
             }
 
             uppm_formula_repo_info(formulaRepoList->repos[i]);
