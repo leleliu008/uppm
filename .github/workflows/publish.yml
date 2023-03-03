@@ -273,10 +273,10 @@ jobs:
           name: uppm-netbsd-amd64-tar-xz
           path: ~/.ppkg/packed/
 
-      - uses: actions/download-artifact@v3
-        with:
-          name: uppm-openbsd-amd64-tar-xz
-          path: ~/.ppkg/packed/
+            #- uses: actions/download-artifact@v3
+            #with:
+            #name: uppm-openbsd-amd64-tar-xz
+            #path: ~/.ppkg/packed/
 
       - uses: actions/download-artifact@v3
         with:
