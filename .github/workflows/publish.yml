@@ -7,29 +7,46 @@ on:
 
 jobs:
 
-  source:
+  check:
     runs-on: ubuntu-latest
 
-    steps:
-      - run: |
-          printf '%s\n' ${{ github.sha }} > uppm-src-git-sha
+    env:
+      GH_TOKEN: ${{ github.token }}
 
-      - uses: actions/upload-artifact@v3
-        with:
-          name: uppm-src-git-sha
-          path: uppm-src-git-sha
+    steps:
+      - id:  check-if-has-new-commit
+        run: |
+          cat > QUERY <<EOF
+          {
+            repository(owner: "leleliu008", name: "uppm") {
+                latestRelease {
+                  name
+                }
+            }
+          }
+          EOF
+
+          LATEST_RELEASE_GIT_SHA="$(gh api graphql -f "query=$(cat QUERY)" --jq .data.repository.latestRelease.name | cut -d+ -f2)"
+
+          if [ "$LATEST_RELEASE_GIT_SHA" = ${{ github.sha }} ] ; then
+              printf 'HAS_NEW_COMMIT=no\n'        >> "$GITHUB_OUTPUT"
+          else
+              printf 'HAS_NEW_COMMIT=yes\n'       >> "$GITHUB_OUTPUT"
+          fi
+
+          printf 'GIT_SHA=%s\n' ${{ github.sha }} >> "$GITHUB_OUTPUT"
+
+    outputs:
+      if-has-new-commit: ${{ steps.check-if-has-new-commit.outputs.HAS_NEW_COMMIT }}
+      git-sha:           ${{ steps.check-if-has-new-commit.outputs.GIT_SHA }}
 
   netbsd-amd64:
-    needs: source
+    needs: check
+    if: needs.check.outputs.if-has-new-commit == 'yes'
+
     runs-on: macos-12
 
     steps:
-
-      - uses: actions/download-artifact@v3
-        with:
-          name: uppm-src-git-sha
-          path: .
-
       - uses: leleliu008/github-actions-vagrant@main
         with:
           mem: 2048
@@ -53,7 +70,7 @@ jobs:
             run ./ppkg setup --use-system-package-manager
             run ./ppkg update
 
-            gsed -i "/git-url/a git-sha: $(cat uppm-src-git-sha)" ~/.ppkg/repos.d/offical-core/formula/uppm.yml
+            gsed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/offical-core/formula/uppm.yml
 
             run ./ppkg install uppm --link-type=static-only --install-lib=static
             run ./ppkg pack    uppm
@@ -71,12 +88,6 @@ jobs:
     runs-on: macos-12
 
     steps:
-
-      - uses: actions/download-artifact@v3
-        with:
-          name: uppm-src-git-sha
-          path: .
-
       - run: brew install openssh
 
       - uses: leleliu008/github-actions-vagrant@main
@@ -96,7 +107,7 @@ jobs:
             run ./ppkg setup --use-system-package-manager
             run ./ppkg update
 
-            gsed -i "/git-url/a git-sha: $(cat uppm-src-git-sha)" ~/.ppkg/repos.d/offical-core/formula/uppm.yml
+            gsed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/offical-core/formula/uppm.yml
 
             run ./ppkg install uppm --link-type=static-only --install-lib=static
             run ./ppkg pack    uppm
@@ -109,16 +120,12 @@ jobs:
           path: ${{ github.workspace }}/uppm-*-openbsd-amd64.tar.xz
 
   freebsd-amd64:
-    needs: netbsd-amd64
+    needs: [check, netbsd-amd64]
+    if: needs.check.outputs.if-has-new-commit == 'yes'
+
     runs-on: macos-12
 
     steps:
-
-      - uses: actions/download-artifact@v3
-        with:
-          name: uppm-src-git-sha
-          path: .
-
       - uses: leleliu008/github-actions-vagrant@main
         with:
           mem: 2048
@@ -133,7 +140,7 @@ jobs:
             run ./ppkg setup --use-system-package-manager
             run ./ppkg update
 
-            gsed -i "/git-url/a git-sha: $(cat uppm-src-git-sha)" ~/.ppkg/repos.d/offical-core/formula/uppm.yml
+            gsed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/offical-core/formula/uppm.yml
 
             run ./ppkg install uppm --link-type=static-only --install-lib=static
             run ./ppkg pack    uppm
@@ -146,7 +153,8 @@ jobs:
           path: ${{ github.workspace }}/uppm-*-freebsd-amd64.tar.xz
 
   macos:
-    needs: freebsd-amd64
+    needs: [check, freebsd-amd64]
+    if: needs.check.outputs.if-has-new-commit == 'yes' 
 
     strategy:
       fail-fast: false
@@ -157,12 +165,6 @@ jobs:
     runs-on: macos-12
 
     steps:
-
-      - uses: actions/download-artifact@v3
-        with:
-          name: uppm-src-git-sha
-          path: .
-
       - run: brew uninstall go@1.17
       - run: brew update
       - run: brew install --overwrite python@3.10 python@3.11
@@ -173,7 +175,7 @@ jobs:
       - run: ./xcpkg update
 
       - run: |
-          gsed -i "/git-url/a git-sha: $(cat uppm-src-git-sha)" ~/.xcpkg/repos.d/offical-core/formula/uppm.yml
+          gsed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.xcpkg/repos.d/offical-core/formula/uppm.yml
 
       - run: ./xcpkg install MacOSX/${{ matrix.target-version }}/${{ matrix.target-arch }}/uppm --link-type=static-prefered --install-lib=static
       - run: ./xcpkg pack    MacOSX/${{ matrix.target-version }}/${{ matrix.target-arch }}/uppm -o .
@@ -184,16 +186,12 @@ jobs:
           path: ${{ github.workspace }}/uppm-*.tar.xz
 
   linux-aarch64:
-    needs: macos
+    needs: [check, macos]
+    if: needs.check.outputs.if-has-new-commit == 'yes'
+
     runs-on: ubuntu-latest
 
     steps:
-
-      - uses: actions/download-artifact@v3
-        with:
-          name: uppm-src-git-sha
-          path: .
-
       - run: |
           cat > run.sh <<EOF
           set -e
@@ -218,7 +216,7 @@ jobs:
           run ./ppkg setup --use-system-package-manager
           run ./ppkg update
 
-          sed -i "/git-url/a git-sha: $(cat uppm-src-git-sha)" ~/.ppkg/repos.d/offical-core/formula/uppm.yml
+          sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/offical-core/formula/uppm.yml
 
           run ./ppkg install uppm gh --link-type=static-only --install-lib=static
           run ./ppkg pack    uppm
@@ -241,7 +239,9 @@ jobs:
           path: uppm-*-linux-aarch64.tar.xz
 
   linux-x86_64:
-    needs: linux-aarch64
+    needs: [check, linux-aarch64]
+    if: needs.check.outputs.if-has-new-commit == 'yes'
+
     runs-on: ubuntu-latest
 
     container: alpine:3.16
@@ -252,26 +252,37 @@ jobs:
 
       - uses: actions/checkout@v3
 
-      - uses: actions/download-artifact@v3
-        with:
-          name: uppm-src-git-sha
-          path: .
-
       - run: wget https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
       - run: chmod a+x ppkg
       - run: ./ppkg setup --use-system-package-manager
       - run: ./ppkg update
 
       - run: |
-          sed -i "/git-url/a git-sha: $(cat uppm-src-git-sha)" ~/.ppkg/repos.d/offical-core/formula/uppm.yml
+          sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/offical-core/formula/uppm.yml
 
-      - run: ./ppkg install uppm gh --link-type=static-only --install-lib=static
+      - run: ./ppkg install uppm --link-type=static-only --install-lib=static
       - run: ./ppkg pack    uppm
 
+      - uses: actions/upload-artifact@v3
+        with:
+          name: uppm-linux-x86_64-tar-xz
+          path: ~/.ppkg/packed/uppm-*-linux-x86_64.tar.xz
+
+
+  publish:
+    needs: [check, linux-x86_64]
+    if: needs.check.outputs.if-has-new-commit == 'yes'
+
+    runs-on: ubuntu-latest
+
+    env:
+      GH_TOKEN: ${{ github.token }}
+
+    steps:
       - uses: actions/download-artifact@v3
         with:
           name: uppm-netbsd-amd64-tar-xz
-          path: ~/.ppkg/packed/
+          path: .
 
             #- uses: actions/download-artifact@v3
             #with:
@@ -281,60 +292,55 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: uppm-freebsd-amd64-tar-xz
-          path: ~/.ppkg/packed/
+          path: .
 
       - uses: actions/download-artifact@v3
         with:
           name: uppm-macos11.0-x86_64-tar-xz
-          path: ~/.ppkg/packed/
+          path: .
 
       - uses: actions/download-artifact@v3
         with:
           name: uppm-macos12.0-x86_64-tar-xz
-          path: ~/.ppkg/packed/
+          path: .
 
       - uses: actions/download-artifact@v3
         with:
           name: uppm-macos13.0-x86_64-tar-xz
-          path: ~/.ppkg/packed/
+          path: .
 
       - uses: actions/download-artifact@v3
         with:
           name: uppm-macos11.0-arm64-tar-xz
-          path: ~/.ppkg/packed/
+          path: .
 
       - uses: actions/download-artifact@v3
         with:
           name: uppm-macos12.0-arm64-tar-xz
-          path: ~/.ppkg/packed/
+          path: .
 
       - uses: actions/download-artifact@v3
         with:
           name: uppm-macos13.0-arm64-tar-xz
-          path: ~/.ppkg/packed/
+          path: .
 
       - uses: actions/download-artifact@v3
         with:
           name: uppm-linux-aarch64-tar-xz
-          path: ~/.ppkg/packed/
+          path: .
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: uppm-linux-x86_64-tar-xz
+          path: .
 
       - run: ls -a
-      - run: ls ~/.ppkg/packed
-
-      - run: printf '%s\n' ${{ github.token }} | ~/.ppkg/installed/gh/bin/gh auth login --with-token
-
-      - run: git config --global --add safe.directory /__w/uppm/uppm
 
       - run: |
-          GIT_SHA="$(cat uppm-src-git-sha)"
-
-          cd ~/.ppkg/packed
-
-          printf 'build-from: https://github.com/leleliu008/uppm/tree/%s\n\n' "$GIT_SHA" > notes.md
+          printf 'build-from: https://github.com/leleliu008/uppm/tree/%s\n\n' ${{ needs.check.outputs.git-sha }} > notes.md
           printf 'sha256sum:\n```\n%s\n```\n' "$(sha256sum uppm-*.tar.xz)" >> notes.md
 
-      - run: |
           VERSION="$(ls ~/.ppkg/packed/uppm-*-linux-x86_64.tar.xz | cut -d- -f2)"
-          GIT_SHA="$(cat uppm-src-git-sha)"
-          TAGNAME="$VERSION+$GIT_SHA"
-          ~/.ppkg/installed/gh/bin/gh release create "$TAGNAME" ~/.ppkg/packed/uppm-*.tar.xz --title "$TAGNAME" --notes-file ~/.ppkg/packed/notes.md
+          TAGNAME="$VERSION+${{ needs.check.outputs.git-sha }}"
+
+          gh release create "$TAGNAME" uppm-*.tar.xz --title "$TAGNAME" --notes-file notes.md
