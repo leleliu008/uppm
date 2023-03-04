@@ -28,6 +28,8 @@ jobs:
 
           LATEST_RELEASE_GIT_SHA="$(gh api graphql -f "query=$(cat QUERY)" --jq .data.repository.latestRelease.name | cut -d+ -f2)"
 
+          printf 'LATEST_RELEASE_GIT_SHA=%s\n' "$LATEST_RELEASE_GIT_SHA"
+
           if [ "$LATEST_RELEASE_GIT_SHA" = ${{ github.sha }} ] ; then
               printf 'HAS_NEW_COMMIT=no\n'        >> "$GITHUB_OUTPUT"
           else
@@ -80,11 +82,13 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: uppm-netbsd-amd64-tar-xz
-          path: ${{ github.workspace }}/uppm-*-netbsd-amd64.tar.xz
+          path: uppm-*-netbsd-amd64.tar.xz
 
   openbsd-amd64:
     if: false
+    #if: needs.check.outputs.if-has-new-commit == 'yes'
     needs: netbsd-amd64
+
     runs-on: macos-12
 
     steps:
@@ -117,7 +121,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: uppm-openbsd-amd64-tar-xz
-          path: ${{ github.workspace }}/uppm-*-openbsd-amd64.tar.xz
+          path: uppm-*-openbsd-amd64.tar.xz
 
   freebsd-amd64:
     needs: [check, netbsd-amd64]
@@ -150,19 +154,19 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: uppm-freebsd-amd64-tar-xz
-          path: ${{ github.workspace }}/uppm-*-freebsd-amd64.tar.xz
+          path: uppm-*-freebsd-amd64.tar.xz
 
   macos:
     needs: [check, freebsd-amd64]
     if: needs.check.outputs.if-has-new-commit == 'yes' 
+
+    runs-on: macos-12
 
     strategy:
       fail-fast: false
       matrix:
         target-version: ['11.0', '12.0', '13.0']
         target-arch: [x86_64, arm64]
-
-    runs-on: macos-12
 
     steps:
       - run: brew uninstall go@1.17
@@ -183,7 +187,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: uppm-macos${{ matrix.target-version }}-${{ matrix.target-arch }}-tar-xz
-          path: ${{ github.workspace }}/uppm-*.tar.xz
+          path: uppm-*.tar.xz
 
   linux-aarch64:
     needs: [check, macos]
@@ -340,7 +344,7 @@ jobs:
           printf 'build-from: https://github.com/leleliu008/uppm/tree/%s\n\n' ${{ needs.check.outputs.git-sha }} > notes.md
           printf 'sha256sum:\n```\n%s\n```\n' "$(sha256sum uppm-*.tar.xz)" >> notes.md
 
-          VERSION="$(ls ~/.ppkg/packed/uppm-*-linux-x86_64.tar.xz | cut -d- -f2)"
+          VERSION="$(ls uppm-*-linux-x86_64.tar.xz | cut -d- -f2)"
           TAGNAME="$VERSION+${{ needs.check.outputs.git-sha }}"
 
           gh release create "$TAGNAME" uppm-*.tar.xz --title "$TAGNAME" --notes-file notes.md
