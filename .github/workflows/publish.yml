@@ -326,13 +326,15 @@ jobs:
       - run: git config --global --add safe.directory /__w/uppm/uppm
 
       - run: |
-          GIT_SHA="(cat uppm-src-git-sha)"
+          GIT_SHA="$(cat uppm-src-git-sha)"
 
           cd ~/.ppkg/packed
 
-          printf 'build-from: https://github.com/uppm/uppm/tree/%s\n\n' "$GIT_SHA" > notes.md
+          printf 'build-from: https://github.com/leleliu008/uppm/tree/%s\n\n' "$GIT_SHA" > notes.md
           printf 'sha256sum:\n```\n%s\n```\n' "$(sha256sum uppm-*.tar.xz)" >> notes.md
 
       - run: |
-          V=$(ls ~/.ppkg/packed/uppm-*-linux-x86_64.tar.xz | cut -d- -f2)
-          ~/.ppkg/installed/gh/bin/gh release create $V ~/.ppkg/packed/uppm-*.tar.xz --title $V --notes-file ~/.ppkg/packed/notes.md
+          VERSION="$(ls ~/.ppkg/packed/uppm-*-linux-x86_64.tar.xz | cut -d- -f2)"
+          GIT_SHA="$(cat uppm-src-git-sha)"
+          TAGNAME="$VERSION+$GIT_SHA"
+          ~/.ppkg/installed/gh/bin/gh release create "$TAGNAME" ~/.ppkg/packed/uppm-*.tar.xz --title "$TAGNAME" --notes-file ~/.ppkg/packed/notes.md
