@@ -347,4 +347,8 @@ jobs:
           VERSION="$(ls uppm-*-linux-x86_64.tar.xz | cut -d- -f2)"
           TAGNAME="$VERSION+${{ needs.check.outputs.git-sha }}"
 
+          # to avaid: failed to run git: fatal: not a git repository (or any of the parent directories): .git
+          git -c init.defaultBranch=master init
+          git remote add origin ${{ github.repositoryUrl }}
+
           gh release create "$TAGNAME" uppm-*.tar.xz --title "$TAGNAME" --notes-file notes.md
