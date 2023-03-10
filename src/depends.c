@@ -257,6 +257,7 @@ int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, con
                 formula = packageSet[i]->formula;
                 free(packageName);
                 packageName = packageSet[i]->packageName;
+                break;
             }
         }
 

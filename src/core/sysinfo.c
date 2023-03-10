@@ -178,6 +178,7 @@ int sysinfo_name(char * buf, size_t bufSize) {
                 strncpy(buf, p, bufSize > n ? n : bufSize);
 
                 fclose(file);
+
                 return UPPM_OK;
             }
         }
@@ -240,11 +241,13 @@ int sysinfo_vers(char * buf, size_t bufSize) {
                 char * p = regex_extract(line, "[1-9][0-9.]+[0-9]");
 
                 if (p == NULL) {
+                    fclose(file);
                     return UPPM_ERROR;
                 } else {
                     size_t n = strlen(p);
                     strncpy(buf, p, bufSize > n ? n : bufSize);
                     free(p);
+                    fclose(file);
                     return UPPM_OK;
                 }
             }
@@ -295,6 +298,9 @@ int sysinfo_vers(char * buf, size_t bufSize) {
                 }
 
                 strncpy(buf, p, bufSize > n ? n : bufSize);
+
+                fclose(file);
+
                 return UPPM_OK;
             }
         }
@@ -456,30 +462,35 @@ int sysinfo_make(SysInfo * sysinfo) {
     sysinfo->arch = strdup(osArch);
 
     if (sysinfo->arch == NULL) {
+        sysinfo_free(*sysinfo);
         return UPPM_ERROR_MEMORY_ALLOCATE;
     }
 
     sysinfo->kind = strdup(osKind);
 
     if (sysinfo->kind == NULL) {
+        sysinfo_free(*sysinfo);
         return UPPM_ERROR_MEMORY_ALLOCATE;
     }
 
     sysinfo->type = strdup(osType);
 
     if (sysinfo->type == NULL) {
+        sysinfo_free(*sysinfo);
         return UPPM_ERROR_MEMORY_ALLOCATE;
     }
 
     sysinfo->name = strdup(osName);
 
     if (sysinfo->name == NULL) {
+        sysinfo_free(*sysinfo);
         return UPPM_ERROR_MEMORY_ALLOCATE;
     }
 
     sysinfo->vers = strdup(osVers);
 
     if (sysinfo->vers == NULL) {
+        sysinfo_free(*sysinfo);
         return UPPM_ERROR_MEMORY_ALLOCATE;
     }
 

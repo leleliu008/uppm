@@ -3,9 +3,11 @@
 #include <sys/stat.h>
 
 #include "core/sysinfo.h"
+#include "core/self.h"
 #include "core/untar.h"
 #include "core/http.h"
 #include "core/log.h"
+#include "core/cp.h"
 #include "uppm.h"
 
 int uppm_upgrade_self(bool verbose) {
@@ -25,8 +27,8 @@ int uppm_upgrade_self(bool verbose) {
 
     struct stat st;
 
-    size_t uppmHomeDirLength = userHomeDirLength + 7;
-    char   uppmHomeDir[uppmHomeDirLength];
+    size_t   uppmHomeDirLength = userHomeDirLength + 7;
+    char     uppmHomeDir[uppmHomeDirLength];
     snprintf(uppmHomeDir, uppmHomeDirLength, "%s/.uppm", userHomeDir);
 
     if (stat(uppmHomeDir, &st) == 0) {
@@ -43,8 +45,8 @@ int uppm_upgrade_self(bool verbose) {
 
     ////////////////////////////////////////////////////////////////
 
-    size_t uppmTmpDirLength = uppmHomeDirLength + 5;
-    char   uppmTmpDir[uppmTmpDirLength];
+    size_t   uppmTmpDirLength = uppmHomeDirLength + 5;
+    char     uppmTmpDir[uppmTmpDirLength];
     snprintf(uppmTmpDir, uppmTmpDirLength, "%s/tmp", uppmHomeDir);
 
     if (stat(uppmTmpDir, &st) == 0) {
@@ -63,8 +65,8 @@ int uppm_upgrade_self(bool verbose) {
 
     const char * githubApiUrl = "https://api.github.com/repos/leleliu008/uppm/releases/latest";
 
-    size_t githubApiResultJsonFilePathLength = uppmTmpDirLength + 13;
-    char   githubApiResultJsonFilePath[githubApiResultJsonFilePathLength];
+    size_t   githubApiResultJsonFilePathLength = uppmTmpDirLength + 13;
+    char     githubApiResultJsonFilePath[githubApiResultJsonFilePathLength];
     snprintf(githubApiResultJsonFilePath, githubApiResultJsonFilePathLength, "%s/latest.json", uppmTmpDir);
 
     int ret = http_fetch_to_file(githubApiUrl, githubApiResultJsonFilePath, verbose, verbose);
@@ -132,7 +134,7 @@ int uppm_upgrade_self(bool verbose) {
                     return UPPM_ERROR;
                 }
 
-                if (q[n] == '"') { // found right double quote
+                if (q[n] == '+') { // found right double quote
                     q[n] = '\0';
                     latestVersion = &q[0];
                     goto finally;
@@ -153,9 +155,48 @@ finally:
         return UPPM_ERROR;
     }
 
-    if (strcmp(latestVersion, UPPM_VERSION) == 0) {
+    size_t latestVersionCopyLength = strlen(latestVersion) + 1;
+    char   latestVersionCopy[latestVersionCopyLength];
+    strncpy(latestVersionCopy, latestVersion, latestVersionCopyLength);
+
+    char * latestVersionMajorStr = strtok(latestVersionCopy, ".");
+    char * latestVersionMinorStr = strtok(NULL, ".");
+    char * latestVersionPatchStr = strtok(NULL, ".");
+
+    int latestVersionMajor = 0;
+    int latestVersionMinor = 0;
+    int latestVersionPatch = 0;
+
+    if (latestVersionMajorStr != NULL) {
+        latestVersionMajor = atoi(latestVersionMajorStr);
+    }
+
+    if (latestVersionMinorStr != NULL) {
+        latestVersionMinor = atoi(latestVersionMinorStr);
+    }
+
+    if (latestVersionPatchStr != NULL) {
+        latestVersionPatch = atoi(latestVersionPatchStr);
+    }
+
+    if (latestVersionMajor == 0 && latestVersionMinor == 0 && latestVersionPatch == 0) {
+        fprintf(stderr, "invalid version format: %s\n", latestVersion);
+        return UPPM_ERROR;
+    }
+
+    if (latestVersionMajor < UPPM_VERSION_MAJOR) {
         LOG_SUCCESS("this software is already the latest version.");
         return UPPM_OK;
+    } else if (latestVersionMajor == UPPM_VERSION_MAJOR) {
+        if (latestVersionMinor < UPPM_VERSION_MINOR) {
+            LOG_SUCCESS("this software is already the latest version.");
+            return UPPM_OK;
+        } else if (latestVersionMinor == UPPM_VERSION_MINOR) {
+            if (latestVersionPatch <= UPPM_VERSION_PATCH) {
+                LOG_SUCCESS("this software is already the latest version.");
+                return UPPM_OK;
+            }
+        }
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////
@@ -178,16 +219,16 @@ finally:
 
     size_t latestVersionLength = strlen(latestVersion);
 
-    size_t tarballFileNameLength = latestVersionLength + strlen(osType) + strlen(osArch) + 15;
-    char   tarballFileName[tarballFileNameLength];
+    size_t   tarballFileNameLength = latestVersionLength + strlen(osType) + strlen(osArch) + 15;
+    char     tarballFileName[tarballFileNameLength];
     snprintf(tarballFileName, tarballFileNameLength, "uppm-%s-%s-%s.tar.xz", latestVersion, osType, osArch);
 
-    size_t tarballUrlLength = tarballFileNameLength + latestVersionLength + 55;
-    char   tarballUrl[tarballUrlLength];
+    size_t   tarballUrlLength = tarballFileNameLength + latestVersionLength + 55;
+    char     tarballUrl[tarballUrlLength];
     snprintf(tarballUrl, tarballUrlLength, "https://github.com/leleliu008/uppm/releases/download/%s/%s", latestVersion, tarballFileName);
 
-    size_t tarballFilePathLength = uppmTmpDirLength + tarballFileNameLength + 2;
-    char   tarballFilePath[tarballFilePathLength];
+    size_t   tarballFilePathLength = uppmTmpDirLength + tarballFileNameLength + 2;
+    char     tarballFilePath[tarballFilePathLength];
     snprintf(tarballFilePath, tarballFilePathLength, "%s/%s", uppmTmpDir, tarballFileName);
 
     ret = http_fetch_to_file(tarballUrl, tarballFilePath, verbose, verbose);
@@ -198,8 +239,8 @@ finally:
 
     //////////////////////////////////////////////////////////////////////////////////
 
-    size_t tarballExtractDirLength = tarballFilePathLength + 3;
-    char   tarballExtractDir[tarballExtractDirLength];
+    size_t   tarballExtractDirLength = tarballFilePathLength + 3;
+    char     tarballExtractDir[tarballExtractDirLength];
     snprintf(tarballExtractDir, tarballExtractDirLength, "%s.d", tarballFilePath);
 
     ret = untar_extract(tarballExtractDir, tarballFilePath, 0, verbose, 1);
@@ -208,11 +249,42 @@ finally:
         return abs(ret) + UPPM_ERROR_ARCHIVE_BASE;
     }
 
-    size_t upgradableExecutableFilePathLength = tarballExtractDirLength + 10;
-    char   upgradableExecutableFilePath[upgradableExecutableFilePathLength];
+    size_t   upgradableExecutableFilePathLength = tarballExtractDirLength + 10;
+    char     upgradableExecutableFilePath[upgradableExecutableFilePathLength];
     snprintf(upgradableExecutableFilePath, upgradableExecutableFilePathLength, "%s/bin/uppm", tarballExtractDir);
 
-    printf("the latest version of executable was downloaded to %s\n", upgradableExecutableFilePath);
+    char * selfRealPath = NULL;
 
-    return UPPM_OK;
+    ret = self_realpath(&selfRealPath);
+
+    if (ret != UPPM_OK) {
+        fprintf(stderr, "Can't upgrade self. the latest version of executable was downloaded to %s, you can replace the current running program with it.\n", upgradableExecutableFilePath);
+        return ret;
+    }
+
+    if (unlink(selfRealPath) != 0) {
+        perror(selfRealPath);
+        free(selfRealPath);
+        fprintf(stderr, "Can't upgrade self. the latest version of executable was downloaded to %s, you can replace the current running program with it.\n", upgradableExecutableFilePath);
+        return UPPM_ERROR;
+    }
+
+    ret = copy_file(upgradableExecutableFilePath, selfRealPath);
+
+    if (ret != UPPM_OK) {
+        free(selfRealPath);
+        fprintf(stderr, "Can't upgrade self. the latest version of executable was downloaded to %s, you can replace the current running program with it.\n", upgradableExecutableFilePath);
+        return UPPM_ERROR;
+    }
+
+    if (chmod(selfRealPath, S_IRWXU) == 0) {
+        free(selfRealPath);
+        fprintf(stderr, "uppm is up to date with version %s\n", latestVersion);
+        return UPPM_OK;
+    } else {
+        perror(selfRealPath);
+        free(selfRealPath);
+        fprintf(stderr, "Can't upgrade self. the latest version of executable was downloaded to %s, you can replace the current running program with it.\n", upgradableExecutableFilePath);
+        return UPPM_ERROR;
+    }
 }
