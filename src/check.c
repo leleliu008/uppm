@@ -12,18 +12,20 @@
 int uppm_check_if_the_given_argument_matches_package_name_pattern(const char * arg) {
     if (arg == NULL) {
         return UPPM_ERROR_ARG_IS_NULL;
-    } else if (strcmp(arg, "") == 0) {
+    }
+
+    if (strcmp(arg, "") == 0) {
         return UPPM_ERROR_ARG_IS_EMPTY;
+    }
+
+    if (regex_matched(arg, UPPM_PACKAGE_NAME_PATTERN) == 0) {
+        return UPPM_OK;
     } else {
-        if (regex_matched(arg, UPPM_PACKAGE_NAME_PATTERN) == 0) {
-            return UPPM_OK;
+        if (errno == 0) {
+            return UPPM_ERROR_ARG_IS_INVALID;
         } else {
-            if (errno == 0) {
-                return UPPM_ERROR_ARG_IS_INVALID;
-            } else {
-                perror(NULL);
-                return UPPM_ERROR;
-            }
+            perror(NULL);
+            return UPPM_ERROR;
         }
     }
 }
