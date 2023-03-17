@@ -22,9 +22,9 @@ int tar_list(const char * inputFilePath, int flags) {
 
     struct archive_entry *entry = NULL;
 
-    int ret;
+    int ret = archive_read_open_filename(ar, inputFilePath, 10240);
 
-    if ((ret = archive_read_open_filename(ar, inputFilePath, 10240))) {
+    if (ret != ARCHIVE_OK) {
         goto finalize;
     }
 
@@ -70,13 +70,13 @@ int tar_extract(const char * outputDir, const char * inputFilePath, int flags, b
     archive_read_support_format_all(ar);
     archive_read_support_filter_all(ar);
 
-	archive_write_disk_set_options(aw, flags);
+    archive_write_disk_set_options(aw, flags);
 
-	struct archive_entry *entry = NULL;
+    struct archive_entry *entry = NULL;
 
-	int ret = 0;
+	int ret = archive_read_open_filename(ar, inputFilePath, 10240);
 
-    if ((ret = archive_read_open_filename(ar, inputFilePath, 10240))) {
+    if (ret != ARCHIVE_OK) {
         goto finalize;
     }
 
@@ -88,7 +88,7 @@ int tar_extract(const char * outputDir, const char * inputFilePath, int flags, b
             break;
         }
 
-		if (ret != ARCHIVE_OK) {
+        if (ret != ARCHIVE_OK) {
             goto finalize;
         }
 

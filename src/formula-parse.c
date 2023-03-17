@@ -486,7 +486,7 @@ int uppm_formula_lookup(const char * packageName, UPPMFormula * * out) {
         if (yaml_parser_scan(&parser, &token) == 0) {
             fprintf(stderr, "syntax error in formula file: %s\n", formulaFilePath);
             ret = UPPM_ERROR_FORMULA_SYNTAX;
-            goto clean;
+            goto finalize;
         }
 
         switch(token.type) {
@@ -505,7 +505,7 @@ int uppm_formula_lookup(const char * packageName, UPPMFormula * * out) {
 
                         if (formula == NULL) {
                             ret = UPPM_ERROR_MEMORY_ALLOCATE;
-                            goto clean;
+                            goto finalize;
                         }
 
                         formula->path = formulaFilePath;
@@ -514,7 +514,7 @@ int uppm_formula_lookup(const char * packageName, UPPMFormula * * out) {
                     ret = uppm_formula_set_value(formulaKeyCode, (char*)token.data.scalar.value, formula);
 
                     if (ret != UPPM_OK) {
-                        goto clean;
+                        goto finalize;
                     }
                 }
                 break;
@@ -528,7 +528,7 @@ int uppm_formula_lookup(const char * packageName, UPPMFormula * * out) {
         }
     } while(token.type != YAML_STREAM_END_TOKEN);
 
-clean:
+finalize:
     yaml_token_delete(&token);
 
     yaml_parser_delete(&parser);

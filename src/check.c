@@ -123,20 +123,20 @@ int uppm_check_if_the_given_package_is_outdated(const char * packageName) {
     int ret = uppm_formula_lookup(packageName, &formula);
 
     if (ret != UPPM_OK) {
-        goto clean;
+        goto finalize;
     }
 
     ret = uppm_receipt_parse(packageName, &receipt);
 
     if (ret != UPPM_OK) {
-        goto clean;
+        goto finalize;
     }
 
     if (strcmp(receipt->version, formula->version) == 0) {
         ret = UPPM_ERROR_PACKAGE_NOT_OUTDATED;
     }
 
-clean:
+finalize:
     uppm_formula_free(formula);
     uppm_receipt_free(receipt);
     return ret;

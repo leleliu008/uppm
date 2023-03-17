@@ -263,7 +263,7 @@ int uppm_formula_repo_parse(const char * formulaRepoConfigFilePath, UPPMFormulaR
         if (yaml_parser_scan(&parser, &token) == 0) {
             fprintf(stderr, "syntax error in formula repo config file: %s\n", formulaRepoConfigFilePath);
             ret = UPPM_ERROR_FORMULA_REPO_CONFIG_SYNTAX;
-            goto clean;
+            goto finalize;
         }
 
         switch(token.type) {
@@ -282,7 +282,7 @@ int uppm_formula_repo_parse(const char * formulaRepoConfigFilePath, UPPMFormulaR
 
                         if (formulaRepo == NULL) {
                             ret = UPPM_ERROR_MEMORY_ALLOCATE;
-                            goto clean;
+                            goto finalize;
                         }
 
                         formulaRepo->enabled = 1;
@@ -291,7 +291,7 @@ int uppm_formula_repo_parse(const char * formulaRepoConfigFilePath, UPPMFormulaR
                     ret = uppm_formula_repo_set_value(formulaRepoKeyCode, (char*)token.data.scalar.value, formulaRepo);
 
                     if (ret != UPPM_OK) {
-                        goto clean;
+                        goto finalize;
                     }
                 }
                 break;
@@ -305,7 +305,7 @@ int uppm_formula_repo_parse(const char * formulaRepoConfigFilePath, UPPMFormulaR
         }
     } while(token.type != YAML_STREAM_END_TOKEN);
 
-clean:
+finalize:
     yaml_token_delete(&token);
 
     yaml_parser_delete(&parser);

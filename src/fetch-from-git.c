@@ -360,7 +360,7 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
 
     if (ret != GIT_OK) {
         gitError = git_error_last();
-        goto clean;
+        goto finalize;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -369,14 +369,14 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
 
     if (ret != GIT_OK) {
         gitError = git_error_last();
-        goto clean;
+        goto finalize;
     }
 
     remoteTrackingBranchHeadOid = git_reference_target(remoteTrackingBranchRef);
 
     if (ret != GIT_OK) {
         gitError = git_error_last();
-        goto clean;
+        goto finalize;
     }
 
     {
@@ -389,7 +389,7 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
             //print_git_oid(HEADOid, "HEADOid");
             // HEAD SHA-1 is equal to remote tracking branch's HEAD SHA-1, means no need to perform merge
             if (memcmp(remoteTrackingBranchHeadOid->id, HEADOid.id, 20) == 0) {
-                goto clean;
+                goto finalize;
             }
         }
     }
@@ -408,7 +408,7 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
 
                 if (ret != GIT_OK) {
                     gitError = git_error_last();
-                    goto clean;
+                    goto finalize;
                 }
             }
         } else if (ret == GIT_ENOTFOUND) {
@@ -419,11 +419,11 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
 
             if (ret != GIT_OK) {
                 gitError = git_error_last();
-                goto clean;
+                goto finalize;
             }
         } else {
             gitError = git_error_last();
-            goto clean;
+            goto finalize;
         }
     }
 
@@ -440,7 +440,7 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
 
     if (ret != GIT_OK) {
         gitError = git_error_last();
-        goto clean;
+        goto finalize;
     }
 
     // https://libgit2.org/libgit2/#HEAD/group/commit/git_commit_tree
@@ -448,7 +448,7 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
 
     if (ret != GIT_OK) {
         gitError = git_error_last();
-        goto clean;
+        goto finalize;
     }
 
     // https://libgit2.org/libgit2/#HEAD/group/checkout/git_checkout_tree
@@ -456,7 +456,7 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
 
     if (ret != GIT_OK) {
         gitError = git_error_last();
-        goto clean;
+        goto finalize;
     }
 
     // https://libgit2.org/libgit2/#HEAD/group/reference/git_reference_set_target
@@ -472,7 +472,7 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
         gitError = git_error_last();
     }
 
-clean:
+finalize:
     if (ret == GIT_OK) {
         printf("%s\n", "Already up to date.");
     } else {

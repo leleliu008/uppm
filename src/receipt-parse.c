@@ -404,7 +404,7 @@ int uppm_receipt_parse(const char * packageName, UPPMReceipt * * out) {
         if (yaml_parser_scan(&parser, &token) == 0) {
             fprintf(stderr, "syntax error in receipt file: %s\n", receiptFilePath);
             ret = UPPM_ERROR_RECEIPT_SYNTAX;
-            goto clean;
+            goto finalize;
         }
 
         switch(token.type) {
@@ -423,14 +423,14 @@ int uppm_receipt_parse(const char * packageName, UPPMReceipt * * out) {
 
                         if (receipt == NULL) {
                             ret = UPPM_ERROR_MEMORY_ALLOCATE;
-                            goto clean;
+                            goto finalize;
                         }
                     }
 
                     ret = uppm_receipt_set_value(receiptKeyCode, (char*)token.data.scalar.value, receipt);
 
                     if (ret != UPPM_OK) {
-                        goto clean;
+                        goto finalize;
                     }
                 }
                 break;
@@ -444,7 +444,7 @@ int uppm_receipt_parse(const char * packageName, UPPMReceipt * * out) {
         }
     } while(token.type != YAML_STREAM_END_TOKEN);
 
-clean:
+finalize:
     yaml_token_delete(&token);
 
     yaml_parser_delete(&parser);

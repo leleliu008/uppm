@@ -234,7 +234,7 @@ int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, con
 
             if (ret != UPPM_OK) {
                 free(packageName);
-                goto finally;
+                goto finalize;
             }
 
             if (packageSetSize == packageSetCapcity) {
@@ -244,7 +244,7 @@ int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, con
                     free(packageName);
                     uppm_formula_free(formula);
                     ret = UPPM_ERROR_MEMORY_ALLOCATE;
-                    goto finally;
+                    goto finalize;
                 }
 
                 memset(p + packageSetCapcity, 0, 10);
@@ -259,7 +259,7 @@ int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, con
                 free(packageName);
                 uppm_formula_free(formula);
                 ret = UPPM_ERROR_MEMORY_ALLOCATE;
-                goto finally;
+                goto finalize;
             }
 
             package->formula = formula;
@@ -271,7 +271,7 @@ int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, con
             if (package->packageName == NULL) {
                 free(packageName);
                 ret = UPPM_ERROR_MEMORY_ALLOCATE;
-                goto finally;
+                goto finalize;
             }
 
             free(packageName);
@@ -291,7 +291,7 @@ int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, con
         ret = string_append(&p, &pSize, &pCapcity, buf, bufLength - 1);
 
         if (ret != UPPM_OK) {
-            goto finally;
+            goto finalize;
         }
 
         ////////////////////////////////////////////////////////////////
@@ -308,7 +308,7 @@ int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, con
             if (strcmp(depPackageName, packageName) == 0) {
                 fprintf(stderr, "package '%s' depends itself.\n", packageName);
                 ret = UPPM_ERROR;
-                goto finally;
+                goto finalize;
             }
 
             ////////////////////////////////////////////////////////////////
@@ -320,7 +320,7 @@ int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, con
             ret = string_append(&p, &pSize, &pCapcity, buf, bufLength - 1);
 
             if (ret != UPPM_OK) {
-                goto finally;
+                goto finalize;
             }
 
             ////////////////////////////////////////////////////////////////
@@ -332,7 +332,7 @@ int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, con
 
                 if (p == NULL) {
                     ret = UPPM_ERROR_MEMORY_ALLOCATE;
-                    goto finally;
+                    goto finalize;
                 }
 
                 memset(p + packageNameStackCapcity, 0, 10);
@@ -345,7 +345,7 @@ int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, con
 
             if (p == NULL) {
                 ret = UPPM_ERROR_MEMORY_ALLOCATE;
-                goto finally;
+                goto finalize;
             }
 
             packageNameStack[packageNameStackSize] = p;
@@ -357,7 +357,7 @@ int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, con
         ret = string_append(&p, &pSize, &pCapcity, " }\n", 3);
     }
 
-finally:
+finalize:
     for (size_t i = 0; i < packageNameStackSize; i++) {
         free(packageNameStack[i]);
         packageNameStack[i] = NULL;
