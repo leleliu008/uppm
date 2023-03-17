@@ -1,3 +1,4 @@
+#include <errno.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
@@ -7,13 +8,15 @@
 
 int mkdir_p(const char * dirPath, bool verbose) {
     if (dirPath == NULL) {
-        return UPPM_ERROR_ARG_IS_NULL;
+        errno = EINVAL;
+        return -1;
     }
 
     size_t dirPathLength = strlen(dirPath);
 
     if (dirPathLength == 0) {
-        return UPPM_ERROR_ARG_IS_EMPTY;
+        errno = EINVAL;
+        return -1;
     }
 
     if (verbose) printf("rm %s\n", dirPath);
@@ -22,9 +25,10 @@ int mkdir_p(const char * dirPath, bool verbose) {
 
     if (stat(dirPath, &st) == 0) {
         if (S_ISDIR(st.st_mode)) {
-            return UPPM_OK;
+            return 0;
         } else {
-            fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", dirPath);
+            errno = ENOTDIR;
+            return -1;
         }
     } else {
         size_t i = dirPathLength - 1;
@@ -36,12 +40,7 @@ int mkdir_p(const char * dirPath, bool verbose) {
         for(;;) {
             if (dirPath[i] == '/') {
                 if (i == 0) { // /a
-                    if (mkdir(dirPath, S_IRWXU)) {
-                        return UPPM_OK;
-                    } else {
-                        perror(dirPath);
-                        return UPPM_ERROR;
-                    }
+                    return mkdir(dirPath, S_IRWXU);
                 } else {
                     char p[i];
                     strncpy(p, dirPath, i - 1);
@@ -54,16 +53,10 @@ int mkdir_p(const char * dirPath, bool verbose) {
 
             if (i == 0) {
                 // dirPath is a relative path
-
-                if (mkdir(dirPath, S_IRWXU)) {
-                    return UPPM_OK;
-                } else {
-                    perror(dirPath);
-                    return UPPM_ERROR;
-                }
+                return mkdir(dirPath, S_IRWXU);
             }
         }
     }
 
-    return UPPM_OK;
+    return 0;
 }

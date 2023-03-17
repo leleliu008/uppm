@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <errno.h>
 
 #include "cp.h"
 
@@ -6,16 +7,16 @@ int copy_file(const char * fromFilePath, const char * toFilePath) {
     FILE * fromFile = fopen(fromFilePath, "rb");
 
     if (fromFile == NULL) {
-        perror(fromFilePath);
-        return UPPM_ERROR;
+        return -1;
     }
 
     FILE * toFile = fopen(toFilePath, "wb");
 
     if (toFile == NULL) {
-        perror(toFilePath);
+        int err = errno;
         fclose(fromFile);
-        return UPPM_ERROR;
+        errno = err;
+        return -1;
     }
 
     unsigned char buff[1024];
@@ -25,25 +26,25 @@ int copy_file(const char * fromFilePath, const char * toFilePath) {
         size = fread(buff, 1, 1024, fromFile);
 
         if (ferror(fromFile)) {
-            perror(fromFilePath);
             fclose(fromFile);
             fclose(toFile);
-            return UPPM_ERROR;
+            errno = EIO;
+            return -1;
         }
 
         if (size > 0) {
             if (fwrite(buff, 1, size, toFile) != size || ferror(toFile)) {
-                perror(toFilePath);
                 fclose(fromFile);
                 fclose(toFile);
-                return UPPM_ERROR;
+                errno = EIO;
+                return -1;
             }
         }
 
         if (feof(fromFile)) {
             fclose(fromFile);
             fclose(toFile);
-            return UPPM_OK;
+            return 0;
         }
     }
 }

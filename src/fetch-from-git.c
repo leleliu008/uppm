@@ -8,6 +8,8 @@
 #include <dirent.h>
 #include <sys/stat.h>
 
+#include "core/url-transform.h"
+
 #include "uppm.h"
 
 typedef struct {
@@ -148,21 +150,47 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
         return UPPM_ERROR_ARG_IS_NULL;
     }
 
+    int ret = UPPM_OK;
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
     char * transformedUrl = NULL;
 
-    int ret = uppm_url_transform(remoteUrl, &transformedUrl, true);
+    const char * urlTransformCommandPath = getenv("UPPM_URL_TRANSFORM");
 
-    if (ret == UPPM_OK) {
-        ;
-    } else if (ret == UPPM_ERROR_URL_TRANSFORM_ENV_NOT_SET) {
+    if (urlTransformCommandPath == NULL || strcmp(urlTransformCommandPath, "") == 0) {
         transformedUrl = strdup(remoteUrl);
 
         if (transformedUrl == NULL) {
             return UPPM_ERROR_MEMORY_ALLOCATE;
         }
     } else {
-        return ret;
+        fprintf(stderr, "\nyou have set UPPM_URL_TRANSFORM=%s\n", urlTransformCommandPath);
+        fprintf(stderr, "transform from: %s\n", remoteUrl);
+
+        char   outputBuffer[1025] = {0};
+        size_t writtenSize = 0;
+
+        if (url_transform(urlTransformCommandPath, remoteUrl, outputBuffer, 1024, &writtenSize, true) != 0) {
+            perror(urlTransformCommandPath);
+            return UPPM_ERROR;
+        }
+
+        if (writtenSize == 0) {
+            fprintf(stderr, "a new url was expected to be output, but it was not.\n");
+            return UPPM_ERROR;
+        }
+
+        fprintf(stderr, "transform   to: %s\n", transformedUrl);
+
+        transformedUrl = strdup(outputBuffer);
+
+        if (transformedUrl == NULL) {
+            return UPPM_ERROR_MEMORY_ALLOCATE;
+        }
     }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
 
     bool needInitGitRepo = false;
 

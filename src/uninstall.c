@@ -3,6 +3,7 @@
 #include <sys/stat.h>
 
 #include "core/rm-r.h"
+
 #include "uppm.h"
 
 int uppm_uninstall(const char * packageName, bool verbose) {
@@ -24,8 +25,8 @@ int uppm_uninstall(const char * packageName, bool verbose) {
         return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
-    size_t packageInstalledDirLength = userHomeDirLength + strlen(packageName) + 20;
-    char   packageInstalledDir[packageInstalledDirLength];
+    size_t   packageInstalledDirLength = userHomeDirLength + strlen(packageName) + 20;
+    char     packageInstalledDir[packageInstalledDirLength];
     snprintf(packageInstalledDir, packageInstalledDirLength, "%s/.uppm/installed/%s", userHomeDir, packageName);
 
     struct stat st;
@@ -34,12 +35,17 @@ int uppm_uninstall(const char * packageName, bool verbose) {
         return UPPM_ERROR_PACKAGE_NOT_INSTALLED;
     }
 
-    size_t receiptFilePathLength = packageInstalledDirLength + 20;
-    char   receiptFilePath[receiptFilePathLength];
+    size_t   receiptFilePathLength = packageInstalledDirLength + 20;
+    char     receiptFilePath[receiptFilePathLength];
     snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", packageInstalledDir);
 
     if (stat(receiptFilePath, &st) == 0 && S_ISREG(st.st_mode)) {
-        return rm_r(packageInstalledDir, verbose);
+        if (rm_r(packageInstalledDir, verbose) == 0) {
+            return UPPM_OK;
+        } else {
+            perror(packageInstalledDir);
+            return UPPM_ERROR;
+        }
     } else {
         // package is broken. is not installed completely?
         return UPPM_ERROR_PACKAGE_NOT_INSTALLED;

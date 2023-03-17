@@ -4,80 +4,42 @@
 #include <stdbool.h>
 #include <unistd.h>
 #include <sys/stat.h>
-#include <curl/curl.h>
+
+#include "core/http.h"
+#include "core/url.h"
 
 #include "uppm.h"
 
-static size_t write_callback(void * ptr, size_t size, size_t nmemb, void * stream) {
-    return fwrite(ptr, size, nmemb, (FILE *)stream);
-}
+static int uppm_depends_make_box(const char * dotScriptStr, size_t dotScriptStrLength, const char * outputFilePath) {
+    size_t urlEncodedBufLength = 3 * dotScriptStrLength + 1;
+    char   urlEncodedBuf[urlEncodedBufLength];
+    memset(urlEncodedBuf, 0, urlEncodedBufLength);
 
-static int uppm_depends_make_box(const char * dotScriptStr, const char * outputFilePath) {
-    curl_global_init(CURL_GLOBAL_ALL);
+    size_t urlEncodedRealLength = 0;
 
-    CURL * curl = curl_easy_init();
+    if (url_encode(urlEncodedBuf, &urlEncodedRealLength, (unsigned char *)dotScriptStr, dotScriptStrLength, true) != 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
-    char * dataUrlEncoded = curl_easy_escape(curl, dotScriptStr, strlen(dotScriptStr));
-
-    size_t urlLength = strlen(dataUrlEncoded) + 66;
-    char   url[urlLength];
-    snprintf(url, urlLength, "https://dot-to-ascii.ggerganov.com/dot-to-ascii.php?boxart=1&src=%s", dataUrlEncoded);
+    size_t   urlLength = urlEncodedRealLength + 66;
+    char     url[urlLength];
+    snprintf(url, urlLength, "https://dot-to-ascii.ggerganov.com/dot-to-ascii.php?boxart=1&src=%s", urlEncodedBuf);
 
     //printf("url=%s\n", url);
 
-    curl_easy_setopt(curl, CURLOPT_URL, url);
-    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
-    curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1L);
+    int ret = http_fetch_to_stream(url, stdout, false, false);
 
-    bool verbose = false;
-    bool showProgress = false;
-
-    // https://curl.se/libcurl/c/CURLOPT_VERBOSE.html
-    if (verbose) {
-        curl_easy_setopt(curl, CURLOPT_VERBOSE, 1);
-    } else {
-        curl_easy_setopt(curl, CURLOPT_VERBOSE, 0);
+    if (ret == -1) {
+        perror(outputFilePath);
+        return UPPM_ERROR;
     }
 
-    // https://curl.se/libcurl/c/CURLOPT_NOPROGRESS.html
-    if (showProgress) {
-        curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0);
-    } else {
-        curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);
+    if (ret > 0) {
+        return UPPM_ERROR_NETWORK_BASE + ret;
     }
 
-    CURLcode curlcode = CURLE_OK;
-
-    int ret = UPPM_OK;
-
-    if (outputFilePath != NULL) {
-        FILE * outputFile = fopen(outputFilePath, "wb");
-
-        if (outputFile == NULL) {
-            perror(outputFilePath);
-            ret = UPPM_ERROR;
-            goto clean;
-        }
-
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, outputFile);
-    }
-
-    curlcode = curl_easy_perform(curl);
-
-clean:
-
-    if (curlcode != CURLE_OK) {
-        fprintf(stderr, "%s\n", curl_easy_strerror(curlcode));
-        ret = UPPM_ERROR_NETWORK_BASE + curlcode;
-    }
-
-    curl_free(dataUrlEncoded);
-    curl_easy_cleanup(curl);
-
-    curl_global_cleanup();
-
-    return ret;
+    return UPPM_OK;
 }
 
 static int uppm_depends_make_xxx(const char * dotScriptStr, size_t len, const char * tOption, const char * oOption) {
@@ -97,8 +59,8 @@ static int uppm_depends_make_xxx(const char * dotScriptStr, size_t len, const ch
 
     struct stat st;
 
-    size_t uppmHomeDirLength = userHomeDirLength + 7;
-    char   uppmHomeDir[uppmHomeDirLength];
+    size_t   uppmHomeDirLength = userHomeDirLength + 7;
+    char     uppmHomeDir[uppmHomeDirLength];
     snprintf(uppmHomeDir, uppmHomeDirLength, "%s/.uppm", userHomeDir);
 
     if (stat(uppmHomeDir, &st) == 0) {
@@ -115,8 +77,8 @@ static int uppm_depends_make_xxx(const char * dotScriptStr, size_t len, const ch
 
     ////////////////////////////////////////////////////////////////
 
-    size_t uppmTmpDirLength = uppmHomeDirLength + 5;
-    char   uppmTmpDir[uppmTmpDirLength];
+    size_t   uppmTmpDirLength = uppmHomeDirLength + 5;
+    char     uppmTmpDir[uppmTmpDirLength];
     snprintf(uppmTmpDir, uppmTmpDirLength, "%s/tmp", uppmHomeDir);
 
     if (stat(uppmTmpDir, &st) == 0) {
@@ -316,8 +278,8 @@ int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, con
 
         ////////////////////////////////////////////////////////////////
 
-        size_t bufLength = strlen(packageName) + 12;
-        char   buf[bufLength];
+        size_t   bufLength = strlen(packageName) + 12;
+        char     buf[bufLength];
         snprintf(buf, bufLength, "    \"%s\" -> {", packageName);
 
         ret = string_append(&p, &pSize, &pCapcity, buf, bufLength - 1);
@@ -463,16 +425,16 @@ finally:
             }
         }
     } else if (outputType == UPPMDependsOutputType_BOX) {
-        size_t dotScriptStrLength = pSize + 14;
-        char   dotScriptStr[dotScriptStrLength];
+        size_t   dotScriptStrLength = pSize + 14;
+        char     dotScriptStr[dotScriptStrLength];
         snprintf(dotScriptStr, dotScriptStrLength, "digraph G {\n%s}", p);
 
         free(p);
 
-        return uppm_depends_make_box(dotScriptStr, outputFilePath);
+        return uppm_depends_make_box(dotScriptStr, dotScriptStrLength - 1, outputFilePath);
     } else if (outputType == UPPMDependsOutputType_PNG) {
-        size_t dotScriptStrLength = pSize + 14;
-        char   dotScriptStr[dotScriptStrLength];
+        size_t   dotScriptStrLength = pSize + 14;
+        char     dotScriptStr[dotScriptStrLength];
         snprintf(dotScriptStr, dotScriptStrLength, "digraph G {\n%s}", p);
 
         free(p);
@@ -480,15 +442,15 @@ finally:
         if (outputFilePath == NULL) {
             return uppm_depends_make_xxx(dotScriptStr, dotScriptStrLength - 1, "-Tpng", NULL);
         } else {
-            size_t oOptionLength=strlen(outputFilePath) + 3;
-            char   oOption[oOptionLength];
+            size_t   oOptionLength=strlen(outputFilePath) + 3;
+            char     oOption[oOptionLength];
             snprintf(oOption, oOptionLength, "-o%s", outputFilePath);
 
             return uppm_depends_make_xxx(dotScriptStr, dotScriptStrLength - 1, "-Tpng", oOption);
         }
     } else if (outputType == UPPMDependsOutputType_SVG) {
-        size_t dotScriptStrLength = pSize + 14;
-        char   dotScriptStr[dotScriptStrLength];
+        size_t   dotScriptStrLength = pSize + 14;
+        char     dotScriptStr[dotScriptStrLength];
         snprintf(dotScriptStr, dotScriptStrLength, "digraph G {\n%s}", p);
 
         free(p);
@@ -496,8 +458,8 @@ finally:
         if (outputFilePath == NULL) {
             return uppm_depends_make_xxx(dotScriptStr, dotScriptStrLength - 1, "-Tsvg", NULL);
         } else {
-            size_t oOptionLength=strlen(outputFilePath) + 3;
-            char   oOption[oOptionLength];
+            size_t   oOptionLength=strlen(outputFilePath) + 3;
+            char     oOption[oOptionLength];
             snprintf(oOption, oOptionLength, "-o%s", outputFilePath);
 
             return uppm_depends_make_xxx(dotScriptStr, dotScriptStrLength - 1, "-Tsvg", oOption);

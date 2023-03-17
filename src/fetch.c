@@ -50,8 +50,8 @@ int uppm_fetch(const char * packageName, bool verbose) {
 
     struct stat st;
 
-    size_t downloadDirLength = userHomeDirLength + 18;
-    char   downloadDir[downloadDirLength];
+    size_t   downloadDirLength = userHomeDirLength + 18;
+    char     downloadDir[downloadDirLength];
     snprintf(downloadDir, downloadDirLength, "%s/.uppm/downloads", userHomeDir);
 
     if (stat(downloadDir, &st) == 0) {
@@ -77,22 +77,21 @@ int uppm_fetch(const char * packageName, bool verbose) {
         return ret;
     }
 
-    size_t binFileNameLength = strlen(formula->bin_sha) + strlen(binFileNameExtension) + 1;
-    char   binFileName[binFileNameLength];
+    size_t   binFileNameLength = strlen(formula->bin_sha) + strlen(binFileNameExtension) + 1;
+    char     binFileName[binFileNameLength];
     snprintf(binFileName, binFileNameLength, "%s%s", formula->bin_sha, binFileNameExtension);
 
-    size_t binFilePathLength = downloadDirLength + binFileNameLength + 1;
-    char   binFilePath[binFilePathLength];
+    size_t   binFilePathLength = downloadDirLength + binFileNameLength + 1;
+    char     binFilePath[binFilePathLength];
     snprintf(binFilePath, binFilePathLength, "%s/%s", downloadDir, binFileName);
 
     if (stat(binFilePath, &st) == 0 && S_ISREG(st.st_mode)) {
         char actualSHA256SUM[65] = {0};
 
-        ret = sha256sum_of_file(actualSHA256SUM, binFilePath);
-
-        if (ret != 0) {
+        if (sha256sum_of_file(actualSHA256SUM, binFilePath) != 0) {
+            perror(binFilePath);
             uppm_formula_free(formula);
-            return ret;
+            return UPPM_ERROR;
         }
 
         if (strcmp(actualSHA256SUM, formula->bin_sha) == 0) {
@@ -102,7 +101,7 @@ int uppm_fetch(const char * packageName, bool verbose) {
         }
     }
 
-    ret = http_fetch_to_file(formula->bin_url, binFilePath, verbose, verbose);
+    ret = uppm_http_fetch_to_file(formula->bin_url, binFilePath, verbose, verbose);
 
     if (ret != UPPM_OK) {
         uppm_formula_free(formula);
@@ -111,11 +110,10 @@ int uppm_fetch(const char * packageName, bool verbose) {
 
     char actualSHA256SUM[65] = {0};
 
-    ret = sha256sum_of_file(actualSHA256SUM, binFilePath);
-
-    if (ret != 0) {
+    if (sha256sum_of_file(actualSHA256SUM, binFilePath) != 0) {
+        perror(binFilePath);
         uppm_formula_free(formula);
-        return ret;
+        return UPPM_ERROR;
     }
 
     if (strcmp(actualSHA256SUM, formula->bin_sha) == 0) {

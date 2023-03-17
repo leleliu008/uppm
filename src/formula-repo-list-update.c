@@ -31,22 +31,18 @@ int uppm_formula_repo_list_update() {
         if (!officalCoreIsThere) {
             char osType[31] = {0};
 
-            ret = sysinfo_type(osType, 30);
-
-            if (ret != UPPM_OK) {
-                return ret;
+            if (sysinfo_type(osType, 30) != 0) {
+                return UPPM_ERROR;
             }
 
             char osArch[31] = {0};
 
-            ret = sysinfo_arch(osArch, 30);
-
-            if (ret != UPPM_OK) {
-                return ret;
+            if (sysinfo_arch(osArch, 30) != 0) {
+                return UPPM_ERROR;
             }
 
-            size_t formulaRepoUrlLength = strlen(osType) + strlen(osArch) + 56;
-            char   formulaRepoUrl[formulaRepoUrlLength];
+            size_t   formulaRepoUrlLength = strlen(osType) + strlen(osArch) + 56;
+            char     formulaRepoUrl[formulaRepoUrlLength];
             snprintf(formulaRepoUrl, formulaRepoUrlLength, "https://github.com/leleliu008/uppm-formula-repository-%s-%s", osType, osArch);
 
             ret = uppm_formula_repo_add("offical-core", formulaRepoUrl, "master", false, true);

@@ -1,8 +1,11 @@
-#ifndef UPPM_SELF_H
-#define UPPM_SELF_H
+#ifndef _SELF_H
+#define _SELF_H
 
-#include "../uppm.h"
-
-int self_realpath(char ** pathP);
+/** get the current executing executable's absolute file path.
+ *
+ *  On success, char* pointer is returned.
+ *  On error, NULL is returned and errno is set to indicate the error.
+ */
+char* self_realpath();
 
 #endif

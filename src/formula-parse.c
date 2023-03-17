@@ -1,11 +1,13 @@
+#include <yaml.h>
+#include <errno.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
 #include <libgen.h>
-#include <yaml.h>
 
 #include "core/sysinfo.h"
 #include "core/regex/regex.h"
+
 #include "uppm.h"
 
 typedef enum {
@@ -361,7 +363,7 @@ static int uppm_formula_check(UPPMFormula * formula, const char * formulaFilePat
         char * splitedStr = strtok(srcFileName, "-");
 
         while (splitedStr != NULL) {
-            if (regex_matched(splitedStr, "^[0-9]+(\\.[0-9]+)+[a-z]?$")) {
+            if (regex_matched(splitedStr, "^[0-9]+(\\.[0-9]+)+[a-z]?$") == 0) {
                 formula->version = strdup(splitedStr);
 
                 if (formula->version == NULL) {
@@ -369,9 +371,14 @@ static int uppm_formula_check(UPPMFormula * formula, const char * formulaFilePat
                 } else {
                     return UPPM_OK;
                 }
+            } else {
+                if (errno != 0) {
+                    perror(NULL);
+                    return UPPM_ERROR;
+                }
+            }
 
-                break;
-            } else if (regex_matched(splitedStr, "^[vV][0-9]+(\\.[0-9]+)+[a-z]?$")) {
+            if (regex_matched(splitedStr, "^[vV][0-9]+(\\.[0-9]+)+[a-z]?$") == 0) {
                 formula->version = strdup(&splitedStr[1]);
 
                 if (formula->version == NULL) {
@@ -379,9 +386,14 @@ static int uppm_formula_check(UPPMFormula * formula, const char * formulaFilePat
                 } else {
                     return UPPM_OK;
                 }
+            } else {
+                if (errno != 0) {
+                    perror(NULL);
+                    return UPPM_ERROR;
+                }
+            }
 
-                break;
-            } else if (regex_matched(splitedStr, "^[0-9]{3,8}$")) {
+            if (regex_matched(splitedStr, "^[0-9]{3,8}$") == 0) {
                 formula->version = strdup(splitedStr);
 
                 if (formula->version == NULL) {
@@ -389,9 +401,14 @@ static int uppm_formula_check(UPPMFormula * formula, const char * formulaFilePat
                 } else {
                     return UPPM_OK;
                 }
+            } else {
+                if (errno != 0) {
+                    perror(NULL);
+                    return UPPM_ERROR;
+                }
+            }
 
-                break;
-            } else if (regex_matched(splitedStr, "^[vrR][0-9]{2,8}[a-z]?$")) {
+            if (regex_matched(splitedStr, "^[vrR][0-9]{2,8}[a-z]?$") == 0) {
                 formula->version = strdup(&splitedStr[1]);
 
                 if (formula->version == NULL) {
@@ -399,8 +416,11 @@ static int uppm_formula_check(UPPMFormula * formula, const char * formulaFilePat
                 } else {
                     return UPPM_OK;
                 }
-
-                break;
+            } else {
+                if (errno != 0) {
+                    perror(NULL);
+                    return UPPM_ERROR;
+                }
             }
 
             splitedStr = strtok(NULL, "-");
@@ -418,12 +438,13 @@ static int uppm_formula_check(UPPMFormula * formula, const char * formulaFilePat
 int uppm_formula_lookup(const char * packageName, UPPMFormula * * out) {
     bool isLinuxMuslLibc = false;
 
-    LIBC libc = LIBC_UNKNOWN;
+    int libc = sysinfo_libc();
 
-    if (sysinfo_libc(&libc) == 0) {
-        isLinuxMuslLibc = libc == LIBC_MUSL;
-    } else {
+    if (libc < 0) {
+        perror(NULL);
         return UPPM_ERROR;
+    } else {
+        isLinuxMuslLibc = libc == 2;
     }
 
     char * formulaFilePath = NULL;

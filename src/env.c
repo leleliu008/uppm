@@ -100,10 +100,9 @@ int uppm_env(bool verbose) {
 
     SysInfo sysinfo = {0};
 
-    int ret = sysinfo_make(&sysinfo);
-
-    if (ret != UPPM_OK) {
-        return ret;
+    if (sysinfo_make(&sysinfo) != 0) {
+        perror(NULL);
+        return UPPM_ERROR;
     }
 
     sysinfo_dump(sysinfo);
@@ -121,23 +120,24 @@ int uppm_env(bool verbose) {
         return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
-    size_t uppmHomeDirLength = userHomeDirLength + 7;
-    char   uppmHomeDir[uppmHomeDirLength];
+    size_t   uppmHomeDirLength = userHomeDirLength + 7;
+    char     uppmHomeDir[uppmHomeDirLength];
     snprintf(uppmHomeDir, uppmHomeDirLength, "%s/.uppm", userHomeDir);
 
     printf("\n");
     printf("uppm.vers : %s\n", UPPM_VERSION);
     printf("uppm.home : %s\n", uppmHomeDir);
 
-    char * path = NULL;
+    char * selfRealPath = self_realpath();
 
-    self_realpath(&path);
-
-    printf("uppm.path : %s\n", path == NULL ? "" : path);
-
-    if (path != NULL) {
-        free(path);
+    if (selfRealPath == NULL) {
+        perror(NULL);
+        return UPPM_ERROR;
     }
+
+    printf("uppm.path : %s\n", selfRealPath);
+
+    free(selfRealPath);
 
     if (!verbose) {
         return UPPM_OK;
@@ -145,8 +145,8 @@ int uppm_env(bool verbose) {
 
     struct stat st;
 
-    size_t installedDirLength = uppmHomeDirLength + 11;
-    char   installedDir[installedDirLength];
+    size_t   installedDirLength = uppmHomeDirLength + 11;
+    char     installedDir[installedDirLength];
     snprintf(installedDir, installedDirLength, "%s/installed", uppmHomeDir);
 
     if (stat(installedDir, &st) == 0) {

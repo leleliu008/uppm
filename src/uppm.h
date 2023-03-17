@@ -189,6 +189,8 @@ typedef enum {
 
 int uppm_main(int argc, char* argv[]);
 
+int uppm_util(int argc, char* argv[]);
+
 int uppm_help();
 
 int uppm_sysinfo();
@@ -237,10 +239,10 @@ int uppm_show_the_available_packages();
 
 int uppm_fetch_via_git(const char * gitRepositoryDirPath, const char * remoteUrl, const char * refspec, const char * checkoutToBranchName);
 
-int uppm_url_transform(const char * inUrl, char * * outUrlPointer, bool verbose);
-
 int uppm_generate_url_transform_sample();
 
 int uppm_examine_file_extension_from_url(char buf[], size_t maxSize, const char * url);
+
+int uppm_http_fetch_to_file(const char * url, const char * outputFilePath, bool verbose, bool showProgress);
 
 #endif

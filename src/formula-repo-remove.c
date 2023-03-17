@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 
 #include "core/rm-r.h"
+
 #include "uppm.h"
 
 int uppm_formula_repo_remove(const char * formulaRepoName) {
@@ -34,8 +35,8 @@ int uppm_formula_repo_remove(const char * formulaRepoName) {
         return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
-    size_t formulaRepoPathLength = userHomeDirLength + formulaRepoNameLength + 16;
-    char   formulaRepoPath[formulaRepoPathLength];
+    size_t   formulaRepoPathLength = userHomeDirLength + formulaRepoNameLength + 16;
+    char     formulaRepoPath[formulaRepoPathLength];
     snprintf(formulaRepoPath, formulaRepoPathLength, "%s/.uppm/repos.d/%s", userHomeDir, formulaRepoName);
 
     struct stat st;
@@ -45,12 +46,17 @@ int uppm_formula_repo_remove(const char * formulaRepoName) {
         return UPPM_ERROR;
     }
 
-    size_t formulaRepoConfigFilePathLength = formulaRepoPathLength + 24;
-    char   formulaRepoConfigFilePath[formulaRepoConfigFilePathLength];
+    size_t   formulaRepoConfigFilePathLength = formulaRepoPathLength + 24;
+    char     formulaRepoConfigFilePath[formulaRepoConfigFilePathLength];
     snprintf(formulaRepoConfigFilePath, formulaRepoConfigFilePathLength, "%s/.uppm-formula-repo.yml", formulaRepoPath);
 
     if (stat(formulaRepoConfigFilePath, &st) == 0 && S_ISREG(st.st_mode)) {
-        return rm_r(formulaRepoPath, false);
+        if (rm_r(formulaRepoPath, false) == 0) {
+            return UPPM_OK;
+        } else {
+            perror(formulaRepoPath);
+            return UPPM_ERROR;
+        }
     } else {
         fprintf(stderr, "formula repo is broken: %s\n", formulaRepoName);
         return UPPM_ERROR;

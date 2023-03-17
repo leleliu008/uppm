@@ -4,10 +4,10 @@
 
 #include "core/sysinfo.h"
 #include "core/self.h"
-#include "core/untar.h"
-#include "core/http.h"
+#include "core/tar.h"
 #include "core/log.h"
 #include "core/cp.h"
+
 #include "uppm.h"
 
 int uppm_upgrade_self(bool verbose) {
@@ -69,7 +69,7 @@ int uppm_upgrade_self(bool verbose) {
     char     githubApiResultJsonFilePath[githubApiResultJsonFilePathLength];
     snprintf(githubApiResultJsonFilePath, githubApiResultJsonFilePathLength, "%s/latest.json", uppmTmpDir);
 
-    int ret = http_fetch_to_file(githubApiUrl, githubApiResultJsonFilePath, verbose, verbose);
+    int ret = uppm_http_fetch_to_file(githubApiUrl, githubApiResultJsonFilePath, verbose, verbose);
 
     if (ret != UPPM_OK) {
         return ret;
@@ -94,7 +94,7 @@ int uppm_upgrade_self(bool verbose) {
         if (p == NULL) {
             if (ferror(file)) {
                 perror(githubApiResultJsonFilePath);
-                goto finally;
+                goto finalize;
             } else {
                 break;
             }
@@ -137,7 +137,7 @@ int uppm_upgrade_self(bool verbose) {
                 if (q[n] == '+') { // found right double quote
                     q[n] = '\0';
                     latestVersion = &q[0];
-                    goto finally;
+                    goto finalize;
                 } else {
                     n++;
                 }
@@ -145,7 +145,7 @@ int uppm_upgrade_self(bool verbose) {
         }
     }
 
-finally:
+finalize:
     fclose(file);
 
     printf("latestVersion=%s\n", latestVersion);
@@ -185,15 +185,15 @@ finally:
     }
 
     if (latestVersionMajor < UPPM_VERSION_MAJOR) {
-        LOG_SUCCESS("this software is already the latest version.");
+        LOG_SUCCESS1("this software is already the latest version.");
         return UPPM_OK;
     } else if (latestVersionMajor == UPPM_VERSION_MAJOR) {
         if (latestVersionMinor < UPPM_VERSION_MINOR) {
-            LOG_SUCCESS("this software is already the latest version.");
+            LOG_SUCCESS1("this software is already the latest version.");
             return UPPM_OK;
         } else if (latestVersionMinor == UPPM_VERSION_MINOR) {
             if (latestVersionPatch <= UPPM_VERSION_PATCH) {
-                LOG_SUCCESS("this software is already the latest version.");
+                LOG_SUCCESS1("this software is already the latest version.");
                 return UPPM_OK;
             }
         }
@@ -203,27 +203,25 @@ finally:
 
     char osType[31] = {0};
 
-    ret = sysinfo_type(osType, 30);
-
-    if (ret != UPPM_OK) {
-        return ret;
+    if (sysinfo_type(osType, 30) < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
     }
 
     char osArch[31] = {0};
 
-    ret = sysinfo_arch(osArch, 30);
-
-    if (ret != UPPM_OK) {
-        return ret;
+    if (sysinfo_arch(osArch, 30) < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
     }
 
     size_t latestVersionLength = strlen(latestVersion);
 
-    size_t   tarballFileNameLength = latestVersionLength + strlen(osType) + strlen(osArch) + 15;
+    size_t   tarballFileNameLength = latestVersionLength + strlen(osType) + strlen(osArch) + 26;
     char     tarballFileName[tarballFileNameLength];
     snprintf(tarballFileName, tarballFileNameLength, "uppm-%s-%s-%s.tar.xz", latestVersion, osType, osArch);
 
-    size_t   tarballUrlLength = tarballFileNameLength + latestVersionLength + 55;
+    size_t   tarballUrlLength = tarballFileNameLength + latestVersionLength + 66;
     char     tarballUrl[tarballUrlLength];
     snprintf(tarballUrl, tarballUrlLength, "https://github.com/leleliu008/uppm/releases/download/%s/%s", latestVersion, tarballFileName);
 
@@ -231,7 +229,7 @@ finally:
     char     tarballFilePath[tarballFilePathLength];
     snprintf(tarballFilePath, tarballFilePathLength, "%s/%s", uppmTmpDir, tarballFileName);
 
-    ret = http_fetch_to_file(tarballUrl, tarballFilePath, verbose, verbose);
+    ret = uppm_http_fetch_to_file(tarballUrl, tarballFilePath, verbose, verbose);
 
     if (ret != UPPM_OK) {
         return ret;
@@ -243,7 +241,7 @@ finally:
     char     tarballExtractDir[tarballExtractDirLength];
     snprintf(tarballExtractDir, tarballExtractDirLength, "%s.d", tarballFilePath);
 
-    ret = untar_extract(tarballExtractDir, tarballFilePath, 0, verbose, 1);
+    ret = tar_extract(tarballExtractDir, tarballFilePath, 0, verbose, 1);
 
     if (ret != 0) {
         return abs(ret) + UPPM_ERROR_ARCHIVE_BASE;
@@ -253,38 +251,39 @@ finally:
     char     upgradableExecutableFilePath[upgradableExecutableFilePathLength];
     snprintf(upgradableExecutableFilePath, upgradableExecutableFilePathLength, "%s/bin/uppm", tarballExtractDir);
 
-    char * selfRealPath = NULL;
+    char * selfRealPath = self_realpath();
 
-    ret = self_realpath(&selfRealPath);
-
-    if (ret != UPPM_OK) {
-        fprintf(stderr, "Can't upgrade self. the latest version of executable was downloaded to %s, you can replace the current running program with it.\n", upgradableExecutableFilePath);
-        return ret;
+    if (selfRealPath == NULL) {
+        perror(NULL);
+        ret = UPPM_ERROR;
+        goto finally;
     }
 
     if (unlink(selfRealPath) != 0) {
         perror(selfRealPath);
-        free(selfRealPath);
-        fprintf(stderr, "Can't upgrade self. the latest version of executable was downloaded to %s, you can replace the current running program with it.\n", upgradableExecutableFilePath);
-        return UPPM_ERROR;
+        ret = UPPM_ERROR;
+        goto finally;
     }
 
-    ret = copy_file(upgradableExecutableFilePath, selfRealPath);
-
-    if (ret != UPPM_OK) {
-        free(selfRealPath);
-        fprintf(stderr, "Can't upgrade self. the latest version of executable was downloaded to %s, you can replace the current running program with it.\n", upgradableExecutableFilePath);
-        return UPPM_ERROR;
+    if (copy_file(upgradableExecutableFilePath, selfRealPath) != 0) {
+        perror(NULL);
+        ret = UPPM_ERROR;
+        goto finally;
     }
 
-    if (chmod(selfRealPath, S_IRWXU) == 0) {
-        free(selfRealPath);
-        fprintf(stderr, "uppm is up to date with version %s\n", latestVersion);
-        return UPPM_OK;
-    } else {
+    if (chmod(selfRealPath, S_IRWXU) != 0) {
         perror(selfRealPath);
-        free(selfRealPath);
-        fprintf(stderr, "Can't upgrade self. the latest version of executable was downloaded to %s, you can replace the current running program with it.\n", upgradableExecutableFilePath);
-        return UPPM_ERROR;
+        ret = UPPM_ERROR;
     }
+
+finally:
+    free(selfRealPath);
+
+    if (ret == UPPM_OK) {
+        fprintf(stderr, "uppm is up to date with version %s\n", latestVersion);
+    } else {
+        fprintf(stderr, "Can't upgrade self. the latest version of executable was downloaded to %s, you can manually replace the current running program with it.\n", upgradableExecutableFilePath);
+    }
+
+    return ret;
 }

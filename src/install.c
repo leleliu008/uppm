@@ -6,12 +6,13 @@
 #include <math.h>
 #include <libgen.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 
-#include "core/http.h"
 #include "core/sysinfo.h"
 #include "core/sha256sum.h"
-#include "core/untar.h"
 #include "core/rm-r.h"
+#include "core/tar.h"
+
 #include "uppm.h"
 
 extern int record_installed_files(const char * installedDirPath);
@@ -71,16 +72,16 @@ int uppm_install(const char * packageName, bool verbose) {
 
     struct stat st;
 
-    size_t packageInstalledDirLength = userHomeDirLength + strlen(packageName) + 20;
-    char   packageInstalledDir[packageInstalledDirLength];
+    size_t   packageInstalledDirLength = userHomeDirLength + strlen(packageName) + 20;
+    char     packageInstalledDir[packageInstalledDirLength];
     snprintf(packageInstalledDir, packageInstalledDirLength, "%s/.uppm/installed/%s", userHomeDir, packageName);
 
-    size_t packageInstalledMetaInfoDirLength = packageInstalledDirLength + 6;
-    char   packageInstalledMetaInfoDir[packageInstalledMetaInfoDirLength];
+    size_t   packageInstalledMetaInfoDirLength = packageInstalledDirLength + 6;
+    char     packageInstalledMetaInfoDir[packageInstalledMetaInfoDirLength];
     snprintf(packageInstalledMetaInfoDir, packageInstalledMetaInfoDirLength, "%s/.uppm", packageInstalledDir);
 
-    size_t receiptFilePathLength = packageInstalledMetaInfoDirLength + 12;
-    char   receiptFilePath[receiptFilePathLength];
+    size_t   receiptFilePathLength = packageInstalledMetaInfoDirLength + 12;
+    char     receiptFilePath[receiptFilePathLength];
     snprintf(receiptFilePath, receiptFilePathLength, "%s/receipt.yml", packageInstalledMetaInfoDir);
 
     if (stat(receiptFilePath, &st) == 0 && S_ISREG(st.st_mode)) {
@@ -93,8 +94,8 @@ int uppm_install(const char * packageName, bool verbose) {
 
     fprintf(stderr, "prepare to install package [%s].\n", packageName);
 
-    size_t uppmDownloadDirLength = userHomeDirLength + 18;
-    char   uppmDownloadDir[uppmDownloadDirLength];
+    size_t   uppmDownloadDirLength = userHomeDirLength + 18;
+    char     uppmDownloadDir[uppmDownloadDirLength];
     snprintf(uppmDownloadDir, uppmDownloadDirLength, "%s/.uppm/downloads", userHomeDir);
 
     if (stat(uppmDownloadDir, &st) == 0) {
@@ -118,12 +119,12 @@ int uppm_install(const char * packageName, bool verbose) {
         return ret;
     }
 
-    size_t binFileNameLength = strlen(formula->bin_sha) + strlen(binFileNameExtension) + 1;
-    char   binFileName[binFileNameLength];
+    size_t   binFileNameLength = strlen(formula->bin_sha) + strlen(binFileNameExtension) + 1;
+    char     binFileName[binFileNameLength];
     snprintf(binFileName, binFileNameLength, "%s%s", formula->bin_sha, binFileNameExtension);
 
-    size_t binFilePathLength = uppmDownloadDirLength + binFileNameLength + 1;
-    char   binFilePath[binFilePathLength];
+    size_t   binFilePathLength = uppmDownloadDirLength + binFileNameLength + 1;
+    char     binFilePath[binFilePathLength];
     snprintf(binFilePath, binFilePathLength, "%s/%s", uppmDownloadDir, binFileName);
 
     bool needFetch = true;
@@ -132,11 +133,10 @@ int uppm_install(const char * packageName, bool verbose) {
         if (S_ISREG(st.st_mode)) {
             char actualSHA256SUM[65] = {0};
 
-            ret = sha256sum_of_file(actualSHA256SUM, binFilePath);
-
-            if (ret != 0) {
+            if (sha256sum_of_file(actualSHA256SUM, binFilePath) != 0) {
+                perror(NULL);
                 uppm_formula_free(formula);
-                return ret;
+                return UPPM_ERROR;
             }
 
             if (strcmp(actualSHA256SUM, formula->bin_sha) == 0) {
@@ -146,7 +146,7 @@ int uppm_install(const char * packageName, bool verbose) {
     }
 
     if (needFetch) {
-        ret = http_fetch_to_file(formula->bin_url, binFilePath, verbose, verbose);
+        ret = uppm_http_fetch_to_file(formula->bin_url, binFilePath, verbose, verbose);
 
         if (ret != UPPM_OK) {
             uppm_formula_free(formula);
@@ -155,11 +155,10 @@ int uppm_install(const char * packageName, bool verbose) {
 
         char actualSHA256SUM[65] = {0};
 
-        ret = sha256sum_of_file(actualSHA256SUM, binFilePath);
-
-        if (ret != 0) {
+        if (sha256sum_of_file(actualSHA256SUM, binFilePath) != 0) {
+            perror(NULL);
             uppm_formula_free(formula);
-            return ret;
+            return UPPM_ERROR;
         }
 
         if (strcmp(actualSHA256SUM, formula->bin_sha) == 0) {
@@ -173,8 +172,8 @@ int uppm_install(const char * packageName, bool verbose) {
         fprintf(stderr, "%s already have been fetched.\n", binFilePath);
     }
 
-    size_t installedDirLength = userHomeDirLength + 20;
-    char   installedDir[installedDirLength];
+    size_t   installedDirLength = userHomeDirLength + 20;
+    char     installedDir[installedDirLength];
     snprintf(installedDir, installedDirLength, "%s/.uppm/installed", userHomeDir);
 
     if (stat(installedDir, &st) == 0) {
@@ -210,7 +209,7 @@ int uppm_install(const char * packageName, bool verbose) {
     }
 
     if (formula->install == NULL) {
-        ret = untar_extract(packageInstalledDir, binFilePath, ARCHIVE_EXTRACT_TIME, verbose, 1);
+        ret = tar_extract(packageInstalledDir, binFilePath, ARCHIVE_EXTRACT_TIME, verbose, 1);
 
         if (ret != 0) {
             uppm_formula_free(formula);
@@ -219,27 +218,26 @@ int uppm_install(const char * packageName, bool verbose) {
     } else {
         SysInfo sysinfo = {0};
 
-        ret = sysinfo_make(&sysinfo);
-
-        if (ret != UPPM_OK) {
+        if (sysinfo_make(&sysinfo) != 0) {
+            perror(NULL);
             uppm_formula_free(formula);
-            return ret;
+            return UPPM_ERROR;
         }
 
-        char * libcName = NULL;
+        char * libcName;
 
         switch(sysinfo.libc) {
-            case LIBC_GLIBC: libcName = (char*)"glibc"; break;
-            case LIBC_MUSL:  libcName = (char*)"musl";  break;
-            default:         libcName = (char*)"";
+            case 1:  libcName = (char*)"glibc"; break;
+            case 2:  libcName = (char*)"musl";  break;
+            default: libcName = (char*)"";
         }
 
-        size_t uppmHomeDirLength = strlen(userHomeDir) + 7;
-        char   uppmHomeDir[uppmHomeDirLength];
+        size_t   uppmHomeDirLength = strlen(userHomeDir) + 7;
+        char     uppmHomeDir[uppmHomeDirLength];
         snprintf(uppmHomeDir, uppmHomeDirLength, "%s/.uppm", userHomeDir);
 
-        size_t shellCodeLength = strlen(formula->install) + 1024;
-        char   shellCode[shellCodeLength];
+        size_t   shellCodeLength = strlen(formula->install) + 1024;
+        char     shellCode[shellCodeLength];
         snprintf(shellCode, shellCodeLength,
                 "set -ex\n\n"
                 "NATIVE_OS_KIND='%s'\n"
@@ -248,7 +246,7 @@ int uppm_install(const char * packageName, bool verbose) {
                 "NATIVE_OS_VERS='%s'\n"
                 "NATIVE_OS_LIBC='%s'\n"
                 "NATIVE_OS_ARCH='%s'\n"
-                "NATIVE_OS_NCPU='%ld'\n\n"
+                "NATIVE_OS_NCPU='%u'\n\n"
                 "UPPM_VERSION='%s'\n"
                 "UPPM_VERSION_MAJOR='%d'\n"
                 "UPPM_VERSION_MINOR='%d'\n"
@@ -295,13 +293,23 @@ int uppm_install(const char * packageName, bool verbose) {
 
         printf("run shell code:\n%s\n", shellCode);
 
-        ret = system(shellCode);
+        int childProcessExitStatusCode = system(shellCode);
 
-        if (ret == -1) {
+        if (childProcessExitStatusCode == -1) {
             perror(NULL);
+            uppm_formula_free(formula);
+            return UPPM_ERROR;
         }
 
         if (ret != 0) {
+            if (WIFEXITED(childProcessExitStatusCode)) {
+                fprintf(stderr, "running shell code exit with status code: %d\n", WEXITSTATUS(childProcessExitStatusCode));
+            } else if (WIFSIGNALED(childProcessExitStatusCode)) {
+                fprintf(stderr, "running shell code killed by signal: %d\n", WTERMSIG(childProcessExitStatusCode));
+            } else if (WIFSTOPPED(childProcessExitStatusCode)) {
+                fprintf(stderr, "running shell code stopped by signal: %d\n", WSTOPSIG(childProcessExitStatusCode));
+            }
+
             uppm_formula_free(formula);
             return UPPM_ERROR;
         }

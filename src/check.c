@@ -1,3 +1,4 @@
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -5,6 +6,7 @@
 #include <sys/stat.h>
 
 #include "core/regex/regex.h"
+
 #include "uppm.h"
 
 int uppm_check_if_the_given_argument_matches_package_name_pattern(const char * arg) {
@@ -12,10 +14,17 @@ int uppm_check_if_the_given_argument_matches_package_name_pattern(const char * a
         return UPPM_ERROR_ARG_IS_NULL;
     } else if (strcmp(arg, "") == 0) {
         return UPPM_ERROR_ARG_IS_EMPTY;
-    } else if (regex_matched(arg, UPPM_PACKAGE_NAME_PATTERN)) {
-        return UPPM_OK;
     } else {
-        return UPPM_ERROR_ARG_IS_INVALID;
+        if (regex_matched(arg, UPPM_PACKAGE_NAME_PATTERN) == 0) {
+            return UPPM_OK;
+        } else {
+            if (errno == 0) {
+                return UPPM_ERROR_ARG_IS_INVALID;
+            } else {
+                perror(NULL);
+                return UPPM_ERROR;
+            }
+        }
     }
 }
 

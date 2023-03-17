@@ -1,10 +1,8 @@
-#ifndef HTTP_H
-#define HTTP_H
+#ifndef _HTTP_H_
+#define _HTTP_H_
 
     #include <stdio.h>
     #include <stdbool.h>
-
-    #include "../uppm.h"
 
     #ifdef __cplasplas
         extern "C"

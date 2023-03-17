@@ -2,8 +2,9 @@
 #include <string.h>
 #include <sys/stat.h>
 
-#include "uppm.h"
 #include "core/rm-r.h"
+
+#include "uppm.h"
 
 int uppm_cleanup(bool verbose) {
     char * userHomeDir = getenv("HOME");
@@ -22,13 +23,18 @@ int uppm_cleanup(bool verbose) {
 
     struct stat st;
 
-    size_t uppmTmpDirLength = userHomeDirLength + 11;
-    char   uppmTmpDir[uppmTmpDirLength];
+    size_t   uppmTmpDirLength = userHomeDirLength + 11;
+    char     uppmTmpDir[uppmTmpDirLength];
     snprintf(uppmTmpDir, uppmTmpDirLength, "%s/.uppm/tmp", userHomeDir);
 
     if (stat(uppmTmpDir, &st) == 0) {
         if (S_ISDIR(st.st_mode)) {
-            return rm_r(uppmTmpDir, verbose);
+            if (rm_r(uppmTmpDir, verbose) == 0) {
+                return UPPM_OK;
+            } else {
+                perror(uppmTmpDir);
+                return UPPM_ERROR;
+            }
         } else {
             fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", uppmTmpDir);
             return UPPM_ERROR;

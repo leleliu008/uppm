@@ -1,3 +1,4 @@
+#include <errno.h>
 #include <stdio.h>
 #include <string.h>
 #include <openssl/sha.h>
@@ -18,15 +19,18 @@ static inline void tohex(char buf[65], unsigned char * sha256Bytes) {
 
 int sha256sum_of_bytes(char outputBuffer[65], unsigned char * inputBuffer, size_t inputBufferSizeInBytes) {
     if (outputBuffer == NULL) {
-        return UPPM_ERROR_ARG_IS_NULL;
+        errno = EINVAL;
+        return -1;
     }
 
     if (inputBuffer == NULL) {
-        return UPPM_ERROR_ARG_IS_NULL;
+        errno = EINVAL;
+        return -1;
     }
 
     if (inputBufferSizeInBytes == 0) {
-        return UPPM_ERROR_ARG_IS_INVALID;
+        errno = EINVAL;
+        return -1;
     }
 
     unsigned char sha256Bytes[SHA256_DIGEST_LENGTH] = {0};
@@ -38,18 +42,20 @@ int sha256sum_of_bytes(char outputBuffer[65], unsigned char * inputBuffer, size_
 
     tohex(outputBuffer, sha256Bytes);
 
-    return UPPM_OK;
+    return 0;
 }
 
 int sha256sum_of_string(char outputBuffer[65], const char * str) {
     if (str == NULL) {
-        return UPPM_ERROR_ARG_IS_NULL;
+        errno = EINVAL;
+        return -1;
     }
 
     size_t strLength = strlen(str);
 
     if (strLength == 0) {
-        return UPPM_ERROR_ARG_IS_EMPTY;
+        errno = EINVAL;
+        return -1;
     }
 
     unsigned char sha256Bytes[SHA256_DIGEST_LENGTH] = {0};
@@ -61,16 +67,18 @@ int sha256sum_of_string(char outputBuffer[65], const char * str) {
 
     tohex(outputBuffer, sha256Bytes);
 
-    return UPPM_OK;
+    return 0;
 }
 
 int sha256sum_of_stream(char outputBuffer[65], FILE * file) {
     if (outputBuffer == NULL) {
-        return UPPM_ERROR_ARG_IS_NULL;
+        errno = EINVAL;
+        return -1;
     }
 
     if (file == NULL) {
-        return UPPM_ERROR_ARG_IS_NULL;
+        errno = EINVAL;
+        return -1;
     }
 
     unsigned char sha256Bytes[SHA256_DIGEST_LENGTH] = {0};
@@ -85,8 +93,8 @@ int sha256sum_of_stream(char outputBuffer[65], FILE * file) {
         size = fread(buffer, 1, 1024, file);
 
         if (ferror(file)) {
-            perror(NULL);
-            return UPPM_ERROR;
+            errno = EIO;
+            return -1;
         }
 
         if (size > 0) {
@@ -102,27 +110,30 @@ int sha256sum_of_stream(char outputBuffer[65], FILE * file) {
 
     tohex(outputBuffer, sha256Bytes);
 
-    return UPPM_OK;
+    return 0;
 }
 
 int sha256sum_of_file(char outputBuffer[65], const char * filepath) {
     if (outputBuffer == NULL) {
-        return UPPM_ERROR_ARG_IS_NULL;
+        errno = EINVAL;
+        return -1;
     }
 
     if (filepath == NULL) {
-        return UPPM_ERROR_ARG_IS_NULL;
+        errno = EINVAL;
+        return -1;
     }
 
     if (strcmp(filepath, "") == 0) {
-        return UPPM_ERROR_ARG_IS_EMPTY;
+        errno = EINVAL;
+        return -1;
     }
 
     FILE * file = fopen(filepath, "rb");
 
     if (file == NULL) {
-        perror(filepath);
-        return UPPM_ERROR;
+        errno = EINVAL;
+        return -1;
     }
 
     int ret = sha256sum_of_stream(outputBuffer, file);

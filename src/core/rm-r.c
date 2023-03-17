@@ -1,8 +1,7 @@
+#include <errno.h>
 #include <stdio.h>
-#include <stdbool.h>
 #include <string.h>
 #include <unistd.h>
-#include <errno.h>
 #include <dirent.h>
 #include <sys/stat.h>
 
@@ -10,23 +9,22 @@
 
 int rm_r(const char * dirPath, bool verbose) {
     if (dirPath == NULL) {
-        return UPPM_ERROR_ARG_IS_NULL;
+        errno = EINVAL;
+        return -1;
     }
 
     size_t dirPathLength = strlen(dirPath);
 
     if (dirPathLength == 0) {
-        return UPPM_ERROR_ARG_IS_EMPTY;
+        errno = EINVAL;
+        return -1;
     }
 
     DIR * dir = opendir(dirPath);
 
     if (dir == NULL) {
-        perror(dirPath);
-        return UPPM_ERROR;
+        return -1;
     }
-
-    int ret = UPPM_OK;
 
     struct stat st;
 
@@ -41,16 +39,12 @@ int rm_r(const char * dirPath, bool verbose) {
             if (errno == 0) {
                 closedir(dir);
 
-                if (rmdir(dirPath) == 0) {
-                    break;
-                } else {
-                    perror(dirPath);
-                    return UPPM_ERROR;
-                }
+                return rmdir(dirPath);
             } else {
-                perror(dirPath);
+                int err = errno;
                 closedir(dir);
-                return UPPM_ERROR;
+                errno = err;
+                return -1;
             }
         }
 
@@ -58,25 +52,26 @@ int rm_r(const char * dirPath, bool verbose) {
             continue;
         }
 
-        size_t filePathLength = dirPathLength + strlen(dir_entry->d_name) + 2;
-        char   filePath[filePathLength];
+        size_t   filePathLength = dirPathLength + strlen(dir_entry->d_name) + 2;
+        char     filePath[filePathLength];
         snprintf(filePath, filePathLength, "%s/%s", dirPath, dir_entry->d_name);
 
         if (verbose) printf("rm %s\n", filePath);
 
         if (stat(filePath, &st) == 0) {
             if (S_ISDIR(st.st_mode)) {
-                ret = rm_r(filePath, verbose);
-
-                if (ret != UPPM_OK) {
+                if (rm_r(filePath, verbose) != 0) {
+                    int err = errno;
                     closedir(dir);
-                    return UPPM_ERROR;
+                    errno = err;
+                    return -1;
                 }
             } else {
                 if (unlink(filePath) != 0) {
-                    perror(filePath);
+                    int err = errno;
                     closedir(dir);
-                    return UPPM_ERROR;
+                    errno = err;
+                    return -1;
                 }
             }
         } else {
@@ -88,12 +83,11 @@ int rm_r(const char * dirPath, bool verbose) {
             // if bin/gsed was removed, then bin/sed will be treated as a non-existent file.
 
             if (unlink(filePath) != 0) {
-                perror(filePath);
+                int err = errno;
                 closedir(dir);
-                return UPPM_ERROR;
+                errno = err;
+                return -1;
             }
         }
     }
-
-    return UPPM_OK;
 }
