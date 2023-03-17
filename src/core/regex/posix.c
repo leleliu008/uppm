@@ -14,12 +14,16 @@ int regex_matched(const char * content, const char * pattern) {
     regex_t regex;
 
     if (regcomp(&regex, pattern, REG_EXTENDED) != 0) {
+        int err = errno;
+        regfree(&regex);
+        errno = err;
         return -1;
     }
 
     regmatch_t regmatch[2];
 
     if (regexec(&regex, content, 2, regmatch, 0) != 0) {
+        regfree(&regex);
         errno = 0;
         return -1;
     }
@@ -46,12 +50,16 @@ char* regex_extract(const char * content, const char * pattern) {
     regex_t regex;
 
     if (regcomp(&regex, pattern, REG_EXTENDED) != 0) {
+        int err = errno;
+        regfree(&regex);
+        errno = err;
         return NULL;
     }
 
     regmatch_t regmatch[2];
 
     if (regexec(&regex, content, 2, regmatch, 0) != 0) {
+        regfree(&regex);
         errno = 0;
         return NULL;
     }

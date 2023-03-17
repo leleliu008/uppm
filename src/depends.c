@@ -28,7 +28,13 @@ static int uppm_depends_make_box(const char * dotScriptStr, size_t dotScriptStrL
 
     //printf("url=%s\n", url);
 
-    int ret = http_fetch_to_stream(url, stdout, false, false);
+    int ret;
+
+    if (outputFilePath == NULL) {
+        ret = http_fetch_to_stream(url, stdout, false, false);
+    } else {
+        ret = http_fetch_to_file(url, outputFilePath, false, false);
+    }
 
     if (ret == -1) {
         perror(outputFilePath);
