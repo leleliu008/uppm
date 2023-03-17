@@ -8,8 +8,8 @@
 #include "tar.h"
 
 int tar_list(const char * inputFilePath, int flags) {
-	if (inputFilePath != NULL && strcmp(inputFilePath, "-") == 0) {
-		inputFilePath = NULL;
+    if (inputFilePath != NULL && strcmp(inputFilePath, "-") == 0) {
+        inputFilePath = NULL;
     }
 
     struct archive *ar = archive_read_new();
@@ -22,50 +22,50 @@ int tar_list(const char * inputFilePath, int flags) {
 
     struct archive_entry *entry = NULL;
 
-    int ret = 0;
+    int ret;
 
-	if ((ret = archive_read_open_filename(ar, inputFilePath, 10240))) {
+    if ((ret = archive_read_open_filename(ar, inputFilePath, 10240))) {
         goto finalize;
     }
 
-	for (;;) {
-		ret = archive_read_next_header(ar, &entry);
+    for (;;) {
+        ret = archive_read_next_header(ar, &entry);
 
-		if (ret == ARCHIVE_EOF) {
-			break;
+        if (ret == ARCHIVE_EOF) {
+            break;
         }
 
-		if (ret == ARCHIVE_OK) {
-		    printf("%s\n", archive_entry_pathname(entry));
+        if (ret == ARCHIVE_OK) {
+            printf("%s\n", archive_entry_pathname(entry));
         } else {
             goto finalize;
         }
-	}
+    }
 
 finalize:
     if (ret != ARCHIVE_OK) {
         fprintf(stdout, "%s\n", archive_error_string(ar));
     }
 
-	archive_read_close(ar);
-	archive_read_free(ar);
+    archive_read_close(ar);
+    archive_read_free(ar);
 
-	archive_write_close(aw);
-  	archive_write_free(aw);
+    archive_write_close(aw);
+    archive_write_free(aw);
 
     return ret;
 }
 
 int tar_extract(const char * outputDir, const char * inputFilePath, int flags, bool verbose, size_t stripComponentsNumber) {
     if (inputFilePath != NULL && strcmp(inputFilePath, "-") == 0) {
-		inputFilePath = NULL;
+        inputFilePath = NULL;
     }
 
     // https://github.com/libarchive/libarchive/issues/459
     setlocale(LC_ALL, "");
 
-	struct archive *ar = archive_read_new();
-	struct archive *aw = archive_write_disk_new();
+    struct archive *ar = archive_read_new();
+    struct archive *aw = archive_write_disk_new();
 
     archive_read_support_format_all(ar);
     archive_read_support_filter_all(ar);
@@ -76,16 +76,16 @@ int tar_extract(const char * outputDir, const char * inputFilePath, int flags, b
 
 	int ret = 0;
 
-	if ((ret = archive_read_open_filename(ar, inputFilePath, 10240))) {
+    if ((ret = archive_read_open_filename(ar, inputFilePath, 10240))) {
         goto finalize;
     }
 
-	for (;;) {
-		ret = archive_read_next_header(ar, &entry);
+    for (;;) {
+        ret = archive_read_next_header(ar, &entry);
 
-		if (ret == ARCHIVE_EOF) {
+        if (ret == ARCHIVE_EOF) {
             ret =  ARCHIVE_OK;
-			break;
+            break;
         }
 
 		if (ret != ARCHIVE_OK) {
@@ -111,8 +111,8 @@ int tar_extract(const char * outputDir, const char * inputFilePath, int flags, b
             }
         }
 
-		if (verbose) {
-			printf("x %s\n", entry_pathname);
+        if (verbose) {
+            printf("x %s\n", entry_pathname);
         }
 
         if ((outputDir != NULL) && (strcmp(outputDir, "") != 0)) {
@@ -190,18 +190,18 @@ int tar_extract(const char * outputDir, const char * inputFilePath, int flags, b
         if (ret != ARCHIVE_OK) {
             goto finalize;
         }
-	}
+    }
 
 finalize:
     if (ret != ARCHIVE_OK) {
         fprintf(stdout, "%s\n", archive_error_string(ar));
     }
 
-	archive_read_close(ar);
-	archive_read_free(ar);
-	
-	archive_write_close(aw);
-  	archive_write_free(aw);
+    archive_read_close(ar);
+    archive_read_free(ar);
+
+    archive_write_close(aw);
+    archive_write_free(aw);
 
     return ret;
 }
@@ -327,13 +327,13 @@ int tar_create(const char * inputDir, const char * outputFilePath, ArchiveType t
     }
 
     if (outputFilePath != NULL && strcmp(outputFilePath, "-") == 0) {
-		outputFilePath = NULL;
+        outputFilePath = NULL;
     }
 
     // https://github.com/libarchive/libarchive/issues/459
     setlocale(LC_ALL, "");
 
-	struct archive *aw = archive_write_new();
+    struct archive *aw = archive_write_new();
 
     switch (type) {
         case ArchiveType_tar_gz:
@@ -360,7 +360,7 @@ int tar_create(const char * inputDir, const char * outputFilePath, ArchiveType t
     archive_write_open_filename(aw, outputFilePath);
 
     struct archive       *ar    = NULL;
-	struct archive_entry *entry = NULL;
+    struct archive_entry *entry = NULL;
 
     int fd;
 
@@ -434,8 +434,8 @@ finalize:
         archive_read_free(ar);
     }
 
-	archive_write_close(aw);
-  	archive_write_free(aw);
+    archive_write_close(aw);
+    archive_write_free(aw);
 
     if (stringArrayList.size > 0) {
         for (size_t i = 0; i < stringArrayList.size; i++) {
