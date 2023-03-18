@@ -23,23 +23,21 @@ static int url_transform_read(int readEndFD, char outputBuffer[], size_t outputB
             return -1;
         }
 
+        if (buf[readSize - 1] == '\n') {
+            readSize--;
+        }
+
         if (readSize > 0) {
-            if (buf[readSize - 1] == '\n') {
-                readSize--;
-            }
+            size_t writtenSize = (*writtenSizeInBytes);
+            size_t detlaSize = outputBufferSizeInBytes - writtenSize;
+            size_t n = detlaSize > (size_t)readSize ? readSize : detlaSize;
 
-            if (readSize > 0) {
-                size_t writtenSize = (*writtenSizeInBytes);
-                size_t detlaSize = outputBufferSizeInBytes - writtenSize;
-                size_t n = detlaSize > (size_t)readSize ? readSize : detlaSize;
+            strncpy(outputBuffer + writtenSize, buf, n);
 
-                strncpy(outputBuffer + writtenSize, buf, n);
+            (*writtenSizeInBytes) = writtenSize + n;
 
-                (*writtenSizeInBytes) = writtenSize + n;
-
-                if ((*writtenSizeInBytes) == outputBufferSizeInBytes) {
-                    return 0;
-                }
+            if ((*writtenSizeInBytes) == outputBufferSizeInBytes) {
+                return 0;
             }
         }
     }

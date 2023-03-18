@@ -347,6 +347,7 @@ int uppm_install(const char * packageName, bool verbose) {
     if (formulaFile == NULL) {
         perror(formula->path);
         uppm_formula_free(formula);
+        fclose(receiptFile);
         return UPPM_ERROR;
     }
 
@@ -362,7 +363,6 @@ int uppm_install(const char * packageName, bool verbose) {
         size = fread(buff, 1, 1024, formulaFile);
 
         if (ferror(formulaFile)) {
-            perror(formula->path);
             fclose(formulaFile);
             fclose(receiptFile);
             return UPPM_ERROR;
@@ -370,7 +370,6 @@ int uppm_install(const char * packageName, bool verbose) {
 
         if (size > 0) {
             if (fwrite(buff, 1, size, receiptFile) != size || ferror(receiptFile)) {
-                perror(receiptFilePath);
                 fclose(formulaFile);
                 fclose(receiptFile);
                 return UPPM_ERROR;

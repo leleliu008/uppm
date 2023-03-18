@@ -245,6 +245,7 @@ int uppm_formula_repo_parse(const char * formulaRepoConfigFilePath, UPPMFormulaR
     // https://libyaml.docsforge.com/master/api/yaml_parser_initialize/
     if (yaml_parser_initialize(&parser) == 0) {
         perror("Failed to initialize yaml parser");
+        fclose(file);
         return UPPM_ERROR;
     }
 

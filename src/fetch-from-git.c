@@ -58,7 +58,7 @@ int git_credential_acquire_callback(git_credential **credential, const char *url
 
     int userHomeDirLength = strlen(userHomeDir);
 
-    if (userHomeDir == NULL) {
+    if (userHomeDirLength == 0) {
         return 1;
     }
 
@@ -146,7 +146,9 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
         repositoryDIR = ".";
     }
 
-    if ((remoteUrl == NULL) || (strcmp(remoteUrl, "") == 0)) {
+    size_t remoteUrlLength = strlen(remoteUrl);
+
+    if (remoteUrl == NULL || remoteUrlLength == 0) {
         return UPPM_ERROR_ARG_IS_NULL;
     }
 
@@ -154,24 +156,20 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
 
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-    char * transformedUrl = NULL;
+    char transformedUrl[1025] = {0};
 
     const char * urlTransformCommandPath = getenv("UPPM_URL_TRANSFORM");
 
     if (urlTransformCommandPath == NULL || strcmp(urlTransformCommandPath, "") == 0) {
-        transformedUrl = strdup(remoteUrl);
-
-        if (transformedUrl == NULL) {
-            return UPPM_ERROR_MEMORY_ALLOCATE;
-        }
+        strncpy(transformedUrl, remoteUrl, remoteUrlLength);
+        transformedUrl[1024] = '\0';
     } else {
         fprintf(stderr, "\nyou have set UPPM_URL_TRANSFORM=%s\n", urlTransformCommandPath);
         fprintf(stderr, "transform from: %s\n", remoteUrl);
 
-        char   outputBuffer[1025] = {0};
         size_t writtenSize = 0;
 
-        if (url_transform(urlTransformCommandPath, remoteUrl, outputBuffer, 1024, &writtenSize, true) != 0) {
+        if (url_transform(urlTransformCommandPath, remoteUrl, transformedUrl, 1024, &writtenSize, true) != 0) {
             perror(urlTransformCommandPath);
             return UPPM_ERROR;
         }
@@ -182,12 +180,6 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
         }
 
         fprintf(stderr, "transform   to: %s\n", transformedUrl);
-
-        transformedUrl = strdup(outputBuffer);
-
-        if (transformedUrl == NULL) {
-            return UPPM_ERROR_MEMORY_ALLOCATE;
-        }
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -480,8 +472,6 @@ finalize:
             fprintf(stderr, "%s\n", gitError->message);
         }
     }
-
-    free(transformedUrl);
 
     git_repository_state_cleanup(gitRepo);
     git_repository_free(gitRepo);

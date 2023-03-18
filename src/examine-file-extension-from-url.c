@@ -16,12 +16,9 @@ int uppm_examine_file_extension_from_url(char buf[], size_t maxSize, const char 
     }
 
     size_t urlLength = 0;
-    char c;
 
     for (;;) {
-        c = url[urlLength];
-
-        if (c == '?' || c == '\0') {
+        if (url[urlLength] == '?' || url[urlLength] == '\0') {
             break;
         } else {
             urlLength++;
@@ -44,11 +41,9 @@ int uppm_examine_file_extension_from_url(char buf[], size_t maxSize, const char 
 
     const char * p;
 
-    for (; i >= 0; i--) {
-        c = url[i];
-
-        if (c == '.') {
-            p = &url[i];
+    for (;;) {
+        if (url[i] == '.') {
+            p = url + i;
 
             if (urlLength - i == 3) {
                 if (strcmp(p, ".gz") == 0) {
@@ -87,12 +82,12 @@ int uppm_examine_file_extension_from_url(char buf[], size_t maxSize, const char 
             size_t n = urlLength - i;
             strncpy(buf, p, maxSize > n ? n : maxSize);
             return UPPM_OK;
-        }
-
-        if (i == 0) {
-            break;
+        } else {
+            if (i == 0) {
+                return UPPM_ERROR_ARG_IS_INVALID;
+            } else {
+                i--;
+            }
         }
     }
-
-    return UPPM_ERROR_ARG_IS_INVALID;
 }

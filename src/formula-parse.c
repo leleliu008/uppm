@@ -470,6 +470,7 @@ int uppm_formula_lookup(const char * packageName, UPPMFormula * * out) {
     if (yaml_parser_initialize(&parser) == 0) {
         perror("Failed to initialize yaml parser");
         free(formulaFilePath);
+        fclose(formulaFile);
         return UPPM_ERROR;
     }
 

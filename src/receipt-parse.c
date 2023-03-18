@@ -388,6 +388,7 @@ int uppm_receipt_parse(const char * packageName, UPPMReceipt * * out) {
     // https://libyaml.docsforge.com/master/api/yaml_parser_initialize/
     if (yaml_parser_initialize(&parser) == 0) {
         perror("Failed to initialize yaml parser");
+        fclose(file);
         return UPPM_ERROR;
     }
 
