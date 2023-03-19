@@ -100,8 +100,6 @@ static UPPMReceiptKeyCode uppm_receipt_key_code_from_key_name(char * key) {
         return UPPMReceiptKeyCode_summary;
     } else if (strcmp(key, "webpage") == 0) {
         return UPPMReceiptKeyCode_webpage;
-    } else if (strcmp(key, "webpage") == 0) {
-        return UPPMReceiptKeyCode_webpage;
     } else if (strcmp(key, "version") == 0) {
         return UPPMReceiptKeyCode_version;
     } else if (strcmp(key, "license") == 0) {
@@ -266,7 +264,7 @@ static int uppm_receipt_set_value(UPPMReceiptKeyCode keyCode, char * value, UPPM
             } else {
                 return UPPM_OK;
             }
-        case UPPMReceiptKeyCode_unknown: return UPPM_OK;
+        default: return UPPM_OK;
     }
 }
 

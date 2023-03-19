@@ -18,7 +18,7 @@ int uppm_examine_file_extension_from_url(char buf[], size_t maxSize, const char 
     size_t urlLength = 0;
 
     for (;;) {
-        if (url[urlLength] == '?' || url[urlLength] == '\0') {
+        if ((url[urlLength] == '?') || (url[urlLength] == '\0')) {
             break;
         } else {
             urlLength++;

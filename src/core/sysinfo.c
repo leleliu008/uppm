@@ -159,7 +159,7 @@ int sysinfo_code(char * buf, size_t bufSize) {
             if (strncmp(line, "ID=", 3) == 0) {
                 char * p = &line[3];
 
-                if (p[0] == '"' || p[0] == '\'') {
+                if ((p[0] == '"') || (p[0] == '\'')) {
                     p++;
                 }
 
@@ -168,7 +168,7 @@ int sysinfo_code(char * buf, size_t bufSize) {
                 p[n - 1] = '\0';
                 n--;
 
-                if (p[n - 1] == '"' || p[n - 1] == '\'') {
+                if ((p[n - 1] == '"') || (p[n - 1] == '\'')) {
                     p[n - 1] = '\0';
                     n--;
                 }

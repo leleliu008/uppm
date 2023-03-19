@@ -146,10 +146,14 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
         repositoryDIR = ".";
     }
 
+    if (remoteUrl == NULL) {
+        return UPPM_ERROR_ARG_IS_NULL;
+    }
+
     size_t remoteUrlLength = strlen(remoteUrl);
 
-    if (remoteUrl == NULL || remoteUrlLength == 0) {
-        return UPPM_ERROR_ARG_IS_NULL;
+    if (remoteUrlLength == 0) {
+        return UPPM_ERROR_ARG_IS_EMPTY;
     }
 
     int ret = UPPM_OK;
@@ -160,7 +164,7 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
 
     const char * urlTransformCommandPath = getenv("UPPM_URL_TRANSFORM");
 
-    if (urlTransformCommandPath == NULL || strcmp(urlTransformCommandPath, "") == 0) {
+    if ((urlTransformCommandPath == NULL) || (strcmp(urlTransformCommandPath, "") == 0)) {
         strncpy(transformedUrl, remoteUrl, remoteUrlLength);
         transformedUrl[1024] = '\0';
     } else {
