@@ -16,7 +16,11 @@ int base64_encode_of_string(char * * output, size_t * outputSizeInBytes, const c
         return -1;
     }
 
-    return base64_encode_of_bytes(output, outputSizeInBytes, (unsigned char *)input, inputSizeInBytes == 0 ? strlen(input) : inputSizeInBytes);
+    if (inputSizeInBytes == 0U) {
+        inputSizeInBytes = strlen(input);
+    }
+
+    return base64_encode_of_bytes(output, outputSizeInBytes, (unsigned char *)input, inputSizeInBytes);
 }
 
 int base64_encode_of_bytes(char * * output, size_t * outputSizeInBytes, const unsigned char * input, size_t inputSizeInBytes) {
@@ -30,12 +34,12 @@ int base64_encode_of_bytes(char * * output, size_t * outputSizeInBytes, const un
         return -1;
     }
 
-    if (inputSizeInBytes == 0) {
+    if (inputSizeInBytes == 0U) {
         errno = EINVAL;
         return -1;
     }
 
-    size_t bufLength = (inputSizeInBytes << 2) / 3 + 3;
+    size_t bufLength = (inputSizeInBytes << 2U) / 3U + 3U;
     char   buf[bufLength];
     memset(buf, 0, bufLength);
 
@@ -67,16 +71,16 @@ int base64_decode_to_bytes(unsigned char * * output, size_t * outputSizeInBytes,
         return -1;
     }
 
-    if (inputSizeInBytes == 0) {
+    if (inputSizeInBytes == 0U) {
         inputSizeInBytes = strlen(input);
     }
 
-    if (inputSizeInBytes == 0) {
+    if (inputSizeInBytes == 0U) {
         errno = EINVAL;
         return -1;
     }
 
-    size_t bufLength = (inputSizeInBytes * 3) >> 2;
+    size_t bufLength = (inputSizeInBytes * 3U) >> 2;
     unsigned char  buf[bufLength];
     memset(buf, 0, bufLength);
 
@@ -117,16 +121,16 @@ int base64_decode_to_string(char * * output, size_t * outputSizeInBytes, const c
         return -1;
     }
 
-    if (inputSizeInBytes == 0) {
+    if (inputSizeInBytes == 0U) {
         inputSizeInBytes = strlen(input);
     }
 
-    if (inputSizeInBytes == 0) {
+    if (inputSizeInBytes == 0U) {
         errno = EINVAL;
         return -1;
     }
 
-    size_t bufLength = ((inputSizeInBytes * 3) >> 2) + 1;
+    size_t bufLength = ((inputSizeInBytes * 3U) >> 2U) + 1U;
     char   buf[bufLength];
     memset(buf, 0, bufLength);
 

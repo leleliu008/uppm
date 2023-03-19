@@ -15,7 +15,7 @@
 
 int http_fetch_to_stream(const char * url, FILE * outputFile, bool verbose, bool showProgress) {
     if (outputFile == NULL) {
-        size_t  urlCopyLength = strlen(url) + 1;
+        size_t  urlCopyLength = strlen(url) + 1U;
         char    urlCopy[urlCopyLength];
         strncpy(urlCopy, url, urlCopyLength);
 
@@ -57,14 +57,14 @@ int http_fetch_to_stream(const char * url, FILE * outputFile, bool verbose, bool
     //curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 2L);
 
     // https://www.openssl.org/docs/man1.1.1/man3/SSL_CTX_set_default_verify_paths.html
-    const char * SSL_CERT_FILE = getenv("SSL_CERT_FILE");
+    const char * const SSL_CERT_FILE = getenv("SSL_CERT_FILE");
 
     if ((SSL_CERT_FILE != NULL) && (strcmp(SSL_CERT_FILE, "") != 0)) {
         // https://curl.se/libcurl/c/CURLOPT_CAINFO.html
         curl_easy_setopt(curl, CURLOPT_CAINFO, SSL_CERT_FILE);
     }
 
-    const char * SSL_CERT_DIR = getenv("SSL_CERT_DIR");
+    const char * const SSL_CERT_DIR = getenv("SSL_CERT_DIR");
 
     if ((SSL_CERT_DIR != NULL) && (strcmp(SSL_CERT_DIR, "") != 0)) {
         // https://curl.se/libcurl/c/CURLOPT_CAPATH.html

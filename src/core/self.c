@@ -20,6 +20,20 @@
 
 #if defined (__OpenBSD__)
 #include <stdbool.h>
+
+static inline bool ispath(const char * p) {
+    for (;;) {
+        if (p[0] == '\0') {
+            return false;
+        }
+
+        if (p[0] == '/') {
+            return true;
+        }
+
+        p++;
+    }
+}
 #endif
 
 #include "self.h"
@@ -37,13 +51,13 @@ char* self_realpath() {
 #elif defined (__FreeBSD__)
     const int mib[] = { CTL_KERN, KERN_PROC, KERN_PROC_PATHNAME, -1 };
 
-    size_t bufLength = 0;
+    size_t bufLength = 0U;
 
     if (sysctl(mib, 4, NULL, &bufLength, NULL, 0) < 0) {
         return NULL;
     }
 
-    char * buf = (char*)calloc(bufLength + 1, sizeof(char));
+    char * buf = (char*)calloc(bufLength + 1U, sizeof(char));
 
     if (buf == NULL) {
         errno = ENOMEM;
@@ -76,31 +90,10 @@ char* self_realpath() {
         return NULL;
     }
 
-    bool isPath = false;
-
-    char c;
-
-    char * p = argv[0];
-
-    for (;;) {
-        c = p[0];
-
-        if (c == '\0') {
-            break;
-        }
-
-        if (c == '/') {
-            isPath = true;
-            break;
-        }
-
-        p++;
-    }
-
-    if (isPath) {
+    if (ispath(argv[0])) {
         return realpath(argv[0], NULL);
     } else {
-        char * PATH = getenv("PATH");
+        const char * const PATH = getenv("PATH");
 
         // in fact, it shouldn’t happen
         if (PATH == NULL) {
@@ -110,11 +103,11 @@ char* self_realpath() {
         size_t PATHLength = strlen(PATH);
 
         // in fact, it shouldn’t happen
-        if (PATHLength == 0) {
+        if (PATHLength == 0U) {
             return NULL;
         }
 
-        size_t  PATH2Length = PATHLength + 1;
+        size_t  PATH2Length = PATHLength + 1U;
         char    PATH2[PATH2Length];
         strncpy(PATH2, PATH, PATH2Length);
 
@@ -126,7 +119,7 @@ char* self_realpath() {
 
         while (PATHItem != NULL) {
             if ((stat(PATHItem, &st) == 0) && S_ISDIR(st.st_mode)) {
-                size_t   fullPathLength = strlen(PATHItem) + commandNameLength + 2;
+                size_t   fullPathLength = strlen(PATHItem) + commandNameLength + 2U;
                 char     fullPath[fullPathLength];
                 snprintf(fullPath, fullPathLength, "%s/%s", PATHItem, argv[0]);
 

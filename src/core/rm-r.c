@@ -15,7 +15,7 @@ int rm_r(const char * dirPath, bool verbose) {
 
     size_t dirPathLength = strlen(dirPath);
 
-    if (dirPathLength == 0) {
+    if (dirPathLength == 0U) {
         errno = EINVAL;
         return -1;
     }
@@ -26,14 +26,10 @@ int rm_r(const char * dirPath, bool verbose) {
         return -1;
     }
 
-    struct stat st;
-
-    struct dirent * dir_entry;
-
     for (;;) {
         errno = 0;
 
-        dir_entry = readdir(dir);
+        struct dirent * dir_entry = readdir(dir);
 
         if (dir_entry == NULL) {
             if (errno == 0) {
@@ -52,11 +48,13 @@ int rm_r(const char * dirPath, bool verbose) {
             continue;
         }
 
-        size_t   filePathLength = dirPathLength + strlen(dir_entry->d_name) + 2;
+        size_t   filePathLength = dirPathLength + strlen(dir_entry->d_name) + 2U;
         char     filePath[filePathLength];
         snprintf(filePath, filePathLength, "%s/%s", dirPath, dir_entry->d_name);
 
         if (verbose) printf("rm %s\n", filePath);
+
+        struct stat st;
 
         if (stat(filePath, &st) == 0) {
             if (S_ISDIR(st.st_mode)) {

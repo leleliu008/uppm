@@ -1,5 +1,5 @@
-#ifndef _RM_R_H
-#define _RM_R_H
+#ifndef _CORE_RM_R_H
+#define _CORE_RM_R_H
 
 #include<stdbool.h>
 

@@ -6,7 +6,6 @@
  *  On success, 0 is returned.
  *  On error,  -1 is returned and errno is set to indicate the error.
  */
-
 int copy_file(const char * fromFilePath, const char * toFilePath);
 
 #endif

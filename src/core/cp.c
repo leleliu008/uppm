@@ -20,10 +20,9 @@ int copy_file(const char * fromFilePath, const char * toFilePath) {
     }
 
     unsigned char buff[1024];
-    size_t size;
 
     for (;;) {
-        size = fread(buff, 1, 1024, fromFile);
+        size_t size = fread(buff, 1, 1024, fromFile);
 
         if (ferror(fromFile)) {
             fclose(fromFile);
@@ -32,8 +31,8 @@ int copy_file(const char * fromFilePath, const char * toFilePath) {
             return -1;
         }
 
-        if (size > 0) {
-            if (fwrite(buff, 1, size, toFile) != size || ferror(toFile)) {
+        if (size > 0U) {
+            if ((fwrite(buff, 1, size, toFile) != size) || ferror(toFile)) {
                 fclose(fromFile);
                 fclose(toFile);
                 errno = EIO;

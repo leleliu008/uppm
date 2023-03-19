@@ -14,7 +14,7 @@ int mkdir_p(const char * dirPath, bool verbose) {
 
     size_t dirPathLength = strlen(dirPath);
 
-    if (dirPathLength == 0) {
+    if (dirPathLength == 0U) {
         errno = EINVAL;
         return -1;
     }
@@ -31,7 +31,7 @@ int mkdir_p(const char * dirPath, bool verbose) {
             return -1;
         }
     } else {
-        size_t i = dirPathLength - 1;
+        size_t i = dirPathLength - 1U;
 
         if (dirPath[i] == '/') {
             i--;
@@ -39,11 +39,11 @@ int mkdir_p(const char * dirPath, bool verbose) {
 
         for(;;) {
             if (dirPath[i] == '/') {
-                if (i == 0) { // /a
+                if (i == 0U) { // /a
                     return mkdir(dirPath, S_IRWXU);
                 } else {
                     char p[i];
-                    strncpy(p, dirPath, i - 1);
+                    strncpy(p, dirPath, i - 1U);
 
                     return mkdir_p(p, verbose);
                 }
@@ -51,7 +51,7 @@ int mkdir_p(const char * dirPath, bool verbose) {
 
             i--;
 
-            if (i == 0) {
+            if (i == 0U) {
                 // dirPath is a relative path
                 return mkdir(dirPath, S_IRWXU);
             }

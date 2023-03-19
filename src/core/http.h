@@ -1,5 +1,5 @@
-#ifndef _HTTP_H
-#define _HTTP_H
+#ifndef _CORE_HTTP_H
+#define _CORE_HTTP_H
 
 #include <stdio.h>
 #include <stdbool.h>

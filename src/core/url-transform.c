@@ -9,11 +9,10 @@
 #include "url-transform.h"
 
 static int url_transform_read(int readEndFD, char outputBuffer[], size_t outputBufferSizeInBytes, size_t * writtenSizeInBytes) {
-    char    buf[1024];
-    ssize_t readSize;
+    char buf[1024];
 
     for (;;) {
-        readSize = read(readEndFD, buf, 1024);
+        ssize_t readSize = read(readEndFD, buf, 1024);
 
         if (readSize == 0) {
             return 0;

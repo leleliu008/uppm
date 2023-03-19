@@ -5,13 +5,11 @@
 
 #include "sha256sum.h"
 
-static inline void tohex(char buf[65], unsigned char * sha256Bytes) {
-    const char * table = "0123456789abcdef";
+static inline void tohex(char buf[65], const unsigned char * sha256Bytes) {
+    const char * const table = "0123456789abcdef";
 
-    size_t i, j;
-
-    for (i = 0; i < SHA256_DIGEST_LENGTH; i++) {
-        j = i << 1;
+    for (size_t i = 0; i < SHA256_DIGEST_LENGTH; i++) {
+        size_t j = i << 1;
         buf[j]     = table[sha256Bytes[i] >> 4];
         buf[j + 1] = table[sha256Bytes[i] & 0x0F];
     }
@@ -28,7 +26,7 @@ int sha256sum_of_bytes(char outputBuffer[65], unsigned char * inputBuffer, size_
         return -1;
     }
 
-    if (inputBufferSizeInBytes == 0) {
+    if (inputBufferSizeInBytes == 0U) {
         errno = EINVAL;
         return -1;
     }
@@ -53,7 +51,7 @@ int sha256sum_of_string(char outputBuffer[65], const char * str) {
 
     size_t strLength = strlen(str);
 
-    if (strLength == 0) {
+    if (strLength == 0U) {
         errno = EINVAL;
         return -1;
     }
@@ -87,17 +85,16 @@ int sha256sum_of_stream(char outputBuffer[65], FILE * file) {
     SHA256_Init(&ctx);
 
     unsigned char buffer[1024];
-    size_t size;
 
     for (;;) {
-        size = fread(buffer, 1, 1024, file);
+        size_t size = fread(buffer, 1, 1024, file);
 
         if (ferror(file)) {
             errno = EIO;
             return -1;
         }
 
-        if (size > 0) {
+        if (size > 0U) {
             SHA256_Update(&ctx, buffer, size);
         }
 

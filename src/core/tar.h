@@ -7,7 +7,6 @@
 #include <archive.h>
 #include <archive_entry.h>
 
-
 typedef enum {
     ArchiveType_tar_gz,
     ArchiveType_tar_xz,
