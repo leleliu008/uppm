@@ -17,6 +17,9 @@ int sysinfo_kind(char * buf, size_t bufSize) {
 #elif defined (__APPLE__)
     strncpy(buf, "darwin",  (bufSize > 6U) ? 6U : bufSize);
     return 0;
+#elif defined (__DragonFly__)
+    strncpy(buf, "dragonflybsd", (bufSize > 12U) ? 12U : bufSize);
+    return 0;
 #elif defined (__FreeBSD__)
     strncpy(buf, "freebsd", (bufSize > 7U) ? 7U : bufSize);
     return 0;
@@ -60,6 +63,9 @@ int sysinfo_type(char * buf, size_t bufSize) {
     return 0;
 #elif defined (__APPLE__)
     strncpy(buf, "macos",   (bufSize > 5U) ? 5U : bufSize);
+    return 0;
+#elif defined (__DragonFly__)
+    strncpy(buf, "dragonflybsd", (bufSize > 12U) ? 12U : bufSize);
     return 0;
 #elif defined (__FreeBSD__)
     strncpy(buf, "freebsd", (bufSize > 7U) ? 7U : bufSize);
@@ -118,6 +124,9 @@ int sysinfo_code(char * buf, size_t bufSize) {
     return 0;
 #elif defined (__APPLE__)
     strncpy(buf, "macos",   (bufSize > 5U) ? 5U : bufSize);
+    return 0;
+#elif defined (__DragonFly__)
+    strncpy(buf, "dragonflybsd", (bufSize > 12U) ? 12U : bufSize);
     return 0;
 #elif defined (__FreeBSD__)
     strncpy(buf, "freebsd", (bufSize > 7U) ? 7U : bufSize);
@@ -192,6 +201,9 @@ int sysinfo_name(char * buf, size_t bufSize) {
     return 0;
 #elif defined (__APPLE__)
     strncpy(buf, "macOS",   (bufSize > 5U) ? 5U : bufSize);
+    return 0;
+#elif defined (__DragonFly__)
+    strncpy(buf, "DragonFlyBSD", (bufSize > 12U) ? 12U : bufSize);
     return 0;
 #elif defined (__FreeBSD__)
     strncpy(buf, "FreeBSD", (bufSize > 7U) ? 7U : bufSize);
