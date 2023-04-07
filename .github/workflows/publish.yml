@@ -42,6 +42,7 @@ jobs:
       if-has-new-commit: ${{ steps.check-if-has-new-commit.outputs.HAS_NEW_COMMIT }}
       git-sha:           ${{ steps.check-if-has-new-commit.outputs.GIT_SHA }}
 
+
   netbsd-amd64:
     needs: check
     if: needs.check.outputs.if-has-new-commit == 'yes'
@@ -81,8 +82,9 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          name: uppm-netbsd-amd64-tar-xz
+          name: uppm---netbsd-amd64-tar-xz
           path: uppm-*-netbsd-amd64.tar.xz
+
 
   openbsd-amd64:
     if: false
@@ -120,8 +122,9 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          name: uppm-openbsd-amd64-tar-xz
+          name: uppm---openbsd-amd64-tar-xz
           path: uppm-*-openbsd-amd64.tar.xz
+
 
   freebsd-amd64:
     needs: [check, netbsd-amd64]
@@ -153,8 +156,9 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          name: uppm-freebsd-amd64-tar-xz
+          name: uppm---freebsd-amd64-tar-xz
           path: uppm-*-freebsd-amd64.tar.xz
+
 
   macos:
     needs: [check, freebsd-amd64]
@@ -165,11 +169,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target-version: ['11.0', '12.0', '13.0']
+        target-version: ['10.15', '11.0', '12.0', '13.0']
         target-arch: [x86_64, arm64]
 
     steps:
-      - run: brew uninstall go@1.17
       - run: brew update
       - run: brew install --overwrite python@3.10 python@3.11
 
@@ -186,11 +189,43 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          name: uppm-macos${{ matrix.target-version }}-${{ matrix.target-arch }}-tar-xz
-          path: uppm-*.tar.xz
+          name: uppm---macos${{ matrix.target-version }}-${{ matrix.target-arch }}-tar-xz
+          path: uppm-*-macos*.tar.xz
+
+
+  linux-x86_64:
+    needs: [check, macos]
+    if: needs.check.outputs.if-has-new-commit == 'yes'
+
+    runs-on: ubuntu-latest
+
+    container: alpine:3.16
+
+    steps:
+      - run: apk update
+      - run: apk add git
+
+      - uses: actions/checkout@v3
+
+      - run: wget https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
+      - run: chmod a+x ppkg
+      - run: ./ppkg setup --use-system-package-manager
+      - run: ./ppkg update
+
+      - run: |
+          sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/offical-core/formula/uppm.yml
+
+      - run: ./ppkg install uppm --link-type=static-only --install-lib=static
+      - run: ./ppkg pack    uppm -o .
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: uppm---linux-x86_64-tar-xz
+          path: uppm-*-linux-x86_64.tar.xz
+
 
   linux-aarch64:
-    needs: [check, macos]
+    needs: [check, linux-x86_64]
     if: needs.check.outputs.if-has-new-commit == 'yes'
 
     runs-on: ubuntu-latest
@@ -223,9 +258,7 @@ jobs:
           sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/offical-core/formula/uppm.yml
 
           run ./ppkg install uppm gh --link-type=static-only --install-lib=static
-          run ./ppkg pack    uppm
-
-          ls ~/.ppkg/packed/uppm-*.tar.xz > filepath.txt
+          run ./ppkg pack    uppm -o .
           EOF
 
           chmod +x run.sh
@@ -233,48 +266,119 @@ jobs:
       # https://github.com/multiarch/qemu-user-static
       - run: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
       - run: docker run -v $PWD:$PWD -w $PWD --name alpine arm64v8/alpine sh run.sh
-      - run: docker cp alpine:$(cat filepath.txt) .
 
       - run: ls
 
       - uses: actions/upload-artifact@v3
         with:
-          name: uppm-linux-aarch64-tar-xz
+          name: uppm---linux-aarch64-tar-xz
           path: uppm-*-linux-aarch64.tar.xz
 
-  linux-x86_64:
+
+  linux-ppc64le:
     needs: [check, linux-aarch64]
     if: needs.check.outputs.if-has-new-commit == 'yes'
 
     runs-on: ubuntu-latest
 
-    container: alpine:3.16
-
     steps:
-      - run: apk update
-      - run: apk add git
-
-      - uses: actions/checkout@v3
-
-      - run: wget https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
-      - run: chmod a+x ppkg
-      - run: ./ppkg setup --use-system-package-manager
-      - run: ./ppkg update
-
       - run: |
+          cat > run.sh <<EOF
+          set -e
+
+          COLOR_GREEN='\033[0;32m'        # Green
+          COLOR_PURPLE='\033[0;35m'       # Purple
+          COLOR_OFF='\033[0m'             # Reset
+
+          echo() {
+              printf '%b\n' "\$*"
+          }
+
+          run() {
+              echo "\${COLOR_PURPLE}==>\${COLOR_OFF} \${COLOR_GREEN}\$@\${COLOR_OFF}"
+              eval "\$*"
+          }
+
+          run uname -a
+
+          run wget https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
+          run chmod a+x ppkg
+          run ./ppkg setup --use-system-package-manager
+          run ./ppkg update
+
           sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/offical-core/formula/uppm.yml
 
-      - run: ./ppkg install uppm --link-type=static-only --install-lib=static
-      - run: ./ppkg pack    uppm
+          run ./ppkg install uppm gh --link-type=static-only --install-lib=static
+          run ./ppkg pack    uppm -o .
+          EOF
+
+          chmod +x run.sh
+
+      # https://github.com/multiarch/qemu-user-static
+      - run: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+      - run: docker run -v $PWD:$PWD -w $PWD --name alpine ppc64le/alpine sh run.sh
+
+      - run: ls
 
       - uses: actions/upload-artifact@v3
         with:
-          name: uppm-linux-x86_64-tar-xz
-          path: ~/.ppkg/packed/uppm-*-linux-x86_64.tar.xz
+          name: uppm---linux-ppc64le-tar-xz
+          path: uppm-*-linux-ppc64le.tar.xz
+
+
+  linux-s390x:
+    needs: [check, linux-ppc64le]
+    if: needs.check.outputs.if-has-new-commit == 'yes'
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - run: |
+          cat > run.sh <<EOF
+          set -e
+
+          COLOR_GREEN='\033[0;32m'        # Green
+          COLOR_PURPLE='\033[0;35m'       # Purple
+          COLOR_OFF='\033[0m'             # Reset
+
+          echo() {
+              printf '%b\n' "\$*"
+          }
+
+          run() {
+              echo "\${COLOR_PURPLE}==>\${COLOR_OFF} \${COLOR_GREEN}\$@\${COLOR_OFF}"
+              eval "\$*"
+          }
+
+          run uname -a
+
+          run wget https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
+          run chmod a+x ppkg
+          run ./ppkg setup --use-system-package-manager
+          run ./ppkg update
+
+          sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/offical-core/formula/uppm.yml
+
+          run ./ppkg install uppm gh --link-type=static-only --install-lib=static
+          run ./ppkg pack    uppm -o .
+          EOF
+
+          chmod +x run.sh
+
+      # https://github.com/multiarch/qemu-user-static
+      - run: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+      - run: docker run -v $PWD:$PWD -w $PWD --name alpine s390x/alpine sh run.sh
+
+      - run: ls
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: uppm---linux-s390x-tar-xz
+          path: uppm-*-linux-s390x.tar.xz
 
 
   publish:
-    needs: [check, linux-x86_64]
+    needs: [check, linux-s390x]
     if: needs.check.outputs.if-has-new-commit == 'yes'
 
     runs-on: ubuntu-latest
@@ -295,47 +399,62 @@ jobs:
 
       - uses: actions/download-artifact@v3
         with:
-          name: uppm-freebsd-amd64-tar-xz
+          name: uppm---freebsd-amd64-tar-xz
           path: .
 
       - uses: actions/download-artifact@v3
         with:
-          name: uppm-macos11.0-x86_64-tar-xz
+          name: uppm---macos10.15-x86_64-tar-xz
           path: .
 
       - uses: actions/download-artifact@v3
         with:
-          name: uppm-macos12.0-x86_64-tar-xz
+          name: uppm---macos11.0-x86_64-tar-xz
           path: .
 
       - uses: actions/download-artifact@v3
         with:
-          name: uppm-macos13.0-x86_64-tar-xz
+          name: uppm---macos12.0-x86_64-tar-xz
           path: .
 
       - uses: actions/download-artifact@v3
         with:
-          name: uppm-macos11.0-arm64-tar-xz
+          name: uppm---macos13.0-x86_64-tar-xz
           path: .
 
       - uses: actions/download-artifact@v3
         with:
-          name: uppm-macos12.0-arm64-tar-xz
+          name: uppm---macos11.0-arm64-tar-xz
           path: .
 
       - uses: actions/download-artifact@v3
         with:
-          name: uppm-macos13.0-arm64-tar-xz
+          name: uppm---macos12.0-arm64-tar-xz
           path: .
 
       - uses: actions/download-artifact@v3
         with:
-          name: uppm-linux-aarch64-tar-xz
+          name: uppm---macos13.0-arm64-tar-xz
           path: .
 
       - uses: actions/download-artifact@v3
         with:
-          name: uppm-linux-x86_64-tar-xz
+          name: uppm---linux-x86_64-tar-xz
+          path: .
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: uppm---linux-aarch64-tar-xz
+          path: .
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: uppm---linux-ppc64le-tar-xz
+          path: .
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: uppm---linux-s390x-tar-xz
           path: .
 
       - run: ls -a
