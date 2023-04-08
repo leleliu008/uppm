@@ -389,7 +389,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v3
         with:
-          name: uppm-netbsd-amd64-tar-xz
+          name: uppm---netbsd-amd64-tar-xz
           path: .
 
             #- uses: actions/download-artifact@v3
