@@ -7,7 +7,7 @@
 #include "uppm.h"
 
 int uppm_list_the_outdated__packages() {
-    char * userHomeDir = getenv("HOME");
+    const char * const userHomeDir = getenv("HOME");
 
     if (userHomeDir == NULL) {
         return UPPM_ERROR_ENV_HOME_NOT_SET;
@@ -15,11 +15,11 @@ int uppm_list_the_outdated__packages() {
 
     size_t userHomeDirLength = strlen(userHomeDir);
 
-    if (userHomeDirLength == 0) {
+    if (userHomeDirLength == 0U) {
         return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
-    size_t installedDirLength = userHomeDirLength + 17;
+    size_t installedDirLength = userHomeDirLength + 17U;
     char   installedDir[installedDirLength];
     snprintf(installedDir, installedDirLength, "%s/.uppm/installed", userHomeDir);
 

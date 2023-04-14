@@ -11,7 +11,7 @@ int uppm_formula_locate(const char * packageName, char ** out) {
         return ret;
     }
 
-    char * userHomeDir = getenv("HOME");
+    const char * const userHomeDir = getenv("HOME");
 
     if (userHomeDir == NULL) {
         return UPPM_ERROR_ENV_HOME_NOT_SET;
@@ -19,7 +19,7 @@ int uppm_formula_locate(const char * packageName, char ** out) {
 
     size_t userHomeDirLength = strlen(userHomeDir);
 
-    if (userHomeDirLength == 0) {
+    if (userHomeDirLength == 0U) {
         return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
@@ -39,7 +39,7 @@ int uppm_formula_locate(const char * packageName, char ** out) {
     for (size_t i = 0; i < formulaRepoList->size; i++) {
         char * formulaRepoPath = formulaRepoList->repos[i]->path;
 
-        size_t formulaFilePathLength =  strlen(formulaRepoPath) + packageNameLength + 15;
+        size_t formulaFilePathLength =  strlen(formulaRepoPath) + packageNameLength + 15U;
         char   formulaFilePath[formulaFilePathLength];
         snprintf(formulaFilePath, formulaFilePathLength, "%s/formula/%s.yml", formulaRepoPath, packageName);
 

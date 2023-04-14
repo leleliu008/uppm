@@ -14,7 +14,7 @@ int uppm_formula_repo_remove(const char * formulaRepoName) {
 
     size_t formulaRepoNameLength = strlen(formulaRepoName);
 
-    if (formulaRepoNameLength == 0) {
+    if (formulaRepoNameLength == 0U) {
         return UPPM_ERROR_ARG_IS_EMPTY;
     }
 
@@ -23,7 +23,7 @@ int uppm_formula_repo_remove(const char * formulaRepoName) {
         return UPPM_ERROR;
     }
 
-    char * userHomeDir = getenv("HOME");
+    const char * const userHomeDir = getenv("HOME");
 
     if (userHomeDir == NULL) {
         return UPPM_ERROR_ENV_HOME_NOT_SET;
@@ -31,11 +31,11 @@ int uppm_formula_repo_remove(const char * formulaRepoName) {
 
     size_t userHomeDirLength = strlen(userHomeDir);
 
-    if (userHomeDirLength == 0) {
+    if (userHomeDirLength == 0U) {
         return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
-    size_t   formulaRepoPathLength = userHomeDirLength + formulaRepoNameLength + 16;
+    size_t   formulaRepoPathLength = userHomeDirLength + formulaRepoNameLength + 16U;
     char     formulaRepoPath[formulaRepoPathLength];
     snprintf(formulaRepoPath, formulaRepoPathLength, "%s/.uppm/repos.d/%s", userHomeDir, formulaRepoName);
 
@@ -46,7 +46,7 @@ int uppm_formula_repo_remove(const char * formulaRepoName) {
         return UPPM_ERROR;
     }
 
-    size_t   formulaRepoConfigFilePathLength = formulaRepoPathLength + 24;
+    size_t   formulaRepoConfigFilePathLength = formulaRepoPathLength + 24U;
     char     formulaRepoConfigFilePath[formulaRepoConfigFilePathLength];
     snprintf(formulaRepoConfigFilePath, formulaRepoConfigFilePathLength, "%s/.uppm-formula-repo.yml", formulaRepoPath);
 

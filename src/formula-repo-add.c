@@ -15,7 +15,7 @@ int uppm_formula_repo_add(const char * formulaRepoName, const char * formulaRepo
 
     size_t formulaRepoNameLength = strlen(formulaRepoName);
 
-    if (formulaRepoNameLength == 0) {
+    if (formulaRepoNameLength == 0U) {
         return UPPM_ERROR_ARG_IS_EMPTY;
     }
 
@@ -25,7 +25,7 @@ int uppm_formula_repo_add(const char * formulaRepoName, const char * formulaRepo
 
     size_t formulaRepoUrlLength = strlen(formulaRepoUrl);
 
-    if (formulaRepoUrlLength == 0) {
+    if (formulaRepoUrlLength == 0U) {
         return UPPM_ERROR_ARG_IS_EMPTY;
     }
 
@@ -37,7 +37,7 @@ int uppm_formula_repo_add(const char * formulaRepoName, const char * formulaRepo
 
     ///////////////////////////////////////////////////////////////////////////////////////
 
-    char * userHomeDir = getenv("HOME");
+    const char * const userHomeDir = getenv("HOME");
 
     if (userHomeDir == NULL) {
         return UPPM_ERROR_ENV_HOME_NOT_SET;
@@ -45,7 +45,7 @@ int uppm_formula_repo_add(const char * formulaRepoName, const char * formulaRepo
 
     size_t userHomeDirLength = strlen(userHomeDir);
 
-    if (userHomeDirLength == 0) {
+    if (userHomeDirLength == 0U) {
         return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
@@ -53,7 +53,7 @@ int uppm_formula_repo_add(const char * formulaRepoName, const char * formulaRepo
 
     struct stat st;
 
-    size_t uppmHomeDirLength = userHomeDirLength + 7;
+    size_t uppmHomeDirLength = userHomeDirLength + 7U;
     char   uppmHomeDir[uppmHomeDirLength];
     snprintf(uppmHomeDir, uppmHomeDirLength, "%s/.uppm", userHomeDir);
 
@@ -71,7 +71,7 @@ int uppm_formula_repo_add(const char * formulaRepoName, const char * formulaRepo
 
     ////////////////////////////////////////////////////////////////////////////////////////
 
-    size_t formulaRepoRootDirLength = uppmHomeDirLength + 9;
+    size_t formulaRepoRootDirLength = uppmHomeDirLength + 9U;
     char   formulaRepoRootDir[formulaRepoRootDirLength];
     snprintf(formulaRepoRootDir, formulaRepoRootDirLength, "%s/repos.d", uppmHomeDir);
 
@@ -89,7 +89,7 @@ int uppm_formula_repo_add(const char * formulaRepoName, const char * formulaRepo
 
     ////////////////////////////////////////////////////////////////////////////////////////
 
-    size_t formulaRepoDirLength = formulaRepoRootDirLength + formulaRepoNameLength + 2;
+    size_t formulaRepoDirLength = formulaRepoRootDirLength + formulaRepoNameLength + 2U;
     char   formulaRepoDir[formulaRepoDirLength];
     snprintf(formulaRepoDir, formulaRepoDirLength, "%s/%s", formulaRepoRootDir, formulaRepoName);
 

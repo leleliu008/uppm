@@ -7,7 +7,7 @@
 #include "uppm.h"
 
 int uppm_generate_url_transform_sample() {
-    char * userHomeDir = getenv("HOME");
+    const char * const userHomeDir = getenv("HOME");
 
     if (userHomeDir == NULL) {
         return UPPM_ERROR_ENV_HOME_NOT_SET;
@@ -15,7 +15,7 @@ int uppm_generate_url_transform_sample() {
 
     size_t userHomeDirLength = strlen(userHomeDir);
 
-    if (userHomeDirLength == 0) {
+    if (userHomeDirLength == 0U) {
         return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
@@ -23,7 +23,7 @@ int uppm_generate_url_transform_sample() {
 
     struct stat st;
 
-    size_t uppmHomeDirLength = userHomeDirLength + 7;
+    size_t uppmHomeDirLength = userHomeDirLength + 7U;
     char   uppmHomeDir[uppmHomeDirLength];
     snprintf(uppmHomeDir, uppmHomeDirLength, "%s/.uppm", userHomeDir);
 
@@ -41,7 +41,7 @@ int uppm_generate_url_transform_sample() {
 
     ////////////////////////////////////////////////////////////////
 
-    size_t urlTransformSampleFilePathLength = uppmHomeDirLength + 22;
+    size_t urlTransformSampleFilePathLength = uppmHomeDirLength + 22U;
     char   urlTransformSampleFilePath[urlTransformSampleFilePathLength];
     snprintf(urlTransformSampleFilePath, urlTransformSampleFilePathLength, "%s/url-transform.sample", uppmHomeDir);
 

@@ -50,7 +50,7 @@ void git_checkout_progress_callback(const char *path, size_t completed_steps, si
 // https://libgit2.org/libgit2/#HEAD/group/credential/git_credential_ssh_key_new
 // https://libgit2.org/libgit2/#HEAD/group/callback/git_credential_acquire_cb
 int git_credential_acquire_callback(git_credential **credential, const char *url, const char *username_from_url, unsigned int allowed_types, void *payload) {
-    const char * userHomeDir = getenv("HOME");
+    const const char * const userHomeDir = getenv("HOME");
 
     if (userHomeDir == NULL) {
         return 1;
@@ -58,11 +58,11 @@ int git_credential_acquire_callback(git_credential **credential, const char *url
 
     int userHomeDirLength = strlen(userHomeDir);
 
-    if (userHomeDirLength == 0) {
+    if (userHomeDirLength == 0U) {
         return 1;
     }
 
-    size_t sshPrivateKeyFilePathLength = userHomeDirLength + 20;
+    size_t sshPrivateKeyFilePathLength = userHomeDirLength + 20U;
     char   sshPrivateKeyFilePath[sshPrivateKeyFilePathLength];
     snprintf(sshPrivateKeyFilePath, sshPrivateKeyFilePathLength, "%s/.ssh/id_rsa", userHomeDir);
 
@@ -152,7 +152,7 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
 
     size_t remoteUrlLength = strlen(remoteUrl);
 
-    if (remoteUrlLength == 0) {
+    if (remoteUrlLength == 0U) {
         return UPPM_ERROR_ARG_IS_EMPTY;
     }
 

@@ -7,7 +7,7 @@
 #include "uppm.h"
 
 int uppm_cleanup(bool verbose) {
-    char * userHomeDir = getenv("HOME");
+    const char * const userHomeDir = getenv("HOME");
 
     if (userHomeDir == NULL) {
         return UPPM_ERROR_ENV_HOME_NOT_SET;
@@ -15,7 +15,7 @@ int uppm_cleanup(bool verbose) {
 
     size_t userHomeDirLength = strlen(userHomeDir);
 
-    if (userHomeDirLength == 0) {
+    if (userHomeDirLength == 0U) {
         return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
@@ -23,7 +23,7 @@ int uppm_cleanup(bool verbose) {
 
     struct stat st;
 
-    size_t   uppmTmpDirLength = userHomeDirLength + 11;
+    size_t   uppmTmpDirLength = userHomeDirLength + 11U;
     char     uppmTmpDir[uppmTmpDirLength];
     snprintf(uppmTmpDir, uppmTmpDirLength, "%s/.uppm/tmp", userHomeDir);
 

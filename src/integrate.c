@@ -8,7 +8,7 @@
 int uppm_integrate_zsh_completion(const char * outputDir, bool verbose) {
     const char * url = "https://raw.githubusercontent.com/leleliu008/uppm/master/uppm-zsh-completion";
 
-    char * userHomeDir = getenv("HOME");
+    const char * const userHomeDir = getenv("HOME");
 
     if (userHomeDir == NULL) {
         return UPPM_ERROR_ENV_HOME_NOT_SET;
@@ -16,7 +16,7 @@ int uppm_integrate_zsh_completion(const char * outputDir, bool verbose) {
 
     size_t userHomeDirLength = strlen(userHomeDir);
 
-    if (userHomeDirLength == 0) {
+    if (userHomeDirLength == 0U) {
         return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
@@ -24,7 +24,7 @@ int uppm_integrate_zsh_completion(const char * outputDir, bool verbose) {
 
     struct stat st;
 
-    size_t uppmHomeDirLength = userHomeDirLength + 7;
+    size_t uppmHomeDirLength = userHomeDirLength + 7U;
     char   uppmHomeDir[uppmHomeDirLength];
     snprintf(uppmHomeDir, uppmHomeDirLength, "%s/.uppm", userHomeDir);
 
@@ -42,7 +42,7 @@ int uppm_integrate_zsh_completion(const char * outputDir, bool verbose) {
 
     ////////////////////////////////////////////////////////////////
 
-    size_t zshCompletionDirLength = uppmHomeDirLength + 16;
+    size_t zshCompletionDirLength = uppmHomeDirLength + 16U;
     char   zshCompletionDir[zshCompletionDirLength];
     snprintf(zshCompletionDir, zshCompletionDirLength, "%s/zsh_completion", uppmHomeDir);
 
@@ -60,7 +60,7 @@ int uppm_integrate_zsh_completion(const char * outputDir, bool verbose) {
 
     ////////////////////////////////////////////////////////////////
 
-    size_t zshCompletionFilePathLength = zshCompletionDirLength + 7;
+    size_t zshCompletionFilePathLength = zshCompletionDirLength + 7U;
     char   zshCompletionFilePath[zshCompletionFilePathLength];
     snprintf(zshCompletionFilePath, zshCompletionFilePathLength, "%s/_uppm", zshCompletionDir);
 

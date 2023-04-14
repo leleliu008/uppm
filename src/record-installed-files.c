@@ -14,7 +14,7 @@ static int record_installed_files_r(const char * dirPath, size_t offset, FILE * 
 
     size_t dirPathLength = strlen(dirPath);
 
-    if (dirPathLength == 0) {
+    if (dirPathLength == 0U) {
         return UPPM_ERROR_ARG_IS_EMPTY;
     }
 
@@ -81,7 +81,7 @@ static int record_installed_files_r(const char * dirPath, size_t offset, FILE * 
 int record_installed_files(const char * installedDirPath) {
     size_t installedDirLength = strlen(installedDirPath);
 
-    size_t installedManifestFilePathLength = installedDirLength + 20;
+    size_t installedManifestFilePathLength = installedDirLength + 20U;
     char   installedManifestFilePath[installedManifestFilePathLength];
     snprintf(installedManifestFilePath, installedManifestFilePathLength, "%s/.uppm/manifest.txt", installedDirPath);
 

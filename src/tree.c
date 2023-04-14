@@ -12,7 +12,7 @@ int uppm_tree(const char * packageName, size_t argc, char* argv[]) {
         return ret;
     }
 
-    char * userHomeDir = getenv("HOME");
+    const char * const userHomeDir = getenv("HOME");
 
     if (userHomeDir == NULL) {
         return UPPM_ERROR_ENV_HOME_NOT_SET;
@@ -20,7 +20,7 @@ int uppm_tree(const char * packageName, size_t argc, char* argv[]) {
 
     size_t userHomeDirLength = strlen(userHomeDir);
 
-    if (userHomeDirLength == 0) {
+    if (userHomeDirLength == 0U) {
         return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
@@ -34,7 +34,7 @@ int uppm_tree(const char * packageName, size_t argc, char* argv[]) {
         return UPPM_ERROR_PACKAGE_NOT_INSTALLED;
     }
 
-    size_t receiptFilePathLength = packageInstalledDirLength + 20;
+    size_t receiptFilePathLength = packageInstalledDirLength + 20U;
     char   receiptFilePath[receiptFilePathLength];
     snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", packageInstalledDir);
 
@@ -54,7 +54,7 @@ int uppm_tree(const char * packageName, size_t argc, char* argv[]) {
         return ret;
     }
 
-    size_t treeCommandPathLength = userHomeDirLength + 31;
+    size_t treeCommandPathLength = userHomeDirLength + 31U;
     char   treeCommandPath[treeCommandPathLength];
     snprintf(treeCommandPath, treeCommandPathLength, "%s/.uppm/installed/tree/bin/tree", userHomeDir);
 

@@ -11,7 +11,7 @@
 #include "uppm.h"
 
 int uppm_upgrade_self(bool verbose) {
-    char * userHomeDir = getenv("HOME");
+    const char * const userHomeDir = getenv("HOME");
 
     if (userHomeDir == NULL) {
         return UPPM_ERROR_ENV_HOME_NOT_SET;
@@ -19,7 +19,7 @@ int uppm_upgrade_self(bool verbose) {
 
     size_t userHomeDirLength = strlen(userHomeDir);
 
-    if (userHomeDirLength == 0) {
+    if (userHomeDirLength == 0U) {
         return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
@@ -27,7 +27,7 @@ int uppm_upgrade_self(bool verbose) {
 
     struct stat st;
 
-    size_t   uppmHomeDirLength = userHomeDirLength + 7;
+    size_t   uppmHomeDirLength = userHomeDirLength + 7U;
     char     uppmHomeDir[uppmHomeDirLength];
     snprintf(uppmHomeDir, uppmHomeDirLength, "%s/.uppm", userHomeDir);
 
@@ -45,7 +45,7 @@ int uppm_upgrade_self(bool verbose) {
 
     ////////////////////////////////////////////////////////////////
 
-    size_t   uppmTmpDirLength = uppmHomeDirLength + 5;
+    size_t   uppmTmpDirLength = uppmHomeDirLength + 5U;
     char     uppmTmpDir[uppmTmpDirLength];
     snprintf(uppmTmpDir, uppmTmpDirLength, "%s/tmp", uppmHomeDir);
 
@@ -65,7 +65,7 @@ int uppm_upgrade_self(bool verbose) {
 
     const char * githubApiUrl = "https://api.github.com/repos/leleliu008/uppm/releases/latest";
 
-    size_t   githubApiResultJsonFilePathLength = uppmTmpDirLength + 13;
+    size_t   githubApiResultJsonFilePathLength = uppmTmpDirLength + 13U;
     char     githubApiResultJsonFilePath[githubApiResultJsonFilePathLength];
     snprintf(githubApiResultJsonFilePath, githubApiResultJsonFilePathLength, "%s/latest.json", uppmTmpDir);
 
@@ -221,11 +221,11 @@ finalize:
     char     tarballFileName[tarballFileNameLength];
     snprintf(tarballFileName, tarballFileNameLength, "uppm-%s-%s-%s.tar.xz", latestVersion, osType, osArch);
 
-    size_t   tarballUrlLength = tarballFileNameLength + latestVersionLength + 66;
+    size_t   tarballUrlLength = tarballFileNameLength + latestVersionLength + 66U;
     char     tarballUrl[tarballUrlLength];
     snprintf(tarballUrl, tarballUrlLength, "https://github.com/leleliu008/uppm/releases/download/%s/%s", latestVersion, tarballFileName);
 
-    size_t   tarballFilePathLength = uppmTmpDirLength + tarballFileNameLength + 2;
+    size_t   tarballFilePathLength = uppmTmpDirLength + tarballFileNameLength + 2U;
     char     tarballFilePath[tarballFilePathLength];
     snprintf(tarballFilePath, tarballFilePathLength, "%s/%s", uppmTmpDir, tarballFileName);
 
@@ -237,7 +237,7 @@ finalize:
 
     //////////////////////////////////////////////////////////////////////////////////
 
-    size_t   tarballExtractDirLength = tarballFilePathLength + 3;
+    size_t   tarballExtractDirLength = tarballFilePathLength + 3U;
     char     tarballExtractDir[tarballExtractDirLength];
     snprintf(tarballExtractDir, tarballExtractDirLength, "%s.d", tarballFilePath);
 
@@ -247,7 +247,7 @@ finalize:
         return abs(ret) + UPPM_ERROR_ARCHIVE_BASE;
     }
 
-    size_t   upgradableExecutableFilePathLength = tarballExtractDirLength + 10;
+    size_t   upgradableExecutableFilePathLength = tarballExtractDirLength + 10U;
     char     upgradableExecutableFilePath[upgradableExecutableFilePathLength];
     snprintf(upgradableExecutableFilePath, upgradableExecutableFilePathLength, "%s/bin/uppm", tarballExtractDir);
 

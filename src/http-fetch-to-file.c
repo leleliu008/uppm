@@ -36,7 +36,7 @@ int uppm_http_fetch_to_file(const char * url, const char * outputFilePath, bool 
             return UPPM_ERROR;
         }
 
-        if (transformedUrlLength == 0) {
+        if (transformedUrlLength == 0U) {
             if (verbose) {
                 fprintf(stderr, "a new url was expected to be output, but it was not.\n");
             }

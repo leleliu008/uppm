@@ -31,7 +31,7 @@ int uppm_install(const char * packageName, bool verbose) {
     if (formula->dep_pkg != NULL) {
         size_t depPackageNamesLength = strlen(formula->dep_pkg);
 
-        size_t depPackageNamesCopyLength = depPackageNamesLength + 1;
+        size_t depPackageNamesCopyLength = depPackageNamesLength + 1U;
         char   depPackageNamesCopy[depPackageNamesCopyLength];
         strncpy(depPackageNamesCopy, formula->dep_pkg, depPackageNamesCopyLength);
 
@@ -58,7 +58,7 @@ int uppm_install(const char * packageName, bool verbose) {
 
     //////////////////////////////////////////////////////////////////////////
 
-    char * userHomeDir = getenv("HOME");
+    const char * const userHomeDir = getenv("HOME");
 
     if (userHomeDir == NULL) {
         return UPPM_ERROR_ENV_HOME_NOT_SET;
@@ -66,7 +66,7 @@ int uppm_install(const char * packageName, bool verbose) {
 
     size_t userHomeDirLength = strlen(userHomeDir);
 
-    if (userHomeDirLength == 0) {
+    if (userHomeDirLength == 0U) {
         return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
@@ -76,11 +76,11 @@ int uppm_install(const char * packageName, bool verbose) {
     char     packageInstalledDir[packageInstalledDirLength];
     snprintf(packageInstalledDir, packageInstalledDirLength, "%s/.uppm/installed/%s", userHomeDir, packageName);
 
-    size_t   packageInstalledMetaInfoDirLength = packageInstalledDirLength + 6;
+    size_t   packageInstalledMetaInfoDirLength = packageInstalledDirLength + 6U;
     char     packageInstalledMetaInfoDir[packageInstalledMetaInfoDirLength];
     snprintf(packageInstalledMetaInfoDir, packageInstalledMetaInfoDirLength, "%s/.uppm", packageInstalledDir);
 
-    size_t   receiptFilePathLength = packageInstalledMetaInfoDirLength + 12;
+    size_t   receiptFilePathLength = packageInstalledMetaInfoDirLength + 12U;
     char     receiptFilePath[receiptFilePathLength];
     snprintf(receiptFilePath, receiptFilePathLength, "%s/receipt.yml", packageInstalledMetaInfoDir);
 
@@ -94,7 +94,7 @@ int uppm_install(const char * packageName, bool verbose) {
 
     fprintf(stderr, "prepare to install package [%s].\n", packageName);
 
-    size_t   uppmDownloadDirLength = userHomeDirLength + 18;
+    size_t   uppmDownloadDirLength = userHomeDirLength + 18U;
     char     uppmDownloadDir[uppmDownloadDirLength];
     snprintf(uppmDownloadDir, uppmDownloadDirLength, "%s/.uppm/downloads", userHomeDir);
 
@@ -123,7 +123,7 @@ int uppm_install(const char * packageName, bool verbose) {
     char     binFileName[binFileNameLength];
     snprintf(binFileName, binFileNameLength, "%s%s", formula->bin_sha, binFileNameExtension);
 
-    size_t   binFilePathLength = uppmDownloadDirLength + binFileNameLength + 1;
+    size_t   binFilePathLength = uppmDownloadDirLength + binFileNameLength + 1U;
     char     binFilePath[binFilePathLength];
     snprintf(binFilePath, binFilePathLength, "%s/%s", uppmDownloadDir, binFileName);
 
@@ -172,7 +172,7 @@ int uppm_install(const char * packageName, bool verbose) {
         fprintf(stderr, "%s already have been fetched.\n", binFilePath);
     }
 
-    size_t   installedDirLength = userHomeDirLength + 20;
+    size_t   installedDirLength = userHomeDirLength + 20U;
     char     installedDir[installedDirLength];
     snprintf(installedDir, installedDirLength, "%s/.uppm/installed", userHomeDir);
 

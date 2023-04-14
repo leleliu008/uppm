@@ -11,7 +11,7 @@
 #include "uppm.h"
 
 static int uppm_depends_make_box(const char * dotScriptStr, size_t dotScriptStrLength, const char * outputFilePath) {
-    size_t urlEncodedBufLength = 3 * dotScriptStrLength + 1;
+    size_t urlEncodedBufLength = 3 * dotScriptStrLength + 1U;
     char   urlEncodedBuf[urlEncodedBufLength];
     memset(urlEncodedBuf, 0, urlEncodedBufLength);
 
@@ -22,7 +22,7 @@ static int uppm_depends_make_box(const char * dotScriptStr, size_t dotScriptStrL
         return UPPM_ERROR;
     }
 
-    size_t   urlLength = urlEncodedRealLength + 66;
+    size_t   urlLength = urlEncodedRealLength + 66U;
     char     url[urlLength];
     snprintf(url, urlLength, "https://dot-to-ascii.ggerganov.com/dot-to-ascii.php?boxart=1&src=%s", urlEncodedBuf);
 
@@ -49,7 +49,7 @@ static int uppm_depends_make_box(const char * dotScriptStr, size_t dotScriptStrL
 }
 
 static int uppm_depends_make_xxx(const char * dotScriptStr, size_t len, const char * tOption, const char * oOption) {
-    char * userHomeDir = getenv("HOME");
+    const char * const userHomeDir = getenv("HOME");
 
     if (userHomeDir == NULL) {
         return UPPM_ERROR_ENV_HOME_NOT_SET;
@@ -57,7 +57,7 @@ static int uppm_depends_make_xxx(const char * dotScriptStr, size_t len, const ch
 
     size_t userHomeDirLength = strlen(userHomeDir);
 
-    if (userHomeDirLength == 0) {
+    if (userHomeDirLength == 0U) {
         return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
@@ -65,7 +65,7 @@ static int uppm_depends_make_xxx(const char * dotScriptStr, size_t len, const ch
 
     struct stat st;
 
-    size_t   uppmHomeDirLength = userHomeDirLength + 7;
+    size_t   uppmHomeDirLength = userHomeDirLength + 7U;
     char     uppmHomeDir[uppmHomeDirLength];
     snprintf(uppmHomeDir, uppmHomeDirLength, "%s/.uppm", userHomeDir);
 
@@ -83,7 +83,7 @@ static int uppm_depends_make_xxx(const char * dotScriptStr, size_t len, const ch
 
     ////////////////////////////////////////////////////////////////
 
-    size_t   uppmTmpDirLength = uppmHomeDirLength + 5;
+    size_t   uppmTmpDirLength = uppmHomeDirLength + 5U;
     char     uppmTmpDir[uppmTmpDirLength];
     snprintf(uppmTmpDir, uppmTmpDirLength, "%s/tmp", uppmHomeDir);
 
@@ -136,7 +136,7 @@ static int uppm_depends_make_xxx(const char * dotScriptStr, size_t len, const ch
 
 static int string_append(char ** outP, size_t * outSize, size_t * outCapcity, const char * buf, size_t bufLength) {
     size_t  oldCapcity = (*outCapcity);
-    size_t needCapcity = oldCapcity + bufLength + 1;
+    size_t needCapcity = oldCapcity + bufLength + 1U;
 
     if (needCapcity > oldCapcity) {
         size_t newCapcity = needCapcity + 256;
@@ -298,7 +298,7 @@ int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, con
 
         size_t depPackageNamesLength = strlen(formula->dep_pkg);
 
-        size_t depPackageNamesCopyLength = depPackageNamesLength + 1;
+        size_t depPackageNamesCopyLength = depPackageNamesLength + 1U;
         char   depPackageNamesCopy[depPackageNamesCopyLength];
         strncpy(depPackageNamesCopy, formula->dep_pkg, depPackageNamesCopyLength);
 

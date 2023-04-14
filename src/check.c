@@ -72,7 +72,7 @@ int uppm_check_if_the_given_package_is_installed(const char * packageName) {
         return ret;
     }
 
-    char * userHomeDir = getenv("HOME");
+    const char * const userHomeDir = getenv("HOME");
 
     if (userHomeDir == NULL) {
         return UPPM_ERROR_ENV_HOME_NOT_SET;
@@ -80,13 +80,13 @@ int uppm_check_if_the_given_package_is_installed(const char * packageName) {
 
     size_t userHomeDirLength = strlen(userHomeDir);
 
-    if (userHomeDirLength == 0) {
+    if (userHomeDirLength == 0U) {
         return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
     struct stat st;
 
-    size_t uppmHomeDirLength = userHomeDirLength + 7;
+    size_t uppmHomeDirLength = userHomeDirLength + 7U;
     char   uppmHomeDir[uppmHomeDirLength];
     snprintf(uppmHomeDir, uppmHomeDirLength, "%s/.uppm", userHomeDir);
 
@@ -103,7 +103,7 @@ int uppm_check_if_the_given_package_is_installed(const char * packageName) {
         return UPPM_ERROR_PACKAGE_NOT_INSTALLED;
     }
 
-    size_t receiptFilePathLength = uppmHomeDirLength + packageInstalledDirLength + 19;
+    size_t receiptFilePathLength = uppmHomeDirLength + packageInstalledDirLength + 19U;
     char   receiptFilePath[receiptFilePathLength];
     snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", packageInstalledDir);
 

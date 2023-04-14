@@ -13,7 +13,7 @@ int uppm_uninstall(const char * packageName, bool verbose) {
         return ret;
     }
 
-    char * userHomeDir = getenv("HOME");
+    const char * const userHomeDir = getenv("HOME");
 
     if (userHomeDir == NULL) {
         return UPPM_ERROR_ENV_HOME_NOT_SET;
@@ -21,7 +21,7 @@ int uppm_uninstall(const char * packageName, bool verbose) {
 
     size_t userHomeDirLength = strlen(userHomeDir);
 
-    if (userHomeDirLength == 0) {
+    if (userHomeDirLength == 0U) {
         return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
@@ -35,7 +35,7 @@ int uppm_uninstall(const char * packageName, bool verbose) {
         return UPPM_ERROR_PACKAGE_NOT_INSTALLED;
     }
 
-    size_t   receiptFilePathLength = packageInstalledDirLength + 20;
+    size_t   receiptFilePathLength = packageInstalledDirLength + 20U;
     char     receiptFilePath[receiptFilePathLength];
     snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", packageInstalledDir);
 

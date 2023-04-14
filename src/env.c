@@ -56,7 +56,7 @@ static int uppm_list_dirs(const char * installedDir, size_t installedDirLength, 
         char   packageInstalledDir[packageInstalledDirLength];
         snprintf(packageInstalledDir, packageInstalledDirLength, "%s/%s", installedDir, dir_entry->d_name);
 
-        size_t receiptFilePathLength = packageInstalledDirLength + 20;
+        size_t receiptFilePathLength = packageInstalledDirLength + 20U;
         char   receiptFilePath[receiptFilePathLength];
         snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", packageInstalledDir);
 
@@ -108,7 +108,7 @@ int uppm_env(bool verbose) {
     sysinfo_dump(sysinfo);
     sysinfo_free(sysinfo);
 
-    char * userHomeDir = getenv("HOME");
+    const char * const userHomeDir = getenv("HOME");
 
     if (userHomeDir == NULL) {
         return UPPM_ERROR_ENV_HOME_NOT_SET;
@@ -116,11 +116,11 @@ int uppm_env(bool verbose) {
 
     size_t userHomeDirLength = strlen(userHomeDir);
 
-    if (userHomeDirLength == 0) {
+    if (userHomeDirLength == 0U) {
         return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
-    size_t   uppmHomeDirLength = userHomeDirLength + 7;
+    size_t   uppmHomeDirLength = userHomeDirLength + 7U;
     char     uppmHomeDir[uppmHomeDirLength];
     snprintf(uppmHomeDir, uppmHomeDirLength, "%s/.uppm", userHomeDir);
 
@@ -145,7 +145,7 @@ int uppm_env(bool verbose) {
 
     struct stat st;
 
-    size_t   installedDirLength = uppmHomeDirLength + 11;
+    size_t   installedDirLength = uppmHomeDirLength + 11U;
     char     installedDir[installedDirLength];
     snprintf(installedDir, installedDirLength, "%s/installed", uppmHomeDir);
 
