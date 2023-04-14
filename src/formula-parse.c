@@ -126,10 +126,8 @@ static int uppm_formula_set_value(UPPMFormulaKeyCode keyCode, char * value, UPPM
         return UPPM_OK;
     }
 
-    char c;
-
     for (;;) {
-        c = value[0];
+        char c = value[0];
 
         if (c == '\0') {
             return UPPM_OK;
@@ -281,10 +279,8 @@ static int uppm_formula_check(UPPMFormula * formula, const char * formulaFilePat
 
         size_t srcFileNameLength = 0;
 
-        char c;
-
         for (;;) {
-            c = srcFileName[srcFileNameLength];
+            char c = srcFileName[srcFileNameLength];
 
             if (c == '\0') {
                 break;

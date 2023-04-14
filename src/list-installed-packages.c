@@ -37,12 +37,10 @@ int uppm_list_the_installed_packages() {
         return UPPM_ERROR;
     }
 
-    struct dirent * dir_entry;
-
     for (;;) {
         errno = 0;
 
-        dir_entry = readdir(dir);
+        struct dirent * dir_entry = readdir(dir);
 
         if (dir_entry == NULL) {
             if (errno == 0) {

@@ -357,10 +357,9 @@ int uppm_install(const char * packageName, bool verbose) {
     fprintf(receiptFile, "pkgname: %s\n", packageName);
 
     char   buff[1024];
-    size_t size;
 
     for (;;) {
-        size = fread(buff, 1, 1024, formulaFile);
+        size_t size = fread(buff, 1, 1024, formulaFile);
 
         if (ferror(formulaFile)) {
             fclose(formulaFile);

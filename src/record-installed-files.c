@@ -29,12 +29,10 @@ static int record_installed_files_r(const char * dirPath, size_t offset, FILE * 
 
     struct stat st;
 
-    struct dirent * dir_entry;
-
     for (;;) {
         errno = 0;
 
-        dir_entry = readdir(dir);
+        struct dirent * dir_entry = readdir(dir);
 
         if (dir_entry == NULL) {
             if (errno == 0) {

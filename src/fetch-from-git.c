@@ -50,7 +50,7 @@ void git_checkout_progress_callback(const char *path, size_t completed_steps, si
 // https://libgit2.org/libgit2/#HEAD/group/credential/git_credential_ssh_key_new
 // https://libgit2.org/libgit2/#HEAD/group/callback/git_credential_acquire_cb
 int git_credential_acquire_callback(git_credential **credential, const char *url, const char *username_from_url, unsigned int allowed_types, void *payload) {
-    const const char * const userHomeDir = getenv("HOME");
+    const char * const userHomeDir = getenv("HOME");
 
     if (userHomeDir == NULL) {
         return 1;
@@ -86,9 +86,8 @@ int git_credential_acquire_callback(git_credential **credential, const char *url
 void print_git_oid(const git_oid oid, const char * prefix) {
     char sha1sum[41] = {0};
 
-    size_t i, j;
-    for (i = 0; i < 20; i++) {
-        j = 2 * i;
+    for (int i = 0; i < 20; i++) {
+        int j = 2 * i;
         sprintf(&sha1sum[j], "%02x", (unsigned int)(oid.id[i]));
     }
 
@@ -103,12 +102,10 @@ int check_if_is_a_empty_dir(const char * dirpath, bool * value) {
         return UPPM_ERROR;
     }
 
-    struct dirent * dir_entry;
-
     for (;;) {
         errno = 0;
 
-        dir_entry = readdir(dir);
+        struct dirent * dir_entry = readdir(dir);
 
         if (dir_entry == NULL) {
             if (errno == 0) {

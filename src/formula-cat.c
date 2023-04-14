@@ -26,10 +26,9 @@ int uppm_formula_cat(const char * packageName) {
     formulaFilePath = NULL;
 
     char   buff[1024];
-    size_t size;
 
     for(;;) {
-        size = fread(buff, 1, 1024, file);
+        size_t size = fread(buff, 1, 1024, file);
 
         if (ferror(file)) {
             fclose(file);

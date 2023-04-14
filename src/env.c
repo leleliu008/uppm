@@ -28,12 +28,10 @@ static int uppm_list_dirs(const char * installedDir, size_t installedDirLength, 
 
     struct stat st;
 
-    struct dirent * dir_entry;
-
     for (;;) {
         errno = 0;
 
-        dir_entry = readdir(dir);
+        struct dirent * dir_entry = readdir(dir);
 
         if (dir_entry == NULL) {
             if (errno == 0) {

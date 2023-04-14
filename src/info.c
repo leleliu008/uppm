@@ -65,10 +65,9 @@ int uppm_info(const char * packageName, const char * key) {
         }
 
         char   buff[1024];
-        size_t size;
 
         for (;;) {
-            size = fread(buff, 1, 1024, formulaFile);
+            size_t size = fread(buff, 1, 1024, formulaFile);
 
             if (ferror(formulaFile)) {
                 perror(formulaFilePath);
@@ -166,10 +165,9 @@ int uppm_info(const char * packageName, const char * key) {
         printf("formula: %s\n", formulaFilePath);
 
         char   buff[1024];
-        size_t size;
 
         for (;;) {
-            size = fread(buff, 1, 1024, formulaFile);
+            size_t size = fread(buff, 1, 1024, formulaFile);
 
             if (ferror(formulaFile)) {
                 perror(formulaFilePath);
@@ -466,10 +464,9 @@ int uppm_info(const char * packageName, const char * key) {
         }
 
         char   buff[1024];
-        size_t size;
 
         for (;;) {
-            size = fread(buff, 1, 1024, installedManifestFile);
+            size_t size = fread(buff, 1, 1024, installedManifestFile);
 
             if (ferror(installedManifestFile)) {
                 perror(installedManifestFilePath);
@@ -573,10 +570,9 @@ int uppm_info(const char * packageName, const char * key) {
         }
 
         char   buff[1024];
-        size_t size;
 
         for (;;) {
-            size = fread(buff, 1, 1024, receiptFile);
+            size_t size = fread(buff, 1, 1024, receiptFile);
 
             if (ferror(receiptFile)) {
                 perror(receiptFilePath);

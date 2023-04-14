@@ -6,7 +6,7 @@
 #include "url.h"
 
 int url_encode(char outputBuf[], size_t * writtenSizeInBytes, unsigned char inputBuf[], size_t inputBufSizeInBytes, bool isToUpper) {
-    const char *table = isToUpper ? "0123456789ABCDEF" : "0123456789abcdef";
+    const char * const table = isToUpper ? "0123456789ABCDEF" : "0123456789abcdef";
 
     size_t outputLength = 0;
 
@@ -60,10 +60,8 @@ int url_decode(unsigned char outputBuf[], size_t * writtenSizeInBytes, char inpu
 
     size_t outputLength = 0;
 
-    char c;
-
     for (size_t i = 0; i < inputBufSizeInBytes; i++) {
-        c = inputBuf[i];
+        char c = inputBuf[i];
 
         if (c == '%') {
             char c1 = hex2dec(inputBuf[++i]);

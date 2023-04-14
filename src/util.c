@@ -25,10 +25,8 @@ int uppm_util(int argc, char* argv[]) {
         if (argv[3] == NULL) {
             unsigned char inputBuf[1024];
 
-            size_t  readSizeInBytes;
-
             for (;;) {
-                readSizeInBytes = fread(inputBuf, 1, 1024, stdin);
+                size_t readSizeInBytes = fread(inputBuf, 1, 1024, stdin);
 
                 if (ferror(stdin)) {
                     return UPPM_ERROR;
@@ -130,10 +128,8 @@ int uppm_util(int argc, char* argv[]) {
         if (argv[3] == NULL) {
             unsigned char inputBuf[1023];
 
-            size_t readSizeInBytes;
-
             for (;;) {
-                readSizeInBytes = fread(inputBuf, 1, 1023, stdin);
+                size_t readSizeInBytes = fread(inputBuf, 1, 1023, stdin);
 
                 if (ferror(stdin)) {
                     return UPPM_ERROR;
@@ -198,10 +194,8 @@ int uppm_util(int argc, char* argv[]) {
         if (argv[3] == NULL) {
             unsigned char inputBuf[1024];
 
-            size_t readSizeInBytes;
-
             for (;;) {
-                readSizeInBytes = fread(inputBuf, 1, 1024, stdin);
+                size_t readSizeInBytes = fread(inputBuf, 1, 1024, stdin);
 
                 if (ferror(stdin)) {
                     return UPPM_ERROR;

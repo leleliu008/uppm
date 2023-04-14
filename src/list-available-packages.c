@@ -44,14 +44,11 @@ int uppm_list_the_available_packages(UPPMPackageNameCallbak packageNameCallbak, 
 
         char * fileName;
         char * fileNameSuffix;
-        size_t fileNameLength;
-
-        struct dirent * dir_entry;
 
         for (;;) {
             errno = 0;
 
-            dir_entry = readdir(dir);
+            struct dirent * dir_entry = readdir(dir);
 
             if (dir_entry == NULL) {
                 if (errno == 0) {
@@ -69,7 +66,7 @@ int uppm_list_the_available_packages(UPPMPackageNameCallbak packageNameCallbak, 
 
             fileName = dir_entry->d_name;
 
-            fileNameLength = strlen(fileName);
+            size_t fileNameLength = strlen(fileName);
 
             if (fileNameLength > 4) {
                 fileNameSuffix = fileName + fileNameLength - 4;
