@@ -1,12 +1,13 @@
 # uppm
-Universal Prebuild Package Manager for Unix-like systems.
 
+Universal Prebuild Package Manager for Unix-like systems.
 
 <br>
 
 **Note**: This project is being actively developed. It's in beta stage and may not be stable. Some features are subject to change without notice.
 
 ## dependences
+
 |dependency|required?|purpose|
 |----|---------|-------|
 |[cmake](https://cmake.org/)|required |for generating `build.ninja`|
@@ -22,8 +23,8 @@ Universal Prebuild Package Manager for Unix-like systems.
 |[zlib](https://www.zlib.net/)|required|for compressing and uncompressing.|
 |[pcre2](https://www.pcre.org/)||for Regular Expressions support.<br>only required on OpenBSD.|
 
-
 ## build and install uppm via [ppkg](https://github.com/leleliu008/ppkg)
+
 ```bash
 ppkg install uppm
 ```
@@ -215,272 +216,340 @@ cmake --build   build.d
 cmake --install build.d
 ```
 
-
 ## ~/.uppm
+
 all relevant dirs and files are located in `~/.uppm` directory.
 
 **Note**: Please do NOT place your own files in `~/.uppm` directory, as `uppm` will change files in `~/.uppm` directory without notice.
 
 ## uppm command usage
-*   **show help of this command**
-        
-        uppm -h
-        uppm --help
-        
-*   **show version of this command**
 
-        uppm -V
-        uppm --version
-        
-*   **show your system's information**
+* **show help of this command**
 
-        uppm sysinfo
+    ```bash
+    uppm -h
+    uppm --help
+    ```
 
-*   **show your system's information and other information**
+* **show version of this command**
 
-        uppm env
-        
-*   **integrate `zsh-completion` script**
+    ```bash
+    uppm -V
+    uppm --version
+    ```
 
-        uppm integrate zsh
-        uppm integrate zsh --output-dir=/usr/local/share/zsh/site-functions
-        uppm integrate zsh -v
-        
+* **show your system's information**
+
+    ```bash
+    uppm sysinfo
+    ```
+
+* **show your system's information and other information**
+
+    ```bash
+    uppm env
+    ```
+
+* **integrate `zsh-completion` script**
+
+    ```bash
+    uppm integrate zsh
+    uppm integrate zsh --output-dir=/usr/local/share/zsh/site-functions
+    uppm integrate zsh -v
+    ```
+
     I provide a zsh-completion script for `uppm`. when you've typed `uppm` then type `TAB` key, the rest of the arguments will be automatically complete for you.
 
     **Note**: to apply this feature, you may need to run the command `autoload -U compinit && compinit` in your terminal (your current running shell must be zsh).
 
-*   **update all available formula repositories**
+* **update all available formula repositories**
 
-        uppm update
-        
-*   **search all available packages whose name matches the given regular expression pattern**
-        
-        uppm search curl
-        uppm search lib
-        
-*   **show information of the given package**
-        
-        uppm info curl
-        uppm info curl version
-        uppm info curl summary
-        uppm info curl webpage
-        uppm info curl bin-url
-        uppm info curl bin-sha
-        uppm info curl bin-ft  # filetype of bin-url
-        uppm info curl bin-fp  # filepath of bin-url
-        uppm info curl install
-        uppm info curl formula
+    ```bash
+    uppm update
+    ```
 
-        uppm info curl installed-dir
-        uppm info curl installed-files
-        uppm info curl installed-receipt-path
-        uppm info curl installed-receipt-json
-        uppm info curl installed-receipt-yaml
-        uppm info curl installed-timestamp-unix
-        uppm info curl installed-timestamp-iso-8601
-        uppm info curl installed-timestamp-rfc-3339
-        uppm info curl installed-version
+* **search all available packages whose name matches the given regular expression pattern**
 
-        uppm info curl --json
-        uppm info curl --json | jq .
+    ```bash
+    uppm search curl
+    uppm search lib
+    ```
 
-        uppm info curl --yaml
-        uppm info curl --yaml | yq .
+* **show information of the given package**
 
-        uppm info curl --shell
+    ```bash
+    uppm info curl
+    uppm info curl version
+    uppm info curl summary
+    uppm info curl webpage
+    uppm info curl bin-url
+    uppm info curl bin-sha
+    uppm info curl bin-ft  # filetype of bin-url
+    uppm info curl bin-fp  # filepath of bin-url
+    uppm info curl install
+    uppm info curl formula
 
-        uppm info @all
+    uppm info curl installed-dir
+    uppm info curl installed-files
+    uppm info curl installed-receipt-path
+    uppm info curl installed-receipt-json
+    uppm info curl installed-receipt-yaml
+    uppm info curl installed-timestamp-unix
+    uppm info curl installed-timestamp-iso-8601
+    uppm info curl installed-timestamp-rfc-3339
+    uppm info curl installed-version
 
-        uppm info @all --shell
+    uppm info curl --json
+    uppm info curl --json | jq .
 
-        uppm info @all --json
-        uppm info @all --json | jq .
+    uppm info curl --yaml
+    uppm info curl --yaml | yq .
 
-        uppm info @all --yaml
-        uppm info @all --yaml | yq .
-        
-*   **show packages that are depended by the given package**
-        
-        uppm depends curl
+    uppm info curl --shell
 
-        uppm depends curl -t dot
-        uppm depends curl -t box
-        uppm depends curl -t png
-        uppm depends curl -t svg
+    uppm info @all
 
-        uppm depends curl -t dot -o .
-        uppm depends curl -t box -o .
-        uppm depends curl -t png -o .
-        uppm depends curl -t svg -o .
+    uppm info @all --shell
 
-        uppm depends curl -t dot -o a/
-        uppm depends curl -t box -o a/
-        uppm depends curl -t png -o a/
-        uppm depends curl -t svg -o a/
+    uppm info @all --json
+    uppm info @all --json | jq .
 
-        uppm depends curl -o xx.dot
-        uppm depends curl -o xx.box
-        uppm depends curl -o xx.png
-        uppm depends curl -o xx.svg
-        
-*   **download resources of the given package to the local cache**
-        
-        uppm fetch curl
-        uppm fetch @all
+    uppm info @all --yaml
+    uppm info @all --yaml | yq .
+    ```
 
-        uppm fetch curl -v
-        uppm fetch @all -v
+* **show packages that are depended by the given package**
 
-*   **install packages**
-        
-        uppm install curl
-        uppm install curl bzip2 -v
-        
-*   **reinstall packages**
-        
-        uppm reinstall curl
-        uppm reinstall curl bzip2 -v
-        
-*   **uninstall packages**
+    ```bash
+    uppm depends curl
 
-        uppm uninstall curl
-        uppm uninstall curl bzip2 -v
-        
-*   **upgrade the outdated packages**
+    uppm depends curl -t dot
+    uppm depends curl -t box
+    uppm depends curl -t png
+    uppm depends curl -t svg
 
-        uppm upgrade
-        uppm upgrade curl
-        uppm upgrade curl bzip2 -v
-        
-*   **upgrade this software**
+    uppm depends curl -t dot -o .
+    uppm depends curl -t box -o .
+    uppm depends curl -t png -o .
+    uppm depends curl -t svg -o .
 
-        uppm upgrade-self
-        uppm upgrade-self -v
-        
-*   **view the formula of the given package**
+    uppm depends curl -t dot -o a/
+    uppm depends curl -t box -o a/
+    uppm depends curl -t png -o a/
+    uppm depends curl -t svg -o a/
 
-        uppm formula-view curl
-        uppm formula-view curl --no-color
+    uppm depends curl -o xx.dot
+    uppm depends curl -o xx.box
+    uppm depends curl -o xx.png
+    uppm depends curl -o xx.svg
+    ```
 
-*   **edit the formula of the given package**
+* **download resources of the given package to the local cache**
 
-        uppm formula-edit curl
-        uppm formula-edit curl --editor=/usr/local/bin/vim
+    ```bash
+    uppm fetch curl
+    uppm fetch @all
 
-*   **list all avaliable formula repositories**
+    uppm fetch curl -v
+    uppm fetch @all -v
+    ```
 
-        uppm formula-repo-list
+* **install packages**
 
-*   **create a new empty formula repository**
+    ```bash
+    uppm install curl
+    uppm install curl bzip2 -v
+    ```
 
-        uppm formula-repo-init my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo
-        uppm formula-repo-init my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --branch=master
-        uppm formula-repo-init my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --branch=main --pin
-        uppm formula-repo-init my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --unpin --disable
-        uppm formula-repo-init my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --enable
+* **reinstall packages**
 
-*   **create a new empty formula repository then sync with server**
+    ```bash
+    uppm reinstall curl
+    uppm reinstall curl bzip2 -v
+    ```
 
-        uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo
-        uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --branch=master
-        uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --branch=main --pin
-        uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --unpin --disable
-        uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --enable
-        
-*   **delete the given formula repository**
+* **uninstall packages**
 
-        uppm formula-repo-del my_repo
+    ```bash
+    uppm uninstall curl
+    uppm uninstall curl bzip2 -v
+    ```
 
-*   **sync the given formula repository with server**
+* **upgrade the outdated packages**
 
-        uppm formula-repo-sync my_repo
+    ```bash
+    uppm upgrade
+    uppm upgrade curl
+    uppm upgrade curl bzip2 -v
+    ```
 
-*   **show information of the given formula repository**
+* **upgrade this software**
 
-        uppm formula-repo-info my_repo
+    ```bash
+    uppm upgrade-self
+    uppm upgrade-self -v
+    ```
 
-*   **change the config of the given formula repository**
+* **view the formula of the given package**
 
-        uppm formula-repo-conf my_repo --url=https://github.com/leleliu008/uppm-formula-repository-my_repo
-        uppm formula-repo-conf my_repo --branch=main
-        uppm formula-repo-conf my_repo --pin
-        uppm formula-repo-conf my_repo --unpin
-        uppm formula-repo-conf my_repo --enable
-        uppm formula-repo-conf my_repo --disable
+    ```bash
+    uppm formula-view curl
+    uppm formula-view curl --no-color
+    ```
 
-*   **list all available packages**
-        
-        uppm ls-available
-        
-*   **list all installed packages**
-        
-        uppm ls-installed
-        
-*   **list all outdated packages**
-        
-        uppm ls-outdated
-        
-*   **check if the given package is available ?**
-        
-        uppm is-available curl
-        
-*   **check if the given package is installed ?**
-        
-        uppm is-installed curl
-        
-*   **check if the given package is outdated ?**
-        
-        uppm is-outdated  curl
-        
-*   **list the installed files of the given installed package in a tree-like format**
-        
-        uppm tree curl
-        uppm tree curl -L 3
-        
-*   **generate url-transform sample**
+* **edit the formula of the given package**
 
-        uppm gen-url-transform-sample
+    ```bash
+    uppm formula-edit curl
+    uppm formula-edit curl --editor=/usr/local/bin/vim
+    ```
 
-*   **extra common used utilities**
-        
-        uppm util zlib-deflate -L 6 < input/file/path
-        uppm util zlib-inflate      < input/file/path
+* **list all avaliable formula repositories**
 
-        uppm util base16-encode "string to be encoded with base16 algorithm"
-        uppm util base16-encode < input/file/path
+    ```bash
+    uppm formula-repo-list
+    ```
 
-        uppm util base16-decode ABCD
-        uppm util base16-decode ABCD > output/file/path
+* **create a new empty formula repository**
 
-        uppm util base64-encode "string to be encoded with base64 algorithm"
-        uppm util base64-encode < input/file/path
+    ```bash
+    uppm formula-repo-init my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo
+    uppm formula-repo-init my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --branch=master
+    uppm formula-repo-init my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --branch=main --pin
+    uppm formula-repo-init my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --unpin --disable
+    uppm formula-repo-init my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --enable
+    ```
 
-        uppm util base64-decode YQ==
-        uppm util base64-decode YQ== > output/file/path
+* **create a new empty formula repository then sync with server**
 
-        uppm util sha256sum   input/file/path
-        uppm util sha256sum < input/file/path
+    ```bash
+    uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo
+    uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --branch=master
+    uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --branch=main --pin
+    uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --unpin --disable
+    uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --enable
+    ```
 
-        uppm util which tree
-        uppm util which tree -a
-        
-*   **delete the unused cached files**
-        
-        uppm cleanup
-        
+* **delete the given formula repository**
+
+    ```bash
+    uppm formula-repo-del my_repo
+    ```
+
+* **sync the given formula repository with server**
+
+    ```bash
+    uppm formula-repo-sync my_repo
+    ```
+
+* **show information of the given formula repository**
+
+    ```bash
+    uppm formula-repo-info my_repo
+    ```
+
+* **change the config of the given formula repository**
+
+    ```bash
+    uppm formula-repo-conf my_repo --url=https://github.com/leleliu008/uppm-formula-repository-my_repo
+    uppm formula-repo-conf my_repo --branch=main
+    uppm formula-repo-conf my_repo --pin
+    uppm formula-repo-conf my_repo --unpin
+    uppm formula-repo-conf my_repo --enable
+    uppm formula-repo-conf my_repo --disable
+    ```
+
+* **list all available packages**
+
+    ```bash
+    uppm ls-available
+    ```
+
+* **list all installed packages**
+
+    ```bash
+    uppm ls-installed
+    ```
+
+* **list all outdated packages**
+
+    ```bash
+    uppm ls-outdated
+    ```
+
+* **check if the given package is available ?**
+
+    ```bash
+    uppm is-available curl
+    ```
+
+* **check if the given package is installed ?**
+
+    ```bash
+    uppm is-installed curl
+    ```
+
+* **check if the given package is outdated ?**
+
+    ```bash
+    uppm is-outdated  curl
+    ```
+
+* **list the installed files of the given installed package in a tree-like format**
+
+    ```bash
+    uppm tree curl
+    uppm tree curl -L 3
+    ```
+
+* **generate url-transform sample**
+
+    ```bash
+    uppm gen-url-transform-sample
+    ```
+
+* **extra common used utilities**
+
+    ```bash
+    uppm util zlib-deflate -L 6 < input/file/path
+    uppm util zlib-inflate      < input/file/path
+
+    uppm util base16-encode "string to be encoded with base16 algorithm"
+    uppm util base16-encode < input/file/path
+
+    uppm util base16-decode ABCD
+    uppm util base16-decode ABCD > output/file/path
+
+    uppm util base64-encode "string to be encoded with base64 algorithm"
+    uppm util base64-encode < input/file/path
+
+    uppm util base64-decode YQ==
+    uppm util base64-decode YQ== > output/file/path
+
+    uppm util sha256sum   input/file/path
+    uppm util sha256sum < input/file/path
+
+    uppm util which tree
+    uppm util which tree -a
+    ```
+
+* **delete the unused cached files**
+
+    ```bash
+    uppm cleanup
+    ```
 
 ## environment variables
 
-*   **HOME**
+* **HOME**
 
     this environment variable already have been set on most systems, if not set or set a empty string, you will receive an error message.
 
-*   **PATH**
+* **PATH**
 
     this environment variable already have been set on most systems, if not set or set a empty string, you will receive an error message.
 
-*   **SSL_CERT_FILE**
+* **SSL_CERT_FILE**
 
     ```bash
     curl -LO https://curl.se/ca/cacert.pem
@@ -489,7 +558,7 @@ all relevant dirs and files are located in `~/.uppm` directory.
 
     In general, you don't need to set this environment variable, but, if you encounter the reporting `the SSL certificate is invalid`, trying to run above commands in your terminal will do the trick.
 
-*   **UPPM_URL_TRANSFORM**
+* **UPPM_URL_TRANSFORM**
 
     ```bash
     export UPPM_URL_TRANSFORM=/path/of/url-transform
@@ -516,6 +585,7 @@ a uppm formula'a filename prefix must match regular expression pattern `^[A-Za-z
 a uppm formula's file content must follow [the uppm formula scheme](https://github.com/leleliu008/uppm-formula-repository-linux-x86_64)
 
 ## uppm formula repository
+
 a uppm formula repository is a git repository.
 
 a uppm formula repository's root dir should have a `formula` named sub dir, this repository's formulas all should be located in this dir.
@@ -525,11 +595,12 @@ a uppm formula repository's local path is `~/.uppm/repos.d/${UPPMFormulaRepoName
 **Note:** uppm supports multiple formula repositories.
 
 ## uppm formula repository's config
+
 After a uppm formula repository is successfully fetched from server to local, a config file for this repository would be created at `~/.uppm/repos.d/${UPPMFormulaRepoName}/.uppm-formula-repo.yml`
 
 a typical uppm formula repository's config as following:
 
-```
+```yml
 url: https://github.com/leleliu008/uppm-formula-repository-linux-x86_64
 branch: master
 pinned: 0
@@ -545,14 +616,15 @@ If a uppm formula repository is `disabled`, which means uppm would not search fo
 ## uppm offical formula repository
 
 uppm offical formula repository's url:
-- https://github.com/leleliu008/uppm-formula-repository-android-aarch64
-- https://github.com/leleliu008/uppm-formula-repository-linux-x86_64
-- https://github.com/leleliu008/uppm-formula-repository-linux-aarch64
-- https://github.com/leleliu008/uppm-formula-repository-macos-x86_64
-- https://github.com/leleliu008/uppm-formula-repository-macos-arm64
-- https://github.com/leleliu008/uppm-formula-repository-freebsd-amd64
-- https://github.com/leleliu008/uppm-formula-repository-openbsd-amd64
-- https://github.com/leleliu008/uppm-formula-repository-netbsd-amd64
+
+* <https://github.com/leleliu008/uppm-formula-repository-android-aarch64>
+* <https://github.com/leleliu008/uppm-formula-repository-linux-x86_64>
+* <https://github.com/leleliu008/uppm-formula-repository-linux-aarch64>
+* <https://github.com/leleliu008/uppm-formula-repository-macos-x86_64>
+* <https://github.com/leleliu008/uppm-formula-repository-macos-arm64>
+* <https://github.com/leleliu008/uppm-formula-repository-freebsd-amd64>
+* <https://github.com/leleliu008/uppm-formula-repository-openbsd-amd64>
+* <https://github.com/leleliu008/uppm-formula-repository-netbsd-amd64>
 
 uppm offical formula repository would be automatically fetched to local cache as name `offical-core` when you run `uppm update` command.
 
