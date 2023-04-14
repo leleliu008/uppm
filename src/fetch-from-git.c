@@ -338,7 +338,7 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
     gitFetchOptions.callbacks = gitRemoteCallbacks;
 
     git_checkout_options gitCheckoutOptions = GIT_CHECKOUT_OPTIONS_INIT;
-    gitCheckoutOptions.checkout_strategy    = GIT_CHECKOUT_SAFE;
+    gitCheckoutOptions.checkout_strategy    = GIT_CHECKOUT_FORCE;
     gitCheckoutOptions.progress_cb          = git_checkout_progress_callback;
     gitCheckoutOptions.progress_payload     = &progressPayload;
 

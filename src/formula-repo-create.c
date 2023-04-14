@@ -7,6 +7,7 @@
 #include <sys/stat.h>
 #include <git2.h>
 
+#include "core/log.h"
 #include "uppm.h"
 
 int uppm_formula_repo_create(const char * formulaRepoName, const char * formulaRepoUrl, const char * branchName, int pinned, int enabled) {
@@ -52,8 +53,8 @@ int uppm_formula_repo_create(const char * formulaRepoName, const char * formulaR
 
     struct stat st;
 
-    size_t uppmHomeDirLength = userHomeDirLength + 7U;
-    char   uppmHomeDir[uppmHomeDirLength];
+    size_t   uppmHomeDirLength = userHomeDirLength + 7U;
+    char     uppmHomeDir[uppmHomeDirLength];
     snprintf(uppmHomeDir, uppmHomeDirLength, "%s/.uppm", userHomeDir);
 
     if (stat(uppmHomeDir, &st) == 0) {
@@ -70,8 +71,8 @@ int uppm_formula_repo_create(const char * formulaRepoName, const char * formulaR
 
     ////////////////////////////////////////////////////////////////////////////////////////
 
-    size_t formulaRepoRootDirLength = uppmHomeDirLength + 9U;
-    char   formulaRepoRootDir[formulaRepoRootDirLength];
+    size_t   formulaRepoRootDirLength = uppmHomeDirLength + 9U;
+    char     formulaRepoRootDir[formulaRepoRootDirLength];
     snprintf(formulaRepoRootDir, formulaRepoRootDirLength, "%s/repos.d", uppmHomeDir);
 
     if (stat(formulaRepoRootDir, &st) == 0) {
@@ -88,12 +89,12 @@ int uppm_formula_repo_create(const char * formulaRepoName, const char * formulaR
 
     ////////////////////////////////////////////////////////////////////////////////////////
 
-    size_t formulaRepoDirLength = formulaRepoRootDirLength + formulaRepoNameLength + 2U;
-    char   formulaRepoDir[formulaRepoDirLength];
+    size_t   formulaRepoDirLength = formulaRepoRootDirLength + formulaRepoNameLength + 2U;
+    char     formulaRepoDir[formulaRepoDirLength];
     snprintf(formulaRepoDir, formulaRepoDirLength, "%s/%s", formulaRepoRootDir, formulaRepoName);
 
     if (stat(formulaRepoDir, &st) == 0) {
-        fprintf(stderr, "formula repo already exist at: %s\n", formulaRepoDir);
+        LOG_ERROR2("formula repo already exist at: ", formulaRepoDir);
         return UPPM_ERROR_FORMULA_REPO_HAS_EXIST;
     } else {
         if (mkdir(formulaRepoDir, S_IRWXU) != 0) {
@@ -104,8 +105,8 @@ int uppm_formula_repo_create(const char * formulaRepoName, const char * formulaR
 
     ////////////////////////////////////////////////////////////////////////////////////////
 
-    size_t subDirLength = formulaRepoDirLength + 9U;
-    char   subDir[subDirLength];
+    size_t   subDirLength = formulaRepoDirLength + 9U;
+    char     subDir[subDirLength];
     snprintf(subDir, subDirLength, "%s/formula", formulaRepoDir);
 
     if (mkdir(subDir, S_IRWXU) != 0) {
