@@ -84,7 +84,7 @@ int uppm_integrate_zsh_completion(const char * outputDir, bool verbose) {
         return UPPM_ERROR;
     }
 
-    size_t destFilePathLength = strlen(outputDir) + 7;
+    size_t destFilePathLength = strlen(outputDir) + 7U;
     char   destFilePath[destFilePathLength];
     snprintf(destFilePath, destFilePathLength, "%s/_uppm", outputDir);
 

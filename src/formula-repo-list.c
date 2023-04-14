@@ -73,7 +73,7 @@ int uppm_formula_repo_list(UPPMFormulaRepoList * * out) {
             continue;
         }
 
-        size_t formulaRepoPathLength = uppmFormulaRepoDirLength + strlen(dir_entry->d_name) + 2;
+        size_t formulaRepoPathLength = uppmFormulaRepoDirLength + strlen(dir_entry->d_name) + 2U;
         char   formulaRepoPath[formulaRepoPathLength];
         snprintf(formulaRepoPath, formulaRepoPathLength, "%s/%s", uppmFormulaRepoDir, dir_entry->d_name);
 

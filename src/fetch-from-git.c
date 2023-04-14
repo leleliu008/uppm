@@ -322,7 +322,7 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
 
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-    size_t localeTrackingBranchRefStringLength = strlen(localeTrackingBranchName) + 12;
+    size_t localeTrackingBranchRefStringLength = strlen(localeTrackingBranchName) + 12U;
     char   localeTrackingBranchRefString[localeTrackingBranchRefStringLength];
     snprintf(localeTrackingBranchRefString, localeTrackingBranchRefStringLength, "refs/heads/%s", localeTrackingBranchName);
 

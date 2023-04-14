@@ -107,7 +107,7 @@ int uppm_formula_repo_add(const char * formulaRepoName, const char * formulaRepo
 
     printf("Adding formula repo : %s => %s\n", formulaRepoName, formulaRepoUrl);
 
-    size_t refspecLength = (branchNameLength << 1) + 33;
+    size_t refspecLength = (branchNameLength << 1) + 33U;
     char   refspec[refspecLength];
     snprintf(refspec, refspecLength, "refs/heads/%s:refs/remotes/origin/%s", branchName, branchName);
 

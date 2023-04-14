@@ -20,7 +20,7 @@ int uppm_list_the_available_packages(UPPMPackageNameCallbak packageNameCallbak, 
     for (size_t i = 0; i < formulaRepoList->size; i++) {
         char * formulaRepoPath  = formulaRepoList->repos[i]->path;
 
-        size_t formulaDirLength = strlen(formulaRepoPath) + 10;
+        size_t formulaDirLength = strlen(formulaRepoPath) + 10U;
         char   formulaDir[formulaDirLength];
         snprintf(formulaDir, formulaDirLength, "%s/formula", formulaRepoPath);
 

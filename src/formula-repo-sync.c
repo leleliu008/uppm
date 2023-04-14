@@ -40,7 +40,7 @@ int uppm_formula_repo_sync(UPPMFormulaRepo * formulaRepo) {
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    size_t refspecLength = (strlen(formulaRepo->branch) << 1) + 33;
+    size_t refspecLength = (strlen(formulaRepo->branch) << 1) + 33U;
     char   refspec[refspecLength];
     snprintf(refspec, refspecLength, "refs/heads/%s:refs/remotes/origin/%s", formulaRepo->branch, formulaRepo->branch);
 

@@ -51,7 +51,7 @@ static int record_installed_files_r(const char * dirPath, size_t offset, FILE * 
             continue;
         }
 
-        size_t filePathLength = dirPathLength + strlen(dir_entry->d_name) + 2;
+        size_t filePathLength = dirPathLength + strlen(dir_entry->d_name) + 2U;
         char   filePath[filePathLength];
         snprintf(filePath, filePathLength, "%s/%s", dirPath, dir_entry->d_name);
 

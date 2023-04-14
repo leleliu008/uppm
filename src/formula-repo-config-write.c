@@ -20,13 +20,13 @@ int uppm_formula_repo_config_write(const char * formulaRepoDirPath, const char *
         timestamp_updated = "";
     }
 
-    size_t strLength = strlen(formulaRepoUrl) + strlen(branchName) + strlen(timestamp_created) + strlen(timestamp_updated) + 75;
-    char   str[strLength + 1];
-    snprintf(str, strLength + 1, "url: %s\nbranch: %s\npinned: %1d\nenabled: %1d\ntimestamp-created: %s\ntimestamp-updated: %s\n", formulaRepoUrl, branchName, pinned, enabled, timestamp_created, timestamp_updated);
+    size_t strLength = strlen(formulaRepoUrl) + strlen(branchName) + strlen(timestamp_created) + strlen(timestamp_updated) + 75U;
+    char   str[strLength + 1U];
+    snprintf(str, strLength + 1U, "url: %s\nbranch: %s\npinned: %1d\nenabled: %1d\ntimestamp-created: %s\ntimestamp-updated: %s\n", formulaRepoUrl, branchName, pinned, enabled, timestamp_created, timestamp_updated);
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    size_t formulaRepoConfigFilePathLength = strlen(formulaRepoDirPath) + 24;
+    size_t formulaRepoConfigFilePathLength = strlen(formulaRepoDirPath) + 24U;
     char   formulaRepoConfigFilePath[formulaRepoConfigFilePathLength];
     snprintf(formulaRepoConfigFilePath, formulaRepoConfigFilePathLength, "%s/.uppm-formula-repo.yml", formulaRepoDirPath);
 

@@ -155,7 +155,7 @@ finalize:
         return UPPM_ERROR;
     }
 
-    size_t latestVersionCopyLength = strlen(latestVersion) + 1;
+    size_t latestVersionCopyLength = strlen(latestVersion) + 1U;
     char   latestVersionCopy[latestVersionCopyLength];
     strncpy(latestVersionCopy, latestVersion, latestVersionCopyLength);
 
@@ -217,7 +217,7 @@ finalize:
 
     size_t latestVersionLength = strlen(latestVersion);
 
-    size_t   tarballFileNameLength = latestVersionLength + strlen(osType) + strlen(osArch) + 26;
+    size_t   tarballFileNameLength = latestVersionLength + strlen(osType) + strlen(osArch) + 26U;
     char     tarballFileName[tarballFileNameLength];
     snprintf(tarballFileName, tarballFileNameLength, "uppm-%s-%s-%s.tar.xz", latestVersion, osType, osArch);
 

@@ -10,8 +10,8 @@ static inline void tohex(char buf[65], const unsigned char * sha256Bytes) {
 
     for (size_t i = 0; i < SHA256_DIGEST_LENGTH; i++) {
         size_t j = i << 1;
-        buf[j]     = table[sha256Bytes[i] >> 4];
-        buf[j + 1] = table[sha256Bytes[i] & 0x0F];
+        buf[j]      = table[sha256Bytes[i] >> 4];
+        buf[j + 1U] = table[sha256Bytes[i] & 0x0F];
     }
 }
 

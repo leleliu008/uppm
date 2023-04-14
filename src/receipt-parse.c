@@ -355,7 +355,7 @@ int uppm_receipt_parse(const char * packageName, UPPMReceipt * * out) {
         return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
-    size_t packageInstalledDirLength = userHomeDirLength + strlen(packageName) + 20;
+    size_t packageInstalledDirLength = userHomeDirLength + strlen(packageName) + 20U;
     char   packageInstalledDir[packageInstalledDirLength];
     snprintf(packageInstalledDir, packageInstalledDirLength, "%s/.uppm/installed/%s", userHomeDir, packageName);
 

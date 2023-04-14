@@ -52,7 +52,7 @@ static int uppm_list_dirs(const char * installedDir, size_t installedDirLength, 
             continue;
         }
 
-        size_t packageInstalledDirLength = installedDirLength + strlen(dir_entry->d_name) + 2;
+        size_t packageInstalledDirLength = installedDirLength + strlen(dir_entry->d_name) + 2U;
         char   packageInstalledDir[packageInstalledDirLength];
         snprintf(packageInstalledDir, packageInstalledDirLength, "%s/%s", installedDir, dir_entry->d_name);
 
@@ -64,7 +64,7 @@ static int uppm_list_dirs(const char * installedDir, size_t installedDirLength, 
             if ((sub == NULL) || (strcmp(sub, "") == 0)) {
                 printf("%s\n", packageInstalledDir);
             } else {
-                size_t subDirLength = packageInstalledDirLength + strlen(sub) + 2;
+                size_t subDirLength = packageInstalledDirLength + strlen(sub) + 2U;
                 char   subDir[subDirLength];
                 snprintf(subDir, subDirLength, "%s/%s", packageInstalledDir, sub);
 

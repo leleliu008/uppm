@@ -272,7 +272,7 @@ int uppm_main(int argc, char* argv[]) {
             struct stat st;
 
             if (stat(outputPath, &st) == 0 && S_ISDIR(st.st_mode)) {
-                size_t outputFilePathLength = strlen(outputPath) + strlen(argv[2]) + 20;
+                size_t outputFilePathLength = strlen(outputPath) + strlen(argv[2]) + 20U;
 
                 outputFilePath = (char*) malloc(outputFilePathLength);
 
@@ -295,7 +295,7 @@ int uppm_main(int argc, char* argv[]) {
                 size_t outputPathLength = strlen(outputPath);
 
                 if (outputPath[outputPathLength - 1] == '/') {
-                    size_t outputFilePathLength = strlen(outputPath) + strlen(argv[2]) + 20;
+                    size_t outputFilePathLength = strlen(outputPath) + strlen(argv[2]) + 20U;
 
                     outputFilePath = (char*) malloc(outputFilePathLength);
 

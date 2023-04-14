@@ -77,7 +77,7 @@ int uppm_fetch(const char * packageName, bool verbose) {
         return ret;
     }
 
-    size_t   binFileNameLength = strlen(formula->bin_sha) + strlen(binFileNameExtension) + 1;
+    size_t   binFileNameLength = strlen(formula->bin_sha) + strlen(binFileNameExtension) + 1U;
     char     binFileName[binFileNameLength];
     snprintf(binFileName, binFileNameLength, "%s%s", formula->bin_sha, binFileNameExtension);
 

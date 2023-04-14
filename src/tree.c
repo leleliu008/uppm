@@ -24,7 +24,7 @@ int uppm_tree(const char * packageName, size_t argc, char* argv[]) {
         return UPPM_ERROR_ENV_HOME_NOT_SET;
     }
 
-    size_t packageInstalledDirLength = userHomeDirLength + strlen(packageName) + 20;
+    size_t packageInstalledDirLength = userHomeDirLength + strlen(packageName) + 20U;
     char   packageInstalledDir[packageInstalledDirLength];
     snprintf(packageInstalledDir, packageInstalledDirLength, "%s/.uppm/installed/%s", userHomeDir, packageName);
 
@@ -58,7 +58,7 @@ int uppm_tree(const char * packageName, size_t argc, char* argv[]) {
     char   treeCommandPath[treeCommandPathLength];
     snprintf(treeCommandPath, treeCommandPathLength, "%s/.uppm/installed/tree/bin/tree", userHomeDir);
 
-    size_t n = argc + 5;
+    size_t n = argc + 5U;
     char*  p[n];
 
     p[0] = treeCommandPath;

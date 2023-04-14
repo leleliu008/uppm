@@ -59,7 +59,7 @@ int uppm_list_the_installed_packages() {
             continue;
         }
 
-        size_t receiptFilePathLength = uppmInstalledDirLength + strlen(dir_entry->d_name) + 20;
+        size_t receiptFilePathLength = uppmInstalledDirLength + strlen(dir_entry->d_name) + 20U;
         char   receiptFilePath[receiptFilePathLength];
         snprintf(receiptFilePath, receiptFilePathLength, "%s/%s/.uppm/receipt.yml", uppmInstalledDir, dir_entry->d_name);
 

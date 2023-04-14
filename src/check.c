@@ -51,7 +51,7 @@ int uppm_check_if_the_given_package_is_available(const char * packageName) {
     for (size_t i = 0; i < formulaRepoList->size; i++) {
         char * formulaRepoPath = formulaRepoList->repos[i]->path;
 
-        size_t formulaFilePathLength = strlen(formulaRepoPath) + strlen(packageName) + 15;
+        size_t formulaFilePathLength = strlen(formulaRepoPath) + strlen(packageName) + 15U;
         char   formulaFilePath[formulaFilePathLength];
         snprintf(formulaFilePath, formulaFilePathLength, "%s/formula/%s.yml", formulaRepoPath, packageName);
 
@@ -90,7 +90,7 @@ int uppm_check_if_the_given_package_is_installed(const char * packageName) {
     char   uppmHomeDir[uppmHomeDirLength];
     snprintf(uppmHomeDir, uppmHomeDirLength, "%s/.uppm", userHomeDir);
 
-    size_t packageInstalledDirLength = userHomeDirLength + strlen(packageName) + 20;
+    size_t packageInstalledDirLength = userHomeDirLength + strlen(packageName) + 20U;
     char   packageInstalledDir[packageInstalledDirLength];
     snprintf(packageInstalledDir, packageInstalledDirLength, "%s/.uppm/installed/%s", userHomeDir, packageName);
 

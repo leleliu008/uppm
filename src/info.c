@@ -390,7 +390,7 @@ int uppm_info(const char * packageName, const char * key) {
 
         struct stat st;
 
-        size_t installedDirLength = userHomeDirLength + strlen(packageName) + 20;
+        size_t installedDirLength = userHomeDirLength + strlen(packageName) + 20U;
         char   installedDir[installedDirLength];
         snprintf(installedDir, installedDirLength, "%s/.uppm/installed/%s", userHomeDir, packageName);
 
@@ -430,7 +430,7 @@ int uppm_info(const char * packageName, const char * key) {
 
         struct stat st;
 
-        size_t installedDirLength = userHomeDirLength + strlen(packageName) + 20;
+        size_t installedDirLength = userHomeDirLength + strlen(packageName) + 20U;
         char   installedDir[installedDirLength];
         snprintf(installedDir, installedDirLength, "%s/.uppm/installed/%s", userHomeDir, packageName);
 
@@ -505,7 +505,7 @@ int uppm_info(const char * packageName, const char * key) {
 
         struct stat st;
 
-        size_t installedDirLength = userHomeDirLength + strlen(packageName) + 20;
+        size_t installedDirLength = userHomeDirLength + strlen(packageName) + 20U;
         char   installedDir[installedDirLength];
         snprintf(installedDir, installedDirLength, "%s/.uppm/installed/%s", userHomeDir, packageName);
 
@@ -545,7 +545,7 @@ int uppm_info(const char * packageName, const char * key) {
 
         struct stat st;
 
-        size_t installedDirLength = userHomeDirLength + strlen(packageName) + 20;
+        size_t installedDirLength = userHomeDirLength + strlen(packageName) + 20U;
         char   installedDir[installedDirLength];
         snprintf(installedDir, installedDirLength, "%s/.uppm/installed/%s", userHomeDir, packageName);
 

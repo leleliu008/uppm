@@ -104,7 +104,7 @@ static int uppm_depends_make_xxx(const char * dotScriptStr, size_t len, const ch
     char ts[11] = {0};
     snprintf(ts, 11, "%ld", time(NULL));
 
-    size_t filepathLength = uppmTmpDirLength + strlen(ts) + 6;
+    size_t filepathLength = uppmTmpDirLength + strlen(ts) + 6U;
     char   filepath[filepathLength];
     snprintf(filepath, filepathLength, "%s/%s.dot", uppmTmpDir, ts);
 
@@ -139,7 +139,7 @@ static int string_append(char ** outP, size_t * outSize, size_t * outCapcity, co
     size_t needCapcity = oldCapcity + bufLength + 1U;
 
     if (needCapcity > oldCapcity) {
-        size_t newCapcity = needCapcity + 256;
+        size_t newCapcity = needCapcity + 256U;
 
         char * p = (char*)realloc(*outP, newCapcity * sizeof(char));
 
@@ -149,7 +149,7 @@ static int string_append(char ** outP, size_t * outSize, size_t * outCapcity, co
         } else {
             (*outP) = p;
             (*outCapcity) = newCapcity;
-            memset(&p[*outSize], 0, 256 + bufLength + 1);
+            memset(&p[*outSize], 0, 256U + bufLength + 1U);
         }
     }
 
@@ -238,7 +238,7 @@ int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, con
             }
 
             if (packageSetSize == packageSetCapcity) {
-                UPPMPackage ** p = (UPPMPackage**)realloc(packageSet, (packageSetCapcity + 10) * sizeof(UPPMPackage*));
+                UPPMPackage ** p = (UPPMPackage**)realloc(packageSet, (packageSetCapcity + 10U) * sizeof(UPPMPackage*));
 
                 if (p == NULL) {
                     free(packageName);
@@ -284,7 +284,7 @@ int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, con
 
         ////////////////////////////////////////////////////////////////
 
-        size_t   bufLength = strlen(packageName) + 12;
+        size_t   bufLength = strlen(packageName) + 12U;
         char     buf[bufLength];
         snprintf(buf, bufLength, "    \"%s\" -> {", packageName);
 
@@ -313,11 +313,11 @@ int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, con
 
             ////////////////////////////////////////////////////////////////
 
-            size_t  bufLength = strlen(depPackageName) + 4;
+            size_t  bufLength = strlen(depPackageName) + 4U;
             char    buf[bufLength];
             snprintf(buf, bufLength, " \"%s\"", depPackageName);
 
-            ret = string_append(&p, &pSize, &pCapcity, buf, bufLength - 1);
+            ret = string_append(&p, &pSize, &pCapcity, buf, bufLength - 1U);
 
             if (ret != UPPM_OK) {
                 goto finalize;
@@ -328,7 +328,7 @@ int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, con
             ////////////////////////////////////////////////////////////////
 
             if (packageNameStackSize == packageNameStackCapcity) {
-                char ** p = (char**)realloc(packageNameStack, (packageNameStackCapcity + 10) * sizeof(char*));
+                char ** p = (char**)realloc(packageNameStack, (packageNameStackCapcity + 10U) * sizeof(char*));
 
                 if (p == NULL) {
                     ret = UPPM_ERROR_MEMORY_ALLOCATE;
@@ -431,7 +431,7 @@ finalize:
             }
         }
     } else if (outputType == UPPMDependsOutputType_BOX) {
-        size_t   dotScriptStrLength = pSize + 14;
+        size_t   dotScriptStrLength = pSize + 14U;
         char     dotScriptStr[dotScriptStrLength];
         snprintf(dotScriptStr, dotScriptStrLength, "digraph G {\n%s}", p);
 
@@ -439,7 +439,7 @@ finalize:
 
         return uppm_depends_make_box(dotScriptStr, dotScriptStrLength - 1, outputFilePath);
     } else if (outputType == UPPMDependsOutputType_PNG) {
-        size_t   dotScriptStrLength = pSize + 14;
+        size_t   dotScriptStrLength = pSize + 14U;
         char     dotScriptStr[dotScriptStrLength];
         snprintf(dotScriptStr, dotScriptStrLength, "digraph G {\n%s}", p);
 
@@ -448,14 +448,14 @@ finalize:
         if (outputFilePath == NULL) {
             return uppm_depends_make_xxx(dotScriptStr, dotScriptStrLength - 1, "-Tpng", NULL);
         } else {
-            size_t   oOptionLength=strlen(outputFilePath) + 3;
+            size_t   oOptionLength=strlen(outputFilePath) + 3U;
             char     oOption[oOptionLength];
             snprintf(oOption, oOptionLength, "-o%s", outputFilePath);
 
             return uppm_depends_make_xxx(dotScriptStr, dotScriptStrLength - 1, "-Tpng", oOption);
         }
     } else if (outputType == UPPMDependsOutputType_SVG) {
-        size_t   dotScriptStrLength = pSize + 14;
+        size_t   dotScriptStrLength = pSize + 14U;
         char     dotScriptStr[dotScriptStrLength];
         snprintf(dotScriptStr, dotScriptStrLength, "digraph G {\n%s}", p);
 
@@ -464,7 +464,7 @@ finalize:
         if (outputFilePath == NULL) {
             return uppm_depends_make_xxx(dotScriptStr, dotScriptStrLength - 1, "-Tsvg", NULL);
         } else {
-            size_t   oOptionLength=strlen(outputFilePath) + 3;
+            size_t   oOptionLength=strlen(outputFilePath) + 3U;
             char     oOption[oOptionLength];
             snprintf(oOption, oOptionLength, "-o%s", outputFilePath);
 

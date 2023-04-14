@@ -41,7 +41,7 @@ int uppm_formula_repo_list_update() {
                 return UPPM_ERROR;
             }
 
-            size_t   formulaRepoUrlLength = strlen(osType) + strlen(osArch) + 56;
+            size_t   formulaRepoUrlLength = strlen(osType) + strlen(osArch) + 56U;
             char     formulaRepoUrl[formulaRepoUrlLength];
             snprintf(formulaRepoUrl, formulaRepoUrlLength, "https://github.com/leleliu008/uppm-formula-repository-%s-%s", osType, osArch);
 

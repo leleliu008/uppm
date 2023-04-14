@@ -72,7 +72,7 @@ int uppm_install(const char * packageName, bool verbose) {
 
     struct stat st;
 
-    size_t   packageInstalledDirLength = userHomeDirLength + strlen(packageName) + 20;
+    size_t   packageInstalledDirLength = userHomeDirLength + strlen(packageName) + 20U;
     char     packageInstalledDir[packageInstalledDirLength];
     snprintf(packageInstalledDir, packageInstalledDirLength, "%s/.uppm/installed/%s", userHomeDir, packageName);
 
@@ -119,7 +119,7 @@ int uppm_install(const char * packageName, bool verbose) {
         return ret;
     }
 
-    size_t   binFileNameLength = strlen(formula->bin_sha) + strlen(binFileNameExtension) + 1;
+    size_t   binFileNameLength = strlen(formula->bin_sha) + strlen(binFileNameExtension) + 1U;
     char     binFileName[binFileNameLength];
     snprintf(binFileName, binFileNameLength, "%s%s", formula->bin_sha, binFileNameExtension);
 
@@ -232,11 +232,11 @@ int uppm_install(const char * packageName, bool verbose) {
             default: libcName = (char*)"";
         }
 
-        size_t   uppmHomeDirLength = strlen(userHomeDir) + 7;
+        size_t   uppmHomeDirLength = strlen(userHomeDir) + 7U;
         char     uppmHomeDir[uppmHomeDirLength];
         snprintf(uppmHomeDir, uppmHomeDirLength, "%s/.uppm", userHomeDir);
 
-        size_t   shellCodeLength = strlen(formula->install) + 1024;
+        size_t   shellCodeLength = strlen(formula->install) + 1024U;
         char     shellCode[shellCodeLength];
         snprintf(shellCode, shellCodeLength,
                 "set -ex\n\n"
