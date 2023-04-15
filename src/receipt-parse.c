@@ -126,10 +126,8 @@ static int uppm_receipt_set_value(UPPMReceiptKeyCode keyCode, char * value, UPPM
         return UPPM_OK;
     }
 
-    char c;
-
     for (;;) {
-        c = value[0];
+        char c = value[0];
 
         if (c == '\0') {
             return UPPM_OK;
@@ -312,10 +310,9 @@ static int uppm_receipt_check(UPPMReceipt * receipt, const char * receiptFilePat
     //////////////////////////////////////////////////////////////////////////////////////////////////////
 
     size_t i = 0;
-    char   c;
 
     for (;; i++) {
-        c = receipt->timestamp[i];
+        char c = receipt->timestamp[i];
 
         if (c == '\0') {
             break;

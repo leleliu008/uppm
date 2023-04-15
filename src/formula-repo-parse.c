@@ -92,10 +92,8 @@ static int uppm_formula_repo_set_value(UPPMFormulaRepoKeyCode keyCode, char * va
         return UPPM_OK;
     }
 
-    char c;
-
     for (;;) {
-        c = value[0];
+        char c = value[0];
 
         if (c == '\0') {
             return UPPM_OK;
