@@ -36,6 +36,10 @@ int uppm_main(int argc, char* argv[]) {
         return uppm_sysinfo();
     }
 
+    if (strcmp(argv[1], "buildinfo") == 0) {
+        return uppm_buildinfo();
+    }
+
     if (strcmp(argv[1], "env") == 0) {
         int ret = uppm_env(verbose);
 

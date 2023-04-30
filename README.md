@@ -238,16 +238,22 @@ all relevant dirs and files are located in `~/.uppm` directory.
     uppm --version
     ```
 
-* **show your system's information**
-
-    ```bash
-    uppm sysinfo
-    ```
-
-* **show your system's information and other information**
+* **show basic information about this software**
 
     ```bash
     uppm env
+    ```
+
+* **show build information about this software**
+
+    ```bash
+    uppm buildinfo
+    ```
+
+* **show basic information about your current running operation system**
+
+    ```bash
+    uppm sysinfo
     ```
 
 * **integrate `zsh-completion` script**

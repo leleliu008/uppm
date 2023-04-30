@@ -17,13 +17,17 @@ int uppm_help() {
         COLOR_OFF
         "    show version of this command.\n\n"
         COLOR_GREEN
-        "uppm sysinfo\n"
-        COLOR_OFF
-        "    show your system's information.\n\n"
-        COLOR_GREEN
         "uppm env\n"
         COLOR_OFF
-        "    show your system's information and other information.\n\n"
+        "    show basic information about this software.\n\n"
+        COLOR_GREEN
+        "uppm buildinfo\n"
+        COLOR_OFF
+        "    show build information about this software.\n\n"
+        COLOR_GREEN
+        "uppm sysinfo\n"
+        COLOR_OFF
+        "    show basic information about your current running operation system.\n\n"
         COLOR_GREEN
         "uppm integrate zsh [-v] [--output-dir=<DIR>]\n"
         COLOR_OFF
@@ -210,10 +214,12 @@ int uppm_help() {
         "uppm --version\n"
         "uppm -V\n"
         "    show version of this command.\n\n"
-        "uppm sysinfo\n"
-        "    show your system's information.\n\n"
         "uppm env\n"
-        "    show your system's information and other information.\n\n"
+        "    show basic information about this software.\n\n"
+        "uppm buildinfo\n"
+        "    show build information about this software.\n\n"
+        "uppm sysinfo\n"
+        "    show basic information about your current running operation system.\n\n"
         "uppm integrate zsh [-v] [--output-dir=<DIR>]\n"
         "    download a zsh completion script file to a approprivate location.\n\n"
         "    to apply this feature, you may need to run the command 'autoload -U compinit && compinit' in your terminal (your current running shell must be zsh).\n\n"

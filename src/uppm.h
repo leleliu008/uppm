@@ -195,6 +195,8 @@ int uppm_help();
 
 int uppm_sysinfo();
 
+int uppm_buildinfo();
+
 int uppm_env(bool verbose);
 
 int uppm_search(const char * regPattern);
