@@ -11,18 +11,6 @@ int uppm_formula_locate(const char * packageName, char ** out) {
         return ret;
     }
 
-    const char * const userHomeDir = getenv("HOME");
-
-    if (userHomeDir == NULL) {
-        return UPPM_ERROR_ENV_HOME_NOT_SET;
-    }
-
-    size_t userHomeDirLength = strlen(userHomeDir);
-
-    if (userHomeDirLength == 0U) {
-        return UPPM_ERROR_ENV_HOME_NOT_SET;
-    }
-
     UPPMFormulaRepoList * formulaRepoList = NULL;
 
     ret = uppm_formula_repo_list(&formulaRepoList);

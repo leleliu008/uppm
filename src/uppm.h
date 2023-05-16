@@ -199,6 +199,8 @@ int uppm_buildinfo();
 
 int uppm_env(bool verbose);
 
+int uppm_home_dir(char buf[], size_t bufSize, size_t * outSize);
+
 int uppm_search(const char * regPattern);
 
 int uppm_info(const char * packageName, const char * key);

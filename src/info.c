@@ -23,7 +23,7 @@ int uppm_info(const char * packageName, const char * key) {
         return UPPM_ERROR_ARG_IS_NULL;
     }
 
-    if (strcmp(packageName, "") == 0) {
+    if (packageName[0] == '\0') {
         return UPPM_ERROR_ARG_IS_EMPTY;
     }
 
@@ -37,7 +37,7 @@ int uppm_info(const char * packageName, const char * key) {
         return ret;
     }
 
-    if ((key == NULL) || (strcmp(key, "") == 0) || (strcmp(key, "--yaml") == 0)) {
+    if ((key == NULL) || (key[0] == '\0') || (strcmp(key, "--yaml") == 0)) {
         char * formulaFilePath = NULL;
 
         ret = uppm_formula_locate(packageName, &formulaFilePath);
@@ -284,20 +284,6 @@ int uppm_info(const char * packageName, const char * key) {
             return ret;
         }
 
-        const char * const userHomeDir = getenv("HOME");
-
-        if (userHomeDir == NULL) {
-            uppm_formula_free(formula);
-            return UPPM_ERROR_ENV_HOME_NOT_SET;
-        }
-
-        size_t userHomeDirLength = strlen(userHomeDir);
-
-        if (userHomeDirLength == 0U) {
-            uppm_formula_free(formula);
-            return UPPM_ERROR_ENV_HOME_NOT_SET;
-        }
-
         char binFileNameExtension[21] = {0};
 
         ret = uppm_examine_file_extension_from_url(binFileNameExtension, 20, formula->bin_url);
@@ -311,26 +297,21 @@ int uppm_info(const char * packageName, const char * key) {
 
         uppm_formula_free(formula);
     } else if (strcmp(key, "bin-fp") == 0) {
+        char   uppmHomeDir[256];
+        size_t uppmHomeDirLength;
+
+        int ret = uppm_home_dir(uppmHomeDir, 256, &uppmHomeDirLength);
+
+        if (ret != UPPM_OK) {
+            return ret;
+        }
+
         UPPMFormula * formula = NULL;
 
         ret = uppm_formula_lookup(packageName, &formula);
 
         if (ret != UPPM_OK) {
             return ret;
-        }
-
-        const char * const userHomeDir = getenv("HOME");
-
-        if (userHomeDir == NULL) {
-            uppm_formula_free(formula);
-            return UPPM_ERROR_ENV_HOME_NOT_SET;
-        }
-
-        size_t userHomeDirLength = strlen(userHomeDir);
-
-        if (userHomeDirLength == 0U) {
-            uppm_formula_free(formula);
-            return UPPM_ERROR_ENV_HOME_NOT_SET;
         }
 
         char binFileNameExtension[21] = {0};
@@ -342,7 +323,7 @@ int uppm_info(const char * packageName, const char * key) {
             return ret;
         }
 
-        printf("%s/.uppm/downloads/%s%s\n", userHomeDir, formula->bin_sha, binFileNameExtension);
+        printf("%s/downloads/%s%s\n", uppmHomeDir, formula->bin_sha, binFileNameExtension);
 
         uppm_formula_free(formula);
     } else if (strcmp(key, "dep-pkg") == 0) {
@@ -374,23 +355,20 @@ int uppm_info(const char * packageName, const char * key) {
 
         uppm_formula_free(formula);
     } else if (strcmp(key, "installed-dir") == 0) {
-        const char * const userHomeDir = getenv("HOME");
+        char   uppmHomeDir[256];
+        size_t uppmHomeDirLength;
 
-        if (userHomeDir == NULL) {
-            return UPPM_ERROR_ENV_HOME_NOT_SET;
-        }
+        int ret = uppm_home_dir(uppmHomeDir, 256, &uppmHomeDirLength);
 
-        size_t userHomeDirLength = strlen(userHomeDir);
-
-        if (userHomeDirLength == 0U) {
-            return UPPM_ERROR_ENV_HOME_NOT_SET;
+        if (ret != UPPM_OK) {
+            return ret;
         }
 
         struct stat st;
 
-        size_t installedDirLength = userHomeDirLength + strlen(packageName) + 20U;
-        char   installedDir[installedDirLength];
-        snprintf(installedDir, installedDirLength, "%s/.uppm/installed/%s", userHomeDir, packageName);
+        size_t   installedDirLength = uppmHomeDirLength + strlen(packageName) + 12U;
+        char     installedDir[installedDirLength];
+        snprintf(installedDir, installedDirLength, "%s/installed/%s", uppmHomeDir, packageName);
 
         if (stat(installedDir, &st) == 0) {
             if (!S_ISDIR(st.st_mode)) {
@@ -414,23 +392,20 @@ int uppm_info(const char * packageName, const char * key) {
             return UPPM_ERROR_PACKAGE_IS_BROKEN;
         }
     } else if (strcmp(key, "installed-files") == 0) {
-        const char * const userHomeDir = getenv("HOME");
+        char   uppmHomeDir[256];
+        size_t uppmHomeDirLength;
 
-        if (userHomeDir == NULL) {
-            return UPPM_ERROR_ENV_HOME_NOT_SET;
-        }
+        int ret = uppm_home_dir(uppmHomeDir, 256, &uppmHomeDirLength);
 
-        size_t userHomeDirLength = strlen(userHomeDir);
-
-        if (userHomeDirLength == 0U) {
-            return UPPM_ERROR_ENV_HOME_NOT_SET;
+        if (ret != UPPM_OK) {
+            return ret;
         }
 
         struct stat st;
 
-        size_t installedDirLength = userHomeDirLength + strlen(packageName) + 20U;
-        char   installedDir[installedDirLength];
-        snprintf(installedDir, installedDirLength, "%s/.uppm/installed/%s", userHomeDir, packageName);
+        size_t   installedDirLength = uppmHomeDirLength + strlen(packageName) + 12U;
+        char     installedDir[installedDirLength];
+        snprintf(installedDir, installedDirLength, "%s/installed/%s", uppmHomeDir, packageName);
 
         if (stat(installedDir, &st) == 0) {
             if (!S_ISDIR(st.st_mode)) {
@@ -488,23 +463,20 @@ int uppm_info(const char * packageName, const char * key) {
             }
         }
     } else if (strcmp(key, "installed-receipt-path") == 0) {
-        const char * const userHomeDir = getenv("HOME");
+        char   uppmHomeDir[256];
+        size_t uppmHomeDirLength;
 
-        if (userHomeDir == NULL) {
-            return UPPM_ERROR_ENV_HOME_NOT_SET;
-        }
+        int ret = uppm_home_dir(uppmHomeDir, 256, &uppmHomeDirLength);
 
-        size_t userHomeDirLength = strlen(userHomeDir);
-
-        if (userHomeDirLength == 0U) {
-            return UPPM_ERROR_ENV_HOME_NOT_SET;
+        if (ret != UPPM_OK) {
+            return ret;
         }
 
         struct stat st;
 
-        size_t installedDirLength = userHomeDirLength + strlen(packageName) + 20U;
-        char   installedDir[installedDirLength];
-        snprintf(installedDir, installedDirLength, "%s/.uppm/installed/%s", userHomeDir, packageName);
+        size_t   installedDirLength = uppmHomeDirLength + strlen(packageName) + 12U;
+        char     installedDir[installedDirLength];
+        snprintf(installedDir, installedDirLength, "%s/installed/%s", uppmHomeDir, packageName);
 
         if (stat(installedDir, &st) == 0) {
             if (!S_ISDIR(st.st_mode)) {
@@ -528,23 +500,20 @@ int uppm_info(const char * packageName, const char * key) {
             return UPPM_ERROR_PACKAGE_IS_BROKEN;
         }
     } else if (strcmp(key, "installed-receipt-yaml") == 0) {
-        const char * const userHomeDir = getenv("HOME");
+        char   uppmHomeDir[256];
+        size_t uppmHomeDirLength;
 
-        if (userHomeDir == NULL) {
-            return UPPM_ERROR_ENV_HOME_NOT_SET;
-        }
+        int ret = uppm_home_dir(uppmHomeDir, 256, &uppmHomeDirLength);
 
-        size_t userHomeDirLength = strlen(userHomeDir);
-
-        if (userHomeDirLength == 0U) {
-            return UPPM_ERROR_ENV_HOME_NOT_SET;
+        if (ret != UPPM_OK) {
+            return ret;
         }
 
         struct stat st;
 
-        size_t installedDirLength = userHomeDirLength + strlen(packageName) + 20U;
-        char   installedDir[installedDirLength];
-        snprintf(installedDir, installedDirLength, "%s/.uppm/installed/%s", userHomeDir, packageName);
+        size_t   installedDirLength = uppmHomeDirLength + strlen(packageName) + 12U;
+        char     installedDir[installedDirLength];
+        snprintf(installedDir, installedDirLength, "%s/installed/%s", uppmHomeDir, packageName);
 
         if (stat(installedDir, &st) == 0) {
             if (!S_ISDIR(st.st_mode)) {

@@ -23,21 +23,18 @@ int uppm_formula_repo_remove(const char * formulaRepoName) {
         return UPPM_ERROR;
     }
 
-    const char * const userHomeDir = getenv("HOME");
+    char   uppmHomeDir[256];
+    size_t uppmHomeDirLength;
 
-    if (userHomeDir == NULL) {
-        return UPPM_ERROR_ENV_HOME_NOT_SET;
+    int ret = uppm_home_dir(uppmHomeDir, 256, &uppmHomeDirLength);
+
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
-    size_t userHomeDirLength = strlen(userHomeDir);
-
-    if (userHomeDirLength == 0U) {
-        return UPPM_ERROR_ENV_HOME_NOT_SET;
-    }
-
-    size_t   formulaRepoPathLength = userHomeDirLength + formulaRepoNameLength + 16U;
+    size_t   formulaRepoPathLength = uppmHomeDirLength + formulaRepoNameLength + 10U;
     char     formulaRepoPath[formulaRepoPathLength];
-    snprintf(formulaRepoPath, formulaRepoPathLength, "%s/.uppm/repos.d/%s", userHomeDir, formulaRepoName);
+    snprintf(formulaRepoPath, formulaRepoPathLength, "%s/repos.d/%s", uppmHomeDir, formulaRepoName);
 
     struct stat st;
 

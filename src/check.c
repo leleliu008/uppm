@@ -14,7 +14,7 @@ int uppm_check_if_the_given_argument_matches_package_name_pattern(const char * a
         return UPPM_ERROR_ARG_IS_NULL;
     }
 
-    if (strcmp(arg, "") == 0) {
+    if (arg[0] == '\0') {
         return UPPM_ERROR_ARG_IS_EMPTY;
     }
 
@@ -72,27 +72,20 @@ int uppm_check_if_the_given_package_is_installed(const char * packageName) {
         return ret;
     }
 
-    const char * const userHomeDir = getenv("HOME");
+    char   uppmHomeDir[256];
+    size_t uppmHomeDirLength;
 
-    if (userHomeDir == NULL) {
-        return UPPM_ERROR_ENV_HOME_NOT_SET;
-    }
+    ret = uppm_home_dir(uppmHomeDir, 256, &uppmHomeDirLength);
 
-    size_t userHomeDirLength = strlen(userHomeDir);
-
-    if (userHomeDirLength == 0U) {
-        return UPPM_ERROR_ENV_HOME_NOT_SET;
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
     struct stat st;
 
-    size_t uppmHomeDirLength = userHomeDirLength + 7U;
-    char   uppmHomeDir[uppmHomeDirLength];
-    snprintf(uppmHomeDir, uppmHomeDirLength, "%s/.uppm", userHomeDir);
-
-    size_t packageInstalledDirLength = userHomeDirLength + strlen(packageName) + 20U;
+    size_t packageInstalledDirLength = uppmHomeDirLength + strlen(packageName) + 12U;
     char   packageInstalledDir[packageInstalledDirLength];
-    snprintf(packageInstalledDir, packageInstalledDirLength, "%s/.uppm/installed/%s", userHomeDir, packageName);
+    snprintf(packageInstalledDir, packageInstalledDirLength, "%s/installed/%s", uppmHomeDir, packageName);
 
     if (stat(packageInstalledDir, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {

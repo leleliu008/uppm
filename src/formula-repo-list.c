@@ -7,21 +7,18 @@
 #include "uppm.h"
 
 int uppm_formula_repo_list(UPPMFormulaRepoList * * out) {
-    const char * const userHomeDir = getenv("HOME");
+    char   uppmHomeDir[256];
+    size_t uppmHomeDirLength;
 
-    if (userHomeDir == NULL) {
-        return UPPM_ERROR_ENV_HOME_NOT_SET;
+    int ret = uppm_home_dir(uppmHomeDir, 256, &uppmHomeDirLength);
+
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
-    size_t userHomeDirLength = strlen(userHomeDir);
-
-    if (userHomeDirLength == 0U) {
-        return UPPM_ERROR_ENV_HOME_NOT_SET;
-    }
-
-    size_t uppmFormulaRepoDirLength = userHomeDirLength + 15U;
-    char   uppmFormulaRepoDir[uppmFormulaRepoDirLength];
-    snprintf(uppmFormulaRepoDir, uppmFormulaRepoDirLength, "%s/.uppm/repos.d", userHomeDir);
+    size_t   uppmFormulaRepoDirLength = uppmHomeDirLength + 9U;
+    char     uppmFormulaRepoDir[uppmFormulaRepoDirLength];
+    snprintf(uppmFormulaRepoDir, uppmFormulaRepoDirLength, "%s/repos.d", uppmHomeDir);
 
     struct stat st;
 
@@ -47,7 +44,7 @@ int uppm_formula_repo_list(UPPMFormulaRepoList * * out) {
 
     UPPMFormulaRepoList * formulaRepoList = NULL;
 
-    int ret = UPPM_OK;
+    ret = UPPM_OK;
 
     struct dirent * dir_entry;
 

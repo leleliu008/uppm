@@ -5,23 +5,20 @@
 #include "uppm.h"
 
 int uppm_formula_repo_lookup(const char * formulaRepoName, UPPMFormulaRepo * * formulaRepoPP) {
-    const char * const userHomeDir = getenv("HOME");
+    char   uppmHomeDir[256];
+    size_t uppmHomeDirLength;
 
-    if (userHomeDir == NULL) {
-        return UPPM_ERROR_ENV_HOME_NOT_SET;
-    }
+    int ret = uppm_home_dir(uppmHomeDir, 256, &uppmHomeDirLength);
 
-    size_t userHomeDirLength = strlen(userHomeDir);
-
-    if (userHomeDirLength == 0U) {
-        return UPPM_ERROR_ENV_HOME_NOT_SET;
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
     size_t formulaRepoNameLength = strlen(formulaRepoName);
 
-    size_t formulaRepoDirPathLength = userHomeDirLength + formulaRepoNameLength + 16U;
+    size_t formulaRepoDirPathLength = uppmHomeDirLength + formulaRepoNameLength + 10U;
     char   formulaRepoDirPath[formulaRepoDirPathLength];
-    snprintf(formulaRepoDirPath, formulaRepoDirPathLength, "%s/.uppm/repos.d/%s", userHomeDir, formulaRepoName);
+    snprintf(formulaRepoDirPath, formulaRepoDirPathLength, "%s/repos.d/%s", uppmHomeDir, formulaRepoName);
 
     struct stat st;
 
@@ -44,7 +41,7 @@ int uppm_formula_repo_lookup(const char * formulaRepoName, UPPMFormulaRepo * * f
 
     UPPMFormulaRepo * formulaRepo = NULL;
 
-    int ret = uppm_formula_repo_parse(formulaRepoConfigFilePath, &formulaRepo);
+    ret = uppm_formula_repo_parse(formulaRepoConfigFilePath, &formulaRepo);
 
     if (ret != UPPM_OK) {
         return ret;

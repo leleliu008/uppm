@@ -49,7 +49,7 @@ static int uppm_list_dirs(const char * installedDir, size_t installedDirLength, 
         snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", packageInstalledDir);
 
         if (stat(receiptFilePath, &st) == 0 && S_ISREG(st.st_mode)) {
-            if ((sub == NULL) || (strcmp(sub, "") == 0)) {
+            if ((sub == NULL) || (sub[0] == '\0')) {
                 printf("%s\n", packageInstalledDir);
             } else {
                 size_t subDirLength = packageInstalledDirLength + strlen(sub) + 2U;
@@ -67,21 +67,14 @@ static int uppm_list_dirs(const char * installedDir, size_t installedDirLength, 
 }
 
 int uppm_env(bool verbose) {
-    const char * const userHomeDir = getenv("HOME");
+    char   uppmHomeDir[256];
+    size_t uppmHomeDirLength;
 
-    if (userHomeDir == NULL) {
-        return UPPM_ERROR_ENV_HOME_NOT_SET;
+    int ret = uppm_home_dir(uppmHomeDir, 256, &uppmHomeDirLength);
+
+    if (ret != UPPM_OK) {
+        return ret;
     }
-
-    size_t userHomeDirLength = strlen(userHomeDir);
-
-    if (userHomeDirLength == 0U) {
-        return UPPM_ERROR_ENV_HOME_NOT_SET;
-    }
-
-    size_t   uppmHomeDirLength = userHomeDirLength + 7U;
-    char     uppmHomeDir[uppmHomeDirLength];
-    snprintf(uppmHomeDir, uppmHomeDirLength, "%s/.uppm", userHomeDir);
 
     printf("uppm.vers : %s\n", UPPM_VERSION);
     printf("uppm.home : %s\n", uppmHomeDir);

@@ -8,42 +8,21 @@
 int uppm_integrate_zsh_completion(const char * outputDir, bool verbose) {
     const char * url = "https://raw.githubusercontent.com/leleliu008/uppm/master/uppm-zsh-completion";
 
-    const char * const userHomeDir = getenv("HOME");
+    char   uppmHomeDir[256];
+    size_t uppmHomeDirLength;
 
-    if (userHomeDir == NULL) {
-        return UPPM_ERROR_ENV_HOME_NOT_SET;
-    }
+    int ret = uppm_home_dir(uppmHomeDir, 256, &uppmHomeDirLength);
 
-    size_t userHomeDirLength = strlen(userHomeDir);
-
-    if (userHomeDirLength == 0U) {
-        return UPPM_ERROR_ENV_HOME_NOT_SET;
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
     ////////////////////////////////////////////////////////////////
 
     struct stat st;
 
-    size_t uppmHomeDirLength = userHomeDirLength + 7U;
-    char   uppmHomeDir[uppmHomeDirLength];
-    snprintf(uppmHomeDir, uppmHomeDirLength, "%s/.uppm", userHomeDir);
-
-    if (stat(uppmHomeDir, &st) == 0) {
-        if (!S_ISDIR(st.st_mode)) {
-            fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", uppmHomeDir);
-            return UPPM_ERROR;
-        }
-    } else {
-        if (mkdir(uppmHomeDir, S_IRWXU) != 0) {
-            perror(uppmHomeDir);
-            return UPPM_ERROR;
-        }
-    }
-
-    ////////////////////////////////////////////////////////////////
-
-    size_t zshCompletionDirLength = uppmHomeDirLength + 16U;
-    char   zshCompletionDir[zshCompletionDirLength];
+    size_t   zshCompletionDirLength = uppmHomeDirLength + 16U;
+    char     zshCompletionDir[zshCompletionDirLength];
     snprintf(zshCompletionDir, zshCompletionDirLength, "%s/zsh_completion", uppmHomeDir);
 
     if (stat(zshCompletionDir, &st) == 0) {
@@ -64,7 +43,7 @@ int uppm_integrate_zsh_completion(const char * outputDir, bool verbose) {
     char   zshCompletionFilePath[zshCompletionFilePathLength];
     snprintf(zshCompletionFilePath, zshCompletionFilePathLength, "%s/_uppm", zshCompletionDir);
 
-    int ret = http_fetch_to_file(url, zshCompletionFilePath, verbose, verbose);
+    ret = http_fetch_to_file(url, zshCompletionFilePath, verbose, verbose);
 
     if (ret != UPPM_OK) {
         return ret;

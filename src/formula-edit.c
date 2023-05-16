@@ -14,7 +14,7 @@ int uppm_formula_edit(const char * packageName, const char * editor) {
         return ret;
     }
 
-    if (editor == NULL || strcmp(editor, "") == 0) {
+    if (editor == NULL || editor[0] == '\0') {
         editor = "vim";
     }
 

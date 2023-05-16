@@ -121,7 +121,7 @@ int sha256sum_of_file(char outputBuffer[65], const char * filepath) {
         return -1;
     }
 
-    if (strcmp(filepath, "") == 0) {
+    if (filepath[0] == '\0') {
         errno = EINVAL;
         return -1;
     }

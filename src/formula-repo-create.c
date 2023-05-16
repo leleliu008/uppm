@@ -31,45 +31,24 @@ int uppm_formula_repo_create(const char * formulaRepoName, const char * formulaR
         return UPPM_ERROR_ARG_IS_EMPTY;
     }
 
-    if (branchName == NULL || strcmp(branchName, "") == 0) {
+    if (branchName == NULL || branchName[0] == '\0') {
         branchName = (char*)"master";
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
 
-    const char * const userHomeDir = getenv("HOME");
+    char   uppmHomeDir[256];
+    size_t uppmHomeDirLength;
 
-    if (userHomeDir == NULL) {
-        return UPPM_ERROR_ENV_HOME_NOT_SET;
-    }
+    int ret = uppm_home_dir(uppmHomeDir, 256, &uppmHomeDirLength);
 
-    size_t userHomeDirLength = strlen(userHomeDir);
-
-    if (userHomeDirLength == 0U) {
-        return UPPM_ERROR_ENV_HOME_NOT_SET;
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////
 
     struct stat st;
-
-    size_t   uppmHomeDirLength = userHomeDirLength + 7U;
-    char     uppmHomeDir[uppmHomeDirLength];
-    snprintf(uppmHomeDir, uppmHomeDirLength, "%s/.uppm", userHomeDir);
-
-    if (stat(uppmHomeDir, &st) == 0) {
-        if (!S_ISDIR(st.st_mode)) {
-            fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", uppmHomeDir);
-            return UPPM_ERROR;
-        }
-    } else {
-        if (mkdir(uppmHomeDir, S_IRWXU) != 0) {
-            perror(uppmHomeDir);
-            return UPPM_ERROR;
-        }
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////
 
     size_t   formulaRepoRootDirLength = uppmHomeDirLength + 9U;
     char     formulaRepoRootDir[formulaRepoRootDirLength];
@@ -122,7 +101,7 @@ int uppm_formula_repo_create(const char * formulaRepoName, const char * formulaR
 
     git_libgit2_init();
 
-    int ret = git_repository_init(&gitRepo, formulaRepoDir, false);
+    ret = git_repository_init(&gitRepo, formulaRepoDir, false);
 
     if (ret != GIT_OK) {
         gitError = git_error_last();

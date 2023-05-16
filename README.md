@@ -218,9 +218,12 @@ cmake --install build.d
 
 ## ~/.uppm
 
-all relevant dirs and files are located in `~/.uppm` directory.
+all relevant directories and files are located in `~/.uppm` directory.
 
-**Note**: Please do NOT place your own files in `~/.uppm` directory, as `uppm` will change files in `~/.uppm` directory without notice.
+**Caveats**:
+
+- Please do NOT place your own files in `~/.uppm` directory, as `uppm` will change files in `~/.uppm` directory without notice.
+- Please do NOT run `uppm` command in parallell to avoid destroying the data.
 
 ## uppm command usage
 
@@ -297,13 +300,13 @@ all relevant dirs and files are located in `~/.uppm` directory.
 
     uppm info curl installed-dir
     uppm info curl installed-files
+    uppm info curl installed-version
     uppm info curl installed-receipt-path
     uppm info curl installed-receipt-json
     uppm info curl installed-receipt-yaml
     uppm info curl installed-timestamp-unix
     uppm info curl installed-timestamp-iso-8601
     uppm info curl installed-timestamp-rfc-3339
-    uppm info curl installed-version
 
     uppm info curl --json
     uppm info curl --json | jq .
@@ -549,11 +552,11 @@ all relevant dirs and files are located in `~/.uppm` directory.
 
 * **HOME**
 
-    this environment variable already have been set on most systems, if not set or set a empty string, you will receive an error message.
+    This environment variable already have been set on most systems, if not set or set a empty string, you will receive an error message.
 
 * **PATH**
 
-    this environment variable already have been set on most systems, if not set or set a empty string, you will receive an error message.
+    This environment variable already have been set on most systems, if not set or set a empty string, you will receive an error message.
 
 * **SSL_CERT_FILE**
 
@@ -563,6 +566,14 @@ all relevant dirs and files are located in `~/.uppm` directory.
     ```
 
     In general, you don't need to set this environment variable, but, if you encounter the reporting `the SSL certificate is invalid`, trying to run above commands in your terminal will do the trick.
+
+* **UPPM_HOME**
+
+    If this environment variable is not set, `$HOME/.uppm` will be used as the default value.
+
+    ```bash
+    export UPPM_HOME=$HOME/uppm-home
+    ```
 
 * **UPPM_URL_TRANSFORM**
 
@@ -586,7 +597,7 @@ a uppm formula's filename suffix must be `.yml`
 
 a uppm formula'a filename prefix would be treated as the package name.
 
-a uppm formula'a filename prefix must match regular expression pattern `^[A-Za-z0-9+-._]{1,50}$`
+a uppm formula'a filename prefix must match regular expression pattern `^[A-Za-z0-9+-._@]{1,50}$`
 
 a uppm formula's file content must follow [the uppm formula scheme](https://github.com/leleliu008/uppm-formula-repository-linux-x86_64)
 

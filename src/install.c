@@ -58,23 +58,20 @@ int uppm_install(const char * packageName, bool verbose) {
 
     //////////////////////////////////////////////////////////////////////////
 
-    const char * const userHomeDir = getenv("HOME");
+    char   uppmHomeDir[256];
+    size_t uppmHomeDirLength;
 
-    if (userHomeDir == NULL) {
-        return UPPM_ERROR_ENV_HOME_NOT_SET;
-    }
+    ret = uppm_home_dir(uppmHomeDir, 256, &uppmHomeDirLength);
 
-    size_t userHomeDirLength = strlen(userHomeDir);
-
-    if (userHomeDirLength == 0U) {
-        return UPPM_ERROR_ENV_HOME_NOT_SET;
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
     struct stat st;
 
-    size_t   packageInstalledDirLength = userHomeDirLength + strlen(packageName) + 20U;
+    size_t   packageInstalledDirLength = uppmHomeDirLength + strlen(packageName) + 12U;
     char     packageInstalledDir[packageInstalledDirLength];
-    snprintf(packageInstalledDir, packageInstalledDirLength, "%s/.uppm/installed/%s", userHomeDir, packageName);
+    snprintf(packageInstalledDir, packageInstalledDirLength, "%s/installed/%s", uppmHomeDir, packageName);
 
     size_t   packageInstalledMetaInfoDirLength = packageInstalledDirLength + 6U;
     char     packageInstalledMetaInfoDir[packageInstalledMetaInfoDirLength];
@@ -94,9 +91,9 @@ int uppm_install(const char * packageName, bool verbose) {
 
     fprintf(stderr, "prepare to install package [%s].\n", packageName);
 
-    size_t   uppmDownloadDirLength = userHomeDirLength + 18U;
+    size_t   uppmDownloadDirLength = uppmHomeDirLength + 11U;
     char     uppmDownloadDir[uppmDownloadDirLength];
-    snprintf(uppmDownloadDir, uppmDownloadDirLength, "%s/.uppm/downloads", userHomeDir);
+    snprintf(uppmDownloadDir, uppmDownloadDirLength, "%s/downloads", uppmHomeDir);
 
     if (stat(uppmDownloadDir, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {
@@ -172,9 +169,9 @@ int uppm_install(const char * packageName, bool verbose) {
         fprintf(stderr, "%s already have been fetched.\n", binFilePath);
     }
 
-    size_t   installedDirLength = userHomeDirLength + 20U;
+    size_t   installedDirLength = uppmHomeDirLength + 21U;
     char     installedDir[installedDirLength];
-    snprintf(installedDir, installedDirLength, "%s/.uppm/installed", userHomeDir);
+    snprintf(installedDir, installedDirLength, "%s/installed", uppmHomeDir);
 
     if (stat(installedDir, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {
@@ -231,10 +228,6 @@ int uppm_install(const char * packageName, bool verbose) {
             case 2:  libcName = (char*)"musl";  break;
             default: libcName = (char*)"";
         }
-
-        size_t   uppmHomeDirLength = strlen(userHomeDir) + 7U;
-        char     uppmHomeDir[uppmHomeDirLength];
-        snprintf(uppmHomeDir, uppmHomeDirLength, "%s/.uppm", userHomeDir);
 
         size_t   shellCodeLength = strlen(formula->install) + 1024U;
         char     shellCode[shellCodeLength];

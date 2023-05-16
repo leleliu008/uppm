@@ -139,7 +139,7 @@ int check_if_is_a_empty_dir(const char * dirpath, bool * value) {
 // git fetch --progress origin +refs/heads/master:refs/remotes/origin/master
 // git checkout --progress --force -B master refs/remotes/origin/master
 int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const char * refspec, const char * localeTrackingBranchName) {
-    if ((repositoryDIR == NULL) || (strcmp(repositoryDIR, "") == 0)) {
+    if ((repositoryDIR == NULL) || (repositoryDIR[0] == '\0')) {
         repositoryDIR = ".";
     }
 
@@ -161,7 +161,7 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
 
     const char * urlTransformCommandPath = getenv("UPPM_URL_TRANSFORM");
 
-    if ((urlTransformCommandPath == NULL) || (strcmp(urlTransformCommandPath, "") == 0)) {
+    if ((urlTransformCommandPath == NULL) || (urlTransformCommandPath[0] == '\0')) {
         strncpy(transformedUrl, remoteUrl, remoteUrlLength);
         transformedUrl[1024] = '\0';
     } else {
@@ -224,7 +224,7 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
     const char * refspecSrc = NULL;
     const char * refspecDst = NULL;
 
-    if ((refspec != NULL) && strcmp(refspec, "") != 0) {
+    if ((refspec != NULL) && (refspec[0] != '\0')) {
         ret = git_refspec_parse(&gitRefSpec, refspec, true);
 
         if (ret != GIT_OK) {

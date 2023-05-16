@@ -231,7 +231,7 @@ int uppm_main(int argc, char* argv[]) {
                     return UPPM_ERROR_ARG_IS_INVALID;
                 }
 
-                if (strcmp(type, "") == 0) {
+                if (type[0] == '\0') {
                     fprintf(stderr, "-o <OUTPUT-TYPE>, <OUTPUT-TYPE> should be a non-empty string.\n");
                     return UPPM_ERROR_ARG_IS_EMPTY;
                 }
@@ -260,7 +260,7 @@ int uppm_main(int argc, char* argv[]) {
                     return UPPM_ERROR_ARG_IS_INVALID;
                 }
 
-                if (strcmp(outputPath, "") == 0) {
+                if (outputPath[0] == '\0') {
                     fprintf(stderr, "-o <OUTPUT-PATH>, <OUTPUT-PATH> should be a non-empty string.\n");
                     return UPPM_ERROR_ARG_IS_EMPTY;
                 }

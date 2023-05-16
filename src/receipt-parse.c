@@ -340,21 +340,18 @@ int uppm_receipt_parse(const char * packageName, UPPMReceipt * * out) {
         return ret;
     }
 
-    const char * const userHomeDir = getenv("HOME");
+    char   uppmHomeDir[256];
+    size_t uppmHomeDirLength;
 
-    if (userHomeDir == NULL) {
-        return UPPM_ERROR_ENV_HOME_NOT_SET;
+    ret = uppm_home_dir(uppmHomeDir, 256, &uppmHomeDirLength);
+
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
-    size_t userHomeDirLength = strlen(userHomeDir);
-
-    if (userHomeDirLength == 0U) {
-        return UPPM_ERROR_ENV_HOME_NOT_SET;
-    }
-
-    size_t packageInstalledDirLength = userHomeDirLength + strlen(packageName) + 20U;
-    char   packageInstalledDir[packageInstalledDirLength];
-    snprintf(packageInstalledDir, packageInstalledDirLength, "%s/.uppm/installed/%s", userHomeDir, packageName);
+    size_t   packageInstalledDirLength = uppmHomeDirLength + strlen(packageName) + 12U;
+    char     packageInstalledDir[packageInstalledDirLength];
+    snprintf(packageInstalledDir, packageInstalledDirLength, "%s/installed/%s", uppmHomeDir, packageName);
 
     struct stat st;
 

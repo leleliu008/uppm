@@ -59,14 +59,14 @@ int http_fetch_to_stream(const char * url, FILE * outputFile, bool verbose, bool
     // https://www.openssl.org/docs/man1.1.1/man3/SSL_CTX_set_default_verify_paths.html
     const char * const SSL_CERT_FILE = getenv("SSL_CERT_FILE");
 
-    if ((SSL_CERT_FILE != NULL) && (strcmp(SSL_CERT_FILE, "") != 0)) {
+    if ((SSL_CERT_FILE != NULL) && (SSL_CERT_FILE[0] != '\0')) {
         // https://curl.se/libcurl/c/CURLOPT_CAINFO.html
         curl_easy_setopt(curl, CURLOPT_CAINFO, SSL_CERT_FILE);
     }
 
     const char * const SSL_CERT_DIR = getenv("SSL_CERT_DIR");
 
-    if ((SSL_CERT_DIR != NULL) && (strcmp(SSL_CERT_DIR, "") != 0)) {
+    if ((SSL_CERT_DIR != NULL) && (SSL_CERT_DIR[0] != '\0')) {
         // https://curl.se/libcurl/c/CURLOPT_CAPATH.html
         curl_easy_setopt(curl, CURLOPT_CAPATH, SSL_CERT_DIR);
     }

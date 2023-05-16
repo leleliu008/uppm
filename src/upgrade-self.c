@@ -11,39 +11,18 @@
 #include "uppm.h"
 
 int uppm_upgrade_self(bool verbose) {
-    const char * const userHomeDir = getenv("HOME");
+    char   uppmHomeDir[256];
+    size_t uppmHomeDirLength;
 
-    if (userHomeDir == NULL) {
-        return UPPM_ERROR_ENV_HOME_NOT_SET;
-    }
+    int ret = uppm_home_dir(uppmHomeDir, 256, &uppmHomeDirLength);
 
-    size_t userHomeDirLength = strlen(userHomeDir);
-
-    if (userHomeDirLength == 0U) {
-        return UPPM_ERROR_ENV_HOME_NOT_SET;
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
     ////////////////////////////////////////////////////////////////
 
     struct stat st;
-
-    size_t   uppmHomeDirLength = userHomeDirLength + 7U;
-    char     uppmHomeDir[uppmHomeDirLength];
-    snprintf(uppmHomeDir, uppmHomeDirLength, "%s/.uppm", userHomeDir);
-
-    if (stat(uppmHomeDir, &st) == 0) {
-        if (!S_ISDIR(st.st_mode)) {
-            fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", uppmHomeDir);
-            return UPPM_ERROR;
-        }
-    } else {
-        if (mkdir(uppmHomeDir, S_IRWXU) != 0) {
-            perror(uppmHomeDir);
-            return UPPM_ERROR;
-        }
-    }
-
-    ////////////////////////////////////////////////////////////////
 
     size_t   uppmTmpDirLength = uppmHomeDirLength + 5U;
     char     uppmTmpDir[uppmTmpDirLength];
@@ -69,7 +48,7 @@ int uppm_upgrade_self(bool verbose) {
     char     githubApiResultJsonFilePath[githubApiResultJsonFilePathLength];
     snprintf(githubApiResultJsonFilePath, githubApiResultJsonFilePathLength, "%s/latest.json", uppmTmpDir);
 
-    int ret = uppm_http_fetch_to_file(githubApiUrl, githubApiResultJsonFilePath, verbose, verbose);
+    ret = uppm_http_fetch_to_file(githubApiUrl, githubApiResultJsonFilePath, verbose, verbose);
 
     if (ret != UPPM_OK) {
         return ret;

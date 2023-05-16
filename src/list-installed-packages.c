@@ -5,26 +5,24 @@
 #include <sys/stat.h>
 
 #include "core/log.h"
+
 #include "uppm.h"
 
 int uppm_list_the_installed_packages() {
-    const char * const userHomeDir = getenv("HOME");
+    char   uppmHomeDir[256];
+    size_t uppmHomeDirLength;
 
-    if (userHomeDir == NULL) {
-        return UPPM_ERROR_ENV_HOME_NOT_SET;
-    }
+    int ret = uppm_home_dir(uppmHomeDir, 256, &uppmHomeDirLength);
 
-    size_t userHomeDirLength = strlen(userHomeDir);
-
-    if (userHomeDirLength == 0U) {
-        return UPPM_ERROR_ENV_HOME_NOT_SET;
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
     struct stat st;
 
-    size_t uppmInstalledDirLength = userHomeDirLength + 17U; 
-    char   uppmInstalledDir[uppmInstalledDirLength];
-    snprintf(uppmInstalledDir, uppmInstalledDirLength, "%s/.uppm/installed", userHomeDir);
+    size_t   uppmInstalledDirLength = uppmHomeDirLength + 11U; 
+    char     uppmInstalledDir[uppmInstalledDirLength];
+    snprintf(uppmInstalledDir, uppmInstalledDirLength, "%s/installed", uppmHomeDir);
 
     if (stat(uppmInstalledDir, &st) != 0 || (!S_ISDIR(st.st_mode))) {
         return UPPM_OK;

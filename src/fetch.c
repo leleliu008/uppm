@@ -18,7 +18,7 @@ int uppm_fetch(const char * packageName, bool verbose) {
         return UPPM_ERROR_ARG_IS_NULL;
     }
 
-    if (strcmp(packageName, "") == 0) {
+    if (packageName[0] == '\0') {
         return UPPM_ERROR_ARG_IS_EMPTY;
     }
 
@@ -34,25 +34,21 @@ int uppm_fetch(const char * packageName, bool verbose) {
         return ret;
     }
 
-    const char * const userHomeDir = getenv("HOME");
+    char   uppmHomeDir[256];
+    size_t uppmHomeDirLength;
 
-    if (userHomeDir == NULL) {
+    ret = uppm_home_dir(uppmHomeDir, 256, &uppmHomeDirLength);
+
+    if (ret != UPPM_OK) {
         uppm_formula_free(formula);
-        return UPPM_ERROR_ENV_HOME_NOT_SET;
-    }
-
-    size_t userHomeDirLength = strlen(userHomeDir);
-
-    if (userHomeDirLength == 0U) {
-        uppm_formula_free(formula);
-        return UPPM_ERROR_ENV_HOME_NOT_SET;
+        return ret;
     }
 
     struct stat st;
 
-    size_t   downloadDirLength = userHomeDirLength + 18U;
+    size_t   downloadDirLength = uppmHomeDirLength + 11U;
     char     downloadDir[downloadDirLength];
-    snprintf(downloadDir, downloadDirLength, "%s/.uppm/downloads", userHomeDir);
+    snprintf(downloadDir, downloadDirLength, "%s/downloads", uppmHomeDir);
 
     if (stat(downloadDir, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {
