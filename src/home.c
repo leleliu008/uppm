@@ -16,7 +16,7 @@ int uppm_home_dir(char buf[], size_t bufSize, size_t * outSize) {
 
     const char * const uppmHomeDir = getenv("UPPM_HOME");
 
-    if (uppmHomeDir == NULL || uppmHomeDir[0] == '\0') {
+    if (uppmHomeDir == NULL) {
         const char * const userHomeDir = getenv("HOME");
 
         if (userHomeDir == NULL) {
@@ -55,6 +55,11 @@ int uppm_home_dir(char buf[], size_t bufSize, size_t * outSize) {
             (*outSize) = n;
         }
     } else {
+        if (uppmHomeDir[0] == '\0') {
+            fprintf(stderr, "'UPPM_HOME' environment variable's value was expected to be a non-empty string, but it was not.\n");
+            return UPPM_ERROR;
+        }
+
         struct stat st;
 
         if (stat(uppmHomeDir, &st) == 0) {
