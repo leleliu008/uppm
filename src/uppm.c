@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 
 #include "core/log.h"
+
 #include "uppm.h"
 
 int uppm_main(int argc, char* argv[]) {
