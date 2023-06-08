@@ -1,6 +1,6 @@
+#include <errno.h>
 #include <stdio.h>
 #include <string.h>
-#include <errno.h>
 #include <dirent.h>
 #include <sys/stat.h>
 
@@ -76,8 +76,8 @@ int uppm_env(bool verbose) {
         return ret;
     }
 
-    printf("uppm.vers : %s\n", UPPM_VERSION);
-    printf("uppm.home : %s\n", uppmHomeDir);
+    printf("uppm.version : %s\n", UPPM_VERSION);
+    printf("uppm.homedir : %s\n", uppmHomeDir);
 
     char * selfRealPath = self_realpath();
 
@@ -86,11 +86,11 @@ int uppm_env(bool verbose) {
         return UPPM_ERROR;
     }
 
-    printf("uppm.path : %s\n", selfRealPath);
+    printf("uppm.exepath : %s\n", selfRealPath);
 
     free(selfRealPath);
 
-    printf("uppm.link : %s\n", "https://github.com/leleliu008/uppm");
+    printf("uppm.website : %s\n", "https://github.com/leleliu008/uppm");
 
     if (!verbose) {
         return UPPM_OK;
