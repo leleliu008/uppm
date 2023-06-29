@@ -129,7 +129,7 @@ jobs:
 
 
   freebsd-amd64:
-    needs: [check, netbsd-amd64]
+    needs: [check, openbsd-amd64]
     if: needs.check.outputs.if-has-new-commit == 'yes'
 
     runs-on: macos-12
@@ -379,7 +379,7 @@ jobs:
 
 
   linux-s390x:
-    needs: [check, linux-ppc64le]
+    needs: [check, linux-riscv64]
     if: needs.check.outputs.if-has-new-commit == 'yes'
 
     runs-on: ubuntu-latest
