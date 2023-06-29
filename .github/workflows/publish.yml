@@ -68,9 +68,12 @@ jobs:
                 export SSL_CERT_FILE="$ETCCERTSDIR/ca-certificates.crt"
             fi
 
+            run sudo pkgin -y update
+            run sudo pkgin -y install llvm
+
             run curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
             run chmod a+x ppkg
-            run ./ppkg setup --use-system-package-manager
+            run ./ppkg setup
             run ./ppkg update
 
             gsed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/offical-core/formula/uppm.yml
@@ -87,8 +90,7 @@ jobs:
 
 
   openbsd-amd64:
-    if: false
-    #if: needs.check.outputs.if-has-new-commit == 'yes'
+    if: needs.check.outputs.if-has-new-commit == 'yes'
     needs: netbsd-amd64
 
     runs-on: macos-12
@@ -101,16 +103,16 @@ jobs:
           mem: 2048
           box: generic/openbsd7
           run: |
-            run sudo pkg_add curl
+            run sudo pkg_add curl gtar-- gcc%11
+
+            run sudo ln -s /usr/local/bin/gtar /usr/bin/tar
 
             export HOME=/home/vagrant
             export LD_LIBRARY_PATH=/usr/local/lib
 
-            run sudo ln -sf /usr/local/bin/pkgconf /usr/bin/pkg-config
-
             run curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
             run chmod a+x ppkg
-            run ./ppkg setup --use-system-package-manager
+            run ./ppkg setup
             run ./ppkg update
 
             gsed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/offical-core/formula/uppm.yml
@@ -140,11 +142,11 @@ jobs:
           run: |
             export HOME=/home/vagrant
 
-            run pkg install -y curl libnghttp2
+            run pkg install -y gcc curl libnghttp2
 
             run curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
             run chmod a+x ppkg
-            run ./ppkg setup --use-system-package-manager
+            run ./ppkg setup
             run ./ppkg update
 
             gsed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/offical-core/formula/uppm.yml
@@ -173,12 +175,9 @@ jobs:
         target-arch: [x86_64, arm64]
 
     steps:
-      - run: brew update
-      - run: brew install --overwrite python@3.10 python@3.11
-
       - run: curl -LO https://raw.githubusercontent.com/leleliu008/xcpkg/master/xcpkg
       - run: chmod a+x xcpkg
-      - run: ./xcpkg setup --use-brew
+      - run: ./xcpkg setup
       - run: ./xcpkg update
 
       - run: |
@@ -209,7 +208,7 @@ jobs:
 
       - run: wget https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
       - run: chmod a+x ppkg
-      - run: ./ppkg setup --use-system-package-manager
+      - run: ./ppkg setup
       - run: ./ppkg update
 
       - run: |
@@ -252,12 +251,12 @@ jobs:
 
           run wget https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
           run chmod a+x ppkg
-          run ./ppkg setup --use-system-package-manager
+          run ./ppkg setup
           run ./ppkg update
 
           sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/offical-core/formula/uppm.yml
 
-          run ./ppkg install uppm gh --link-type=static-only --install-lib=static
+          run ./ppkg install uppm --link-type=static-only --install-lib=static
           run ./ppkg pack    uppm -o .
           EOF
 
@@ -303,12 +302,12 @@ jobs:
 
           run wget https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
           run chmod a+x ppkg
-          run ./ppkg setup --use-system-package-manager
+          run ./ppkg setup
           run ./ppkg update
 
           sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/offical-core/formula/uppm.yml
 
-          run ./ppkg install uppm gh --link-type=static-only --install-lib=static
+          run ./ppkg install uppm --link-type=static-only --install-lib=static
           run ./ppkg pack    uppm -o .
           EOF
 
@@ -324,6 +323,59 @@ jobs:
         with:
           name: uppm---linux-ppc64le-tar-xz
           path: uppm-*-linux-ppc64le.tar.xz
+
+
+  linux-riscv64:
+    needs: [check, linux-ppc64le]
+    if: needs.check.outputs.if-has-new-commit == 'yes'
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - run: |
+          cat > run.sh <<EOF
+          set -e
+
+          COLOR_GREEN='\033[0;32m'        # Green
+          COLOR_PURPLE='\033[0;35m'       # Purple
+          COLOR_OFF='\033[0m'             # Reset
+
+          echo() {
+              printf '%b\n' "\$*"
+          }
+
+          run() {
+              echo "\${COLOR_PURPLE}==>\${COLOR_OFF} \${COLOR_GREEN}\$@\${COLOR_OFF}"
+              eval "\$*"
+          }
+
+          run uname -a
+
+          run wget https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
+          run chmod a+x ppkg
+          run ./ppkg setup
+          run ./ppkg update
+
+          sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/offical-core/formula/uppm.yml
+
+          run ./ppkg install uppm --link-type=static-only --install-lib=static
+          run ./ppkg pack    uppm -o .
+          EOF
+
+          chmod +x run.sh
+
+      # https://github.com/multiarch/qemu-user-static
+      - run: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+      - run: docker run -v $PWD:$PWD -w $PWD --name alpine riscv64/alpine:edge sh run.sh
+
+      - run: ls
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: uppm---linux-riscv64-tar-xz
+          path: uppm-*-linux-riscv64.tar.xz
+
+
 
 
   linux-s390x:
@@ -354,7 +406,7 @@ jobs:
 
           run wget https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
           run chmod a+x ppkg
-          run ./ppkg setup --use-system-package-manager
+          run ./ppkg setup
           run ./ppkg update
 
           sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/offical-core/formula/uppm.yml
@@ -392,10 +444,10 @@ jobs:
           name: uppm---netbsd-amd64-tar-xz
           path: .
 
-            #- uses: actions/download-artifact@v3
-            #with:
-            #name: uppm-openbsd-amd64-tar-xz
-            #path: ~/.ppkg/packed/
+      - uses: actions/download-artifact@v3
+        with:
+          name: uppm-openbsd-amd64-tar-xz
+          path: ~/.ppkg/packed/
 
       - uses: actions/download-artifact@v3
         with:
@@ -450,6 +502,11 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: uppm---linux-ppc64le-tar-xz
+          path: .
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: uppm---linux-riscv64-tar-xz
           path: .
 
       - uses: actions/download-artifact@v3
