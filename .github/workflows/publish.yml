@@ -90,7 +90,8 @@ jobs:
 
 
   openbsd-amd64:
-    if: needs.check.outputs.if-has-new-commit == 'yes'
+    if: false
+      #if: needs.check.outputs.if-has-new-commit == 'yes'
     needs: netbsd-amd64
 
     runs-on: macos-12
@@ -129,7 +130,7 @@ jobs:
 
 
   freebsd-amd64:
-    needs: [check, openbsd-amd64]
+    needs: [check, netbsd-amd64]
     if: needs.check.outputs.if-has-new-commit == 'yes'
 
     runs-on: macos-12
@@ -444,10 +445,10 @@ jobs:
           name: uppm---netbsd-amd64-tar-xz
           path: .
 
-      - uses: actions/download-artifact@v3
-        with:
-          name: uppm-openbsd-amd64-tar-xz
-          path: ~/.ppkg/packed/
+            #- uses: actions/download-artifact@v3
+            #with:
+            #name: uppm-openbsd-amd64-tar-xz
+            #path: ~/.ppkg/packed/
 
       - uses: actions/download-artifact@v3
         with:
