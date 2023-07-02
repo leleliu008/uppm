@@ -238,7 +238,7 @@ jobs:
 
     steps:
       - run: apk update
-      - run: apk add wget gcc libc-dev linux-headers
+      - run: apk add wget g++ libc-dev linux-headers
 
       - uses: actions/checkout@v3
 
@@ -286,7 +286,7 @@ jobs:
           run uname -a
 
           run apk update
-          run apk add wget gcc libc-dev linux-headers
+          run apk add wget g++ libc-dev linux-headers
 
           run wget https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
           run chmod a+x ppkg
@@ -340,7 +340,7 @@ jobs:
           run uname -a
 
           run apk update
-          run apk add wget gcc libc-dev linux-headers
+          run apk add wget g++ libc-dev linux-headers
 
           run wget https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
           run chmod a+x ppkg
@@ -394,7 +394,7 @@ jobs:
           run uname -a
 
           run apk update
-          run apk add wget gcc libc-dev linux-headers
+          run apk add wget g++ libc-dev linux-headers
 
           run wget https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
           run chmod a+x ppkg
@@ -449,7 +449,7 @@ jobs:
           run uname -a
 
           run apk update
-          run apk add wget gcc libc-dev linux-headers
+          run apk add wget g++ libc-dev linux-headers
 
           run wget https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
           run chmod a+x ppkg
