@@ -493,8 +493,8 @@ jobs:
 
       - uses: actions/download-artifact@v3
         with:
-          name: uppm-openbsd-amd64-tar-xz
-          path: ~/.ppkg/packed/
+          name: uppm---openbsd-amd64-tar-xz
+          path: .
 
       - uses: actions/download-artifact@v3
         with:
