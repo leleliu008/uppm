@@ -56,14 +56,14 @@ int git_credential_acquire_callback(git_credential **credential, const char *url
         return 1;
     }
 
-    int userHomeDirLength = strlen(userHomeDir);
+    size_t userHomeDirLength = strlen(userHomeDir);
 
     if (userHomeDirLength == 0U) {
         return 1;
     }
 
-    size_t sshPrivateKeyFilePathLength = userHomeDirLength + 20U;
-    char   sshPrivateKeyFilePath[sshPrivateKeyFilePathLength];
+    size_t   sshPrivateKeyFilePathLength = userHomeDirLength + 20U;
+    char     sshPrivateKeyFilePath[sshPrivateKeyFilePathLength];
     snprintf(sshPrivateKeyFilePath, sshPrivateKeyFilePathLength, "%s/.ssh/id_rsa", userHomeDir);
 
     struct stat st;
@@ -254,9 +254,9 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
     git_reference  * localeTrackingBranchRef = NULL;
     git_reference  * remoteTrackingBranchRef = NULL;
 
-    const git_oid * remoteTrackingBranchHeadOid    = NULL;
-    git_object    * remoteTrackingBranchHeadCommit = NULL;
-    git_tree      * remoteTrackingBranchHeadTree   = NULL;
+    const git_oid * remoteTrackingBranchHEADOid    = NULL;
+    git_object    * remoteTrackingBranchHEADCommit = NULL;
+    git_tree      * remoteTrackingBranchHEADTree   = NULL;
 
     const git_error * gitError        = NULL;
 
@@ -319,9 +319,9 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
 
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-    size_t localeTrackingBranchRefStringLength = strlen(localeTrackingBranchName) + 12U;
-    char   localeTrackingBranchRefString[localeTrackingBranchRefStringLength];
-    snprintf(localeTrackingBranchRefString, localeTrackingBranchRefStringLength, "refs/heads/%s", localeTrackingBranchName);
+    size_t   localeTrackingBranchRefPathLength = strlen(localeTrackingBranchName) + 12U;
+    char     localeTrackingBranchRefPath[localeTrackingBranchRefPathLength];
+    snprintf(localeTrackingBranchRefPath, localeTrackingBranchRefPathLength, "refs/heads/%s", localeTrackingBranchName);
 
     //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -365,62 +365,48 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
         goto finalize;
     }
 
-    remoteTrackingBranchHeadOid = git_reference_target(remoteTrackingBranchRef);
+    remoteTrackingBranchHEADOid = git_reference_target(remoteTrackingBranchRef);
 
     if (ret != GIT_OK) {
         gitError = git_error_last();
         goto finalize;
     }
 
-    {
-        git_oid HEADOid  = {0};
+    //////////////////////////////////////////////////////////////////////////////////////////////
 
-        ret = git_reference_name_to_id(&HEADOid, gitRepo, "HEAD");
+    ret = git_branch_lookup(&localeTrackingBranchRef, gitRepo, localeTrackingBranchName, GIT_BRANCH_LOCAL);
 
-        if (ret == GIT_OK) {
-            //print_git_oid((*remoteTrackingBranchHeadOid), "remoteTrackingBranchHeadOid");
-            //print_git_oid(HEADOid, "HEADOid");
-            // HEAD SHA-1 is equal to remote tracking branch's HEAD SHA-1, means no need to perform merge
-            if (memcmp(remoteTrackingBranchHeadOid->id, HEADOid.id, 20) == 0) {
-                goto finalize;
-            }
-        }
-    }
+    if (ret == GIT_OK) {
+        const git_oid * localeTrackingBranchHEADOid = git_reference_target(localeTrackingBranchRef);
 
-    {
-        git_oid localeTrackingBranchHeadOid  = {0};
-
-        ret = git_reference_name_to_id(&localeTrackingBranchHeadOid, gitRepo, localeTrackingBranchRefString);
-
-        if (ret == GIT_OK) {
-            //print_git_oid((*remoteTrackingBranchHeadOid), "remoteTrackingBranchHeadOid");
-            //print_git_oid(localeTrackingBranchHeadOid, "localeTrackingBranchHeadOid");
-            // remote tracking branch's SHA-1 is equal to remote tracking branch's HEAD SHA-1, means no need to perform merge
-            if (memcmp(remoteTrackingBranchHeadOid->id, localeTrackingBranchHeadOid.id, 20) == 0) {
-                ret = git_repository_set_head(gitRepo, localeTrackingBranchRefString);
+        if (NULL != localeTrackingBranchHEADOid) {
+            //print_git_oid((*remoteTrackingBranchHEADOid), "remoteTrackingBranchHEADOid");
+            //print_git_oid(localeTrackingBranchHEADOid, "localeTrackingBranchHEADOid");
+            // remote tracking branch's SHA-1 is equal to locale tracking branch's HEAD SHA-1, means no need to perform merge
+            if (memcmp(remoteTrackingBranchHEADOid->id, localeTrackingBranchHEADOid->id, 20) == 0) {
+                ret = git_repository_set_head(gitRepo, localeTrackingBranchRefPath);
 
                 if (ret != GIT_OK) {
                     gitError = git_error_last();
-                    goto finalize;
                 }
-            }
-        } else if (ret == GIT_ENOTFOUND) {
-            git_reference * localeTrackingBranchRef = NULL;
 
-            ret = git_reference_create(&localeTrackingBranchRef, gitRepo, localeTrackingBranchRefString, remoteTrackingBranchHeadOid, false, NULL);
-            git_reference_free(localeTrackingBranchRef);
-
-            if (ret != GIT_OK) {
-                gitError = git_error_last();
                 goto finalize;
             }
-        } else {
-            gitError = git_error_last();
-            goto finalize;
         }
     }
 
-    // git cat-file commit HEAD
+    if (ret == GIT_ENOTFOUND) {
+        ret = git_reference_create(&localeTrackingBranchRef, gitRepo, localeTrackingBranchRefPath, remoteTrackingBranchHEADOid, false, NULL);
+    }
+
+    if (ret != GIT_OK) {
+        gitError = git_error_last();
+        goto finalize;
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+    // git cat-file -p FETCH_HEAD
     // tree 29bd7db599c429dd821a8564196a02daebe09465
     // parent eb86afc806d4df01763663c1f2a9b411bddf3a82
     // author leleliu008 <leleliu008@gmail.com> 1673391639 +0800
@@ -429,7 +415,7 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
     // optimized
 
     // https://libgit2.org/libgit2/#HEAD/group/reference/git_reference_peel
-    ret = git_reference_peel(&remoteTrackingBranchHeadCommit, remoteTrackingBranchRef, GIT_OBJ_COMMIT);
+    ret = git_reference_peel(&remoteTrackingBranchHEADCommit, remoteTrackingBranchRef, GIT_OBJ_COMMIT);
 
     if (ret != GIT_OK) {
         gitError = git_error_last();
@@ -437,7 +423,7 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
     }
 
     // https://libgit2.org/libgit2/#HEAD/group/commit/git_commit_tree
-    ret = git_commit_tree(&remoteTrackingBranchHeadTree, (git_commit*)remoteTrackingBranchHeadCommit);
+    ret = git_commit_tree(&remoteTrackingBranchHEADTree, (git_commit*)remoteTrackingBranchHEADCommit);
 
     if (ret != GIT_OK) {
         gitError = git_error_last();
@@ -445,21 +431,28 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
     }
 
     // https://libgit2.org/libgit2/#HEAD/group/checkout/git_checkout_tree
-    ret = git_checkout_tree(gitRepo, (git_object*)remoteTrackingBranchHeadTree, &gitCheckoutOptions);
+    ret = git_checkout_tree(gitRepo, (git_object*)remoteTrackingBranchHEADTree, &gitCheckoutOptions);
 
     if (ret != GIT_OK) {
         gitError = git_error_last();
         goto finalize;
     }
 
-    // https://libgit2.org/libgit2/#HEAD/group/reference/git_reference_set_target
-    ret = git_reference_set_target(&localeTrackingBranchRef, localeTrackingBranchRef, git_commit_id((git_commit*)remoteTrackingBranchHeadCommit), NULL);
+    {
+        git_reference * localeTrackingBranchRefNew = NULL;
 
-    if (ret != GIT_OK) {
-        gitError = git_error_last();
+        // https://libgit2.org/libgit2/#HEAD/group/reference/git_reference_set_target
+        ret = git_reference_set_target(&localeTrackingBranchRefNew, localeTrackingBranchRef, remoteTrackingBranchHEADOid, NULL);
+
+        git_reference_free(localeTrackingBranchRefNew);
+
+        if (ret != GIT_OK) {
+            gitError = git_error_last();
+            goto finalize;
+        }
     }
 
-    ret = git_repository_set_head(gitRepo, localeTrackingBranchRefString);
+    ret = git_repository_set_head(gitRepo, localeTrackingBranchRefPath);
 
     if (ret != GIT_OK) {
         gitError = git_error_last();
@@ -480,8 +473,8 @@ finalize:
     git_remote_free(gitRemote);
     git_reference_free(localeTrackingBranchRef);
     git_reference_free(remoteTrackingBranchRef);
-    git_tree_free(remoteTrackingBranchHeadTree);
-    git_object_free(remoteTrackingBranchHeadCommit);
+    git_tree_free(remoteTrackingBranchHEADTree);
+    git_object_free(remoteTrackingBranchHEADCommit);
 
     git_config_free(gitConfig);
     git_config_entry_free(gitConfigEntry);
