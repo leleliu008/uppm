@@ -87,11 +87,15 @@ int uppm_formula_repo_add(const char * formulaRepoName, const char * formulaRepo
 
     printf("Adding formula repo : %s => %s\n", formulaRepoName, formulaRepoUrl);
 
-    size_t   refspecLength = (branchNameLength << 1) + 33U;
-    char     refspec[refspecLength];
-    snprintf(refspec, refspecLength, "refs/heads/%s:refs/remotes/origin/%s", branchName, branchName);
+    size_t   remoteRefPathLength = branchNameLength + 12U;
+    char     remoteRefPath[remoteRefPathLength];
+    snprintf(remoteRefPath, remoteRefPathLength, "refs/heads/%s", branchName);
 
-    ret = uppm_fetch_via_git(formulaRepoDir, formulaRepoUrl, refspec, branchName);
+    size_t   remoteTrackingRefPathLength = branchNameLength + 21U;
+    char     remoteTrackingRefPath[remoteTrackingRefPathLength];
+    snprintf(remoteTrackingRefPath, remoteTrackingRefPathLength, "refs/remotes/origin/%s", branchName);
+
+    ret = uppm_git_sync(formulaRepoDir, formulaRepoUrl, remoteRefPath, remoteTrackingRefPath, branchName);
 
     if (ret != UPPM_OK) {
         return ret;

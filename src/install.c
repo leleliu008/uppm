@@ -8,10 +8,11 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 
-#include "core/sysinfo.h"
 #include "core/sha256sum.h"
+#include "core/sysinfo.h"
 #include "core/rm-r.h"
 #include "core/tar.h"
+#include "core/cp.h"
 
 #include "uppm.h"
 
@@ -201,11 +202,17 @@ int uppm_install(const char * packageName, bool verbose) {
     }
 
     if (mkdir(packageInstalledDir, S_IRWXU) != 0) {
+        perror(packageInstalledDir);
         uppm_formula_free(formula);
         return UPPM_ERROR;
     }
 
-    if (formula->install == NULL) {
+    if (strcmp(binFileNameExtension, ".zip") == 0 ||
+        strcmp(binFileNameExtension, ".tgz") == 0 ||
+        strcmp(binFileNameExtension, ".txz") == 0 ||
+        strcmp(binFileNameExtension, ".tlz") == 0 ||
+        strcmp(binFileNameExtension, ".tbz2") == 0) {
+
         ret = tar_extract(packageInstalledDir, binFilePath, ARCHIVE_EXTRACT_TIME, verbose, 1);
 
         if (ret != 0) {
@@ -213,6 +220,24 @@ int uppm_install(const char * packageName, bool verbose) {
             return abs(ret) + UPPM_ERROR_ARCHIVE_BASE;
         }
     } else {
+        size_t   toFilePathLength = packageInstalledDirLength + binFileNameLength + 1U;
+        char     toFilePath[toFilePathLength];
+        snprintf(toFilePath, toFilePathLength, "%s/%s", packageInstalledDir, binFileName);
+
+        ret = copy_file(binFilePath, toFilePath);
+
+        if (ret != UPPM_OK) {
+            return ret;
+        }
+    }
+
+    if (chdir(packageInstalledDir) != 0) {
+        perror(packageInstalledDir);
+        uppm_formula_free(formula);
+        return UPPM_ERROR;
+    }
+
+    if (formula->install != NULL) {
         SysInfo sysinfo = {0};
 
         if (sysinfo_make(&sysinfo) != 0) {
@@ -221,7 +246,7 @@ int uppm_install(const char * packageName, bool verbose) {
             return UPPM_ERROR;
         }
 
-        char * libcName;
+        const char * libcName;
 
         switch(sysinfo.libc) {
             case 1:  libcName = (char*)"glibc"; break;
@@ -229,7 +254,7 @@ int uppm_install(const char * packageName, bool verbose) {
             default: libcName = (char*)"";
         }
 
-        size_t   shellCodeLength = strlen(formula->install) + 1024U;
+        size_t   shellCodeLength = strlen(formula->install) + 2048U;
         char     shellCode[shellCodeLength];
         snprintf(shellCode, shellCodeLength,
                 "set -ex\n\n"
@@ -256,6 +281,13 @@ int uppm_install(const char * packageName, bool verbose) {
                 "PKG_BIN_FILETYPE='%s'\n"
                 "PKG_BIN_FILEPATH='%s'\n"
                 "PKG_INSTALL_DIR='%s'\n\n"
+                "for item in $PKG_DEP_PKG\n"
+                "do\n"
+                "if [ -d \"$UPPM_HOME/installed/$item/bin\" ] ; then\n"
+                "PATH=\"$UPPM_HOME/installed/$item/bin:$PATH\"\n"
+                "fi\n"
+                "done\n\n"
+                "pwd\n"
                 "%s",
                 sysinfo.kind,
                 sysinfo.type,

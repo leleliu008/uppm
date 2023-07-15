@@ -138,22 +138,50 @@ int check_if_is_a_empty_dir(const char * dirpath, bool * value) {
 // git remote add origin https://github.com/leleliu008/uppm-formula-repository-offical-core.git
 // git fetch --progress origin +refs/heads/master:refs/remotes/origin/master
 // git checkout --progress --force -B master refs/remotes/origin/master
-int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const char * refspec, const char * localeTrackingBranchName) {
+int uppm_git_sync(const char * repositoryDIR, const char * remoteUrl, const char * remoteRefPath, const char * remoteTrackingRefPath, const char * checkoutToBranchName) {
     if ((repositoryDIR == NULL) || (repositoryDIR[0] == '\0')) {
         repositoryDIR = ".";
     }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
 
     if (remoteUrl == NULL) {
         return UPPM_ERROR_ARG_IS_NULL;
     }
 
-    size_t remoteUrlLength = strlen(remoteUrl);
-
-    if (remoteUrlLength == 0U) {
+    if (remoteUrl[0] == '\0') {
         return UPPM_ERROR_ARG_IS_EMPTY;
     }
 
-    int ret = UPPM_OK;
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+    if (remoteRefPath == NULL) {
+        return UPPM_ERROR_ARG_IS_NULL;
+    }
+
+    if (remoteRefPath[0] == '\0') {
+        return UPPM_ERROR_ARG_IS_EMPTY;
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+    if (remoteTrackingRefPath == NULL) {
+        return UPPM_ERROR_ARG_IS_NULL;
+    }
+
+    if (remoteTrackingRefPath[0] == '\0') {
+        return UPPM_ERROR_ARG_IS_EMPTY;
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+    if (checkoutToBranchName == NULL) {
+        return UPPM_ERROR_ARG_IS_NULL;
+    }
+
+    if (checkoutToBranchName[0] == '\0') {
+        return UPPM_ERROR_ARG_IS_EMPTY;
+    }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -162,7 +190,7 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
     const char * urlTransformCommandPath = getenv("UPPM_URL_TRANSFORM");
 
     if ((urlTransformCommandPath == NULL) || (urlTransformCommandPath[0] == '\0')) {
-        strncpy(transformedUrl, remoteUrl, remoteUrlLength);
+        strncpy(transformedUrl, remoteUrl, strlen(remoteUrl));
         transformedUrl[1024] = '\0';
     } else {
         fprintf(stderr, "\nyou have set UPPM_URL_TRANSFORM=%s\n", urlTransformCommandPath);
@@ -193,7 +221,7 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
         if (S_ISDIR(st.st_mode)) {
             bool isAEmptyDir = false;
 
-            ret = check_if_is_a_empty_dir(repositoryDIR, &isAEmptyDir);
+            int ret = check_if_is_a_empty_dir(repositoryDIR, &isAEmptyDir);
 
             if (ret != UPPM_OK) {
                 return UPPM_ERROR;
@@ -219,28 +247,9 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
 
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-    git_refspec * gitRefSpec = NULL;
-
-    const char * refspecSrc = NULL;
-    const char * refspecDst = NULL;
-
-    if ((refspec != NULL) && (refspec[0] != '\0')) {
-        ret = git_refspec_parse(&gitRefSpec, refspec, true);
-
-        if (ret != GIT_OK) {
-            const git_error * gitError = git_error_last();
-            fprintf(stderr, "%s\n", gitError->message);
-            git_libgit2_shutdown();
-            return abs(ret) + UPPM_ERROR_LIBGIT2_BASE;
-        }
-
-        refspecSrc = git_refspec_src(gitRefSpec);
-        refspecDst = git_refspec_dst(gitRefSpec);
-
-        //printf("string:%s\n", git_refspec_string(gitRefSpec));
-        //printf("src:%s\n", refspecSrc);
-        //printf("dst:%s\n", refspecDst);
-    }
+    size_t   checkoutToBranchRefPathLength = strlen(checkoutToBranchName) + 12U;
+    char     checkoutToBranchRefPath[checkoutToBranchRefPathLength];
+    snprintf(checkoutToBranchRefPath, checkoutToBranchRefPathLength, "refs/heads/%s", checkoutToBranchName);
 
     //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -251,14 +260,16 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
 
     git_remote       * gitRemote      = NULL;
 
-    git_reference  * localeTrackingBranchRef = NULL;
-    git_reference  * remoteTrackingBranchRef = NULL;
+    git_reference * checkoutToBranchRefPointer = NULL;
+    git_reference * remoteTrackingRefPointer = NULL;
 
-    const git_oid * remoteTrackingBranchHEADOid    = NULL;
-    git_object    * remoteTrackingBranchHEADCommit = NULL;
-    git_tree      * remoteTrackingBranchHEADTree   = NULL;
+    const git_oid * remoteTrackingRefHEADCommitOid     = NULL;
+    git_object    * remoteTrackingRefHEADCommitPointer = NULL;
+    git_tree      * remoteTrackingRefHEADCommitPointToTree   = NULL;
 
     const git_error * gitError        = NULL;
+
+    int ret = UPPM_OK;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -319,12 +330,6 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
 
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-    size_t   localeTrackingBranchRefPathLength = strlen(localeTrackingBranchName) + 12U;
-    char     localeTrackingBranchRefPath[localeTrackingBranchRefPathLength];
-    snprintf(localeTrackingBranchRefPath, localeTrackingBranchRefPathLength, "refs/heads/%s", localeTrackingBranchName);
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
-
     ProgressPayload progressPayload = {0};
 
     git_remote_callbacks gitRemoteCallbacks = GIT_REMOTE_CALLBACKS_INIT;
@@ -342,9 +347,13 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
     gitCheckoutOptions.progress_cb          = git_checkout_progress_callback;
     gitCheckoutOptions.progress_payload     = &progressPayload;
 
-    if (refspecSrc == NULL) {
+    if (remoteRefPath == NULL && remoteTrackingRefPath == NULL) {
         ret = git_remote_fetch(gitRemote, NULL, &gitFetchOptions, NULL);
     } else {
+        size_t   refspecLength = strlen(remoteRefPath) + strlen(remoteTrackingRefPath) + 2;
+        char     refspec[refspecLength];
+        snprintf(refspec, refspecLength, "%s:%s", remoteRefPath, remoteTrackingRefPath);
+
         git_strarray refspecArray = {.count = 1};
         char* strings[1] = {(char*)refspec};
         refspecArray.strings = strings;
@@ -358,14 +367,14 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
 
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-    ret = git_branch_lookup(&remoteTrackingBranchRef, gitRepo, &refspecDst[13], GIT_BRANCH_REMOTE);
+    ret = git_reference_lookup(&remoteTrackingRefPointer, gitRepo, remoteTrackingRefPath);
 
     if (ret != GIT_OK) {
         gitError = git_error_last();
         goto finalize;
     }
 
-    remoteTrackingBranchHEADOid = git_reference_target(remoteTrackingBranchRef);
+    remoteTrackingRefHEADCommitOid = git_reference_target(remoteTrackingRefPointer);
 
     if (ret != GIT_OK) {
         gitError = git_error_last();
@@ -374,17 +383,17 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
 
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-    ret = git_branch_lookup(&localeTrackingBranchRef, gitRepo, localeTrackingBranchName, GIT_BRANCH_LOCAL);
+    ret = git_branch_lookup(&checkoutToBranchRefPointer, gitRepo, checkoutToBranchName, GIT_BRANCH_LOCAL);
 
     if (ret == GIT_OK) {
-        const git_oid * localeTrackingBranchHEADOid = git_reference_target(localeTrackingBranchRef);
+        const git_oid * checkoutToBranchHEADOid = git_reference_target(checkoutToBranchRefPointer);
 
-        if (NULL != localeTrackingBranchHEADOid) {
-            //print_git_oid((*remoteTrackingBranchHEADOid), "remoteTrackingBranchHEADOid");
-            //print_git_oid(localeTrackingBranchHEADOid, "localeTrackingBranchHEADOid");
+        if (NULL != checkoutToBranchHEADOid) {
+            //print_git_oid((*remoteTrackingRefHEADCommitOid), "remoteTrackingRefHEADCommitOid");
+            //print_git_oid(checkoutToBranchHEADOid, "checkoutToBranchHEADOid");
             // remote tracking branch's SHA-1 is equal to locale tracking branch's HEAD SHA-1, means no need to perform merge
-            if (memcmp(remoteTrackingBranchHEADOid->id, localeTrackingBranchHEADOid->id, 20) == 0) {
-                ret = git_repository_set_head(gitRepo, localeTrackingBranchRefPath);
+            if (memcmp(remoteTrackingRefHEADCommitOid->id, checkoutToBranchHEADOid->id, 20) == 0) {
+                ret = git_repository_set_head(gitRepo, checkoutToBranchRefPath);
 
                 if (ret != GIT_OK) {
                     gitError = git_error_last();
@@ -396,7 +405,7 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
     }
 
     if (ret == GIT_ENOTFOUND) {
-        ret = git_reference_create(&localeTrackingBranchRef, gitRepo, localeTrackingBranchRefPath, remoteTrackingBranchHEADOid, false, NULL);
+        ret = git_reference_create(&checkoutToBranchRefPointer, gitRepo, checkoutToBranchRefPath, remoteTrackingRefHEADCommitOid, false, NULL);
     }
 
     if (ret != GIT_OK) {
@@ -415,7 +424,7 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
     // optimized
 
     // https://libgit2.org/libgit2/#HEAD/group/reference/git_reference_peel
-    ret = git_reference_peel(&remoteTrackingBranchHEADCommit, remoteTrackingBranchRef, GIT_OBJ_COMMIT);
+    ret = git_reference_peel(&remoteTrackingRefHEADCommitPointer, remoteTrackingRefPointer, GIT_OBJ_COMMIT);
 
     if (ret != GIT_OK) {
         gitError = git_error_last();
@@ -423,7 +432,7 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
     }
 
     // https://libgit2.org/libgit2/#HEAD/group/commit/git_commit_tree
-    ret = git_commit_tree(&remoteTrackingBranchHEADTree, (git_commit*)remoteTrackingBranchHEADCommit);
+    ret = git_commit_tree(&remoteTrackingRefHEADCommitPointToTree, (git_commit*)remoteTrackingRefHEADCommitPointer);
 
     if (ret != GIT_OK) {
         gitError = git_error_last();
@@ -431,7 +440,7 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
     }
 
     // https://libgit2.org/libgit2/#HEAD/group/checkout/git_checkout_tree
-    ret = git_checkout_tree(gitRepo, (git_object*)remoteTrackingBranchHEADTree, &gitCheckoutOptions);
+    ret = git_checkout_tree(gitRepo, (git_object*)remoteTrackingRefHEADCommitPointToTree, &gitCheckoutOptions);
 
     if (ret != GIT_OK) {
         gitError = git_error_last();
@@ -439,12 +448,12 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
     }
 
     {
-        git_reference * localeTrackingBranchRefNew = NULL;
+        git_reference * checkoutToBranchRefPointerNew = NULL;
 
         // https://libgit2.org/libgit2/#HEAD/group/reference/git_reference_set_target
-        ret = git_reference_set_target(&localeTrackingBranchRefNew, localeTrackingBranchRef, remoteTrackingBranchHEADOid, NULL);
+        ret = git_reference_set_target(&checkoutToBranchRefPointerNew, checkoutToBranchRefPointer, remoteTrackingRefHEADCommitOid, NULL);
 
-        git_reference_free(localeTrackingBranchRefNew);
+        git_reference_free(checkoutToBranchRefPointerNew);
 
         if (ret != GIT_OK) {
             gitError = git_error_last();
@@ -452,7 +461,7 @@ int uppm_fetch_via_git(const char * repositoryDIR, const char * remoteUrl, const
         }
     }
 
-    ret = git_repository_set_head(gitRepo, localeTrackingBranchRefPath);
+    ret = git_repository_set_head(gitRepo, checkoutToBranchRefPath);
 
     if (ret != GIT_OK) {
         gitError = git_error_last();
@@ -468,13 +477,15 @@ finalize:
     }
 
     git_repository_state_cleanup(gitRepo);
+
     git_repository_free(gitRepo);
-    git_refspec_free(gitRefSpec);
     git_remote_free(gitRemote);
-    git_reference_free(localeTrackingBranchRef);
-    git_reference_free(remoteTrackingBranchRef);
-    git_tree_free(remoteTrackingBranchHEADTree);
-    git_object_free(remoteTrackingBranchHEADCommit);
+
+    git_reference_free(remoteTrackingRefPointer);
+    git_object_free(remoteTrackingRefHEADCommitPointer);
+    git_tree_free(remoteTrackingRefHEADCommitPointToTree);
+
+    git_reference_free(checkoutToBranchRefPointer);
 
     git_config_free(gitConfig);
     git_config_entry_free(gitConfigEntry);

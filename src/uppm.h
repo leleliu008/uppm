@@ -241,7 +241,7 @@ int uppm_list_the_outdated__packages();
 
 int uppm_show_the_available_packages();
 
-int uppm_fetch_via_git(const char * gitRepositoryDirPath, const char * remoteUrl, const char * refspec, const char * checkoutToBranchName);
+int uppm_git_sync(const char * gitRepositoryDirPath, const char * remoteUrl, const char * remoteRef, const char * remoteTrackingRef, const char * checkoutToBranchName);
 
 int uppm_generate_url_transform_sample();
 

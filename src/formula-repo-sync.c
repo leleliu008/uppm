@@ -40,12 +40,21 @@ int uppm_formula_repo_sync(UPPMFormulaRepo * formulaRepo) {
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    size_t refspecLength = (strlen(formulaRepo->branch) << 1) + 33U;
-    char   refspec[refspecLength];
-    snprintf(refspec, refspecLength, "refs/heads/%s:refs/remotes/origin/%s", formulaRepo->branch, formulaRepo->branch);
+    const char * branchName = formulaRepo->branch;
+    size_t       branchNameLength = strlen(branchName);
 
-    if (uppm_fetch_via_git(formulaRepo->path, formulaRepo->url, refspec, formulaRepo->branch) != 0) {
-        return UPPM_ERROR;
+    size_t   remoteRefPathLength = branchNameLength + 12U;
+    char     remoteRefPath[remoteRefPathLength];
+    snprintf(remoteRefPath, remoteRefPathLength, "refs/heads/%s", branchName);
+
+    size_t   remoteTrackingRefPathLength = branchNameLength + 21U;
+    char     remoteTrackingRefPath[remoteTrackingRefPathLength];
+    snprintf(remoteTrackingRefPath, remoteTrackingRefPathLength, "refs/remotes/origin/%s", branchName);
+
+    int ret = uppm_git_sync(formulaRepo->path, formulaRepo->url, remoteRefPath, remoteTrackingRefPath, branchName);
+
+    if (ret != UPPM_OK) {
+        return ret;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
