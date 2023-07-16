@@ -19,6 +19,7 @@ typedef enum {
     UPPMFormulaKeyCode_bin_url,
     UPPMFormulaKeyCode_bin_sha,
     UPPMFormulaKeyCode_dep_pkg,
+    UPPMFormulaKeyCode_unpackd,
     UPPMFormulaKeyCode_install,
 } UPPMFormulaKeyCode;
 
@@ -34,6 +35,7 @@ void uppm_formula_dump(UPPMFormula * formula) {
     printf("bin-url: %s\n", formula->bin_url);
     printf("bin-sha: %s\n", formula->bin_sha);
     printf("dep-pkg: %s\n", formula->dep_pkg);
+    printf("unpackd: %s\n", formula->unpackd);
     printf("install: %s\n", formula->install);
     printf("path:    %s\n", formula->path);
 }
@@ -78,6 +80,11 @@ void uppm_formula_free(UPPMFormula * formula) {
         formula->dep_pkg = NULL;
     }
 
+    if (formula->unpackd != NULL) {
+        free(formula->unpackd);
+        formula->unpackd = NULL;
+    }
+
     if (formula->install != NULL) {
         free(formula->install);
         formula->install = NULL;
@@ -106,6 +113,8 @@ static UPPMFormulaKeyCode uppm_formula_key_code_from_key_name(char * key, bool i
         return UPPMFormulaKeyCode_bin_sha;
     } else if (strcmp(key, "dep-pkg") == 0) {
         return UPPMFormulaKeyCode_dep_pkg;
+    } else if (strcmp(key, "unpackd") == 0) {
+        return UPPMFormulaKeyCode_unpackd;
     } else if (strcmp(key, "install") == 0) {
         return UPPMFormulaKeyCode_install;
     } else {
@@ -222,6 +231,18 @@ static int uppm_formula_set_value(UPPMFormulaKeyCode keyCode, char * value, UPPM
             formula->dep_pkg = strdup(value);
 
             if (formula->dep_pkg == NULL) {
+                return UPPM_ERROR_MEMORY_ALLOCATE;
+            } else {
+                return UPPM_OK;
+            }
+        case UPPMFormulaKeyCode_unpackd:
+            if (formula->unpackd != NULL) {
+                free(formula->unpackd);
+            }
+
+            formula->unpackd = strdup(value);
+
+            if (formula->unpackd == NULL) {
                 return UPPM_ERROR_MEMORY_ALLOCATE;
             } else {
                 return UPPM_OK;

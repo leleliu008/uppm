@@ -103,6 +103,7 @@ typedef struct {
     char * bin_url;
     char * bin_sha;
     char * dep_pkg;
+    char * unpackd;
     char * install;
     char * path;
 } UPPMFormula;

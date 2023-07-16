@@ -213,7 +213,15 @@ int uppm_install(const char * packageName, bool verbose) {
         strcmp(binFileNameExtension, ".tlz") == 0 ||
         strcmp(binFileNameExtension, ".tbz2") == 0) {
 
-        ret = tar_extract(packageInstalledDir, binFilePath, ARCHIVE_EXTRACT_TIME, verbose, 1);
+        if (formula->unpackd == NULL) {
+            ret = tar_extract(packageInstalledDir, binFilePath, ARCHIVE_EXTRACT_TIME, verbose, 1);
+        } else {
+            size_t   extractDIRLength = packageInstalledDirLength + strlen(formula->unpackd) + 1U;
+            char     extractDIR[extractDIRLength];
+            snprintf(extractDIR, extractDIRLength, "%s/%s", packageInstalledDir, formula->unpackd);
+
+            ret = tar_extract(extractDIR, binFilePath, ARCHIVE_EXTRACT_TIME, verbose, 1);
+        }
 
         if (ret != 0) {
             uppm_formula_free(formula);
