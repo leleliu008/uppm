@@ -6,7 +6,7 @@
 #include <stdbool.h>
 
 
-#define UPPM_PACKAGE_NAME_PATTERN "^[A-Za-z0-9+-._]{1,50}$"
+#define UPPM_PACKAGE_NAME_PATTERN "^[A-Za-z0-9+-._@]{1,50}$"
 
 
 #define UPPM_OK                     0
