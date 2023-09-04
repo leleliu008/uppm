@@ -1,13 +1,15 @@
+#include <errno.h>
 #include <stdio.h>
 #include <string.h>
+
+#include <fcntl.h>
 #include <unistd.h>
-#include <errno.h>
 #include <dirent.h>
 #include <sys/stat.h>
 
 #include "uppm.h"
 
-static int record_installed_files_r(const char * dirPath, size_t offset, FILE * installedManifestFile) {
+static int record_installed_files_r(const char * dirPath, size_t offset, int outputFD) {
     if (dirPath == NULL) {
         return UPPM_ERROR_ARG_IS_NULL;
     }
@@ -49,8 +51,8 @@ static int record_installed_files_r(const char * dirPath, size_t offset, FILE * 
             continue;
         }
 
-        size_t filePathLength = dirPathLength + strlen(dir_entry->d_name) + 2U;
-        char   filePath[filePathLength];
+        size_t   filePathLength = dirPathLength + strlen(dir_entry->d_name) + 2U;
+        char     filePath[filePathLength];
         snprintf(filePath, filePathLength, "%s/%s", dirPath, dir_entry->d_name);
 
         if (stat(filePath, &st) != 0) {
@@ -60,39 +62,39 @@ static int record_installed_files_r(const char * dirPath, size_t offset, FILE * 
         }
 
         if (S_ISDIR(st.st_mode)) {
-            fprintf(installedManifestFile, "d|%s/\n", &filePath[offset]);
+            dprintf(outputFD, "d|%s/\n", &filePath[offset]);
 
-            ret = record_installed_files_r(filePath, offset, installedManifestFile);
+            ret = record_installed_files_r(filePath, offset, outputFD);
 
             if (ret != UPPM_OK) {
                 closedir(dir);
                 return ret;
             }
         } else {
-            fprintf(installedManifestFile, "f|%s\n", &filePath[offset]);
+            dprintf(outputFD, "f|%s\n", &filePath[offset]);
         }
     }
 
     return ret;
 }
 
-int record_installed_files(const char * installedDirPath) {
-    size_t installedDirLength = strlen(installedDirPath);
+int record_installed_files(const char * installedDIRPath) {
+    size_t   installedDIRLength = strlen(installedDIRPath);
 
-    size_t installedManifestFilePathLength = installedDirLength + 20U;
-    char   installedManifestFilePath[installedManifestFilePathLength];
-    snprintf(installedManifestFilePath, installedManifestFilePathLength, "%s/.uppm/manifest.txt", installedDirPath);
+    size_t   installedManifestFilePathLength = installedDIRLength + 20U;
+    char     installedManifestFilePath[installedManifestFilePathLength];
+    snprintf(installedManifestFilePath, installedManifestFilePathLength, "%s/.uppm/manifest.txt", installedDIRPath);
 
-    FILE * installedManifestFile = fopen(installedManifestFilePath, "w");
+    int fd = open(installedManifestFilePath, O_CREAT | O_TRUNC | O_WRONLY, 0666);
 
-    if (installedManifestFile == NULL) {
+    if (fd == -1) {
         perror(installedManifestFilePath);
         return UPPM_ERROR;
     }
 
-    int ret = record_installed_files_r(installedDirPath, installedDirLength + 1, installedManifestFile);
+    int ret = record_installed_files_r(installedDIRPath, installedDIRLength + 1, fd);
 
-    fclose(installedManifestFile);
+    close(fd);
 
     return ret;
 }

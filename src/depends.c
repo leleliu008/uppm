@@ -1,117 +1,19 @@
 #include <time.h>
+#include <errno.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+
+#include <fcntl.h>
 #include <unistd.h>
+#include <sys/wait.h>
 #include <sys/stat.h>
 
+#include "core/rm-r.h"
 #include "core/http.h"
 #include "core/url.h"
 
 #include "uppm.h"
-
-static int uppm_depends_make_box(const char * dotScriptStr, size_t dotScriptStrLength, const char * outputFilePath) {
-    size_t urlEncodedBufLength = 3 * dotScriptStrLength + 1U;
-    char   urlEncodedBuf[urlEncodedBufLength];
-    memset(urlEncodedBuf, 0, urlEncodedBufLength);
-
-    size_t urlEncodedRealLength = 0;
-
-    if (url_encode(urlEncodedBuf, &urlEncodedRealLength, (unsigned char *)dotScriptStr, dotScriptStrLength, true) != 0) {
-        perror(NULL);
-        return UPPM_ERROR;
-    }
-
-    size_t   urlLength = urlEncodedRealLength + 66U;
-    char     url[urlLength];
-    snprintf(url, urlLength, "https://dot-to-ascii.ggerganov.com/dot-to-ascii.php?boxart=1&src=%s", urlEncodedBuf);
-
-    //printf("url=%s\n", url);
-
-    int ret;
-
-    if (outputFilePath == NULL) {
-        ret = http_fetch_to_stream(url, stdout, false, false);
-    } else {
-        ret = http_fetch_to_file(url, outputFilePath, false, false);
-    }
-
-    if (ret == -1) {
-        perror(outputFilePath);
-        return UPPM_ERROR;
-    }
-
-    if (ret > 0) {
-        return UPPM_ERROR_NETWORK_BASE + ret;
-    }
-
-    return UPPM_OK;
-}
-
-static int uppm_depends_make_xxx(const char * dotScriptStr, size_t len, const char * tOption, const char * oOption) {
-    char   uppmHomeDir[256];
-    size_t uppmHomeDirLength;
-
-    int ret = uppm_home_dir(uppmHomeDir, 256, &uppmHomeDirLength);
-
-    if (ret != UPPM_OK) {
-        return ret;
-    }
-
-    ////////////////////////////////////////////////////////////////
-
-    struct stat st;
-
-    size_t   uppmTmpDirLength = uppmHomeDirLength + 5U;
-    char     uppmTmpDir[uppmTmpDirLength];
-    snprintf(uppmTmpDir, uppmTmpDirLength, "%s/tmp", uppmHomeDir);
-
-    if (stat(uppmTmpDir, &st) == 0) {
-        if (!S_ISDIR(st.st_mode)) {
-            fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", uppmTmpDir);
-            return UPPM_ERROR;
-        }
-    } else {
-        if (mkdir(uppmTmpDir, S_IRWXU) != 0) {
-            perror(uppmTmpDir);
-            return UPPM_ERROR;
-        }
-    }
-
-    ////////////////////////////////////////////////////////////////
-
-    char ts[11] = {0};
-    snprintf(ts, 11, "%ld", time(NULL));
-
-    size_t filepathLength = uppmTmpDirLength + strlen(ts) + 6U;
-    char   filepath[filepathLength];
-    snprintf(filepath, filepathLength, "%s/%s.dot", uppmTmpDir, ts);
-
-    FILE * file = fopen(filepath, "w");
-
-    if (file == NULL) {
-        perror(NULL);
-        return UPPM_ERROR;
-    }
-
-    if (fwrite(dotScriptStr, 1, len, file) != len || ferror(file)) {
-        perror(filepath);
-        fclose(file);
-        return UPPM_ERROR;
-    }
-
-    fclose(file);
-
-    if (oOption == NULL) {
-        execlp("dot", "dot", tOption,          filepath, NULL);
-    } else {
-        execlp("dot", "dot", tOption, oOption, filepath, NULL);
-    }
-
-    perror("dot");
-
-    return UPPM_ERROR;
-}
 
 static int string_append(char ** outP, size_t * outSize, size_t * outCapcity, const char * buf, size_t bufLength) {
     size_t  oldCapcity = (*outCapcity);
@@ -148,7 +50,7 @@ typedef struct {
     char * nodeList;
     size_t nodeListSize;
     size_t nodeListCapcity;
-} DirectedPath;
+} DIRectedPath;
 
 int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, const char * outputFilePath) {
     int ret = UPPM_OK;
@@ -158,12 +60,6 @@ int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, con
     char * p = NULL;
     size_t pSize = 0;
     size_t pCapcity = 0;
-
-    ////////////////////////////////////////////////////////////////
-
-    size_t          directedPathArrayListCapcity = 0;
-    size_t          directedPathArrayListSize    = 0;
-    DirectedPath ** directedPathArrayList        = NULL;
 
     ////////////////////////////////////////////////////////////////
 
@@ -376,81 +272,231 @@ finalize:
 
     ////////////////////////////////////////////////////////////////
 
-    if (outputFilePath != NULL && outputFilePath[0] == '\0') {
-        outputFilePath = NULL;
-    }
+    size_t   dotScriptStrLength = pSize + 14U;
+    char     dotScriptStr[dotScriptStrLength];
+    snprintf(dotScriptStr, dotScriptStrLength, "digraph G {\n%s}", p);
+
+    free(p);
+
+    dotScriptStrLength--;
 
     ////////////////////////////////////////////////////////////////
 
     if (outputType == UPPMDependsOutputType_DOT) {
         if (outputFilePath == NULL) {
-            printf("digraph G {\n%s}\n", p);
-            free(p);
+            printf("%s\n", dotScriptStr);
             return UPPM_OK;
-        } else {
-            FILE * outputFile = fopen(outputFilePath, "wb");
-
-            if (outputFile == NULL) {
-                perror(outputFilePath);
-                free(p);
-                return UPPM_ERROR;
-            }
-
-            fprintf(outputFile, "digraph G {\n%s}\n", p);
-
-            free(p);
-
-            if (ferror(outputFile)) {
-                perror(outputFilePath);
-                fclose(outputFile);
-                return UPPM_ERROR;
-            } else {
-                fclose(outputFile);
-                return UPPM_OK;
-            }
         }
-    } else if (outputType == UPPMDependsOutputType_BOX) {
-        size_t   dotScriptStrLength = pSize + 14U;
-        char     dotScriptStr[dotScriptStrLength];
-        snprintf(dotScriptStr, dotScriptStrLength, "digraph G {\n%s}", p);
+    }
 
-        free(p);
+    ////////////////////////////////////////////////////////////////
 
-        return uppm_depends_make_box(dotScriptStr, dotScriptStrLength - 1, outputFilePath);
-    } else if (outputType == UPPMDependsOutputType_PNG) {
-        size_t   dotScriptStrLength = pSize + 14U;
-        char     dotScriptStr[dotScriptStrLength];
-        snprintf(dotScriptStr, dotScriptStrLength, "digraph G {\n%s}", p);
+    char   uppmHomeDIR[256];
+    size_t uppmHomeDIRLength;
 
-        free(p);
+    ret = uppm_home_dir(uppmHomeDIR, 255, &uppmHomeDIRLength);
 
-        if (outputFilePath == NULL) {
-            return uppm_depends_make_xxx(dotScriptStr, dotScriptStrLength - 1, "-Tpng", NULL);
-        } else {
-            size_t   oOptionLength=strlen(outputFilePath) + 3U;
-            char     oOption[oOptionLength];
-            snprintf(oOption, oOptionLength, "-o%s", outputFilePath);
+    if (ret != UPPM_OK) {
+        return ret;
+    }
 
-            return uppm_depends_make_xxx(dotScriptStr, dotScriptStrLength - 1, "-Tpng", oOption);
-        }
-    } else if (outputType == UPPMDependsOutputType_SVG) {
-        size_t   dotScriptStrLength = pSize + 14U;
-        char     dotScriptStr[dotScriptStrLength];
-        snprintf(dotScriptStr, dotScriptStrLength, "digraph G {\n%s}", p);
+    ////////////////////////////////////////////////////////////////
 
-        free(p);
+    struct stat st;
 
-        if (outputFilePath == NULL) {
-            return uppm_depends_make_xxx(dotScriptStr, dotScriptStrLength - 1, "-Tsvg", NULL);
-        } else {
-            size_t   oOptionLength=strlen(outputFilePath) + 3U;
-            char     oOption[oOptionLength];
-            snprintf(oOption, oOptionLength, "-o%s", outputFilePath);
+    size_t   uppmRunDIRLength = uppmHomeDIRLength + 5U;
+    char     uppmRunDIR[uppmRunDIRLength];
+    snprintf(uppmRunDIR, uppmRunDIRLength, "%s/run", uppmHomeDIR);
 
-            return uppm_depends_make_xxx(dotScriptStr, dotScriptStrLength - 1, "-Tsvg", oOption);
+    if (stat(uppmRunDIR, &st) == 0) {
+        if (!S_ISDIR(st.st_mode)) {
+            fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", uppmRunDIR);
+            return UPPM_ERROR;
         }
     } else {
-        free(p);
+        if (mkdir(uppmRunDIR, S_IRWXU) != 0) {
+            if (errno != EEXIST) {
+                perror(uppmRunDIR);
+                return UPPM_ERROR;
+            }
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////
+
+    size_t   sessionDIRLength = uppmRunDIRLength + 20U;
+    char     sessionDIR[sessionDIRLength];
+    snprintf(sessionDIR, sessionDIRLength, "%s/%d", uppmRunDIR, getpid());
+
+    if (stat(sessionDIR, &st) == 0) {
+        if (S_ISDIR(st.st_mode)) {
+            if (rm_r(sessionDIR, false) != 0) {
+                perror(sessionDIR);
+                return UPPM_ERROR;
+            }
+        } else {
+            fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", sessionDIR);
+            return UPPM_ERROR;
+        }
+    } else {
+        if (mkdir(sessionDIR, S_IRWXU) != 0) {
+            perror(sessionDIR);
+            return UPPM_ERROR;
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////
+
+    if (outputType == UPPMDependsOutputType_BOX) {
+        size_t urlEncodedBufLength = 3 * dotScriptStrLength + 1U;
+        char   urlEncodedBuf[urlEncodedBufLength];
+        memset(urlEncodedBuf, 0, urlEncodedBufLength);
+
+        size_t urlEncodedRealLength = 0;
+
+        if (url_encode(urlEncodedBuf, &urlEncodedRealLength, (unsigned char *)dotScriptStr, dotScriptStrLength, true) != 0) {
+            perror(NULL);
+            return UPPM_ERROR;
+        }
+
+        size_t   urlLength = urlEncodedRealLength + 66U;
+        char     url[urlLength];
+        snprintf(url, urlLength, "https://dot-to-ascii.ggerganov.com/dot-to-ascii.php?boxart=1&src=%s", urlEncodedBuf);
+
+        //printf("url=%s\n", url);
+
+        if (outputFilePath == NULL) {
+            int ret = http_fetch_to_stream(url, stdout, false, false);
+
+            if (ret == -1) {
+                return UPPM_ERROR;
+            }
+
+            if (ret > 0) {
+                return UPPM_ERROR_NETWORK_BASE + ret;
+            }
+
+            return UPPM_OK;
+        } else {
+            size_t   boxFilePathLength = sessionDIRLength + 18U;
+            char     boxFilePath[boxFilePathLength];
+            snprintf(boxFilePath, boxFilePathLength, "%s/dependencies.box", sessionDIR);
+
+            int ret = http_fetch_to_file(url, boxFilePath, false, false);
+
+            if (ret == -1) {
+                perror(outputFilePath);
+                return UPPM_ERROR;
+            }
+
+            if (ret > 0) {
+                return UPPM_ERROR_NETWORK_BASE + ret;
+            }
+
+            if (rename(boxFilePath, outputFilePath) == 0) {
+                return UPPM_OK;
+            } else {
+                perror(outputFilePath);
+                return UPPM_ERROR;
+            }
+        }
+    } 
+
+    ////////////////////////////////////////////////////////////////
+
+    size_t   dotFilePathLength = sessionDIRLength + 18U;
+    char     dotFilePath[dotFilePathLength];
+    snprintf(dotFilePath, dotFilePathLength, "%s/dependencies.dot", sessionDIR);
+
+    int dotFD = open(dotFilePath, O_CREAT | O_WRONLY | O_TRUNC, 0666);
+
+    if (dotFD == -1) {
+        perror(dotFilePath);
+        return UPPM_ERROR;
+    }
+
+    ret = write(dotFD, dotScriptStr, dotScriptStrLength);
+
+    if (ret == -1) {
+        perror(dotFilePath);
+        close(dotFD);
+        return UPPM_ERROR;
+    }
+
+    close(dotFD);
+
+    if ((size_t)ret != dotScriptStrLength) {
+        fprintf(stderr, "not fully written: %s\n", dotFilePath);
+        return UPPM_ERROR;
+    }
+
+    ////////////////////////////////////////////////////////////////
+
+    if (outputType == UPPMDependsOutputType_DOT) {
+        if (rename(dotFilePath, outputFilePath) == 0) {
+            return UPPM_OK;
+        } else {
+            perror(outputFilePath);
+            return UPPM_ERROR;
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////
+
+    size_t   tmpFilePathLength = sessionDIRLength + 18U;
+    char     tmpFilePath[tmpFilePathLength];
+    snprintf(tmpFilePath, tmpFilePathLength, "%s/dependencies.tmp", sessionDIR);
+
+    ////////////////////////////////////////////////////////////////
+
+    int pid = fork();
+
+    if (pid == -1) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
+
+    if (pid == 0) {
+        if (outputType == UPPMDependsOutputType_PNG) {
+            execlp("dot", "dot", "-Tpng", "-o", tmpFilePath, dotFilePath, NULL);
+        } else if (outputType == UPPMDependsOutputType_SVG) {
+            execlp("dot", "dot", "-Tsvg", "-o", tmpFilePath, dotFilePath, NULL);
+        }
+
+        perror("dot");
+        exit(255);
+    } else {
+        int childProcessExitStatusCode;
+
+        if (waitpid(pid, &childProcessExitStatusCode, 0) < 0) {
+            perror(NULL);
+            return UPPM_ERROR;
+        }
+
+        if (childProcessExitStatusCode == 0) {
+            if (rename(tmpFilePath, outputFilePath) == 0) {
+                return UPPM_OK;
+            } else {
+                perror(outputFilePath);
+                return UPPM_ERROR;
+            }
+        }
+
+        const char * type;
+
+        if (outputType == UPPMDependsOutputType_PNG) {
+            type = "-Tpng";
+        } else if (outputType == UPPMDependsOutputType_SVG) {
+            type = "-Tsvg";
+        }
+
+        if (WIFEXITED(childProcessExitStatusCode)) {
+            fprintf(stderr, "running command 'dot %s -o %s %s' exit with status code: %d\n", type, tmpFilePath, dotFilePath, WEXITSTATUS(childProcessExitStatusCode));
+        } else if (WIFSIGNALED(childProcessExitStatusCode)) {
+            fprintf(stderr, "running command 'dot %s -o %s %s' killed by signal: %d\n", type, tmpFilePath, dotFilePath, WTERMSIG(childProcessExitStatusCode));
+        } else if (WIFSTOPPED(childProcessExitStatusCode)) {
+            fprintf(stderr, "running command 'dot %s -o %s %s' stopped by signal: %d\n", type, tmpFilePath, dotFilePath, WSTOPSIG(childProcessExitStatusCode));
+        }
 
         return UPPM_ERROR;
     }

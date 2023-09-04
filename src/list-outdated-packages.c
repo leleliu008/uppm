@@ -1,35 +1,37 @@
+#include <errno.h>
 #include <stdio.h>
 #include <string.h>
-#include <errno.h>
+
 #include <dirent.h>
 #include <sys/stat.h>
 
 #include "uppm.h"
 
 int uppm_list_the_outdated__packages() {
-    char   uppmHomeDir[256];
-    size_t uppmHomeDirLength;
+    char   uppmHomeDIR[256];
+    size_t uppmHomeDIRLength;
 
-    int ret = uppm_home_dir(uppmHomeDir, 256, &uppmHomeDirLength);
+    int ret = uppm_home_dir(uppmHomeDIR, 255, &uppmHomeDIRLength);
 
     if (ret != UPPM_OK) {
         return ret;
     }
 
-    size_t   installedDirLength = uppmHomeDirLength + 11U;
-    char     installedDir[installedDirLength];
-    snprintf(installedDir, installedDirLength, "%s/installed", uppmHomeDir);
-
     struct stat st;
 
-    if (stat(installedDir, &st) != 0 || (!S_ISDIR(st.st_mode))) {
+    size_t   uppmInstalledDIRLength = uppmHomeDIRLength + 11U; 
+    char     uppmInstalledDIR[uppmInstalledDIRLength];
+    snprintf(uppmInstalledDIR, uppmInstalledDIRLength, "%s/installed", uppmHomeDIR);
+
+
+    if (stat(uppmInstalledDIR, &st) != 0 || (!S_ISDIR(st.st_mode))) {
         return UPPM_OK;
     }
 
-    DIR * dir = opendir(installedDir);
+    DIR * dir = opendir(uppmInstalledDIR);
 
     if (dir == NULL) {
-        perror(installedDir);
+        perror(uppmInstalledDIR);
         return UPPM_ERROR;
     }
 
@@ -43,7 +45,7 @@ int uppm_list_the_outdated__packages() {
                 closedir(dir);
                 break;
             } else {
-                perror(installedDir);
+                perror(uppmInstalledDIR);
                 closedir(dir);
                 return UPPM_ERROR;
             }
@@ -53,9 +55,21 @@ int uppm_list_the_outdated__packages() {
             continue;
         }
 
-        size_t receiptFilePathLength = installedDirLength + strlen(dir_entry->d_name) + 20U;
-        char   receiptFilePath[receiptFilePathLength];
-        snprintf(receiptFilePath, receiptFilePathLength, "%s/%s/.uppm/receipt.yml", installedDir, dir_entry->d_name);
+        size_t   packageInstalledDIRLength = uppmInstalledDIRLength + strlen(dir_entry->d_name) + 2U;
+        char     packageInstalledDIR[packageInstalledDIRLength];
+        snprintf(packageInstalledDIR, packageInstalledDIRLength, "%s/%s", uppmInstalledDIR, dir_entry->d_name);
+
+        if (lstat(packageInstalledDIR, &st) == 0) {
+            if (!S_ISLNK(st.st_mode)) {
+                continue;
+            }
+        } else {
+            continue;
+        }
+
+        size_t   receiptFilePathLength = packageInstalledDIRLength + 20U;
+        char     receiptFilePath[receiptFilePathLength];
+        snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", packageInstalledDIR);
 
         if (stat(receiptFilePath, &st) == 0 && S_ISREG(st.st_mode)) {
             //printf("%s\n", dir_entry->d_name);

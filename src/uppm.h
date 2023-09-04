@@ -142,7 +142,7 @@ int  uppm_formula_repo_remove(const char * formulaRepoName);
 int  uppm_formula_repo_sync_ (const char * formulaRepoName);
 int  uppm_formula_repo_info_ (const char * formulaRepoName);
 int  uppm_formula_repo_config(const char * formulaRepoName, const char * formulaRepoUrl, const char * branchName, int pinned, int enabled);
-int  uppm_formula_repo_config_write(const char * formulaRepoDirPath, const char * formulaRepoUrl, const char * branchName, int pinned, int enabled, const char * timestamp_created, const char * timestamp_updated);
+int  uppm_formula_repo_config_write(const char * formulaRepoDIRPath, const char * formulaRepoUrl, const char * branchName, int pinned, int enabled, const char * timestamp_created, const char * timestamp_updated);
 int  uppm_formula_repo_lookup(const char * formulaRepoName, UPPMFormulaRepo * * formulaRepo);
 int  uppm_formula_repo_parse (const char * formulaRepoConfigFilePath, UPPMFormulaRepo * * formulaRepo);
 
@@ -202,6 +202,8 @@ int uppm_env(bool verbose);
 
 int uppm_home_dir(char buf[], size_t bufSize, size_t * outSize);
 
+int uppm_session_dir(char buf[], size_t bufSize, size_t * outSize);
+
 int uppm_search(const char * regPattern);
 
 int uppm_info(const char * packageName, const char * key);
@@ -222,9 +224,9 @@ int uppm_upgrade(const char * packageName, bool verbose);
 
 int uppm_upgrade_self(bool verbose);
 
-int uppm_integrate_zsh_completion (const char * outputDir, bool verbose);
-int uppm_integrate_bash_completion(const char * outputDir, bool verbose);
-int uppm_integrate_fish_completion(const char * outputDir, bool verbose);
+int uppm_integrate_zsh_completion (const char * outputDIR, bool verbose);
+int uppm_integrate_bash_completion(const char * outputDIR, bool verbose);
+int uppm_integrate_fish_completion(const char * outputDIR, bool verbose);
 
 int uppm_cleanup(bool verbose);
 
@@ -242,7 +244,7 @@ int uppm_list_the_outdated__packages();
 
 int uppm_show_the_available_packages();
 
-int uppm_git_sync(const char * gitRepositoryDirPath, const char * remoteUrl, const char * remoteRef, const char * remoteTrackingRef, const char * checkoutToBranchName);
+int uppm_git_sync(const char * gitRepositoryDIRPath, const char * remoteUrl, const char * remoteRef, const char * remoteTrackingRef, const char * checkoutToBranchName);
 
 int uppm_generate_url_transform_sample();
 

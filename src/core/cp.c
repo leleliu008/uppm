@@ -1,49 +1,60 @@
-#include <stdio.h>
 #include <errno.h>
+
+#include <fcntl.h>
+#include <unistd.h>
 
 #include "cp.h"
 
 int copy_file(const char * fromFilePath, const char * toFilePath) {
-    FILE * fromFile = fopen(fromFilePath, "rb");
+    int fromFD = open(fromFilePath, O_RDONLY);
 
-    if (fromFile == NULL) {
+    if (fromFD == -1) {
         return -1;
     }
 
-    FILE * toFile = fopen(toFilePath, "wb");
+    int toFD = open(toFilePath, O_CREAT | O_TRUNC | O_WRONLY, 0666);
 
-    if (toFile == NULL) {
+    if (toFD == -1) {
         int err = errno;
-        fclose(fromFile);
+        close(fromFD);
         errno = err;
         return -1;
     }
 
-    unsigned char buff[1024];
+    unsigned char buf[1024];
 
     for (;;) {
-        size_t size = fread(buff, 1, 1024, fromFile);
+        ssize_t readSize = read(fromFD, buf, 1024);
 
-        if (ferror(fromFile)) {
-            fclose(fromFile);
-            fclose(toFile);
-            errno = EIO;
+        if (readSize == -1) {
+            int err = errno;
+            close(fromFD);
+            close(toFD);
+            errno = err;
             return -1;
         }
 
-        if (size > 0U) {
-            if ((fwrite(buff, 1, size, toFile) != size) || ferror(toFile)) {
-                fclose(fromFile);
-                fclose(toFile);
-                errno = EIO;
-                return -1;
-            }
+        if (readSize == 0) {
+            close(fromFD);
+            close(toFD);
+            return 0;
         }
 
-        if (feof(fromFile)) {
-            fclose(fromFile);
-            fclose(toFile);
-            return 0;
+        ssize_t writeSize = write(toFD, buf, readSize);
+
+        if (writeSize != -1) {
+            int err = errno;
+            close(fromFD);
+            close(toFD);
+            errno = err;
+            return -1;
+        }
+
+        if (writeSize != readSize) {
+            close(fromFD);
+            close(toFD);
+            errno = EIO;
+            return -1;
         }
     }
 }

@@ -8,11 +8,11 @@
 
 #include "uppm.h"
 
-static int uppm_list_dirs(const char * installedDir, size_t installedDirLength, const char * sub) {
-    DIR * dir = opendir(installedDir);
+static int uppm_list_dirs(const char * installedDIR, size_t installedDIRLength, const char * sub) {
+    DIR * dir = opendir(installedDIR);
 
     if (dir == NULL) {
-        perror(installedDir);
+        perror(installedDIR);
         return UPPM_ERROR;
     }
 
@@ -28,7 +28,7 @@ static int uppm_list_dirs(const char * installedDir, size_t installedDirLength, 
                 closedir(dir);
                 break;
             } else {
-                perror(installedDir);
+                perror(installedDIR);
                 closedir(dir);
                 return UPPM_ERROR;
             }
@@ -40,24 +40,24 @@ static int uppm_list_dirs(const char * installedDir, size_t installedDirLength, 
             continue;
         }
 
-        size_t packageInstalledDirLength = installedDirLength + strlen(dir_entry->d_name) + 2U;
-        char   packageInstalledDir[packageInstalledDirLength];
-        snprintf(packageInstalledDir, packageInstalledDirLength, "%s/%s", installedDir, dir_entry->d_name);
+        size_t packageInstalledDIRLength = installedDIRLength + strlen(dir_entry->d_name) + 2U;
+        char   packageInstalledDIR[packageInstalledDIRLength];
+        snprintf(packageInstalledDIR, packageInstalledDIRLength, "%s/%s", installedDIR, dir_entry->d_name);
 
-        size_t receiptFilePathLength = packageInstalledDirLength + 20U;
+        size_t receiptFilePathLength = packageInstalledDIRLength + 20U;
         char   receiptFilePath[receiptFilePathLength];
-        snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", packageInstalledDir);
+        snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", packageInstalledDIR);
 
         if (stat(receiptFilePath, &st) == 0 && S_ISREG(st.st_mode)) {
             if ((sub == NULL) || (sub[0] == '\0')) {
-                printf("%s\n", packageInstalledDir);
+                printf("%s\n", packageInstalledDIR);
             } else {
-                size_t subDirLength = packageInstalledDirLength + strlen(sub) + 2U;
-                char   subDir[subDirLength];
-                snprintf(subDir, subDirLength, "%s/%s", packageInstalledDir, sub);
+                size_t subDIRLength = packageInstalledDIRLength + strlen(sub) + 2U;
+                char   subDIR[subDIRLength];
+                snprintf(subDIR, subDIRLength, "%s/%s", packageInstalledDIR, sub);
 
-                if (stat(subDir, &st) == 0 && S_ISDIR(st.st_mode)) {
-                    printf("%s\n", subDir);
+                if (stat(subDIR, &st) == 0 && S_ISDIR(st.st_mode)) {
+                    printf("%s\n", subDIR);
                 }
             }
         }
@@ -67,17 +67,17 @@ static int uppm_list_dirs(const char * installedDir, size_t installedDirLength, 
 }
 
 int uppm_env(bool verbose) {
-    char   uppmHomeDir[256];
-    size_t uppmHomeDirLength;
+    char   uppmHomeDIR[256];
+    size_t uppmHomeDIRLength;
 
-    int ret = uppm_home_dir(uppmHomeDir, 256, &uppmHomeDirLength);
+    int ret = uppm_home_dir(uppmHomeDIR, 255, &uppmHomeDIRLength);
 
     if (ret != UPPM_OK) {
         return ret;
     }
 
     printf("uppm.version : %s\n", UPPM_VERSION);
-    printf("uppm.homedir : %s\n", uppmHomeDir);
+    printf("uppm.homedir : %s\n", uppmHomeDIR);
 
     char * selfRealPath = self_realpath();
 
@@ -98,27 +98,27 @@ int uppm_env(bool verbose) {
 
     struct stat st;
 
-    size_t   installedDirLength = uppmHomeDirLength + 11U;
-    char     installedDir[installedDirLength];
-    snprintf(installedDir, installedDirLength, "%s/installed", uppmHomeDir);
+    size_t   installedDIRLength = uppmHomeDIRLength + 11U;
+    char     installedDIR[installedDIRLength];
+    snprintf(installedDIR, installedDIRLength, "%s/installed", uppmHomeDIR);
 
-    if (stat(installedDir, &st) == 0) {
+    if (stat(installedDIR, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {
-            fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", installedDir);
+            fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", installedDIR);
             return UPPM_ERROR;
         }
     } else {
         return UPPM_OK;
     }
 
-    printf("\nbinDirs:\n");
-    uppm_list_dirs(installedDir, installedDirLength, "bin");
+    printf("\nbinDIRs:\n");
+    uppm_list_dirs(installedDIR, installedDIRLength, "bin");
 
-    printf("\nlibDirs:\n");
-    uppm_list_dirs(installedDir, installedDirLength, "lib");
+    printf("\nlibDIRs:\n");
+    uppm_list_dirs(installedDIR, installedDIRLength, "lib");
 
-    printf("\naclocalDirs:\n");
-    uppm_list_dirs(installedDir, installedDirLength, "share/aclocal");
+    printf("\naclocalDIRs:\n");
+    uppm_list_dirs(installedDIR, installedDIRLength, "share/aclocal");
     
     return UPPM_OK;
 }

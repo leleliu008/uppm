@@ -50,21 +50,21 @@ void git_checkout_progress_callback(const char *path, size_t completed_steps, si
 // https://libgit2.org/libgit2/#HEAD/group/credential/git_credential_ssh_key_new
 // https://libgit2.org/libgit2/#HEAD/group/callback/git_credential_acquire_cb
 int git_credential_acquire_callback(git_credential **credential, const char *url, const char *username_from_url, unsigned int allowed_types, void *payload) {
-    const char * const userHomeDir = getenv("HOME");
+    const char * const userHomeDIR = getenv("HOME");
 
-    if (userHomeDir == NULL) {
+    if (userHomeDIR == NULL) {
         return 1;
     }
 
-    size_t userHomeDirLength = strlen(userHomeDir);
+    size_t userHomeDIRLength = strlen(userHomeDIR);
 
-    if (userHomeDirLength == 0U) {
+    if (userHomeDIRLength == 0U) {
         return 1;
     }
 
-    size_t   sshPrivateKeyFilePathLength = userHomeDirLength + 20U;
+    size_t   sshPrivateKeyFilePathLength = userHomeDIRLength + 20U;
     char     sshPrivateKeyFilePath[sshPrivateKeyFilePathLength];
-    snprintf(sshPrivateKeyFilePath, sshPrivateKeyFilePathLength, "%s/.ssh/id_rsa", userHomeDir);
+    snprintf(sshPrivateKeyFilePath, sshPrivateKeyFilePathLength, "%s/.ssh/id_rsa", userHomeDIR);
 
     struct stat st;
 
@@ -73,7 +73,7 @@ int git_credential_acquire_callback(git_credential **credential, const char *url
         return 0;
     }
 
-    snprintf(sshPrivateKeyFilePath, sshPrivateKeyFilePathLength, "%s/.ssh/id_ed25519", userHomeDir);
+    snprintf(sshPrivateKeyFilePath, sshPrivateKeyFilePathLength, "%s/.ssh/id_ed25519", userHomeDIR);
 
     if ((stat(sshPrivateKeyFilePath, &st) == 0) && S_ISREG(st.st_mode)) {
         git_credential_ssh_key_new(credential, username_from_url, NULL, sshPrivateKeyFilePath, NULL);
@@ -219,15 +219,15 @@ int uppm_git_sync(const char * repositoryDIR, const char * remoteUrl, const char
 
     if (stat(repositoryDIR, &st) == 0) {
         if (S_ISDIR(st.st_mode)) {
-            bool isAEmptyDir = false;
+            bool isAEmptyDIR = false;
 
-            int ret = check_if_is_a_empty_dir(repositoryDIR, &isAEmptyDir);
+            int ret = check_if_is_a_empty_dir(repositoryDIR, &isAEmptyDIR);
 
             if (ret != UPPM_OK) {
                 return UPPM_ERROR;
             }
 
-            if (isAEmptyDir) {
+            if (isAEmptyDIR) {
                 needInitGitRepo = true;
             } else {
                 needInitGitRepo = false;

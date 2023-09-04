@@ -5,10 +5,10 @@
 #include "uppm.h"
 
 int uppm_formula_repo_lookup(const char * formulaRepoName, UPPMFormulaRepo * * formulaRepoPP) {
-    char   uppmHomeDir[256];
-    size_t uppmHomeDirLength;
+    char   uppmHomeDIR[256];
+    size_t uppmHomeDIRLength;
 
-    int ret = uppm_home_dir(uppmHomeDir, 256, &uppmHomeDirLength);
+    int ret = uppm_home_dir(uppmHomeDIR, 255, &uppmHomeDIRLength);
 
     if (ret != UPPM_OK) {
         return ret;
@@ -16,24 +16,24 @@ int uppm_formula_repo_lookup(const char * formulaRepoName, UPPMFormulaRepo * * f
 
     size_t formulaRepoNameLength = strlen(formulaRepoName);
 
-    size_t formulaRepoDirPathLength = uppmHomeDirLength + formulaRepoNameLength + 10U;
-    char   formulaRepoDirPath[formulaRepoDirPathLength];
-    snprintf(formulaRepoDirPath, formulaRepoDirPathLength, "%s/repos.d/%s", uppmHomeDir, formulaRepoName);
+    size_t formulaRepoDIRPathLength = uppmHomeDIRLength + formulaRepoNameLength + 10U;
+    char   formulaRepoDIRPath[formulaRepoDIRPathLength];
+    snprintf(formulaRepoDIRPath, formulaRepoDIRPathLength, "%s/repos.d/%s", uppmHomeDIR, formulaRepoName);
 
     struct stat st;
 
-    if (stat(formulaRepoDirPath, &st) == 0) {
+    if (stat(formulaRepoDIRPath, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {
-            fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", formulaRepoDirPath);
+            fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", formulaRepoDIRPath);
             return UPPM_ERROR;
         }
     } else {
         return UPPM_ERROR_FORMULA_REPO_NOT_FOUND;
     }
 
-    size_t formulaRepoConfigFilePathLength = formulaRepoDirPathLength + 24U;
+    size_t formulaRepoConfigFilePathLength = formulaRepoDIRPathLength + 24U;
     char   formulaRepoConfigFilePath[formulaRepoConfigFilePathLength];
-    snprintf(formulaRepoConfigFilePath, formulaRepoConfigFilePathLength, "%s/.uppm-formula-repo.yml", formulaRepoDirPath);
+    snprintf(formulaRepoConfigFilePath, formulaRepoConfigFilePathLength, "%s/.uppm-formula-repo.yml", formulaRepoDIRPath);
 
     if (!((stat(formulaRepoConfigFilePath, &st) == 0) && S_ISREG(st.st_mode))) {
         return UPPM_ERROR_FORMULA_REPO_NOT_FOUND;
@@ -54,7 +54,7 @@ int uppm_formula_repo_lookup(const char * formulaRepoName, UPPMFormulaRepo * * f
         return UPPM_ERROR_MEMORY_ALLOCATE;
     }
 
-    formulaRepo->path = strdup(formulaRepoDirPath);
+    formulaRepo->path = strdup(formulaRepoDIRPath);
 
     if (formulaRepo->path == NULL) {
         uppm_formula_repo_free(formulaRepo);

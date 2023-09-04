@@ -72,10 +72,10 @@ int uppm_check_if_the_given_package_is_installed(const char * packageName) {
         return ret;
     }
 
-    char   uppmHomeDir[256];
-    size_t uppmHomeDirLength;
+    char   uppmHomeDIR[256];
+    size_t uppmHomeDIRLength;
 
-    ret = uppm_home_dir(uppmHomeDir, 256, &uppmHomeDirLength);
+    ret = uppm_home_dir(uppmHomeDIR, 255, &uppmHomeDIRLength);
 
     if (ret != UPPM_OK) {
         return ret;
@@ -83,22 +83,22 @@ int uppm_check_if_the_given_package_is_installed(const char * packageName) {
 
     struct stat st;
 
-    size_t packageInstalledDirLength = uppmHomeDirLength + strlen(packageName) + 12U;
-    char   packageInstalledDir[packageInstalledDirLength];
-    snprintf(packageInstalledDir, packageInstalledDirLength, "%s/installed/%s", uppmHomeDir, packageName);
+    size_t   packageInstalledDIRLength = uppmHomeDIRLength + strlen(packageName) + 12U;
+    char     packageInstalledDIR[packageInstalledDIRLength];
+    snprintf(packageInstalledDIR, packageInstalledDIRLength, "%s/installed/%s", uppmHomeDIR, packageName);
 
-    if (stat(packageInstalledDir, &st) == 0) {
+    if (stat(packageInstalledDIR, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {
-            fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", packageInstalledDir);
+            fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", packageInstalledDIR);
             return UPPM_ERROR;
         }
     } else {
         return UPPM_ERROR_PACKAGE_NOT_INSTALLED;
     }
 
-    size_t receiptFilePathLength = uppmHomeDirLength + packageInstalledDirLength + 19U;
-    char   receiptFilePath[receiptFilePathLength];
-    snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", packageInstalledDir);
+    size_t   receiptFilePathLength = uppmHomeDIRLength + packageInstalledDIRLength + 19U;
+    char     receiptFilePath[receiptFilePathLength];
+    snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", packageInstalledDIR);
 
     if (stat(receiptFilePath, &st) == 0) {
         if (S_ISREG(st.st_mode)) {

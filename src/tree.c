@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+
 #include <unistd.h>
 #include <sys/stat.h>
 
@@ -12,28 +13,28 @@ int uppm_tree(const char * packageName, size_t argc, char* argv[]) {
         return ret;
     }
 
-    char   uppmHomeDir[256];
-    size_t uppmHomeDirLength;
+    char   uppmHomeDIR[256];
+    size_t uppmHomeDIRLength;
 
-    ret = uppm_home_dir(uppmHomeDir, 256, &uppmHomeDirLength);
+    ret = uppm_home_dir(uppmHomeDIR, 255, &uppmHomeDIRLength);
 
     if (ret != UPPM_OK) {
         return ret;
     }
 
-    size_t   packageInstalledDirLength = uppmHomeDirLength + strlen(packageName) + 12U;
-    char     packageInstalledDir[packageInstalledDirLength];
-    snprintf(packageInstalledDir, packageInstalledDirLength, "%s/installed/%s", uppmHomeDir, packageName);
+    size_t   packageInstalledDIRLength = uppmHomeDIRLength + strlen(packageName) + 12U;
+    char     packageInstalledDIR[packageInstalledDIRLength];
+    snprintf(packageInstalledDIR, packageInstalledDIRLength, "%s/installed/%s", uppmHomeDIR, packageName);
 
     struct stat st;
 
-    if (stat(packageInstalledDir, &st) != 0) {
+    if (stat(packageInstalledDIR, &st) != 0) {
         return UPPM_ERROR_PACKAGE_NOT_INSTALLED;
     }
 
-    size_t receiptFilePathLength = packageInstalledDirLength + 20U;
-    char   receiptFilePath[receiptFilePathLength];
-    snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", packageInstalledDir);
+    size_t   receiptFilePathLength = packageInstalledDIRLength + 20U;
+    char     receiptFilePath[receiptFilePathLength];
+    snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", packageInstalledDIR);
 
     if (stat(receiptFilePath, &st) != 0 || (!S_ISREG(st.st_mode))) {
         return UPPM_ERROR_PACKAGE_IS_BROKEN;
@@ -51,9 +52,9 @@ int uppm_tree(const char * packageName, size_t argc, char* argv[]) {
         return ret;
     }
 
-    size_t   treeCommandPathLength = uppmHomeDirLength + 25U;
+    size_t   treeCommandPathLength = uppmHomeDIRLength + 25U;
     char     treeCommandPath[treeCommandPathLength];
-    snprintf(treeCommandPath, treeCommandPathLength, "%s/installed/tree/bin/tree", uppmHomeDir);
+    snprintf(treeCommandPath, treeCommandPathLength, "%s/installed/tree/bin/tree", uppmHomeDIR);
 
     size_t n = argc + 5U;
     char*  p[n];
@@ -62,12 +63,12 @@ int uppm_tree(const char * packageName, size_t argc, char* argv[]) {
     p[1] = (char*)"--dirsfirst";
     p[2] = (char*)"-a";
 
-    for (size_t i = 0; i < argc; i++) {
-        p[3+i] = argv[i];
+    for (size_t i = 0U; i < argc; i++) {
+        p[3U + i] = argv[i];
     }
 
-    p[n-2] = packageInstalledDir;
-    p[n-1]   = NULL;
+    p[n - 2U] = packageInstalledDIR;
+    p[n - 1U]   = NULL;
 
     execv(treeCommandPath, p);
 

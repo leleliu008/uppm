@@ -1,13 +1,17 @@
+#include <time.h>
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
-#include <errno.h>
+
+#include <fcntl.h>
 #include <unistd.h>
 #include <sys/stat.h>
+
 #include <jansson.h>
 
 #include "core/log.h"
+
 #include "uppm.h"
 
 static int package_name_callback(const char * packageName, size_t i, const void * key) {
@@ -46,9 +50,9 @@ int uppm_info(const char * packageName, const char * key) {
             return ret;
         }
 
-        FILE * formulaFile = fopen(formulaFilePath, "r");
+        int formulaFD = open(formulaFilePath, O_RDONLY);
 
-        if (formulaFile == NULL) {
+        if (formulaFD == -1) {
             perror(formulaFilePath);
             free(formulaFilePath);
             return UPPM_ERROR;
@@ -64,30 +68,37 @@ int uppm_info(const char * packageName, const char * key) {
             printf("pkgname: %s\n", packageName);
         }
 
-        char   buff[1024];
+        char buf[1024];
 
         for (;;) {
-            size_t size = fread(buff, 1, 1024, formulaFile);
+            ssize_t readSize = read(formulaFD, buf, 1024);
 
-            if (ferror(formulaFile)) {
+            if (readSize == -1) {
                 perror(formulaFilePath);
-                fclose(formulaFile);
+                close(formulaFD);
                 free(formulaFilePath);
                 return UPPM_ERROR;
             }
 
-            if (size > 0) {
-                if (fwrite(buff, 1, size, stdout) != size || ferror(stdout)) {
-                    perror(NULL);
-                    fclose(formulaFile);
-                    free(formulaFilePath);
-                    return UPPM_ERROR;
-                }
+            if (readSize == 0) {
+                close(formulaFD);
+                break;
             }
 
-            if (feof(formulaFile)) {
-                fclose(formulaFile);
-                break;
+            ssize_t writeSize = write(STDOUT_FILENO, buf, readSize);
+
+            if (writeSize == -1) {
+                perror(NULL);
+                close(formulaFD);
+                free(formulaFilePath);
+                return UPPM_ERROR;
+            }
+
+            if (writeSize != readSize) {
+                fprintf(stderr, "not fully written to stdout.\n");
+                close(formulaFD);
+                free(formulaFilePath);
+                return UPPM_ERROR;
             }
         }
 
@@ -154,9 +165,9 @@ int uppm_info(const char * packageName, const char * key) {
             return ret;
         }
 
-        FILE * formulaFile = fopen(formulaFilePath, "r");
+        int formulaFD = open(formulaFilePath, O_RDONLY);
 
-        if (formulaFile == NULL) {
+        if (formulaFD == -1) {
             perror(formulaFilePath);
             free(formulaFilePath);
             return UPPM_ERROR;
@@ -164,31 +175,38 @@ int uppm_info(const char * packageName, const char * key) {
 
         printf("formula: %s\n", formulaFilePath);
 
-        char   buff[1024];
+        char buf[1024];
 
         for (;;) {
-            size_t size = fread(buff, 1, 1024, formulaFile);
+            ssize_t readSize = read(formulaFD, buf, 1024);
 
-            if (ferror(formulaFile)) {
+            if (readSize == -1) {
                 perror(formulaFilePath);
-                fclose(formulaFile);
+                close(formulaFD);
                 free(formulaFilePath);
                 return UPPM_ERROR;
             }
 
-            if (size > 0) {
-                if (fwrite(buff, 1, size, stdout) != size || ferror(stdout)) {
-                    perror(NULL);
-                    fclose(formulaFile);
-                    free(formulaFilePath);
-                    return UPPM_ERROR;
-                }
-            }
-
-            if (feof(formulaFile)) {
-                fclose(formulaFile);
+            if (readSize == 0) {
+                close(formulaFD);
                 free(formulaFilePath);
                 return UPPM_OK;
+            }
+
+            ssize_t writeSize = write(STDOUT_FILENO, buf, readSize);
+
+            if (writeSize == -1) {
+                perror(NULL);
+                close(formulaFD);
+                free(formulaFilePath);
+                return UPPM_ERROR;
+            }
+
+            if (writeSize != readSize) {
+                perror(NULL);
+                close(formulaFD);
+                free(formulaFilePath);
+                return UPPM_ERROR;
             }
         }
     } else if (strcmp(key, "summary") == 0) {
@@ -297,10 +315,10 @@ int uppm_info(const char * packageName, const char * key) {
 
         uppm_formula_free(formula);
     } else if (strcmp(key, "bin-fp") == 0) {
-        char   uppmHomeDir[256];
-        size_t uppmHomeDirLength;
+        char   uppmHomeDIR[256];
+        size_t uppmHomeDIRLength;
 
-        int ret = uppm_home_dir(uppmHomeDir, 256, &uppmHomeDirLength);
+        int ret = uppm_home_dir(uppmHomeDIR, 255, &uppmHomeDIRLength);
 
         if (ret != UPPM_OK) {
             return ret;
@@ -323,7 +341,7 @@ int uppm_info(const char * packageName, const char * key) {
             return ret;
         }
 
-        printf("%s/downloads/%s%s\n", uppmHomeDir, formula->bin_sha, binFileNameExtension);
+        printf("%s/downloads/%s%s\n", uppmHomeDIR, formula->bin_sha, binFileNameExtension);
 
         uppm_formula_free(formula);
     } else if (strcmp(key, "dep-pkg") == 0) {
@@ -355,10 +373,10 @@ int uppm_info(const char * packageName, const char * key) {
 
         uppm_formula_free(formula);
     } else if (strcmp(key, "installed-dir") == 0) {
-        char   uppmHomeDir[256];
-        size_t uppmHomeDirLength;
+        char   uppmHomeDIR[256];
+        size_t uppmHomeDIRLength;
 
-        int ret = uppm_home_dir(uppmHomeDir, 256, &uppmHomeDirLength);
+        int ret = uppm_home_dir(uppmHomeDIR, 255, &uppmHomeDIRLength);
 
         if (ret != UPPM_OK) {
             return ret;
@@ -366,11 +384,11 @@ int uppm_info(const char * packageName, const char * key) {
 
         struct stat st;
 
-        size_t   installedDirLength = uppmHomeDirLength + strlen(packageName) + 12U;
-        char     installedDir[installedDirLength];
-        snprintf(installedDir, installedDirLength, "%s/installed/%s", uppmHomeDir, packageName);
+        size_t   installedDIRLength = uppmHomeDIRLength + strlen(packageName) + 12U;
+        char     installedDIR[installedDIRLength];
+        snprintf(installedDIR, installedDIRLength, "%s/installed/%s", uppmHomeDIR, packageName);
 
-        if (stat(installedDir, &st) == 0) {
+        if (stat(installedDIR, &st) == 0) {
             if (!S_ISDIR(st.st_mode)) {
                 return UPPM_ERROR_PACKAGE_IS_BROKEN;
             }
@@ -378,13 +396,13 @@ int uppm_info(const char * packageName, const char * key) {
             return UPPM_ERROR_PACKAGE_NOT_INSTALLED;
         }
 
-        size_t receiptFilePathLength = installedDirLength + 20U;
+        size_t receiptFilePathLength = installedDIRLength + 20U;
         char   receiptFilePath[receiptFilePathLength];
-        snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", installedDir);
+        snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", installedDIR);
 
         if (stat(receiptFilePath, &st) == 0) {
             if (S_ISREG(st.st_mode)) {
-                printf("%s\n", installedDir);
+                printf("%s\n", installedDIR);
             } else {
                 return UPPM_ERROR_PACKAGE_IS_BROKEN;
             }
@@ -392,10 +410,10 @@ int uppm_info(const char * packageName, const char * key) {
             return UPPM_ERROR_PACKAGE_IS_BROKEN;
         }
     } else if (strcmp(key, "installed-files") == 0) {
-        char   uppmHomeDir[256];
-        size_t uppmHomeDirLength;
+        char   uppmHomeDIR[256];
+        size_t uppmHomeDIRLength;
 
-        int ret = uppm_home_dir(uppmHomeDir, 256, &uppmHomeDirLength);
+        int ret = uppm_home_dir(uppmHomeDIR, 255, &uppmHomeDIRLength);
 
         if (ret != UPPM_OK) {
             return ret;
@@ -403,11 +421,11 @@ int uppm_info(const char * packageName, const char * key) {
 
         struct stat st;
 
-        size_t   installedDirLength = uppmHomeDirLength + strlen(packageName) + 12U;
-        char     installedDir[installedDirLength];
-        snprintf(installedDir, installedDirLength, "%s/installed/%s", uppmHomeDir, packageName);
+        size_t   installedDIRLength = uppmHomeDIRLength + strlen(packageName) + 12U;
+        char     installedDIR[installedDIRLength];
+        snprintf(installedDIR, installedDIRLength, "%s/installed/%s", uppmHomeDIR, packageName);
 
-        if (stat(installedDir, &st) == 0) {
+        if (stat(installedDIR, &st) == 0) {
             if (!S_ISDIR(st.st_mode)) {
                 return UPPM_ERROR_PACKAGE_IS_BROKEN;
             }
@@ -415,58 +433,64 @@ int uppm_info(const char * packageName, const char * key) {
             return UPPM_ERROR_PACKAGE_NOT_INSTALLED;
         }
 
-        size_t receiptFilePathLength = installedDirLength + 20U;
-        char   receiptFilePath[receiptFilePathLength];
-        snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", installedDir);
+        size_t   receiptFilePathLength = installedDIRLength + 20U;
+        char     receiptFilePath[receiptFilePathLength];
+        snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", installedDIR);
 
         if (stat(receiptFilePath, &st) != 0 || (!S_ISREG(st.st_mode))) {
             return UPPM_ERROR_PACKAGE_IS_BROKEN;
         }
 
-        size_t installedManifestFilePathLength = installedDirLength + 20U;
-        char   installedManifestFilePath[installedManifestFilePathLength];
-        snprintf(installedManifestFilePath, installedManifestFilePathLength, "%s/.uppm/manifest.txt", installedDir);
+        size_t   manifestFilePathLength = installedDIRLength + 20U;
+        char     manifestFilePath[manifestFilePathLength];
+        snprintf(manifestFilePath, manifestFilePathLength, "%s/.uppm/manifest.txt", installedDIR);
 
-        if (stat(installedManifestFilePath, &st) != 0 || (!S_ISREG(st.st_mode))) {
+        if (stat(manifestFilePath, &st) != 0 || (!S_ISREG(st.st_mode))) {
             return UPPM_ERROR_PACKAGE_IS_BROKEN;
         }
 
-        FILE * installedManifestFile = fopen(installedManifestFilePath, "r");
+        int manifestFD = open(manifestFilePath, O_RDONLY);
 
-        if (installedManifestFile == NULL) {
-            perror(installedManifestFilePath);
+        if (manifestFD == -1) {
+            perror(manifestFilePath);
             return UPPM_ERROR;
         }
 
-        char   buff[1024];
+        char buf[1024];
 
         for (;;) {
-            size_t size = fread(buff, 1, 1024, installedManifestFile);
+            ssize_t readSize = read(manifestFD, buf, 1024);
 
-            if (ferror(installedManifestFile)) {
-                perror(installedManifestFilePath);
-                fclose(installedManifestFile);
+            if (readSize == -1) {
+                perror(manifestFilePath);
+                close(manifestFD);
                 return UPPM_ERROR;
             }
 
-            if (size > 0) {
-                if (fwrite(buff, 1, size, stdout) != size || ferror(stdout)) {
-                    perror(NULL);
-                    fclose(installedManifestFile);
-                    return UPPM_ERROR;
-                }
+            if (readSize == 0) {
+                close(manifestFD);
+                break;
             }
 
-            if (feof(installedManifestFile)) {
-                fclose(installedManifestFile);
-                break;
+            ssize_t writeSize = write(STDOUT_FILENO, buf, readSize);
+
+            if (writeSize == -1) {
+                perror(manifestFilePath);
+                close(manifestFD);
+                return UPPM_ERROR;
+            }
+
+            if (writeSize != readSize) {
+                fprintf(stderr, "not fully written to stdout.\n");
+                close(manifestFD);
+                return UPPM_ERROR;
             }
         }
     } else if (strcmp(key, "installed-receipt-path") == 0) {
-        char   uppmHomeDir[256];
-        size_t uppmHomeDirLength;
+        char   uppmHomeDIR[256];
+        size_t uppmHomeDIRLength;
 
-        int ret = uppm_home_dir(uppmHomeDir, 256, &uppmHomeDirLength);
+        int ret = uppm_home_dir(uppmHomeDIR, 255, &uppmHomeDIRLength);
 
         if (ret != UPPM_OK) {
             return ret;
@@ -474,11 +498,11 @@ int uppm_info(const char * packageName, const char * key) {
 
         struct stat st;
 
-        size_t   installedDirLength = uppmHomeDirLength + strlen(packageName) + 12U;
-        char     installedDir[installedDirLength];
-        snprintf(installedDir, installedDirLength, "%s/installed/%s", uppmHomeDir, packageName);
+        size_t   installedDIRLength = uppmHomeDIRLength + strlen(packageName) + 12U;
+        char     installedDIR[installedDIRLength];
+        snprintf(installedDIR, installedDIRLength, "%s/installed/%s", uppmHomeDIR, packageName);
 
-        if (stat(installedDir, &st) == 0) {
+        if (stat(installedDIR, &st) == 0) {
             if (!S_ISDIR(st.st_mode)) {
                 return UPPM_ERROR_PACKAGE_IS_BROKEN;
             }
@@ -486,9 +510,9 @@ int uppm_info(const char * packageName, const char * key) {
             return UPPM_ERROR_PACKAGE_NOT_INSTALLED;
         }
 
-        size_t receiptFilePathLength = installedDirLength + 20U;
+        size_t receiptFilePathLength = installedDIRLength + 20U;
         char   receiptFilePath[receiptFilePathLength];
-        snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", installedDir);
+        snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", installedDIR);
 
         if (stat(receiptFilePath, &st) == 0) {
             if (S_ISREG(st.st_mode)) {
@@ -500,10 +524,10 @@ int uppm_info(const char * packageName, const char * key) {
             return UPPM_ERROR_PACKAGE_IS_BROKEN;
         }
     } else if (strcmp(key, "installed-receipt-yaml") == 0) {
-        char   uppmHomeDir[256];
-        size_t uppmHomeDirLength;
+        char   uppmHomeDIR[256];
+        size_t uppmHomeDIRLength;
 
-        int ret = uppm_home_dir(uppmHomeDir, 256, &uppmHomeDirLength);
+        int ret = uppm_home_dir(uppmHomeDIR, 255, &uppmHomeDIRLength);
 
         if (ret != UPPM_OK) {
             return ret;
@@ -511,11 +535,11 @@ int uppm_info(const char * packageName, const char * key) {
 
         struct stat st;
 
-        size_t   installedDirLength = uppmHomeDirLength + strlen(packageName) + 12U;
-        char     installedDir[installedDirLength];
-        snprintf(installedDir, installedDirLength, "%s/installed/%s", uppmHomeDir, packageName);
+        size_t   installedDIRLength = uppmHomeDIRLength + strlen(packageName) + 12U;
+        char     installedDIR[installedDIRLength];
+        snprintf(installedDIR, installedDIRLength, "%s/installed/%s", uppmHomeDIR, packageName);
 
-        if (stat(installedDir, &st) == 0) {
+        if (stat(installedDIR, &st) == 0) {
             if (!S_ISDIR(st.st_mode)) {
                 return UPPM_ERROR_PACKAGE_IS_BROKEN;
             }
@@ -523,43 +547,49 @@ int uppm_info(const char * packageName, const char * key) {
             return UPPM_ERROR_PACKAGE_NOT_INSTALLED;
         }
 
-        size_t receiptFilePathLength = installedDirLength + 20U;
-        char   receiptFilePath[receiptFilePathLength];
-        snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", installedDir);
+        size_t   receiptFilePathLength = installedDIRLength + 20U;
+        char     receiptFilePath[receiptFilePathLength];
+        snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", installedDIR);
 
         if (stat(receiptFilePath, &st) != 0 || (!S_ISREG(st.st_mode))) {
             return UPPM_ERROR_PACKAGE_IS_BROKEN;
         }
 
-        FILE * receiptFile = fopen(receiptFilePath, "r");
+        int receiptFD = open(receiptFilePath, O_RDONLY);
 
-        if (receiptFile == NULL) {
+        if (receiptFD == -1) {
             perror(receiptFilePath);
             return UPPM_ERROR;
         }
 
-        char   buff[1024];
+        char buf[1024];
 
         for (;;) {
-            size_t size = fread(buff, 1, 1024, receiptFile);
+            ssize_t readSize = read(receiptFD, buf, 1024);
 
-            if (ferror(receiptFile)) {
+            if (readSize == -1) {
                 perror(receiptFilePath);
-                fclose(receiptFile);
+                close(receiptFD);
                 return UPPM_ERROR;
             }
 
-            if (size > 0) {
-                if (fwrite(buff, 1, size, stdout) != size || ferror(stdout)) {
-                    perror(NULL);
-                    fclose(receiptFile);
-                    return UPPM_ERROR;
-                }
+            if (readSize == 0) {
+                close(receiptFD);
+                return UPPM_OK;
             }
 
-            if (feof(receiptFile)) {
-                fclose(receiptFile);
-                break;
+            ssize_t writeSize = write(STDOUT_FILENO, buf, readSize);
+
+            if (writeSize == -1) {
+                perror(NULL);
+                close(receiptFD);
+                return UPPM_ERROR;
+            }
+
+            if (writeSize != readSize) {
+                perror(NULL);
+                close(receiptFD);
+                return UPPM_ERROR;
             }
         }
     } else if (strcmp(key, "installed-receipt-json") == 0) {

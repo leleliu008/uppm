@@ -1,10 +1,13 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <fcntl.h>
+#include <unistd.h>
+
 #include "uppm.h"
 
-int uppm_formula_repo_config_write(const char * formulaRepoDirPath, const char * formulaRepoUrl, const char * branchName, int pinned, int enabled, const char * timestamp_created, const char * timestamp_updated) {
-    if (formulaRepoDirPath == NULL) {
+int uppm_formula_repo_config_write(const char * formulaRepoDIRPath, const char * formulaRepoUrl, const char * branchName, int pinned, int enabled, const char * timestamp_created, const char * timestamp_updated) {
+    if (formulaRepoDIRPath == NULL) {
         return UPPM_ERROR_ARG_IS_NULL;
     }
 
@@ -20,29 +23,37 @@ int uppm_formula_repo_config_write(const char * formulaRepoDirPath, const char *
         timestamp_updated = "";
     }
 
-    size_t strLength = strlen(formulaRepoUrl) + strlen(branchName) + strlen(timestamp_created) + strlen(timestamp_updated) + 75U;
-    char   str[strLength + 1U];
+    size_t   strLength = strlen(formulaRepoUrl) + strlen(branchName) + strlen(timestamp_created) + strlen(timestamp_updated) + 75U;
+    char     str[strLength + 1U];
     snprintf(str, strLength + 1U, "url: %s\nbranch: %s\npinned: %1d\nenabled: %1d\ntimestamp-created: %s\ntimestamp-updated: %s\n", formulaRepoUrl, branchName, pinned, enabled, timestamp_created, timestamp_updated);
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    size_t formulaRepoConfigFilePathLength = strlen(formulaRepoDirPath) + 24U;
-    char   formulaRepoConfigFilePath[formulaRepoConfigFilePathLength];
-    snprintf(formulaRepoConfigFilePath, formulaRepoConfigFilePathLength, "%s/.uppm-formula-repo.yml", formulaRepoDirPath);
+    size_t   formulaRepoConfigFilePathLength = strlen(formulaRepoDIRPath) + 24U;
+    char     formulaRepoConfigFilePath[formulaRepoConfigFilePathLength];
+    snprintf(formulaRepoConfigFilePath, formulaRepoConfigFilePathLength, "%s/.uppm-formula-repo.yml", formulaRepoDIRPath);
 
-    FILE * file = fopen(formulaRepoConfigFilePath, "w");
+    int fd = open(formulaRepoConfigFilePath, O_CREAT | O_TRUNC | O_WRONLY);
 
-    if (file == NULL) {
+    if (fd == -1) {
         perror(formulaRepoConfigFilePath);
         return UPPM_ERROR;
     }
 
-    if (fwrite(str, 1, strLength, file) != strLength || ferror(file)) {
+    ssize_t writeSize = write(fd, str, strLength);
+
+    if (writeSize == -1) {
         perror(formulaRepoConfigFilePath);
-        fclose(file);
+        close(fd);
         return UPPM_ERROR;
     }
 
-    fclose(file);
-    return UPPM_OK;
+    close(fd);
+
+    if ((size_t)writeSize == strLength) {
+        return UPPM_OK;
+    } else {
+        fprintf(stderr, "not fully written to %s\n", formulaRepoConfigFilePath);
+        return UPPM_ERROR;
+    }
 }

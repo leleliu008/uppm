@@ -959,7 +959,7 @@ int uppm_main(int argc, char* argv[]) {
             fprintf(stderr, "Usage: %s integrate <zsh|bash|fish>\n", argv[0]);
             return UPPM_ERROR_ARG_IS_NULL;
         } else if (strcmp(argv[2], "zsh") == 0) {
-            char * outputDirPath = NULL;
+            char * outputDIRPath = NULL;
 
             for (int i = 3; i < argc; i++) {
                 if (strncmp(argv[i], "--output-dir=", 13) == 0) {
@@ -967,7 +967,7 @@ int uppm_main(int argc, char* argv[]) {
                         fprintf(stderr, "--output-dir=VALUE, VALUE should be a non-empty string.\n");
                         return UPPM_ERROR_ARG_IS_INVALID;
                     } else {
-                        outputDirPath = &argv[i][13];
+                        outputDIRPath = &argv[i][13];
                     }
                 } else if (strcmp(argv[i], "-v") == 0) {
                     verbose = true;
@@ -977,7 +977,7 @@ int uppm_main(int argc, char* argv[]) {
                 }
             }
 
-            return uppm_integrate_zsh_completion (outputDirPath, verbose);
+            return uppm_integrate_zsh_completion (outputDIRPath, verbose);
         } else if (strcmp(argv[2], "bash") == 0) {
             return uppm_integrate_bash_completion(NULL, verbose);
         } else if (strcmp(argv[2], "fish") == 0) {
