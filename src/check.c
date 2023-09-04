@@ -72,7 +72,7 @@ int uppm_check_if_the_given_package_is_installed(const char * packageName) {
         return ret;
     }
 
-    char   uppmHomeDIR[256];
+    char   uppmHomeDIR[256] = {0};
     size_t uppmHomeDIRLength;
 
     ret = uppm_home_dir(uppmHomeDIR, 255, &uppmHomeDIRLength);

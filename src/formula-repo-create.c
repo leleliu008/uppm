@@ -37,7 +37,7 @@ int uppm_formula_repo_create(const char * formulaRepoName, const char * formulaR
 
     ///////////////////////////////////////////////////////////////////////////////////////
 
-    char   uppmHomeDIR[256];
+    char   uppmHomeDIR[256] = {0};
     size_t uppmHomeDIRLength;
 
     int ret = uppm_home_dir(uppmHomeDIR, 255, &uppmHomeDIRLength);

@@ -13,7 +13,7 @@ int uppm_tree(const char * packageName, size_t argc, char* argv[]) {
         return ret;
     }
 
-    char   uppmHomeDIR[256];
+    char   uppmHomeDIR[256] = {0};
     size_t uppmHomeDIRLength;
 
     ret = uppm_home_dir(uppmHomeDIR, 255, &uppmHomeDIRLength);

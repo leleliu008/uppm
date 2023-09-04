@@ -68,7 +68,7 @@ static int mkdir_p(const char * dir, bool verbose) {
 }
 
 int uppm_integrate_zsh_completion(const char * outputDIR, bool verbose) {
-    char   uppmHomeDIR[256];
+    char   uppmHomeDIR[256] = {0};
     size_t uppmHomeDIRLength;
 
     int ret = uppm_home_dir(uppmHomeDIR, 255, &uppmHomeDIRLength);

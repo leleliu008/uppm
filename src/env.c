@@ -67,7 +67,7 @@ static int uppm_list_dirs(const char * installedDIR, size_t installedDIRLength, 
 }
 
 int uppm_env(bool verbose) {
-    char   uppmHomeDIR[256];
+    char   uppmHomeDIR[256] = {0};
     size_t uppmHomeDIRLength;
 
     int ret = uppm_home_dir(uppmHomeDIR, 255, &uppmHomeDIRLength);

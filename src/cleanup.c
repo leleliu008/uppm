@@ -1,11 +1,9 @@
+#include <errno.h>
 #include <stdio.h>
 #include <string.h>
 
-#include <errno.h>
 #include <dirent.h>
-
 #include <unistd.h>
-
 #include <sys/stat.h>
 
 #include "core/rm-r.h"
@@ -13,7 +11,7 @@
 #include "uppm.h"
 
 static int uppm_cleanup_downloads(bool verbose) {
-    char   uppmHomeDIR[256];
+    char   uppmHomeDIR[256] = {0};
     size_t uppmHomeDIRLength;
 
     int ret = uppm_home_dir(uppmHomeDIR, 255, &uppmHomeDIRLength);
@@ -95,7 +93,7 @@ static int uppm_cleanup_downloads(bool verbose) {
 }
 
 static int uppm_cleanup_installed(bool verbose) {
-    char   uppmHomeDIR[256];
+    char   uppmHomeDIR[256] = {0};
     size_t uppmHomeDIRLength;
 
     int ret = uppm_home_dir(uppmHomeDIR, 255, &uppmHomeDIRLength);

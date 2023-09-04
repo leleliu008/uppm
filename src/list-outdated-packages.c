@@ -8,7 +8,7 @@
 #include "uppm.h"
 
 int uppm_list_the_outdated__packages() {
-    char   uppmHomeDIR[256];
+    char   uppmHomeDIR[256] = {0};
     size_t uppmHomeDIRLength;
 
     int ret = uppm_home_dir(uppmHomeDIR, 255, &uppmHomeDIRLength);

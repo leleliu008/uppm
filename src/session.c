@@ -10,7 +10,7 @@
 #include "uppm.h"
 
 int uppm_session_dir(char buf[], size_t bufSize, size_t * outSize) {
-    char   uppmHomeDIR[256];
+    char   uppmHomeDIR[256] = {0};
     size_t uppmHomeDIRLength;
 
     int ret = uppm_home_dir(uppmHomeDIR, 255, &uppmHomeDIRLength);
