@@ -33,7 +33,7 @@ int uppm_formula_repo_config_write(const char * formulaRepoDIRPath, const char *
     char     formulaRepoConfigFilePath[formulaRepoConfigFilePathLength];
     snprintf(formulaRepoConfigFilePath, formulaRepoConfigFilePathLength, "%s/.uppm-formula-repo.yml", formulaRepoDIRPath);
 
-    int fd = open(formulaRepoConfigFilePath, O_CREAT | O_TRUNC | O_WRONLY);
+    int fd = open(formulaRepoConfigFilePath, O_CREAT | O_TRUNC | O_WRONLY, 0666);
 
     if (fd == -1) {
         perror(formulaRepoConfigFilePath);
