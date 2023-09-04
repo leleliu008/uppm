@@ -161,54 +161,12 @@ int uppm_info(const char * packageName, const char * key) {
 
         ret = uppm_formula_locate(packageName, &formulaFilePath);
 
-        if (ret != UPPM_OK) {
-            return ret;
-        }
-
-        int formulaFD = open(formulaFilePath, O_RDONLY);
-
-        if (formulaFD == -1) {
-            perror(formulaFilePath);
+        if (ret == UPPM_OK) {
+            printf("%s\n", formulaFilePath);
             free(formulaFilePath);
-            return UPPM_ERROR;
         }
 
-        printf("formula: %s\n", formulaFilePath);
-
-        char buf[1024];
-
-        for (;;) {
-            ssize_t readSize = read(formulaFD, buf, 1024);
-
-            if (readSize == -1) {
-                perror(formulaFilePath);
-                close(formulaFD);
-                free(formulaFilePath);
-                return UPPM_ERROR;
-            }
-
-            if (readSize == 0) {
-                close(formulaFD);
-                free(formulaFilePath);
-                return UPPM_OK;
-            }
-
-            ssize_t writeSize = write(STDOUT_FILENO, buf, readSize);
-
-            if (writeSize == -1) {
-                perror(NULL);
-                close(formulaFD);
-                free(formulaFilePath);
-                return UPPM_ERROR;
-            }
-
-            if (writeSize != readSize) {
-                perror(NULL);
-                close(formulaFD);
-                free(formulaFilePath);
-                return UPPM_ERROR;
-            }
-        }
+        return ret;
     } else if (strcmp(key, "summary") == 0) {
         UPPMFormula * formula = NULL;
 

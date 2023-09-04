@@ -79,7 +79,7 @@ jobs:
       - run:  ./output/bin/uppm tree unzip -L 3
 
       - run: |
-          sed -i '/^version: /c version: 6.0.28' $(./output/bin/uppm info unzip formula | head -n 1 | cut -d ' ' -f2)
+          sed -i '/^version: /c version: 6.0.28' $(./output/bin/uppm info unzip formula)
 
       - run:  ./output/bin/uppm ls-available
       - run:  ./output/bin/uppm ls-installed

@@ -105,7 +105,7 @@ jobs:
       - run:  $VALGRIND ./output/bin/uppm info      tree installed-version
 
       - run: |
-          sed -i '/^version: /c version: 2.0.3' $(./output/bin/uppm info tree formula | head -n 1 | cut -d ' ' -f2)
+          sed -i '/^version: /c version: 2.0.3' $(./output/bin/uppm info tree formula)
 
       - run:  $VALGRIND ./output/bin/uppm ls-available
       - run:  $VALGRIND ./output/bin/uppm ls-installed
