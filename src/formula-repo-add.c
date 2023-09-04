@@ -1,10 +1,11 @@
+#include <time.h>
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
-#include <unistd.h>
+
 #include <fcntl.h>
+#include <unistd.h>
 #include <sys/stat.h>
 
 #include "core/rm-r.h"
@@ -60,7 +61,7 @@ int uppm_formula_repo_add(const char * formulaRepoName, const char * formulaRepo
 
     if (stat(formulaRepoDIR, &st) == 0) {
         if (S_ISDIR(st.st_mode)) {
-            LOG_ERROR2("formula repo '%s' already exist.", formulaRepoName);
+            fprintf(stderr, "formula repo '%s' already exist.", formulaRepoName);
             return UPPM_ERROR_FORMULA_REPO_HAS_EXIST;
         } else {
             fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", formulaRepoDIR);

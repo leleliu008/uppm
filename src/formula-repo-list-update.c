@@ -2,6 +2,7 @@
 #include <string.h>
 
 #include "core/sysinfo.h"
+
 #include "uppm.h"
 
 int uppm_formula_repo_list_update() {
@@ -12,7 +13,7 @@ int uppm_formula_repo_list_update() {
     if (ret == UPPM_OK) {
         bool officalCoreIsThere = false;
 
-        for (size_t i = 0; i < formulaRepoList->size; i++) {
+        for (size_t i = 0U; i < formulaRepoList->size; i++) {
             UPPMFormulaRepo * formulaRepo = formulaRepoList->repos[i];
 
             if (strcmp(formulaRepo->name, "offical-core") == 0) {
