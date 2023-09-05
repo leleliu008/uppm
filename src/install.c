@@ -22,7 +22,7 @@
 
 extern int record_installed_files(const char * packageInstalledRootDIRPath);
 
-int uppm_install(const char * packageName, bool verbose) {
+int uppm_install(const char * packageName, bool verbose, bool force) {
     UPPMFormula * formula = NULL;
 
     int ret = uppm_formula_lookup(packageName, &formula);
@@ -52,7 +52,7 @@ int uppm_install(const char * packageName, bool verbose) {
         }
 
         for (size_t i = 0; i < depPackageNameArrayListSize; i++) {
-            ret = uppm_install(depPackageNameArrayList[i], verbose);
+            ret = uppm_install(depPackageNameArrayList[i], verbose, force);
 
             if (ret != UPPM_OK) {
                 uppm_formula_free(formula);
@@ -72,17 +72,19 @@ int uppm_install(const char * packageName, bool verbose) {
         return ret;
     }
 
-    ret = uppm_check_if_the_given_package_is_installed(packageName);
+    if (!force) {
+        ret = uppm_check_if_the_given_package_is_installed(packageName);
 
-    if (ret == UPPM_OK) {
-        uppm_formula_free(formula);
-        fprintf(stderr, "package [%s] already has been installed.\n", packageName);
-        return UPPM_OK;
-    }
+        if (ret == UPPM_OK) {
+            uppm_formula_free(formula);
+            fprintf(stderr, "package [%s] already has been installed.\n", packageName);
+            return UPPM_OK;
+        }
 
-    if (ret != UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
-        uppm_formula_free(formula);
-        return ret;
+        if (ret != UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
+            uppm_formula_free(formula);
+            return ret;
+        }
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -109,9 +111,11 @@ int uppm_install(const char * packageName, bool verbose) {
         return UPPM_ERROR;
     }
 
-    printf("%d: ts = %lu\n", pid, ts);
-    printf("%d: sessionID = %s\n", pid, sessionID);
-    printf("%d: bin_sha   = %s\n", pid, formula->bin_sha);
+    if (verbose) {
+        printf("%d: ts = %lu\n", pid, ts);
+        printf("%d: sessionID = %s\n", pid, sessionID);
+        printf("%d: bin_sha   = %s\n", pid, formula->bin_sha);
+    }
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -493,22 +497,39 @@ int uppm_install(const char * packageName, bool verbose) {
         return UPPM_ERROR;
     }
 
-    if (symlink(sessionID, packageName) == 0) {
-        fprintf(stderr, "%s package was successfully installed.\n", packageName);
-        return UPPM_OK;
-    } else {
-        if (errno == EEXIST) {
-            fprintf(stderr, "due to %s package already have been installed by another process, this installation will be discarded.\n", packageName);
-
-            if (rm_r  (packageInstalledDIR, verbose) != 0) {
-                perror(packageInstalledDIR);
+    if (lstat(packageName, &st) == 0) {
+        if (S_ISDIR(st.st_mode)) {
+            if (rm_r  (packageName, verbose) != 0) {
+                perror(packageName);
                 return UPPM_ERROR;
-            } else {
-                return UPPM_OK;
             }
         } else {
-            perror(packageInstalledDIR);
+            fprintf(stderr, "'%s/%s\n' was expected to be a directory, but it was not.\n", packageInstalledRootDIR, packageName);
             return UPPM_ERROR;
+        }
+    }
+
+    for (;;) {
+        if (rename(sessionID, packageName) == 0) {
+            fprintf(stderr, "%s package was successfully installed.\n", packageName);
+            return UPPM_OK;
+        } else {
+            if (errno == EEXIST) {
+                if (lstat(packageName, &st) == 0) {
+                    if (S_ISDIR(st.st_mode)) {
+                        if (rm_r  (packageName, verbose) != 0) {
+                            perror(packageName);
+                            return UPPM_ERROR;
+                        }
+                    } else {
+                        fprintf(stderr, "'%s/%s\n' was expected to be a directory, but it was not.\n", packageInstalledRootDIR, packageName);
+                        return UPPM_ERROR;
+                    }
+                }
+            } else {
+                perror(packageInstalledDIR);
+                return UPPM_ERROR;
+            }
         }
     }
 }

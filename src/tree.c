@@ -43,7 +43,7 @@ int uppm_tree(const char * packageName, size_t argc, char* argv[]) {
     ret = uppm_check_if_the_given_package_is_installed("tree");
 
     if (ret == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
-        ret = uppm_install("tree", false);
+        ret = uppm_install("tree", false, true);
 
         if (ret != UPPM_OK) {
             return ret;

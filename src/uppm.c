@@ -444,7 +444,7 @@ int uppm_main(int argc, char* argv[]) {
         for (int i = 0; i < packageNameIndexArraySize; i++) {
             char * packageName = argv[packageNameIndexArray[i]];
 
-            int ret = uppm_install(packageName, verbose);
+            int ret = uppm_install(packageName, verbose, false);
 
             if (ret == UPPM_ERROR_ARG_IS_NULL) {
                 fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> is unspecified.\n", argv[0], argv[1]);

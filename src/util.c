@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include <unistd.h>
 
 #include <openssl/evp.h>
@@ -12,12 +13,18 @@
 #include "core/base64.h"
 #include "core/exe.h"
 #include "core/log.h"
+
 #include "uppm.h"
 
 //invoked as 'uppm util <CMD> [ARGUMENTS]'
 int uppm_util(int argc, char* argv[]) {
     if (argv[2] == NULL) {
-        fprintf(stderr, "Usage: %s %s <COMMAND> , <COMMAND> is not given.\n", argv[0], argv[1]);
+        fprintf(stderr, "Usage: %s %s <COMMAND> , <COMMAND> is unspecified.\n", argv[0], argv[1]);
+        return UPPM_ERROR_ARG_IS_NULL;
+    }
+
+    if (argv[2][0] == '\0') {
+        fprintf(stderr, "Usage: %s %s <COMMAND> , <COMMAND> should be a non-empty string.\n", argv[0], argv[1]);
         return UPPM_ERROR_ARG_IS_NULL;
     }
 
@@ -26,42 +33,49 @@ int uppm_util(int argc, char* argv[]) {
             unsigned char inputBuf[1024];
 
             for (;;) {
-                size_t readSizeInBytes = fread(inputBuf, 1, 1024, stdin);
+                ssize_t readSizeInBytes = read(STDIN_FILENO, inputBuf, 1024);
 
-                if (ferror(stdin)) {
+                if (readSizeInBytes == -1) {
+                    perror(NULL);
                     return UPPM_ERROR;
                 }
 
-                if (readSizeInBytes > 0) {
-                    size_t outputBufSizeInBytes = readSizeInBytes << 1;
-                    char   outputBuf[outputBufSizeInBytes];
-
-                    if (base16_encode(outputBuf, inputBuf, readSizeInBytes, true) != 0) {
-                        perror(NULL);
-                        return UPPM_ERROR;
-                    }
-
-                    if (fwrite(outputBuf, 1, outputBufSizeInBytes, stdout) != outputBufSizeInBytes || ferror(stdout)) {
-                        return UPPM_ERROR;
-                    }
-                }
-
-                if (feof(stdin)) {
+                if (readSizeInBytes == 0) {
                     if (isatty(STDOUT_FILENO)) {
                         printf("\n");
                     }
 
                     return UPPM_OK;
                 }
+
+                size_t outputBufSizeInBytes = readSizeInBytes << 1;
+                char   outputBuf[outputBufSizeInBytes];
+
+                if (base16_encode(outputBuf, inputBuf, readSizeInBytes, true) != 0) {
+                    perror(NULL);
+                    return UPPM_ERROR;
+                }
+
+                ssize_t writeSizeInBytes = write(STDOUT_FILENO, outputBuf, outputBufSizeInBytes);
+
+                if (writeSizeInBytes == -1) {
+                    perror(NULL);
+                    return UPPM_ERROR;
+                }
+
+                if ((size_t)writeSizeInBytes != outputBufSizeInBytes) {
+                    fprintf(stderr, "not fully written to stdout.\n");
+                    return UPPM_ERROR;
+                }
             }
         } else {
-            unsigned char * inputBuf = (unsigned char *)argv[3];
-            size_t          inputBufSizeInBytes = strlen(argv[3]);
-
-            if (inputBufSizeInBytes == 0) {
-                fprintf(stderr, "Usage: %s %s %s <STR> , <STR> should be non-empty.\n", argv[0], argv[1], argv[2]);
+            if (argv[3][0] == '\0') {
+                fprintf(stderr, "Usage: %s %s %s <STR> , <STR> should be a non-empty string.\n", argv[0], argv[1], argv[2]);
                 return UPPM_ERROR_ARG_IS_NULL;
             }
+
+            unsigned char * inputBuf = (unsigned char *)argv[3];
+            size_t          inputBufSizeInBytes = strlen(argv[3]);
 
             size_t outputBufSizeInBytes = inputBufSizeInBytes << 1;
             char   outputBuf[outputBufSizeInBytes];
@@ -70,7 +84,15 @@ int uppm_util(int argc, char* argv[]) {
                 return UPPM_ERROR;
             }
 
-            if (fwrite(outputBuf, 1, outputBufSizeInBytes, stdout) != outputBufSizeInBytes || ferror(stdout)) {
+            ssize_t writeSizeInBytes = write(STDOUT_FILENO, outputBuf, outputBufSizeInBytes);
+
+            if (writeSizeInBytes == -1) {
+                perror(NULL);
+                return UPPM_ERROR;
+            }
+
+            if ((size_t)writeSizeInBytes != outputBufSizeInBytes) {
+                fprintf(stderr, "not fully written to stdout.\n");
                 return UPPM_ERROR;
             }
 
@@ -84,19 +106,19 @@ int uppm_util(int argc, char* argv[]) {
 
     if (strcmp(argv[2], "base16-decode") == 0) {
         if (argv[3] == NULL) {
-            fprintf(stderr, "Usage: %s %s %s <BASE16-DECODED-STR> , <BASE16-DECODED-STR> is not given.\n", argv[0], argv[1], argv[2]);
+            fprintf(stderr, "Usage: %s %s %s <BASE16-ENCODED-STR> , <BASE16-ENCODED-STR> is unspecified.\n", argv[0], argv[1], argv[2]);
+            return UPPM_ERROR_ARG_IS_NULL;
+        }
+
+        if (argv[3][0] == '\0') {
+            fprintf(stderr, "Usage: %s %s %s <BASE16-ENCODED-STR> , <BASE16-ENCODED-STR> should be non-empty.\n", argv[0], argv[1], argv[2]);
             return UPPM_ERROR_ARG_IS_NULL;
         }
 
         size_t inputBufSizeInBytes = strlen(argv[3]);
 
-        if (inputBufSizeInBytes == 0) {
-            fprintf(stderr, "Usage: %s %s %s <BASE16-DECODED-STR> , <BASE16-DECODED-STR> should be non-empty.\n", argv[0], argv[1], argv[2]);
-            return UPPM_ERROR_ARG_IS_NULL;
-        }
-
         if ((inputBufSizeInBytes & 1) != 0) {
-            fprintf(stderr, "Usage: %s %s %s <BASE16-DECODED-STR> , <BASE16-DECODED-STR> length should be an even number.\n", argv[0], argv[1], argv[2]);
+            fprintf(stderr, "Usage: %s %s %s <BASE16-ENCODED-STR> , <BASE16-ENCODED-STR> length should be an even number.\n", argv[0], argv[1], argv[2]);
             return UPPM_ERROR_ARG_IS_INVALID;
         }
 
@@ -104,7 +126,15 @@ int uppm_util(int argc, char* argv[]) {
         unsigned char outputBuf[outputBufSizeInBytes];
 
         if (base16_decode(outputBuf, argv[3], inputBufSizeInBytes) == 0) {
-            if (fwrite(outputBuf, 1, outputBufSizeInBytes, stdout) != outputBufSizeInBytes || ferror(stdout)) {
+            ssize_t writeSizeInBytes = write(STDOUT_FILENO, outputBuf, outputBufSizeInBytes);
+
+            if (writeSizeInBytes == -1) {
+                perror(NULL);
+                return UPPM_ERROR;
+            }
+
+            if ((size_t)writeSizeInBytes != outputBufSizeInBytes) {
+                fprintf(stderr, "not fully written to stdout.\n");
                 return UPPM_ERROR;
             }
 
@@ -129,44 +159,51 @@ int uppm_util(int argc, char* argv[]) {
             unsigned char inputBuf[1023];
 
             for (;;) {
-                size_t readSizeInBytes = fread(inputBuf, 1, 1023, stdin);
+                ssize_t readSizeInBytes = read(STDIN_FILENO, inputBuf, 1023);
 
-                if (ferror(stdin)) {
+                if (readSizeInBytes == -1) {
+                    perror(NULL);
                     return UPPM_ERROR;
                 }
 
-                if (readSizeInBytes > 0) {
-                    unsigned int  x = (readSizeInBytes % 3) == 0 ? 0 : 1;
-                    unsigned int  outputBufSizeInBytes = (readSizeInBytes / 3 + x) << 2;
-                    unsigned char outputBuf[outputBufSizeInBytes];
-
-                    int ret = EVP_EncodeBlock(outputBuf, inputBuf, readSizeInBytes);
-
-                    if (ret < 0) {
-                        return ret;
-                    }
-
-                    if (fwrite(outputBuf, 1, outputBufSizeInBytes, stdout) != outputBufSizeInBytes || ferror(stdout)) {
-                        return UPPM_ERROR;
-                    }
-                }
-
-                if (feof(stdin)) {
+                if (readSizeInBytes == 0) {
                     if (isatty(STDOUT_FILENO)) {
                         printf("\n");
                     }
 
                     return UPPM_OK;
                 }
+
+                unsigned int  x = (readSizeInBytes % 3) == 0 ? 0 : 1;
+                unsigned int  outputBufSizeInBytes = (readSizeInBytes / 3 + x) << 2;
+                unsigned char outputBuf[outputBufSizeInBytes];
+
+                int ret = EVP_EncodeBlock(outputBuf, inputBuf, readSizeInBytes);
+
+                if (ret < 0) {
+                    return ret;
+                }
+
+                ssize_t writeSizeInBytes = write(STDOUT_FILENO, outputBuf, outputBufSizeInBytes);
+
+                if (writeSizeInBytes == -1) {
+                    perror(NULL);
+                    return UPPM_ERROR;
+                }
+
+                if ((size_t)writeSizeInBytes != outputBufSizeInBytes) {
+                    fprintf(stderr, "not fully written to stdout.\n");
+                    return UPPM_ERROR;
+                }
             }
         } else {
-            unsigned char * inputBuf = (unsigned char *)argv[3];
-            unsigned int    inputBufSizeInBytes = strlen(argv[3]);
-
-            if (inputBufSizeInBytes == 0) {
-                fprintf(stderr, "Usage: %s %s %s <STR> , <STR> should be non-empty.\n", argv[0], argv[1], argv[2]);
+            if (argv[3][0] == '\0') {
+                fprintf(stderr, "Usage: %s %s %s <STR> , <STR> should be a non-empty string.\n", argv[0], argv[1], argv[2]);
                 return UPPM_ERROR_ARG_IS_NULL;
             }
+
+            unsigned char * inputBuf = (unsigned char *)argv[3];
+            unsigned int    inputBufSizeInBytes = strlen(argv[3]);
 
             unsigned int  x = (inputBufSizeInBytes % 3) == 0 ? 0 : 1;
             unsigned int  outputBufSizeInBytes = (inputBufSizeInBytes / 3 + x) << 2;
@@ -178,7 +215,15 @@ int uppm_util(int argc, char* argv[]) {
                 return ret;
             }
 
-            if (fwrite(outputBuf, 1, outputBufSizeInBytes, stdout) != outputBufSizeInBytes || ferror(stdout)) {
+            ssize_t writeSizeInBytes = write(STDOUT_FILENO, outputBuf, outputBufSizeInBytes);
+
+            if (writeSizeInBytes == -1) {
+                perror(NULL);
+                return UPPM_ERROR;
+            }
+
+            if ((size_t)writeSizeInBytes != outputBufSizeInBytes) {
+                fprintf(stderr, "not fully written to stdout.\n");
                 return UPPM_ERROR;
             }
 
@@ -192,47 +237,54 @@ int uppm_util(int argc, char* argv[]) {
 
     if (strcmp(argv[2], "base64-decode") == 0) {
         if (argv[3] == NULL) {
-            unsigned char inputBuf[1024];
+            unsigned char readBuf[1024];
 
             for (;;) {
-                size_t readSizeInBytes = fread(inputBuf, 1, 1024, stdin);
+                ssize_t readSizeInBytes = read(STDIN_FILENO, readBuf, 1024);
 
-                if (ferror(stdin)) {
+                if (readSizeInBytes == -1) {
+                    perror(NULL);
                     return UPPM_ERROR;
                 }
 
-                if (readSizeInBytes > 0) {
-                    unsigned int  outputBufSizeInBytes = (readSizeInBytes >> 2) * 3;
-                    unsigned char outputBuf[outputBufSizeInBytes];
-
-                    // EVP_DecodeBlock() returns the length of the data decoded or -1 on error.
-                    int n = EVP_DecodeBlock(outputBuf, inputBuf, readSizeInBytes);
-
-                    if (n < 0) {
-                        return UPPM_ERROR_ARG_IS_INVALID;
-                    }
-
-                    if (fwrite(outputBuf, 1, n, stdout) != (size_t)n || ferror(stdout)) {
-                        return UPPM_ERROR;
-                    }
-                }
-
-                if (feof(stdin)) {
+                if (readSizeInBytes == 0) {
                     if (isatty(STDOUT_FILENO)) {
                         printf("\n");
                     }
 
                     return UPPM_OK;
                 }
+
+                unsigned int  outputBufSizeInBytes = (readSizeInBytes >> 2) * 3;
+                unsigned char outputBuf[outputBufSizeInBytes];
+
+                // EVP_DecodeBlock() returns the length of the data decoded or -1 on error.
+                int n = EVP_DecodeBlock(outputBuf, readBuf, readSizeInBytes);
+
+                if (n < 0) {
+                    return UPPM_ERROR_ARG_IS_INVALID;
+                }
+
+                ssize_t writeSizeInBytes = write(STDOUT_FILENO, outputBuf, outputBufSizeInBytes);
+
+                if (writeSizeInBytes == -1) {
+                    perror(NULL);
+                    return UPPM_ERROR;
+                }
+
+                if ((size_t)writeSizeInBytes != outputBufSizeInBytes) {
+                    fprintf(stderr, "not fully written to stdout.\n");
+                    return UPPM_ERROR;
+                }
             }
         } else {
-            unsigned char * inputBuf = (unsigned char *)argv[3];
-            unsigned int    inputBufSizeInBytes = strlen(argv[3]);
-
-            if (inputBufSizeInBytes == 0) {
-                fprintf(stderr, "Usage: %s %s %s <BASE64-DECODED-STR> , <BASE64-DECODED-STR> should be non-empty.\n", argv[0], argv[1], argv[2]);
+            if (argv[3][0] == '\0') {
+                fprintf(stderr, "Usage: %s %s %s <BASE64-ENCODED-STR> , <BASE64-ENCODED-STR> should be a non-empty string.\n", argv[0], argv[1], argv[2]);
                 return UPPM_ERROR_ARG_IS_NULL;
             }
+
+            unsigned char * inputBuf = (unsigned char *)argv[3];
+            unsigned int    inputBufSizeInBytes = strlen(argv[3]);
 
             unsigned int  outputBufSizeInBytes = (inputBufSizeInBytes >> 2) * 3;
             unsigned char outputBuf[outputBufSizeInBytes];
@@ -244,7 +296,15 @@ int uppm_util(int argc, char* argv[]) {
                 return UPPM_ERROR_ARG_IS_INVALID;
             }
 
-            if (fwrite(outputBuf, 1, n, stdout) != (size_t)n || ferror(stdout)) {
+            ssize_t writeSizeInBytes = write(STDOUT_FILENO, outputBuf, outputBufSizeInBytes);
+
+            if (writeSizeInBytes == -1) {
+                perror(NULL);
+                return UPPM_ERROR;
+            }
+
+            if ((size_t)writeSizeInBytes != outputBufSizeInBytes) {
+                fprintf(stderr, "not fully written to stdout.\n");
                 return UPPM_ERROR;
             }
 
@@ -258,29 +318,27 @@ int uppm_util(int argc, char* argv[]) {
 
     if (strcmp(argv[2], "sha256sum") == 0) {
         if (argv[3] == NULL || strcmp(argv[3], "-") == 0) {
-            char outputBuf[65];
-            outputBuf[64] = '\0';
+            char outputBuf[65] = {0};
 
-            if (sha256sum_of_stream(outputBuf, stdin) != 0) {
-                perror(NULL);
-                return UPPM_ERROR;
-            } else {
+            if (sha256sum_of_stream(outputBuf, stdin) == 0) {
                 printf("%s\n", outputBuf);
                 return UPPM_OK;
+            } else {
+                perror(NULL);
+                return UPPM_ERROR;
             }
         } else if (strcmp(argv[3], "-h") == 0 || strcmp(argv[3], "--help") == 0) {
             fprintf(stderr, "Usage: %s %s %s [FILEPATH]\n", argv[0], argv[1], argv[2]);
             return UPPM_OK;
         } else {
-            char outputBuf[65];
-            outputBuf[64] = '\0';
+            char outputBuf[65] = {0};
 
-            if (sha256sum_of_file(outputBuf, argv[3]) != 0) {
-                perror(argv[3]);
-                return UPPM_ERROR;
-            } else {
+            if (sha256sum_of_file(outputBuf, argv[3]) == 0) {
                 printf("%s\n", outputBuf);
                 return UPPM_OK;
+            } else {
+                perror(argv[3]);
+                return UPPM_ERROR;
             }
         }
     }
@@ -326,7 +384,12 @@ int uppm_util(int argc, char* argv[]) {
 
     if (strcmp(argv[2], "which") == 0) {
         if (argv[3] == NULL) {
-            fprintf(stderr, "USAGE: %s %s %s <COMMAND-NAME> [-a]\n", argv[0], argv[1], argv[2]);
+            fprintf(stderr, "USAGE: %s %s %s <COMMAND-NAME> , <COMMAND-NAME> is unspecified.\n", argv[0], argv[1], argv[2]);
+            return 1;
+        }
+
+        if (argv[3][0] == '\0') {
+            fprintf(stderr, "USAGE: %s %s %s <COMMAND-NAME> , <COMMAND-NAME> should be a non-empty string.\n", argv[0], argv[1], argv[2]);
             return 1;
         }
 

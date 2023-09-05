@@ -1,6 +1,7 @@
+#include <errno.h>
 #include <stdio.h>
 #include <string.h>
-#include <errno.h>
+
 #include <dirent.h>
 #include <sys/stat.h>
 
@@ -60,7 +61,7 @@ int uppm_list_the_installed_packages() {
         snprintf(packageInstalledDIR, packageInstalledDIRLength, "%s/%s", uppmInstalledDIR, dir_entry->d_name);
 
         if (lstat(packageInstalledDIR, &st) == 0) {
-            if (!S_ISLNK(st.st_mode)) {
+            if (!S_ISDIR(st.st_mode)) {
                 continue;
             }
         } else {

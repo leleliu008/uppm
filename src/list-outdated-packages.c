@@ -60,7 +60,7 @@ int uppm_list_the_outdated__packages() {
         snprintf(packageInstalledDIR, packageInstalledDIRLength, "%s/%s", uppmInstalledDIR, dir_entry->d_name);
 
         if (lstat(packageInstalledDIR, &st) == 0) {
-            if (!S_ISLNK(st.st_mode)) {
+            if (!S_ISDIR(st.st_mode)) {
                 continue;
             }
         } else {

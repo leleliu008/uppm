@@ -214,7 +214,7 @@ int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, con
 
 int uppm_fetch(const char * packageName, bool verbose);
 
-int uppm_install(const char * packageName, bool verbose);
+int uppm_install(const char * packageName, bool verbose, bool force);
 
 int uppm_reinstall(const char * packageName, bool verbose);
 

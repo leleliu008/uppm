@@ -149,7 +149,7 @@ char* self_realpath() {
     char buf[PATH_MAX] = {0};
 
     //  readlink() does not append a terminating null byte to buf.
-    if (readlink("/proc/self/exe", buf, PATH_MAX - 1U) < 0) {
+    if (readlink("/proc/self/exe", buf, PATH_MAX - 1U) == -1) {
         return NULL;
     }
 

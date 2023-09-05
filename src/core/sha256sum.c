@@ -1,6 +1,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
+
 #include <openssl/sha.h>
 
 #include "sha256sum.h"
@@ -8,7 +9,7 @@
 static inline void tohex(char buf[65], const unsigned char * sha256Bytes) {
     const char * const table = "0123456789abcdef";
 
-    for (size_t i = 0; i < SHA256_DIGEST_LENGTH; i++) {
+    for (size_t i = 0U; i < SHA256_DIGEST_LENGTH; i++) {
         size_t j = i << 1;
         buf[j]      = table[sha256Bytes[i] >> 4];
         buf[j + 1U] = table[sha256Bytes[i] & 0x0F];
@@ -49,9 +50,7 @@ int sha256sum_of_string(char outputBuffer[65], const char * str) {
         return -1;
     }
 
-    size_t strLength = strlen(str);
-
-    if (strLength == 0U) {
+    if (str[0] == '\0') {
         errno = EINVAL;
         return -1;
     }
@@ -60,7 +59,7 @@ int sha256sum_of_string(char outputBuffer[65], const char * str) {
  
     SHA256_CTX ctx;
     SHA256_Init(&ctx);
-    SHA256_Update(&ctx, str, strLength);
+    SHA256_Update(&ctx, str, strlen(str));
     SHA256_Final(sha256Bytes, &ctx);
 
     tohex(outputBuffer, sha256Bytes);

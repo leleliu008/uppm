@@ -29,6 +29,10 @@ int uppm_help() {
         COLOR_OFF
         "    show basic information about your current running operation system.\n\n"
         COLOR_GREEN
+        "uppm upgrade-self [-v]\n"
+        COLOR_OFF
+        "    upgrade this software.\n\n"
+        COLOR_GREEN
         "uppm integrate zsh [-v] [--output-dir=<DIR>]\n"
         COLOR_OFF
         "    download a zsh completion script file to a approprivate location.\n\n"
@@ -220,6 +224,8 @@ int uppm_help() {
         "    show build information about this software.\n\n"
         "uppm sysinfo\n"
         "    show basic information about your current running operation system.\n\n"
+        "uppm upgrade-self [-v]\n"
+        "    upgrade this software.\n\n"
         "uppm integrate zsh [-v] [--output-dir=<DIR>]\n"
         "    download a zsh completion script file to a approprivate location.\n\n"
         "    to apply this feature, you may need to run the command 'autoload -U compinit && compinit' in your terminal (your current running shell must be zsh).\n\n"
