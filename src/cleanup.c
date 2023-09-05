@@ -180,11 +180,6 @@ static int uppm_cleanup_installed(bool verbose) {
 }
 
 int uppm_cleanup(bool verbose) {
-    int ret = uppm_cleanup_downloads(verbose);
-
-    if (ret != UPPM_OK) {
-        return ret;
-    }
-
-    return uppm_cleanup_installed(verbose);
+    (void)verbose;
+    return 0;
 }
