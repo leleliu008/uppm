@@ -1,24 +1,24 @@
-#include <errno.h>
+#include <stdio.h>
 
 #include <fcntl.h>
 #include <unistd.h>
 
-#include "cp.h"
+#include "uppm.h"
 
-int copy_file(const char * fromFilePath, const char * toFilePath) {
+int uppm_copy_file(const char * fromFilePath, const char * toFilePath) {
     int fromFD = open(fromFilePath, O_RDONLY);
 
     if (fromFD == -1) {
-        return -1;
+        perror(fromFilePath);
+        return UPPM_ERROR;
     }
 
     int toFD = open(toFilePath, O_CREAT | O_TRUNC | O_WRONLY, 0666);
 
     if (toFD == -1) {
-        int err = errno;
+        perror(toFilePath);
         close(fromFD);
-        errno = err;
-        return -1;
+        return UPPM_ERROR;
     }
 
     unsigned char buf[1024];
@@ -27,11 +27,10 @@ int copy_file(const char * fromFilePath, const char * toFilePath) {
         ssize_t readSize = read(fromFD, buf, 1024);
 
         if (readSize == -1) {
-            int err = errno;
+            perror(fromFilePath);
             close(fromFD);
             close(toFD);
-            errno = err;
-            return -1;
+            return UPPM_ERROR;
         }
 
         if (readSize == 0) {
@@ -43,18 +42,17 @@ int copy_file(const char * fromFilePath, const char * toFilePath) {
         ssize_t writeSize = write(toFD, buf, readSize);
 
         if (writeSize != -1) {
-            int err = errno;
+            perror(toFilePath);
             close(fromFD);
             close(toFD);
-            errno = err;
-            return -1;
+            return UPPM_ERROR;
         }
 
         if (writeSize != readSize) {
             close(fromFD);
             close(toFD);
-            errno = EIO;
-            return -1;
+            fprintf(stderr, "not fully written to %s\n", toFilePath);
+            return UPPM_ERROR;
         }
     }
 }

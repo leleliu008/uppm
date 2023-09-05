@@ -166,12 +166,20 @@ int uppm_integrate_zsh_completion(const char * outputDIR, bool verbose) {
     snprintf(outputFilePath, outputFilePathLength, "%s/_uppm", outputDIR);
 
     if (rename(tmpFilePath, outputFilePath) != 0) {
-        perror(outputFilePath);
-        return UPPM_ERROR;
-    } else {
-        printf("zsh completion script for uppm has been written to %s\n", outputFilePath);
-        return UPPM_OK;
+        if (errno == EXDEV) {
+            ret = uppm_copy_file(tmpFilePath, outputFilePath);
+
+            if (ret != UPPM_OK) {
+                return ret;
+            }
+        } else {
+            perror(outputFilePath);
+            return UPPM_ERROR;
+        }
     }
+
+    printf("zsh completion script for uppm has been written to %s\n", outputFilePath);
+    return UPPM_OK;
 }
 
 int uppm_integrate_bash_completion(const char * outputDIR, bool verbose) {

@@ -16,7 +16,6 @@
 #include "core/sysinfo.h"
 #include "core/rm-r.h"
 #include "core/tar.h"
-#include "core/cp.h"
 
 #include "uppm.h"
 
@@ -297,7 +296,7 @@ int uppm_install(const char * packageName, bool verbose, bool force) {
         char     toFilePath[toFilePathLength];
         snprintf(toFilePath, toFilePathLength, "%s/%s", packageInstalledDIR, sessionID);
 
-        ret = copy_file(binFilePath, toFilePath);
+        ret = uppm_copy_file(binFilePath, toFilePath);
 
         if (ret != UPPM_OK) {
             return ret;

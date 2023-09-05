@@ -123,8 +123,16 @@ int uppm_generate_url_transform_sample() {
     snprintf(outFilePath, outFilePathLength, "%s/url-transform.sample", uppmHomeDIR);
 
     if (rename(tmpFilePath, outFilePath) != 0) {
-        perror(tmpFilePath);
-        return UPPM_ERROR;
+        if (errno == EXDEV) {
+            ret = uppm_copy_file(tmpFilePath, outFilePath);
+
+            if (ret != UPPM_OK) {
+                return ret;
+            }
+        } else {
+            perror(tmpFilePath);
+            return UPPM_ERROR;
+        }
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////

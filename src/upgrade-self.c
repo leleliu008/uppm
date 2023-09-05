@@ -273,9 +273,28 @@ finalize:
     }
 
     if (rename(upgradableExecutableFilePath, selfRealPath) != 0) {
-        perror(selfRealPath);
-        ret = UPPM_ERROR;
-        goto finally;
+        if (errno == EXDEV) {
+            if (unlink(selfRealPath) != 0) {
+                perror(selfRealPath);
+                ret = UPPM_ERROR;
+                goto finally;
+            }
+
+            ret = uppm_copy_file(upgradableExecutableFilePath, selfRealPath);
+
+            if (ret != UPPM_OK) {
+                goto finally;
+            }
+
+            if (chmod(selfRealPath, S_IRWXU) != 0) {
+                perror(selfRealPath);
+                ret = UPPM_ERROR;
+            }
+        } else {
+            perror(selfRealPath);
+            ret = UPPM_ERROR;
+            goto finally;
+        }
     }
 
 finally:

@@ -396,8 +396,12 @@ finalize:
             if (rename(boxFilePath, outputFilePath) == 0) {
                 return UPPM_OK;
             } else {
-                perror(outputFilePath);
-                return UPPM_ERROR;
+                if (errno == EXDEV) {
+                    return uppm_copy_file(boxFilePath, outputFilePath);
+                } else {
+                    perror(outputFilePath);
+                    return UPPM_ERROR;
+                }
             }
         }
     } 
@@ -436,8 +440,12 @@ finalize:
         if (rename(dotFilePath, outputFilePath) == 0) {
             return UPPM_OK;
         } else {
-            perror(outputFilePath);
-            return UPPM_ERROR;
+            if (errno == EXDEV) {
+                return uppm_copy_file(dotFilePath, outputFilePath);
+            } else {
+                perror(outputFilePath);
+                return UPPM_ERROR;
+            }
         }
     }
 
@@ -477,8 +485,12 @@ finalize:
             if (rename(tmpFilePath, outputFilePath) == 0) {
                 return UPPM_OK;
             } else {
-                perror(outputFilePath);
-                return UPPM_ERROR;
+                if (errno == EXDEV) {
+                    return uppm_copy_file(tmpFilePath, outputFilePath);
+                } else {
+                    perror(outputFilePath);
+                    return UPPM_ERROR;
+                }
             }
         }
 
