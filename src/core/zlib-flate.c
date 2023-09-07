@@ -1,6 +1,7 @@
-#include <zlib.h>
 #include <stdio.h>
 #include <string.h>
+
+#include <zlib.h>
 
 #include "zlib-flate.h"
 

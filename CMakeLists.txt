@@ -110,6 +110,12 @@ if (OPENSSL_VERSION)
     list(GET OPENSSL_VERSION_PART_LIST 0 OPENSSL_VERSION_MAJOR)
 
     message(STATUS "OPENSSL_VERSION_MAJOR = ${OPENSSL_VERSION_MAJOR}")
+
+    if (OPENSSL_VERSION_MAJOR STREQUAL 3)
+        set(SHA256SUM_SRC src/openssl/3/sha256sum.c)
+    else()
+        set(SHA256SUM_SRC src/openssl/1/sha256sum.c)
+    endif()
 else()
     message(FATAL "no OPENSSL_VERSION set.")
 endif()
@@ -125,7 +131,7 @@ endif()
 aux_source_directory(src/core CORE_SRCS)
 aux_source_directory(src           SRCS)
 
-add_executable(uppm "${CORE_SRCS};${REGEX_SRC};${SRCS}")
+add_executable(uppm "${CORE_SRCS};${REGEX_SRC};${SHA256SUM_SRC};${SRCS}")
 
 ########################################################################################
 

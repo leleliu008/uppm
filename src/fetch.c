@@ -8,7 +8,7 @@
 #include <unistd.h>
 
 #include "core/http.h"
-#include "core/sha256sum.h"
+#include "sha256sum.h"
 
 #include "uppm.h"
 
@@ -102,7 +102,6 @@ int uppm_fetch(const char * packageName, bool verbose) {
         char actualSHA256SUM[65] = {0};
 
         if (sha256sum_of_file(actualSHA256SUM, filePath) != 0) {
-            perror(filePath);
             uppm_formula_free(formula);
             return UPPM_ERROR;
         }
@@ -125,7 +124,6 @@ int uppm_fetch(const char * packageName, bool verbose) {
     ret = sha256sum_of_string(tmpFileName, tmpStr);
 
     if (ret != 0) {
-        perror(NULL);
         uppm_formula_free(formula);
         return UPPM_ERROR;
     }
@@ -146,7 +144,6 @@ int uppm_fetch(const char * packageName, bool verbose) {
     char actualSHA256SUM[65] = {0};
 
     if (sha256sum_of_file(actualSHA256SUM, tmpFilePath) != 0) {
-        perror(tmpFilePath);
         uppm_formula_free(formula);
         return UPPM_ERROR;
     }

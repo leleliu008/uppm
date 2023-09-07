@@ -12,11 +12,11 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 
-#include "core/sha256sum.h"
 #include "core/sysinfo.h"
 #include "core/rm-r.h"
 #include "core/tar.h"
 
+#include "sha256sum.h"
 #include "uppm.h"
 
 extern int record_installed_files(const char * packageInstalledRootDIRPath);
@@ -105,7 +105,6 @@ int uppm_install(const char * packageName, bool verbose, bool force) {
     ret = sha256sum_of_string(sessionID, tmpStr);
 
     if (ret != 0) {
-        perror(NULL);
         uppm_formula_free(formula);
         return UPPM_ERROR;
     }
@@ -168,7 +167,6 @@ int uppm_install(const char * packageName, bool verbose, bool force) {
             char actualSHA256SUM[65] = {0};
 
             if (sha256sum_of_file(actualSHA256SUM, binFilePath) != 0) {
-                perror(binFilePath);
                 uppm_formula_free(formula);
                 return UPPM_ERROR;
             }
@@ -196,7 +194,6 @@ int uppm_install(const char * packageName, bool verbose, bool force) {
         char actualSHA256SUM[65] = {0};
 
         if (sha256sum_of_file(actualSHA256SUM, tmpFilePath) != 0) {
-            perror(tmpFilePath);
             uppm_formula_free(formula);
             return UPPM_ERROR;
         }

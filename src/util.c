@@ -8,12 +8,12 @@
 #include <openssl/evp.h>
 
 #include "core/zlib-flate.h"
-#include "core/sha256sum.h"
 #include "core/base16.h"
 #include "core/base64.h"
 #include "core/exe.h"
 #include "core/log.h"
 
+#include "sha256sum.h"
 #include "uppm.h"
 
 //invoked as 'uppm util <CMD> [ARGUMENTS]'
@@ -337,7 +337,6 @@ int uppm_util(int argc, char* argv[]) {
                 printf("%s\n", outputBuf);
                 return UPPM_OK;
             } else {
-                perror(argv[3]);
                 return UPPM_ERROR;
             }
         }

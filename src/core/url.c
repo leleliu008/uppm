@@ -8,7 +8,7 @@
 int url_encode(char outputBuf[], size_t * writtenSizeInBytes, unsigned char inputBuf[], size_t inputBufSizeInBytes, bool isToUpper) {
     const char * const table = isToUpper ? "0123456789ABCDEF" : "0123456789abcdef";
 
-    size_t outputLength = 0;
+    size_t outputLength = 0U;
 
     for (size_t i = 0; i < inputBufSizeInBytes; i++) {
         unsigned char byte = inputBuf[i];
@@ -54,13 +54,13 @@ static inline char hex2dec(char c) {
 }
 
 int url_decode(unsigned char outputBuf[], size_t * writtenSizeInBytes, char inputBuf[], size_t inputBufSizeInBytes) {
-    if (inputBufSizeInBytes == 0) {
+    if (inputBufSizeInBytes == 0U) {
         inputBufSizeInBytes = strlen(inputBuf);
     }
 
-    size_t outputLength = 0;
+    size_t outputLength = 0U;
 
-    for (size_t i = 0; i < inputBufSizeInBytes; i++) {
+    for (size_t i = 0U; i < inputBufSizeInBytes; i++) {
         char c = inputBuf[i];
 
         if (c == '%') {

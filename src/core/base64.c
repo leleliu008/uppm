@@ -1,9 +1,10 @@
-#include "base64.h"
-
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
+
 #include <openssl/evp.h>
+
+#include "base64.h"
 
 int base64_encode_of_string(char * * output, size_t * outputSizeInBytes, const char * input, size_t inputSizeInBytes) {
     if (output == NULL) {
