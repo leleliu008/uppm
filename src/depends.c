@@ -400,6 +400,7 @@ finalize:
                     return uppm_copy_file(boxFilePath, outputFilePath);
                 } else {
                     perror(outputFilePath);
+                    printf("errno=%d\n", errno);
                     return UPPM_ERROR;
                 }
             }
