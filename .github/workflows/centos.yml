@@ -36,7 +36,7 @@ jobs:
 
 
 
-      - run:  echo "SSL_CERT_FILE=$HOME/.ppkg/core/etc/ssl/certs/cacert.pem" >> $GITHUB_ENV
+      - run:  echo "SSL_CERT_FILE=$HOME/.ppkg/core/etc/cacert.pem" >> $GITHUB_ENV
 
 
       - run:  ~/.ppkg/installed/uppm/bin/uppm
@@ -137,7 +137,7 @@ jobs:
 
 
 
-      - run:  echo "SSL_CERT_FILE=$HOME/.ppkg/core/etc/ssl/certs/cacert.pem" >> $GITHUB_ENV
+      - run:  echo "SSL_CERT_FILE=$HOME/.ppkg/core/etc/cacert.pem" >> $GITHUB_ENV
 
 
       - run:  ~/.ppkg/installed/uppm/bin/uppm
@@ -244,7 +244,7 @@ jobs:
 
 
 
-      - run:  echo "SSL_CERT_FILE=$HOME/.ppkg/core/etc/ssl/certs/cacert.pem" >> $GITHUB_ENV
+      - run:  echo "SSL_CERT_FILE=$HOME/.ppkg/core/etc/cacert.pem" >> $GITHUB_ENV
 
 
       - run:  ~/.ppkg/installed/uppm/bin/uppm
