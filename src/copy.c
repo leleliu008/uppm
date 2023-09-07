@@ -10,7 +10,6 @@ int uppm_copy_file(const char * fromFilePath, const char * toFilePath) {
 
     if (fromFD == -1) {
         perror(fromFilePath);
-        puts("A=====");
         return UPPM_ERROR;
     }
 
@@ -18,7 +17,6 @@ int uppm_copy_file(const char * fromFilePath, const char * toFilePath) {
 
     if (toFD == -1) {
         perror(toFilePath);
-        puts("B=====");
         close(fromFD);
         return UPPM_ERROR;
     }
@@ -30,7 +28,6 @@ int uppm_copy_file(const char * fromFilePath, const char * toFilePath) {
 
         if (readSize == -1) {
             perror(fromFilePath);
-        puts("C=====");
             close(fromFD);
             close(toFD);
             return UPPM_ERROR;
@@ -44,9 +41,8 @@ int uppm_copy_file(const char * fromFilePath, const char * toFilePath) {
 
         ssize_t writeSize = write(toFD, buf, readSize);
 
-        if (writeSize != -1) {
+        if (writeSize == -1) {
             perror(toFilePath);
-        puts("D=====");
             close(fromFD);
             close(toFD);
             return UPPM_ERROR;

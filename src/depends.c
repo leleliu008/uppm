@@ -396,12 +396,10 @@ finalize:
             if (rename(boxFilePath, outputFilePath) == 0) {
                 return UPPM_OK;
             } else {
-                    printf("====errno=%d\n", errno);
                 if (errno == EXDEV) {
                     return uppm_copy_file(boxFilePath, outputFilePath);
                 } else {
                     perror(outputFilePath);
-                    printf("errno=%d\n", errno);
                     return UPPM_ERROR;
                 }
             }
