@@ -126,7 +126,7 @@ int uppm_install(const char * packageName, bool verbose, bool force) {
 
     if (lstat(downloadDIR, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {
-            fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", downloadDIR);
+            fprintf(stderr, "%s was expected to be a directory, but it was not.\n", downloadDIR);
             return UPPM_ERROR;
         }
     } else {
@@ -224,7 +224,7 @@ int uppm_install(const char * packageName, bool verbose, bool force) {
 
     if (stat(packageInstalledRootDIR, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {
-            fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", packageInstalledRootDIR);
+            fprintf(stderr, "%s was expected to be a directory, but it was not.\n", packageInstalledRootDIR);
             return UPPM_ERROR;
         }
     } else {
@@ -510,18 +510,6 @@ int uppm_install(const char * packageName, bool verbose, bool force) {
     if (chdir (packageInstalledRootDIR) != 0) {
         perror(packageInstalledRootDIR);
         return UPPM_ERROR;
-    }
-
-    if (lstat(packageName, &st) == 0) {
-        if (S_ISDIR(st.st_mode)) {
-            if (rm_r  (packageName, verbose) != 0) {
-                perror(packageName);
-                return UPPM_ERROR;
-            }
-        } else {
-            fprintf(stderr, "'%s/%s\n' was expected to be a directory, but it was not.\n", packageInstalledRootDIR, packageName);
-            return UPPM_ERROR;
-        }
     }
 
     for (;;) {
