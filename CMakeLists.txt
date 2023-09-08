@@ -3,9 +3,11 @@ cmake_minimum_required(VERSION 3.0)
 project(uppm C)
 
 set(PROJECT_VERSION       0.16.0)
-set(PROJECT_VERSION_MAJOR 0)
-set(PROJECT_VERSION_MINOR 16)
-set(PROJECT_VERSION_PATCH 0)
+
+string(REPLACE "." ";" PROJECT_VERSION_PART_LIST ${PROJECT_VERSION})
+list(GET PROJECT_VERSION_PART_LIST 0 PROJECT_VERSION_MAJOR)
+list(GET PROJECT_VERSION_PART_LIST 1 PROJECT_VERSION_MINOR)
+list(GET PROJECT_VERSION_PART_LIST 2 PROJECT_VERSION_PATCH)
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
@@ -24,7 +26,7 @@ if ("${CMAKE_EXE_LINKER_FLAGS}" MATCHES ".*-static.*")
     set(LINK_STATIC_LIBS ON)
 
     if ("${CMAKE_SYSTEM_NAME}" STREQUAL Darwin)
-        message(FATAL "macOS DO NOT support static link the c runtime.")
+        message(FATAL_ERROR "macOS DO NOT support static link the c runtime.")
     endif()
 endif()
 
@@ -117,7 +119,7 @@ if (OPENSSL_VERSION)
         set(SHA256SUM_SRC src/openssl/1/sha256sum.c)
     endif()
 else()
-    message(FATAL "no OPENSSL_VERSION set.")
+    set(SHA256SUM_SRC src/openssl/1/sha256sum.c)
 endif()
 
 ########################################################################################
