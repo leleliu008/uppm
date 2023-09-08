@@ -252,6 +252,8 @@ int uppm_examine_file_extension_from_url(char buf[], size_t maxSize, const char 
 
 int uppm_http_fetch_to_file(const char * url, const char * outputFilePath, bool verbose, bool showProgress);
 
+int uppm_download(const char * url, const char * sha256sum, const char * downloadDIR, const char * unpackDIR, size_t stripComponentsNumber, bool verbose);
+
 int uppm_copy_file(const char * fromFilePath, const char * toFilePath);
 
 #endif

@@ -60,7 +60,7 @@ int uppm_list_the_outdated__packages() {
         snprintf(packageInstalledDIR, packageInstalledDIRLength, "%s/%s", uppmInstalledDIR, dir_entry->d_name);
 
         if (lstat(packageInstalledDIR, &st) == 0) {
-            if (!S_ISDIR(st.st_mode)) {
+            if (!S_ISLNK(st.st_mode)) {
                 continue;
             }
         } else {
@@ -71,7 +71,7 @@ int uppm_list_the_outdated__packages() {
         char     receiptFilePath[receiptFilePathLength];
         snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", packageInstalledDIR);
 
-        if (stat(receiptFilePath, &st) == 0 && S_ISREG(st.st_mode)) {
+        if (lstat(receiptFilePath, &st) == 0 && S_ISREG(st.st_mode)) {
             //printf("%s\n", dir_entry->d_name);
 
             UPPMReceipt * receipt = NULL;

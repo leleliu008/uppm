@@ -13,6 +13,7 @@
 #include <sys/wait.h>
 
 #include "core/sysinfo.h"
+#include "core/self.h"
 #include "core/rm-r.h"
 #include "core/tar.h"
 
@@ -235,38 +236,34 @@ int uppm_install(const char * packageName, bool verbose, bool force) {
         }
     }
 
-    size_t   packageInstalledDIRLength = uppmHomeDIRLength + 76U;
-    char     packageInstalledDIR[packageInstalledDIRLength];
-    snprintf(packageInstalledDIR, packageInstalledDIRLength, "%s/installed/%s", uppmHomeDIR, sessionID);
+    //////////////////////////////////////////////////////////////////////////
 
-    size_t   packageInstalledMetaInfoDIRLength = packageInstalledDIRLength + 6U;
-    char     packageInstalledMetaInfoDIR[packageInstalledMetaInfoDIRLength];
-    snprintf(packageInstalledMetaInfoDIR, packageInstalledMetaInfoDIRLength, "%s/.uppm", packageInstalledDIR);
+    size_t   packageInstalledRealDIRLength = packageInstalledRootDIRLength + 66U;
+    char     packageInstalledRealDIR[packageInstalledRealDIRLength];
+    snprintf(packageInstalledRealDIR, packageInstalledRealDIRLength, "%s/%s", packageInstalledRootDIR, sessionID);
 
-    size_t   receiptFilePathLength = packageInstalledMetaInfoDIRLength + 12U;
-    char     receiptFilePath[receiptFilePathLength];
-    snprintf(receiptFilePath, receiptFilePathLength, "%s/receipt.yml", packageInstalledMetaInfoDIR);
-
-    if (stat(packageInstalledDIR, &st) == 0) {
+    if (lstat(packageInstalledRealDIR, &st) == 0) {
         if (S_ISDIR(st.st_mode)) {
-            if (rm_r(packageInstalledDIR, verbose) != 0) {
+            if (rm_r(packageInstalledRealDIR, verbose) != 0) {
                 uppm_formula_free(formula);
                 return UPPM_ERROR;
             }
         } else {
-            if (unlink(packageInstalledDIR) != 0) {
-                perror(packageInstalledDIR);
+            if (unlink(packageInstalledRealDIR) != 0) {
+                perror(packageInstalledRealDIR);
                 uppm_formula_free(formula);
                 return UPPM_ERROR;
             }
         }
     }
 
-    if (mkdir(packageInstalledDIR, S_IRWXU) != 0) {
-        perror(packageInstalledDIR);
+    if (mkdir(packageInstalledRealDIR, S_IRWXU) != 0) {
+        perror(packageInstalledRealDIR);
         uppm_formula_free(formula);
         return UPPM_ERROR;
     }
+
+    //////////////////////////////////////////////////////////////////////////
 
     if (strcmp(binFileNameExtension, ".zip") == 0 ||
         strcmp(binFileNameExtension, ".tgz") == 0 ||
@@ -275,11 +272,11 @@ int uppm_install(const char * packageName, bool verbose, bool force) {
         strcmp(binFileNameExtension, ".tbz2") == 0) {
 
         if (formula->unpackd == NULL) {
-            ret = tar_extract(packageInstalledDIR, binFilePath, ARCHIVE_EXTRACT_TIME, verbose, 1);
+            ret = tar_extract(packageInstalledRealDIR, binFilePath, ARCHIVE_EXTRACT_TIME, verbose, 1);
         } else {
-            size_t   extractDIRLength = packageInstalledDIRLength + strlen(formula->unpackd) + 1U;
+            size_t   extractDIRLength = packageInstalledRealDIRLength + strlen(formula->unpackd) + 1U;
             char     extractDIR[extractDIRLength];
-            snprintf(extractDIR, extractDIRLength, "%s/%s", packageInstalledDIR, formula->unpackd);
+            snprintf(extractDIR, extractDIRLength, "%s/%s", packageInstalledRealDIR, formula->unpackd);
 
             ret = tar_extract(extractDIR, binFilePath, ARCHIVE_EXTRACT_TIME, verbose, 1);
         }
@@ -289,9 +286,9 @@ int uppm_install(const char * packageName, bool verbose, bool force) {
             return abs(ret) + UPPM_ERROR_ARCHIVE_BASE;
         }
     } else {
-        size_t   toFilePathLength = packageInstalledDIRLength + 66U;
+        size_t   toFilePathLength = packageInstalledRealDIRLength + 66U;
         char     toFilePath[toFilePathLength];
-        snprintf(toFilePath, toFilePathLength, "%s/%s", packageInstalledDIR, sessionID);
+        snprintf(toFilePath, toFilePathLength, "%s/%s", packageInstalledRealDIR, sessionID);
 
         ret = uppm_copy_file(binFilePath, toFilePath);
 
@@ -300,18 +297,27 @@ int uppm_install(const char * packageName, bool verbose, bool force) {
         }
     }
 
-    if (chdir(packageInstalledDIR) != 0) {
-        perror(packageInstalledDIR);
+    if (chdir(packageInstalledRealDIR) != 0) {
+        perror(packageInstalledRealDIR);
         uppm_formula_free(formula);
         return UPPM_ERROR;
     }
 
     if (formula->install != NULL) {
+        char * selfRealPath = self_realpath();
+
+        if (selfRealPath == NULL) {
+            perror(NULL);
+            uppm_formula_free(formula);
+            return UPPM_ERROR;
+        }
+
         SysInfo sysinfo = {0};
 
         if (sysinfo_make(&sysinfo) != 0) {
             perror(NULL);
             uppm_formula_free(formula);
+            free(selfRealPath);
             return UPPM_ERROR;
         }
 
@@ -322,6 +328,10 @@ int uppm_install(const char * packageName, bool verbose, bool force) {
             case 2:  libcName = (char*)"musl";  break;
             default: libcName = (char*)"";
         }
+
+        size_t   packageInstalledLinkDIRLength = packageInstalledRootDIRLength + strlen(packageName) + 2U;
+        char     packageInstalledLinkDIR[packageInstalledLinkDIRLength];
+        snprintf(packageInstalledLinkDIR, packageInstalledLinkDIRLength, "%s/%s", packageInstalledRootDIR, packageName);
 
         size_t   shellCodeLength = strlen(formula->install) + 2048U;
         char     shellCode[shellCodeLength];
@@ -370,7 +380,7 @@ int uppm_install(const char * packageName, bool verbose, bool force) {
                 UPPM_VERSION_MINOR,
                 UPPM_VERSION_PATCH,
                 uppmHomeDIR,
-                "",
+                selfRealPath,
                 formula->summary == NULL ? "" : formula->summary,
                 formula->webpage == NULL ? "" : formula->webpage,
                 formula->version == NULL ? "" : formula->version,
@@ -380,10 +390,11 @@ int uppm_install(const char * packageName, bool verbose, bool force) {
                 binFileName,
                 binFileNameExtension,
                 binFilePath,
-                packageInstalledDIR,
+                packageInstalledLinkDIR,
                 formula->install);
 
         sysinfo_free(sysinfo);
+        free(selfRealPath);
 
         printf("run shell code:\n%s\n", shellCode);
 
@@ -395,7 +406,7 @@ int uppm_install(const char * packageName, bool verbose, bool force) {
             return UPPM_ERROR;
         }
 
-        if (ret != 0) {
+        if (childProcessExitStatusCode != 0) {
             if (WIFEXITED(childProcessExitStatusCode)) {
                 fprintf(stderr, "running shell code exit with status code: %d\n", WEXITSTATUS(childProcessExitStatusCode));
             } else if (WIFSIGNALED(childProcessExitStatusCode)) {
@@ -411,6 +422,10 @@ int uppm_install(const char * packageName, bool verbose, bool force) {
 
     //////////////////////////////////////////////////////////////////////
 
+    size_t   packageInstalledMetaInfoDIRLength = packageInstalledRealDIRLength + 6U;
+    char     packageInstalledMetaInfoDIR[packageInstalledMetaInfoDIRLength];
+    snprintf(packageInstalledMetaInfoDIR, packageInstalledMetaInfoDIRLength, "%s/.uppm", packageInstalledRealDIR);
+
     if (mkdir(packageInstalledMetaInfoDIR, S_IRWXU) != 0) {
         perror(packageInstalledMetaInfoDIR);
         uppm_formula_free(formula);
@@ -419,7 +434,7 @@ int uppm_install(const char * packageName, bool verbose, bool force) {
 
     //////////////////////////////////////////////////////////////////////
 
-    ret = record_installed_files(packageInstalledDIR);
+    ret = record_installed_files(packageInstalledRealDIR);
 
     if (ret != UPPM_OK) {
         uppm_formula_free(formula);
@@ -427,6 +442,10 @@ int uppm_install(const char * packageName, bool verbose, bool force) {
     }
 
     //////////////////////////////////////////////////////////////////////
+
+    size_t   receiptFilePathLength = packageInstalledMetaInfoDIRLength + 12U;
+    char     receiptFilePath[receiptFilePathLength];
+    snprintf(receiptFilePath, receiptFilePathLength, "%s/receipt.yml", packageInstalledMetaInfoDIR);
 
     int receiptFD = open(receiptFilePath, O_CREAT | O_TRUNC | O_WRONLY, 0666);
 
@@ -506,7 +525,7 @@ int uppm_install(const char * packageName, bool verbose, bool force) {
     }
 
     for (;;) {
-        if (rename(sessionID, packageName) == 0) {
+        if (symlink(sessionID, packageName) == 0) {
             fprintf(stderr, "%s package was successfully installed.\n", packageName);
             return UPPM_OK;
         } else {
@@ -518,12 +537,14 @@ int uppm_install(const char * packageName, bool verbose, bool force) {
                             return UPPM_ERROR;
                         }
                     } else {
-                        fprintf(stderr, "'%s/%s\n' was expected to be a directory, but it was not.\n", packageInstalledRootDIR, packageName);
-                        return UPPM_ERROR;
+                        if (unlink(packageName) != 0) {
+                            perror(packageName);
+                            return UPPM_ERROR;
+                        }
                     }
                 }
             } else {
-                perror(packageInstalledDIR);
+                perror(packageInstalledRealDIR);
                 return UPPM_ERROR;
             }
         }

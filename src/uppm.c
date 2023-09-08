@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include <unistd.h>
 #include <sys/stat.h>
 
@@ -1002,6 +1003,77 @@ int uppm_main(int argc, char* argv[]) {
 
     if (strcmp(argv[1], "util") == 0) {
         return uppm_util(argc, argv);
+    }
+
+    if (strcmp(argv[1], "download") == 0) {
+        if (argv[2] == NULL) {
+            fprintf(stderr, "Usage: %s %s <URL> <SHA256SUM> [--output-dir=<DIR> --unpack-dir=<DIR> --strip-components=<N> -v], <URL> is unspecified.\n", argv[0], argv[1]);
+            return UPPM_ERROR_ARG_IS_NULL;
+        }
+
+        if (argv[3] == NULL) {
+            fprintf(stderr, "Usage: %s %s <URL> <SHA256SUM> [--output-dir=<DIR> --unpack-dir=<DIR> --strip-components=<N> -v], <SHA256SUM> is unspecified.\n", argv[0], argv[1]);
+            return UPPM_ERROR_ARG_IS_NULL;
+        }
+
+        const char * outputDIR = NULL;
+        const char * unpackDIR = NULL;
+
+        size_t stripComponents = 1U;
+
+        for (int i = 4; i < argc; i++) {
+            if (strcmp(argv[i], "-v") == 0) {
+                verbose = true;
+            } else if (strncmp(argv[i], "--strip-components=", 19) == 0) {
+                if (argv[i][19] == '\0') {
+                    fprintf(stderr, "--strip-components=<N>, <N> should be a non-empty string.\n");
+                    return UPPM_ERROR_ARG_IS_INVALID;
+                } else {
+                    char * p = &argv[i][19];
+
+                    for (;;) {
+                        char c = p[0];
+
+                        if (c == '\0') {
+                            break;
+                        }
+
+                        if (c < '0') {
+                            fprintf(stderr, "--strip-components=<N>, <N> should be a integer.\n");
+                            return UPPM_ERROR_ARG_IS_INVALID;
+                        }
+
+                        if (c > '9') {
+                            fprintf(stderr, "--strip-components=<N>, <N> should be a integer.\n");
+                            return UPPM_ERROR_ARG_IS_INVALID;
+                        }
+
+                        p++;
+                    }
+
+                    stripComponents = atoi(&argv[i][19]);
+                }
+            } else if (strncmp(argv[i], "--output-dir=", 13) == 0) {
+                if (argv[i][13] == '\0') {
+                    fprintf(stderr, "--output-dir=<DIR>, <DIR> should be a non-empty string.\n");
+                    return UPPM_ERROR_ARG_IS_INVALID;
+                } else {
+                    outputDIR = &argv[i][13];
+                }
+            } else if (strncmp(argv[i], "--unpack-dir=", 13) == 0) {
+                if (argv[i][13] == '\0') {
+                    fprintf(stderr, "--unpack-dir=<DIR>, <DIR> should be a non-empty string.\n");
+                    return UPPM_ERROR_ARG_IS_INVALID;
+                } else {
+                    unpackDIR = &argv[i][13];
+                }
+            } else {
+                fprintf(stderr, "unrecognized option: %s\n", argv[i]);
+                return UPPM_ERROR_ARG_IS_UNKNOWN;
+            }
+        }
+
+        return uppm_download(argv[2], argv[3], outputDIR, unpackDIR, stripComponents, verbose);
     }
 
     LOG_ERROR2("unrecognized action: ", argv[1]);

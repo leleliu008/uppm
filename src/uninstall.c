@@ -24,29 +24,70 @@ int uppm_uninstall(const char * packageName, bool verbose) {
         return ret;
     }
 
-    size_t   packageInstalledDIRLength = uppmHomeDIRLength + strlen(packageName) + 12U;
-    char     packageInstalledDIR[packageInstalledDIRLength];
-    snprintf(packageInstalledDIR, packageInstalledDIRLength, "%s/installed/%s", uppmHomeDIR, packageName);
+    size_t   packageInstalledRootDIRLength = uppmHomeDIRLength + strlen(packageName) + 11U;
+    char     packageInstalledRootDIR[packageInstalledRootDIRLength];
+    snprintf(packageInstalledRootDIR, packageInstalledRootDIRLength, "%s/installed", uppmHomeDIR);
+
+    size_t   packageInstalledLinkDIRLength = packageInstalledRootDIRLength + strlen(packageName) + 2U;
+    char     packageInstalledLinkDIR[packageInstalledLinkDIRLength];
+    snprintf(packageInstalledLinkDIR, packageInstalledLinkDIRLength, "%s/%s", packageInstalledRootDIR, packageName);
 
     struct stat st;
 
-    if (stat(packageInstalledDIR, &st) != 0) {
-        return UPPM_ERROR_PACKAGE_NOT_INSTALLED;
-    }
+    if (lstat(packageInstalledLinkDIR, &st) == 0) {
+        if (S_ISLNK(st.st_mode)) {
+            size_t   receiptFilePathLength = packageInstalledLinkDIRLength + 20U;
+            char     receiptFilePath[receiptFilePathLength];
+            snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", packageInstalledLinkDIR);
 
-    size_t   receiptFilePathLength = packageInstalledDIRLength + 20U;
-    char     receiptFilePath[receiptFilePathLength];
-    snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", packageInstalledDIR);
+            if (lstat(receiptFilePath, &st) == 0 && S_ISREG(st.st_mode)) {
+                char buf[256] = {0};
 
-    if (stat(receiptFilePath, &st) == 0 && S_ISREG(st.st_mode)) {
-        if (rm_r(packageInstalledDIR, verbose) == 0) {
-            return UPPM_OK;
-        } else {
-            perror(packageInstalledDIR);
-            return UPPM_ERROR;
+                ssize_t readSize = readlink(packageInstalledLinkDIR, buf, 255);
+
+                if (readSize == -1) {
+                    perror(packageInstalledLinkDIR);
+                    return UPPM_ERROR;
+                } else if (readSize != 64) {
+                    // package is broken by other tools?
+                    return UPPM_ERROR_PACKAGE_NOT_INSTALLED;
+                }
+
+                size_t   packageInstalledRealDIRLength = packageInstalledRootDIRLength + 66U;
+                char     packageInstalledRealDIR[packageInstalledRealDIRLength];
+                snprintf(packageInstalledRealDIR, packageInstalledRealDIRLength, "%s/%s", packageInstalledRootDIR, buf);
+
+                if (lstat(packageInstalledRealDIR, &st) == 0) {
+                    if (S_ISDIR(st.st_mode)) {
+                        if (unlink(packageInstalledLinkDIR) == 0) {
+                            if (verbose) {
+                                printf("unlink %s\n", packageInstalledLinkDIR);
+                            }
+                        } else {
+                            perror(packageInstalledLinkDIR);
+                            return UPPM_ERROR;
+                        }
+
+                        if (rm_r(packageInstalledRealDIR, verbose) == 0) {
+                            return UPPM_OK;
+                        } else {
+                            perror(packageInstalledRealDIR);
+                            return UPPM_ERROR;
+                        }
+                    } else {
+                        // package is broken by other tools?
+                        return UPPM_ERROR_PACKAGE_NOT_INSTALLED;
+                    }
+                } else {
+                    // package is broken by other tools?
+                    return UPPM_ERROR_PACKAGE_NOT_INSTALLED;
+                }
+            } else {
+                // package is broken. is not installed completely?
+                return UPPM_ERROR_PACKAGE_NOT_INSTALLED;
+            }
         }
     } else {
-        // package is broken. is not installed completely?
         return UPPM_ERROR_PACKAGE_NOT_INSTALLED;
     }
 }
