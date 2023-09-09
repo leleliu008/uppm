@@ -11,11 +11,11 @@ int uppm_examine_file_extension_from_url(char buf[], size_t maxSize, const char 
         return UPPM_ERROR_ARG_IS_NULL;
     }
 
-    if (maxSize == 0) {
+    if (maxSize == 0U) {
         return UPPM_ERROR_ARG_IS_INVALID;
     }
 
-    size_t urlLength = 0;
+    size_t urlLength = 0U;
 
     for (;;) {
         if ((url[urlLength] == '?') || (url[urlLength] == '\0')) {
@@ -27,11 +27,11 @@ int uppm_examine_file_extension_from_url(char buf[], size_t maxSize, const char 
 
     //printf("url=%s\nurlLength=%lu\n", url, urlLength);
 
-    if (urlLength < 3) {
+    if (urlLength < 3U) {
         return UPPM_ERROR_ARG_IS_INVALID;
     }
 
-    size_t lastIndex = urlLength - 1;
+    size_t lastIndex = urlLength - 1U;
 
     if (url[lastIndex] == '.') {
         return UPPM_ERROR_ARG_IS_INVALID;
@@ -45,34 +45,34 @@ int uppm_examine_file_extension_from_url(char buf[], size_t maxSize, const char 
         if (url[i] == '.') {
             p = url + i;
 
-            if (urlLength - i == 3) {
+            if (urlLength - i == 3U) {
                 if (strcmp(p, ".gz") == 0) {
-                    if (urlLength > 7) {
-                        if (strncmp(&url[i - 4], ".tar", 4) == 0) {
-                            strncpy(buf, ".tgz", maxSize > 4 ? 4 : maxSize);
+                    if (urlLength > 7U) {
+                        if (strncmp(&url[i - 4U], ".tar", 4U) == 0) {
+                            strncpy(buf, ".tgz", maxSize > 4U ? 4U : maxSize);
                             return UPPM_OK;
                         }
                     }
                 } else if (strcmp(p, ".xz") == 0) {
-                    if (urlLength > 7) {
-                        if (strncmp(&url[i - 4], ".tar", 4) == 0) {
-                            strncpy(buf, ".txz", maxSize > 4 ? 4 : maxSize);
+                    if (urlLength > 7U) {
+                        if (strncmp(&url[i - 4U], ".tar", 4U) == 0) {
+                            strncpy(buf, ".txz", maxSize > 4U ? 4U : maxSize);
                             return UPPM_OK;
                         }
                     }
                 } else if (strcmp(p, ".lz") == 0) {
-                    if (urlLength > 7) {
-                        if (strncmp(&url[i - 4], ".tar", 4) == 0) {
-                            strncpy(buf, ".tlz", maxSize > 4 ? 4 : maxSize);
+                    if (urlLength > 7U) {
+                        if (strncmp(&url[i - 4], ".tar", 4U) == 0) {
+                            strncpy(buf, ".tlz", maxSize > 4U ? 4U : maxSize);
                             return UPPM_OK;
                         }
                     }
                 }
-            } else if (urlLength - i == 4) {
+            } else if (urlLength - i == 4U) {
                 if (strcmp(p, ".bz2") == 0) {
                     if (urlLength > 8) {
-                        if (strncmp(&url[i - 4], ".tar", 4) == 0) {
-                            strncpy(buf, ".tbz2", maxSize > 5 ? 5 : maxSize);
+                        if (strncmp(&url[i - 4U], ".tar", 4U) == 0) {
+                            strncpy(buf, ".tbz2", maxSize > 5U ? 5U : maxSize);
                             return UPPM_OK;
                         }
                     }

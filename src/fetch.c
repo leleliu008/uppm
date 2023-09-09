@@ -2,10 +2,11 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <stdbool.h>
-#include <sys/stat.h>
+#include <string.h>
+
 #include <unistd.h>
+#include <sys/stat.h>
 
 #include "core/http.h"
 #include "sha256sum.h"
@@ -61,7 +62,7 @@ int uppm_fetch(const char * packageName, bool verbose) {
 
     if (stat(downloadDIR, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {
-            fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", downloadDIR);
+            fprintf(stderr, "%s was expected to be a directory, but it was not.\n", downloadDIR);
             uppm_formula_free(formula);
             return UPPM_ERROR;
         }

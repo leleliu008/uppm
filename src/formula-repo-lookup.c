@@ -24,7 +24,7 @@ int uppm_formula_repo_lookup(const char * formulaRepoName, UPPMFormulaRepo * * f
 
     if (stat(formulaRepoDIRPath, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {
-            fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", formulaRepoDIRPath);
+            fprintf(stderr, "%s was expected to be a directory, but it was not.\n", formulaRepoDIRPath);
             return UPPM_ERROR;
         }
     } else {

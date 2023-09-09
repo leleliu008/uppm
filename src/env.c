@@ -104,7 +104,7 @@ int uppm_env(bool verbose) {
 
     if (stat(installedDIR, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {
-            fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", installedDIR);
+            fprintf(stderr, "%s was expected to be a directory, but it was not.\n", installedDIR);
             return UPPM_ERROR;
         }
     } else {

@@ -31,7 +31,7 @@ int uppm_generate_url_transform_sample() {
 
     if (stat(uppmRunDIR, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {
-            fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", uppmRunDIR);
+            fprintf(stderr, "%s was expected to be a directory, but it was not.\n", uppmRunDIR);
             return UPPM_ERROR;
         }
     } else {
@@ -56,7 +56,7 @@ int uppm_generate_url_transform_sample() {
                 return UPPM_ERROR;
             }
         } else {
-            fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", sessionDIR);
+            fprintf(stderr, "%s was expected to be a directory, but it was not.\n", sessionDIR);
             return UPPM_ERROR;
         }
     } else {

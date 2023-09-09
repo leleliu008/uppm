@@ -59,7 +59,7 @@ int uppm_formula_repo_create(const char * formulaRepoName, const char * formulaR
             LOG_ERROR2("formula repo '%s' already exist.", formulaRepoName);
             return UPPM_ERROR_FORMULA_REPO_HAS_EXIST;
         } else {
-            fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", formulaRepoDIR);
+            fprintf(stderr, "%s was expected to be a directory, but it was not.\n", formulaRepoDIR);
             return UPPM_ERROR;
         }
     }
@@ -72,7 +72,7 @@ int uppm_formula_repo_create(const char * formulaRepoName, const char * formulaR
 
     if (stat(uppmRunDIR, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {
-            fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", uppmRunDIR);
+            fprintf(stderr, "%s was expected to be a directory, but it was not.\n", uppmRunDIR);
             return UPPM_ERROR;
         }
     } else {
@@ -97,7 +97,7 @@ int uppm_formula_repo_create(const char * formulaRepoName, const char * formulaR
                 return UPPM_ERROR;
             }
         } else {
-            fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", sessionDIR);
+            fprintf(stderr, "%s was expected to be a directory, but it was not.\n", sessionDIR);
             return UPPM_ERROR;
         }
     } else {
@@ -173,7 +173,7 @@ int uppm_formula_repo_create(const char * formulaRepoName, const char * formulaR
 
     if (stat(formulaRepoRootDIR, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {
-            fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", formulaRepoRootDIR);
+            fprintf(stderr, "%s was expected to be a directory, but it was not.\n", formulaRepoRootDIR);
             return UPPM_ERROR;
         }
     } else {

@@ -35,7 +35,7 @@ static int mkdir_p(const char * dir, bool verbose) {
             if (buf[0] != '\0') {
                 if (stat(buf, &st) == 0) {
                     if (!S_ISDIR(st.st_mode)) {
-                        fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", buf);
+                        fprintf(stderr, "%s was expected to be a directory, but it was not.\n", buf);
                         return UPPM_ERROR;
                     }
                 } else {
@@ -45,7 +45,7 @@ static int mkdir_p(const char * dir, bool verbose) {
                         if (errno == EEXIST) {
                             if (stat(buf, &st) == 0) {
                                 if (!S_ISDIR(st.st_mode)) {
-                                    fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", buf);
+                                    fprintf(stderr, "%s was expected to be a directory, but it was not.\n", buf);
                                     return UPPM_ERROR;
                                 }
                             }
@@ -87,7 +87,7 @@ int uppm_integrate_zsh_completion(const char * outputDIR, bool verbose) {
 
     if (stat(uppmRunDIR, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {
-            fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", uppmRunDIR);
+            fprintf(stderr, "%s was expected to be a directory, but it was not.\n", uppmRunDIR);
             return UPPM_ERROR;
         }
     } else {
@@ -112,7 +112,7 @@ int uppm_integrate_zsh_completion(const char * outputDIR, bool verbose) {
                 return UPPM_ERROR;
             }
         } else {
-            fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", sessionDIR);
+            fprintf(stderr, "%s was expected to be a directory, but it was not.\n", sessionDIR);
             return UPPM_ERROR;
         }
     } else {

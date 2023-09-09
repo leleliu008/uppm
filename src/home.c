@@ -37,7 +37,7 @@ int uppm_home_dir(char buf[], size_t bufSize, size_t * outSize) {
 
         if (stat(defaultUppmHomeDIR, &st) == 0) {
             if (!S_ISDIR(st.st_mode)) {
-                fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", defaultUppmHomeDIR);
+                fprintf(stderr, "%s was expected to be a directory, but it was not.\n", defaultUppmHomeDIR);
                 return UPPM_ERROR;
             }
         } else {
@@ -66,7 +66,7 @@ int uppm_home_dir(char buf[], size_t bufSize, size_t * outSize) {
 
         if (stat(uppmHomeDIR, &st) == 0) {
             if (!S_ISDIR(st.st_mode)) {
-                fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", uppmHomeDIR);
+                fprintf(stderr, "%s was expected to be a directory, but it was not.\n", uppmHomeDIR);
                 return UPPM_ERROR;
             }
         } else {
