@@ -82,7 +82,7 @@ function _uppm() {
                 formula-edit)
                     _arguments \
                         '1:package-name:_uppm_available_packages' \
-                        '--editor=-[specify editor]'
+                        '--editor=-[specify editor]:editor:{_files -/}'
                     ;;
                 formula-repo-add)
                     _arguments \

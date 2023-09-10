@@ -159,7 +159,7 @@ int uppm_main(int argc, char* argv[]) {
         for (int i = 3; i < argc; i++) {
             if (strcmp(argv[i], "-v") == 0) {
                 verbose = true;
-            } else if (strcmp(argv[i], "--editor=") == 0) {
+            } else if (strncmp(argv[i], "--editor=", 9) == 0) {
                 editor = &argv[i][9];
             } else {
                 LOG_ERROR2("unrecognized argument: ", argv[i]);
