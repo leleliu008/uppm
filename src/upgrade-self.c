@@ -1,6 +1,7 @@
 #include <math.h>
 #include <errno.h>
 #include <string.h>
+
 #include <sys/stat.h>
 
 #include "core/sysinfo.h"

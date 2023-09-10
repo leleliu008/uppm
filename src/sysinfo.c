@@ -1,5 +1,7 @@
 #include <stdio.h>
+
 #include "core/sysinfo.h"
+
 #include "uppm.h"
 
 int uppm_sysinfo() {

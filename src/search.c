@@ -30,9 +30,7 @@ int uppm_search(const char * regPattern) {
         return UPPM_ERROR_ARG_IS_NULL;
     }
 
-    size_t regPatternLength = strlen(regPattern);
-
-    if (regPatternLength == 0U) {
+    if (regPattern[0] == '\0') {
         return UPPM_ERROR_ARG_IS_EMPTY;
     }
 

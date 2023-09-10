@@ -1,9 +1,10 @@
+#include <time.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-#include <time.h>
 
 #include "core/log.h"
+
 #include "uppm.h"
 
 int uppm_formula_repo_sync_(const char * formulaRepoName) {

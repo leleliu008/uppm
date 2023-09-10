@@ -29,14 +29,14 @@ int uppm_http_fetch_to_file(const char * url, const char * outputFilePath, bool 
         }
 
         char   transformedUrl[1025] = {0};
-        size_t transformedUrlLength = 0;
+        size_t transformedUrlLength = 0U;
 
         if (url_transform(urlTransformCommandPath, url, transformedUrl, 1024, &transformedUrlLength, true) != 0) {
             perror(urlTransformCommandPath);
             return UPPM_ERROR;
         }
 
-        if (transformedUrlLength == 0U) {
+        if (transformedUrl[0] == '\0') {
             if (verbose) {
                 fprintf(stderr, "a new url was expected to be output, but it was not.\n");
             }

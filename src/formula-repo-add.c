@@ -17,9 +17,7 @@ int uppm_formula_repo_add(const char * formulaRepoName, const char * formulaRepo
         return UPPM_ERROR_ARG_IS_NULL;
     }
 
-    size_t formulaRepoNameLength = strlen(formulaRepoName);
-
-    if (formulaRepoNameLength == 0U) {
+    if (formulaRepoName[0] == '\0') {
         return UPPM_ERROR_ARG_IS_EMPTY;
     }
 
@@ -27,17 +25,13 @@ int uppm_formula_repo_add(const char * formulaRepoName, const char * formulaRepo
         return UPPM_ERROR_ARG_IS_NULL;
     }
 
-    size_t formulaRepoUrlLength = strlen(formulaRepoUrl);
-
-    if (formulaRepoUrlLength == 0U) {
+    if (formulaRepoUrl[0] == '\0') {
         return UPPM_ERROR_ARG_IS_EMPTY;
     }
 
     if (branchName == NULL || branchName[0] == '\0') {
         branchName = (char*)"master";
     }
-
-    size_t branchNameLength = strlen(branchName);
 
     ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -54,7 +48,7 @@ int uppm_formula_repo_add(const char * formulaRepoName, const char * formulaRepo
 
     struct stat st;
 
-    size_t   formulaRepoDIRLength = uppmHomeDIRLength + formulaRepoNameLength + 10U;
+    size_t   formulaRepoDIRLength = uppmHomeDIRLength + strlen(formulaRepoName) + 10U;
     char     formulaRepoDIR[formulaRepoDIRLength];
     snprintf(formulaRepoDIR, formulaRepoDIRLength, "%s/repos.d/%s", uppmHomeDIR, formulaRepoName);
 
@@ -136,6 +130,8 @@ int uppm_formula_repo_add(const char * formulaRepoName, const char * formulaRepo
     ////////////////////////////////////////////////////////////////////////////////////////
 
     printf("Adding formula repo : %s => %s\n", formulaRepoName, formulaRepoUrl);
+
+    size_t branchNameLength = strlen(branchName);
 
     size_t   remoteRefPathLength = branchNameLength + 12U;
     char     remoteRefPath[remoteRefPathLength];

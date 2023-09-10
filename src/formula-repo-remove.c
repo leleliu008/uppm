@@ -11,9 +11,7 @@ int uppm_formula_repo_remove(const char * formulaRepoName) {
         return UPPM_ERROR_ARG_IS_NULL;
     }
 
-    size_t formulaRepoNameLength = strlen(formulaRepoName);
-
-    if (formulaRepoNameLength == 0U) {
+    if (formulaRepoName[0] == '\0') {
         return UPPM_ERROR_ARG_IS_EMPTY;
     }
 
@@ -31,7 +29,7 @@ int uppm_formula_repo_remove(const char * formulaRepoName) {
         return ret;
     }
 
-    size_t   formulaRepoPathLength = uppmHomeDIRLength + formulaRepoNameLength + 10U;
+    size_t   formulaRepoPathLength = uppmHomeDIRLength + strlen(formulaRepoName) + 10U;
     char     formulaRepoPath[formulaRepoPathLength];
     snprintf(formulaRepoPath, formulaRepoPathLength, "%s/repos.d/%s", uppmHomeDIR, formulaRepoName);
 

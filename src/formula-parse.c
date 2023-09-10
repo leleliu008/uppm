@@ -1,9 +1,11 @@
-#include <yaml.h>
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+
 #include <libgen.h>
+
+#include <yaml.h>
 
 #include "core/sysinfo.h"
 #include "core/regex/regex.h"

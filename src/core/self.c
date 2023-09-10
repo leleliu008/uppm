@@ -103,14 +103,12 @@ char* self_realpath() {
             return NULL;
         }
 
-        size_t PATHLength = strlen(PATH);
-
         // in fact, it shouldn’t happen
-        if (PATHLength == 0U) {
+        if (PATH[0] == '\0') {
             return NULL;
         }
 
-        size_t  PATH2Length = PATHLength + 1U;
+        size_t  PATH2Length = strlen(PATH) + 1U;
         char    PATH2[PATH2Length];
         strncpy(PATH2, PATH, PATH2Length);
 

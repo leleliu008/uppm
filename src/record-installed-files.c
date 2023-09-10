@@ -14,11 +14,11 @@ static int record_installed_files_r(const char * dirPath, size_t offset, int out
         return UPPM_ERROR_ARG_IS_NULL;
     }
 
-    size_t dirPathLength = strlen(dirPath);
-
-    if (dirPathLength == 0U) {
+    if (dirPath[0] == '\0') {
         return UPPM_ERROR_ARG_IS_EMPTY;
     }
+
+    size_t dirPathLength = strlen(dirPath);
 
     DIR * dir = opendir(dirPath);
 

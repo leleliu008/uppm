@@ -13,9 +13,7 @@ int exe_search(const char * commandName, char *** listP, size_t * listSize, bool
         return -1;
     }
 
-    size_t commandNameLength = strlen(commandName);
-
-    if (commandNameLength == 0U) {
+    if (commandName[0] == '\0') {
         errno = EINVAL;
         return -1;
     }
@@ -36,17 +34,17 @@ int exe_search(const char * commandName, char *** listP, size_t * listSize, bool
         return -2;
     }
 
-    size_t PATHLength = strlen(PATH);
-
-    if (PATHLength == 0U) {
+    if (PATH[0] == '\0') {
         return -3;
     }
 
-    size_t  PATH2Length = PATHLength + 1U;
+    size_t  PATH2Length = strlen(PATH) + 1U;
     char    PATH2[PATH2Length];
     strncpy(PATH2, PATH, PATH2Length);
 
     struct stat st;
+
+    size_t commandNameLength = strlen(commandName);
 
     char ** stringArrayList = NULL;
     size_t  stringArrayListSize    = 0U;
@@ -119,9 +117,7 @@ int exe_lookup(const char * commandName, char ** pathP, size_t * pathLength) {
         return -1;
     }
 
-    size_t commandNameLength = strlen(commandName);
-
-    if (commandNameLength == 0U) {
+    if (commandName[0] == '\0') {
         errno = EINVAL;
         return -1;
     }
@@ -137,17 +133,17 @@ int exe_lookup(const char * commandName, char ** pathP, size_t * pathLength) {
         return -2;
     }
 
-    size_t PATHLength = strlen(PATH);
-
-    if (PATHLength == 0U) {
+    if (PATH[0] == '\0') {
         return -3;
     }
 
-    size_t  PATH2Length = PATHLength + 1U;
+    size_t  PATH2Length = strlen(PATH) + 1U;
     char    PATH2[PATH2Length];
     strncpy(PATH2, PATH, PATH2Length);
 
     struct stat st;
+
+    size_t commandNameLength = strlen(commandName);
 
     char * PATHItem = strtok(PATH2, ":");
 
@@ -192,9 +188,7 @@ int exe_lookup2(const char * commandName, char buf[], size_t * writtenSize, size
         return -1;
     }
 
-    size_t commandNameLength = strlen(commandName);
-
-    if (commandNameLength == 0U) {
+    if (commandName[0] == '\0') {
         errno = EINVAL;
         return -1;
     }
@@ -215,17 +209,17 @@ int exe_lookup2(const char * commandName, char buf[], size_t * writtenSize, size
         return -2;
     }
 
-    size_t PATHLength = strlen(PATH);
-
-    if (PATHLength == 0U) {
+    if (PATH[0] == '\0') {
         return -3;
     }
 
-    size_t  PATH2Length = PATHLength + 1U;
+    size_t  PATH2Length = strlen(PATH) + 1U;
     char    PATH2[PATH2Length];
     strncpy(PATH2, PATH, PATH2Length);
 
     struct stat st;
+
+    size_t commandNameLength = strlen(commandName);
 
     char * PATHItem = strtok(PATH2, ":");
 
