@@ -2,7 +2,11 @@
 
 Universal Prebuild Package Manager for Unix-like systems.
 
-**Caveats:** This software is being actively developed. It's in beta stage and may not be stable. Some features are subject to change without notice.
+## Caveats
+
+- This software is being actively developed. It's in beta stage and may not be stable. Some features are subject to change without notice.
+
+- Please do NOT place your own files under `~/.uppm` directory, as `uppm` will change files under `~/.uppm` directory without notice.
 
 ## dependences
 
@@ -217,12 +221,6 @@ cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=/usr/local
 cmake --build   build.d
 cmake --install build.d
 ```
-
-## ~/.uppm
-
-all relevant directories and files are located in `~/.uppm` directory.
-
-**Caveats**: Please do NOT place your own files under `~/.uppm` directory, as `uppm` will change files under `~/.uppm` directory without notice.
 
 ## uppm command usage
 
@@ -568,7 +566,7 @@ all relevant directories and files are located in `~/.uppm` directory.
 
 - **UPPM_HOME**
 
-    If this environment variable is not set, `$HOME/.uppm` will be used as the default value.
+    If this environment variable is not set or set a empty string, `$HOME/.uppm` will be used as the default value.
 
     ```bash
     export UPPM_HOME=$HOME/uppm-home
