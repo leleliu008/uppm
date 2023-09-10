@@ -8,7 +8,6 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
-#include "core/rm-r.h"
 #include "core/log.h"
 
 #include "uppm.h"
@@ -97,9 +96,10 @@ int uppm_formula_repo_add(const char * formulaRepoName, const char * formulaRepo
 
     if (stat(sessionDIR, &st) == 0) {
         if (S_ISDIR(st.st_mode)) {
-            if (rm_r(sessionDIR, false) != 0) {
-                perror(sessionDIR);
-                return UPPM_ERROR;
+            ret = uppm_rm_r(sessionDIR, false);
+
+            if (ret != UPPM_OK) {
+                return ret;
             }
         } else {
             fprintf(stderr, "%s was expected to be a directory, but it was not.\n", sessionDIR);

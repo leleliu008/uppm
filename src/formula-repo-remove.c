@@ -1,9 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/stat.h>
 
-#include "core/rm-r.h"
+#include <sys/stat.h>
 
 #include "uppm.h"
 
@@ -48,12 +47,7 @@ int uppm_formula_repo_remove(const char * formulaRepoName) {
     snprintf(formulaRepoConfigFilePath, formulaRepoConfigFilePathLength, "%s/.uppm-formula-repo.yml", formulaRepoPath);
 
     if (stat(formulaRepoConfigFilePath, &st) == 0 && S_ISREG(st.st_mode)) {
-        if (rm_r(formulaRepoPath, false) == 0) {
-            return UPPM_OK;
-        } else {
-            perror(formulaRepoPath);
-            return UPPM_ERROR;
-        }
+        return uppm_rm_r(formulaRepoPath, false);
     } else {
         fprintf(stderr, "formula repo is broken: %s\n", formulaRepoName);
         return UPPM_ERROR;

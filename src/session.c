@@ -5,8 +5,6 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
-#include "core/rm-r.h"
-
 #include "uppm.h"
 
 int uppm_session_dir(char buf[], size_t bufSize, size_t * outSize) {
@@ -49,9 +47,10 @@ int uppm_session_dir(char buf[], size_t bufSize, size_t * outSize) {
 
     if (stat(sessionDIR, &st) == 0) {
         if (S_ISDIR(st.st_mode)) {
-            if (rm_r(sessionDIR, false) != 0) {
-                perror(sessionDIR);
-                return UPPM_ERROR;
+            ret = uppm_rm_r(sessionDIR, false);
+
+            if (ret != UPPM_OK) {
+                return ret;
             }
         } else {
             fprintf(stderr, "%s was expected to be a directory, but it was not.\n", sessionDIR);

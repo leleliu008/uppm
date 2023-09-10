@@ -257,6 +257,8 @@ int uppm_download(const char * url, const char * sha256sum, const char * downloa
 
 int uppm_copy_file(const char * fromFilePath, const char * toFilePath);
 
-int uppm_mkdir_p(const char * dir, bool verbose);
+int uppm_mkdir_p(const char * dirPath, bool verbose);
+
+int uppm_rm_r(const char * dirPath, bool verbose);
 
 #endif

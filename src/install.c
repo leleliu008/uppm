@@ -14,7 +14,6 @@
 
 #include "core/sysinfo.h"
 #include "core/self.h"
-#include "core/rm-r.h"
 #include "core/tar.h"
 
 #include "sha256sum.h"
@@ -244,9 +243,11 @@ int uppm_install(const char * packageName, bool verbose, bool force) {
 
     if (lstat(packageInstalledRealDIR, &st) == 0) {
         if (S_ISDIR(st.st_mode)) {
-            if (rm_r(packageInstalledRealDIR, verbose) != 0) {
+            ret = uppm_rm_r(packageInstalledRealDIR, verbose);
+
+            if (ret != UPPM_OK) {
                 uppm_formula_free(formula);
-                return UPPM_ERROR;
+                return ret;
             }
         } else {
             if (unlink(packageInstalledRealDIR) != 0) {
@@ -520,9 +521,10 @@ int uppm_install(const char * packageName, bool verbose, bool force) {
             if (errno == EEXIST) {
                 if (lstat(packageName, &st) == 0) {
                     if (S_ISDIR(st.st_mode)) {
-                        if (rm_r  (packageName, verbose) != 0) {
-                            perror(packageName);
-                            return UPPM_ERROR;
+                        ret = uppm_rm_r(packageName, verbose);
+
+                        if (ret != UPPM_OK) {
+                            return ret;
                         }
                     } else {
                         if (unlink(packageName) != 0) {

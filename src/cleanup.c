@@ -6,8 +6,6 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
-#include "core/rm-r.h"
-
 #include "uppm.h"
 
 static int uppm_cleanup_downloads(bool verbose) {

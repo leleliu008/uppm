@@ -6,7 +6,6 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
-#include "core/rm-r.h"
 #include "core/log.h"
 
 #include "uppm.h"
@@ -51,9 +50,10 @@ int uppm_generate_url_transform_sample() {
 
     if (stat(sessionDIR, &st) == 0) {
         if (S_ISDIR(st.st_mode)) {
-            if (rm_r(sessionDIR, false) != 0) {
-                perror(sessionDIR);
-                return UPPM_ERROR;
+            ret = uppm_rm_r(sessionDIR, false);
+
+            if (ret != UPPM_OK) {
+                return ret;
             }
         } else {
             fprintf(stderr, "%s was expected to be a directory, but it was not.\n", sessionDIR);
@@ -143,10 +143,5 @@ int uppm_generate_url_transform_sample() {
 
     fprintf(stderr, "%sYou can rename url-transform.sample to url-transform then edit it to meet your needs.\n\nTo apply this, you should run 'export UPPM_URL_TRANSFORM=%s' in your terminal.\n%s", COLOR_GREEN, outFilePath, COLOR_OFF);
 
-    if (rm_r(sessionDIR, false) != 0) {
-        perror(sessionDIR);
-        return UPPM_ERROR;
-    }
-
-    return UPPM_OK;
+    return uppm_rm_r(sessionDIR, false);
 }

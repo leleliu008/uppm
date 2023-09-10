@@ -4,8 +4,6 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
-#include "core/rm-r.h"
-
 #include "uppm.h"
 
 int uppm_uninstall(const char * packageName, bool verbose) {
@@ -61,19 +59,14 @@ int uppm_uninstall(const char * packageName, bool verbose) {
                     if (S_ISDIR(st.st_mode)) {
                         if (unlink(packageInstalledLinkDIR) == 0) {
                             if (verbose) {
-                                printf("unlink %s\n", packageInstalledLinkDIR);
+                                printf("rm %s\n", packageInstalledLinkDIR);
                             }
                         } else {
                             perror(packageInstalledLinkDIR);
                             return UPPM_ERROR;
                         }
 
-                        if (rm_r(packageInstalledRealDIR, verbose) == 0) {
-                            return UPPM_OK;
-                        } else {
-                            perror(packageInstalledRealDIR);
-                            return UPPM_ERROR;
-                        }
+                        return uppm_rm_r(packageInstalledRealDIR, verbose);
                     } else {
                         // package is broken by other tools?
                         return UPPM_ERROR_PACKAGE_NOT_INSTALLED;
