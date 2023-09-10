@@ -211,7 +211,7 @@ int uppm_info(const char * packageName, const char * key);
 
 int uppm_tree(const char * packageName, size_t argc, char* argv[]);
 
-int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, const char * outputFilePath);
+int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, const char * outputPath);
 
 int uppm_fetch(const char * packageName, bool verbose);
 
@@ -256,5 +256,7 @@ int uppm_http_fetch_to_file(const char * url, const char * outputFilePath, bool 
 int uppm_download(const char * url, const char * sha256sum, const char * downloadDIR, const char * unpackDIR, size_t stripComponentsNumber, bool verbose);
 
 int uppm_copy_file(const char * fromFilePath, const char * toFilePath);
+
+int uppm_mkdir_p(const char * dir, bool verbose);
 
 #endif

@@ -6,6 +6,7 @@
 
 #include <fcntl.h>
 #include <unistd.h>
+#include <libgen.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
 
@@ -14,6 +15,31 @@
 #include "core/url.h"
 
 #include "uppm.h"
+
+static inline int rename_or_copy_file_to_destination(const char * fromFilePath, const char * toFilePath) {
+    size_t  outputFilePathCopyLength = strlen(toFilePath) + 1U;
+    char    outputFilePathCopy[outputFilePathCopyLength];
+    strncpy(outputFilePathCopy, toFilePath, outputFilePathCopyLength);
+
+    char * outputDIR = dirname(outputFilePathCopy);
+
+    int ret = uppm_mkdir_p(outputDIR, false);
+
+    if (ret != UPPM_OK) {
+        return ret;
+    }
+
+    if (rename(fromFilePath, toFilePath) == 0) {
+        return UPPM_OK;
+    } else {
+        if (errno == EXDEV) {
+            return uppm_copy_file(fromFilePath, toFilePath);
+        } else {
+            perror(toFilePath);
+            return UPPM_ERROR;
+        }
+    }
+}
 
 static int string_append(char ** outP, size_t * outSize, size_t * outCapcity, const char * buf, size_t bufLength) {
     size_t  oldCapcity = (*outCapcity);
@@ -52,7 +78,7 @@ typedef struct {
     size_t nodeListCapcity;
 } DIRectedPath;
 
-int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, const char * outputFilePath) {
+static int uppm_depends2(const char * packageName, UPPMDependsOutputType outputType, const char * outputFilePath) {
     int ret = UPPM_OK;
 
     ////////////////////////////////////////////////////////////////
@@ -391,17 +417,8 @@ finalize:
 
             if (ret > 0) {
                 return UPPM_ERROR_NETWORK_BASE + ret;
-            }
-
-            if (rename(boxFilePath, outputFilePath) == 0) {
-                return UPPM_OK;
             } else {
-                if (errno == EXDEV) {
-                    return uppm_copy_file(boxFilePath, outputFilePath);
-                } else {
-                    perror(outputFilePath);
-                    return UPPM_ERROR;
-                }
+                return rename_or_copy_file_to_destination(boxFilePath, outputFilePath);
             }
         }
     } 
@@ -437,16 +454,7 @@ finalize:
     ////////////////////////////////////////////////////////////////
 
     if (outputType == UPPMDependsOutputType_DOT) {
-        if (rename(dotFilePath, outputFilePath) == 0) {
-            return UPPM_OK;
-        } else {
-            if (errno == EXDEV) {
-                return uppm_copy_file(dotFilePath, outputFilePath);
-            } else {
-                perror(outputFilePath);
-                return UPPM_ERROR;
-            }
-        }
+        return rename_or_copy_file_to_destination(dotFilePath, outputFilePath);
     }
 
     ////////////////////////////////////////////////////////////////
@@ -482,16 +490,7 @@ finalize:
         }
 
         if (childProcessExitStatusCode == 0) {
-            if (rename(tmpFilePath, outputFilePath) == 0) {
-                return UPPM_OK;
-            } else {
-                if (errno == EXDEV) {
-                    return uppm_copy_file(tmpFilePath, outputFilePath);
-                } else {
-                    perror(outputFilePath);
-                    return UPPM_ERROR;
-                }
-            }
+            return rename_or_copy_file_to_destination(tmpFilePath, outputFilePath);
         }
 
         const char * type;
@@ -512,4 +511,68 @@ finalize:
 
         return UPPM_ERROR;
     }
+}
+
+int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, const char * outputPath) {
+    char * outputFilePath = NULL;
+
+    if (outputPath != NULL) {
+        struct stat st;
+
+        if (stat(outputPath, &st) == 0 && S_ISDIR(st.st_mode)) {
+            size_t outputFilePathLength = strlen(outputPath) + strlen(packageName) + 20U;
+
+            outputFilePath = (char*) malloc(outputFilePathLength);
+
+            if (outputFilePath == NULL) {
+                return UPPM_ERROR_MEMORY_ALLOCATE;
+            }
+
+            const char * outputFileNameSuffix;
+
+            switch (outputType) {
+                case UPPMDependsOutputType_DOT: outputFileNameSuffix = "dot"; break;
+                case UPPMDependsOutputType_BOX: outputFileNameSuffix = "box"; break;
+                case UPPMDependsOutputType_SVG: outputFileNameSuffix = "svg"; break;
+                case UPPMDependsOutputType_PNG: outputFileNameSuffix = "png"; break;
+            }
+
+            snprintf(outputFilePath, outputFilePathLength, "%s/%s-dependencies.%s", outputPath, packageName, outputFileNameSuffix);
+        } else {
+            size_t outputPathLength = strlen(outputPath);
+
+            if (outputPath[outputPathLength - 1] == '/') {
+                size_t outputFilePathLength = strlen(outputPath) + strlen(packageName) + 20U;
+
+                outputFilePath = (char*) malloc(outputFilePathLength);
+
+                if (outputFilePath == NULL) {
+                    return UPPM_ERROR_MEMORY_ALLOCATE;
+                }
+
+                const char * outputFileNameSuffix;
+
+                switch (outputType) {
+                    case UPPMDependsOutputType_DOT: outputFileNameSuffix = "dot"; break;
+                    case UPPMDependsOutputType_BOX: outputFileNameSuffix = "box"; break;
+                    case UPPMDependsOutputType_SVG: outputFileNameSuffix = "svg"; break;
+                    case UPPMDependsOutputType_PNG: outputFileNameSuffix = "png"; break;
+                }
+
+                snprintf(outputFilePath, outputFilePathLength, "%s%s-dependencies.%s", outputPath, packageName, outputFileNameSuffix);
+            } else {
+                outputFilePath = strdup(outputPath);
+
+                if (outputFilePath == NULL) {
+                    return UPPM_ERROR_MEMORY_ALLOCATE;
+                }
+            }
+        }
+    }
+
+    int ret = uppm_depends2(packageName, outputType, outputFilePath);
+
+    free(outputFilePath);
+
+    return ret;
 }
