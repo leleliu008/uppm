@@ -60,11 +60,21 @@ int uppm_fetch(const char * packageName, bool verbose) {
     char     downloadDIR[downloadDIRLength];
     snprintf(downloadDIR, downloadDIRLength, "%s/downloads", uppmHomeDIR);
 
-    if (stat(downloadDIR, &st) == 0) {
+    if (lstat(downloadDIR, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {
-            fprintf(stderr, "%s was expected to be a directory, but it was not.\n", downloadDIR);
-            uppm_formula_free(formula);
-            return UPPM_ERROR;
+            if (unlink(downloadDIR) != 0) {
+                perror(downloadDIR);
+                uppm_formula_free(formula);
+                return UPPM_ERROR;
+            }
+
+            if (mkdir(downloadDIR, S_IRWXU) != 0) {
+                if (errno != EEXIST) {
+                    perror(downloadDIR);
+                    uppm_formula_free(formula);
+                    return UPPM_ERROR;
+                }
+            }
         }
     } else {
         if (mkdir(downloadDIR, S_IRWXU) != 0) {

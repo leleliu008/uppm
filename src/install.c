@@ -125,12 +125,24 @@ int uppm_install(const char * packageName, bool verbose, bool force) {
 
     if (lstat(downloadDIR, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {
-            fprintf(stderr, "%s was expected to be a directory, but it was not.\n", downloadDIR);
-            return UPPM_ERROR;
+            if (unlink(downloadDIR) != 0) {
+                perror(downloadDIR);
+                uppm_formula_free(formula);
+                return UPPM_ERROR;
+            }
+
+            if (mkdir(downloadDIR, S_IRWXU) != 0) {
+                if (errno != EEXIST) {
+                    perror(downloadDIR);
+                    uppm_formula_free(formula);
+                    return UPPM_ERROR;
+                }
+            }
         }
     } else {
         if (mkdir(downloadDIR, S_IRWXU) != 0) {
             if (errno != EEXIST) {
+                perror(downloadDIR);
                 uppm_formula_free(formula);
                 return UPPM_ERROR;
             }
@@ -221,14 +233,26 @@ int uppm_install(const char * packageName, bool verbose, bool force) {
     char     packageInstalledRootDIR[packageInstalledRootDIRLength];
     snprintf(packageInstalledRootDIR, packageInstalledRootDIRLength, "%s/installed", uppmHomeDIR);
 
-    if (stat(packageInstalledRootDIR, &st) == 0) {
+    if (lstat(packageInstalledRootDIR, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {
-            fprintf(stderr, "%s was expected to be a directory, but it was not.\n", packageInstalledRootDIR);
-            return UPPM_ERROR;
+            if (unlink(packageInstalledRootDIR) != 0) {
+                perror(packageInstalledRootDIR);
+                uppm_formula_free(formula);
+                return UPPM_ERROR;
+            }
+
+            if (mkdir(packageInstalledRootDIR, S_IRWXU) != 0) {
+                if (errno != EEXIST) {
+                    perror(packageInstalledRootDIR);
+                    uppm_formula_free(formula);
+                    return UPPM_ERROR;
+                }
+            }
         }
     } else {
         if (mkdir(packageInstalledRootDIR, S_IRWXU) != 0) {
             if (errno != EEXIST) {
+                perror(packageInstalledRootDIR);
                 uppm_formula_free(formula);
                 return UPPM_ERROR;
             }
@@ -249,8 +273,20 @@ int uppm_install(const char * packageName, bool verbose, bool force) {
                 uppm_formula_free(formula);
                 return ret;
             }
+
+            if (mkdir(packageInstalledRealDIR, S_IRWXU) != 0) {
+                perror(packageInstalledRealDIR);
+                uppm_formula_free(formula);
+                return UPPM_ERROR;
+            }
         } else {
             if (unlink(packageInstalledRealDIR) != 0) {
+                perror(packageInstalledRealDIR);
+                uppm_formula_free(formula);
+                return UPPM_ERROR;
+            }
+
+            if (mkdir(packageInstalledRealDIR, S_IRWXU) != 0) {
                 perror(packageInstalledRealDIR);
                 uppm_formula_free(formula);
                 return UPPM_ERROR;

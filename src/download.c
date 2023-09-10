@@ -57,10 +57,18 @@ int uppm_download(const char * url, const char * sha256sum, const char * downloa
 
     struct stat st;
 
-    if (stat(downloadDIR, &st) == 0) {
+    if (lstat(downloadDIR, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {
-            fprintf(stderr, "%s was expected to be a directory, but it was not.\n", downloadDIR);
-            return UPPM_ERROR;
+            if (unlink(downloadDIR) != 0) {
+                perror(downloadDIR);
+                return UPPM_ERROR;
+            }
+
+            if (mkdir(downloadDIR, S_IRWXU) != 0) {
+                if (errno != EEXIST) {
+                    return UPPM_ERROR;
+                }
+            }
         }
     } else {
         if (mkdir(downloadDIR, S_IRWXU) != 0) {

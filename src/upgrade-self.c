@@ -30,8 +30,17 @@ int uppm_upgrade_self(bool verbose) {
 
     if (stat(uppmRunDIR, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {
-            fprintf(stderr, "%s was expected to be a directory, but it was not.\n", uppmRunDIR);
-            return UPPM_ERROR;
+            if (unlink(uppmRunDIR) == 0) {
+                perror(uppmRunDIR);
+                return UPPM_ERROR;
+            }
+
+            if (mkdir(uppmRunDIR, S_IRWXU) != 0) {
+                if (errno != EEXIST) {
+                    perror(uppmRunDIR);
+                    return UPPM_ERROR;
+                }
+            }
         }
     } else {
         if (mkdir(uppmRunDIR, S_IRWXU) != 0) {
@@ -48,16 +57,28 @@ int uppm_upgrade_self(bool verbose) {
     char     sessionDIR[sessionDIRLength];
     snprintf(sessionDIR, sessionDIRLength, "%s/%d", uppmRunDIR, getpid());
 
-    if (stat(sessionDIR, &st) == 0) {
+    if (lstat(sessionDIR, &st) == 0) {
         if (S_ISDIR(st.st_mode)) {
             ret = uppm_rm_r(sessionDIR, verbose);
 
             if (ret != UPPM_OK) {
                 return ret;
             }
+
+            if (mkdir(sessionDIR, S_IRWXU) != 0) {
+                perror(sessionDIR);
+                return UPPM_ERROR;
+            }
         } else {
-            fprintf(stderr, "%s was expected to be a directory, but it was not.\n", sessionDIR);
-            return UPPM_ERROR;
+            if (unlink(sessionDIR) != 0) {
+                perror(sessionDIR);
+                return UPPM_ERROR;
+            }
+
+            if (mkdir(sessionDIR, S_IRWXU) != 0) {
+                perror(sessionDIR);
+                return UPPM_ERROR;
+            }
         }
     } else {
         if (mkdir(sessionDIR, S_IRWXU) != 0) {
