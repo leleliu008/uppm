@@ -127,15 +127,13 @@ static int uppm_receipt_set_value(UPPMReceiptKeyCode keyCode, char * value, UPPM
     }
 
     for (;;) {
-        char c = value[0];
-
-        if (c == '\0') {
+        if (value[0] == '\0') {
             return UPPM_OK;
         }
 
         // non-printable ASCII characters and space
-        if (c <= 32) {
-            value = &value[1];
+        if (value[0] <= 32) {
+            value++;
         } else {
             break;
         }

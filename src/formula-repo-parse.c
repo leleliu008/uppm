@@ -93,15 +93,13 @@ static int uppm_formula_repo_set_value(UPPMFormulaRepoKeyCode keyCode, char * va
     }
 
     for (;;) {
-        char c = value[0];
-
-        if (c == '\0') {
+        if (value[0] == '\0') {
             return UPPM_OK;
         }
 
         // non-printable ASCII characters and space
-        if (c <= 32) {
-            value = &value[1];
+        if (value[0] <= 32) {
+            value++;
         } else {
             break;
         }
