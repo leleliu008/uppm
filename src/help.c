@@ -1,5 +1,8 @@
 #include <unistd.h>
+
 #include "core/log.h"
+
+#include "uppm.h"
 
 int uppm_help() {
     if (isatty(STDOUT_FILENO)) {
