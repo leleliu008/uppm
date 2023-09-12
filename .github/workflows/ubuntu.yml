@@ -124,3 +124,4 @@ jobs:
       - run:  ./output/bin/uppm formula-repo-del my_repo
 
       - run:  ./output/bin/uppm cleanup
+      - run:  ./output/bin/uppm upgrade-self

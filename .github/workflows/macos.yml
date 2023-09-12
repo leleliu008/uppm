@@ -117,6 +117,7 @@ jobs:
       - run:  ./output/bin/uppm formula-repo-del my_repo
 
       - run:  ./output/bin/uppm cleanup
+      - run:  ./output/bin/uppm upgrade-self
 
   vcpkg:
 
@@ -229,6 +230,7 @@ jobs:
       - run:  ./output/bin/uppm formula-repo-del my_repo
 
       - run:  ./output/bin/uppm cleanup
+      - run:  ./output/bin/uppm upgrade-self
 
   vcpkg-sanitizer:
 
@@ -345,6 +347,7 @@ jobs:
       - run:  ./output/bin/uppm formula-repo-del my_repo
 
       - run:  ./output/bin/uppm cleanup
+      - run:  ./output/bin/uppm upgrade-self
 
   brew-sanitizer:
     strategy:
@@ -458,3 +461,4 @@ jobs:
       - run:  ./output/bin/uppm formula-repo-del my_repo
 
       - run:  ./output/bin/uppm cleanup
+      - run:  ./output/bin/uppm upgrade-self

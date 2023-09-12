@@ -112,8 +112,8 @@ int uppm_upgrade_self(bool verbose) {
     char * latestReleaseTagName = NULL;
     size_t latestReleaseTagNameLength = 0U;
 
-    char   latestVersion[11] = {0};
-    size_t latestVersionLength = 0U;
+    char   latestReleaseVersion[11] = {0};
+    size_t latestReleaseVersionLength = 0U;
 
     char * p = NULL;
 
@@ -174,8 +174,8 @@ int uppm_upgrade_self(bool verbose) {
                     n++;
 
                     if (p[n] == '+') {
-                        latestVersionLength = n > 10 ? 10 : n;
-                        strncpy(latestVersion, p, latestVersionLength);
+                        latestReleaseVersionLength = n > 10 ? 10 : n;
+                        strncpy(latestReleaseVersion, p, latestReleaseVersionLength);
                     }
                 }
             }
@@ -192,48 +192,48 @@ finalize:
         return UPPM_ERROR;
     }
 
-    if (latestVersion[0] == '\0') {
+    if (latestReleaseVersion[0] == '\0') {
         fprintf(stderr, "%s return invalid json.\n", githubApiUrl);
         return UPPM_ERROR;
     }
 
-    char    latestVersionCopy[latestVersionLength + 1U];
-    strncpy(latestVersionCopy, latestVersion, latestVersionLength + 1U);
+    char    latestReleaseVersionCopy[latestReleaseVersionLength + 1U];
+    strncpy(latestReleaseVersionCopy, latestReleaseVersion, latestReleaseVersionLength + 1U);
 
-    char * latestVersionMajorStr = strtok(latestVersionCopy, ".");
-    char * latestVersionMinorStr = strtok(NULL, ".");
-    char * latestVersionPatchStr = strtok(NULL, ".");
+    char * latestReleaseVersionMajorStr = strtok(latestReleaseVersionCopy, ".");
+    char * latestReleaseVersionMinorStr = strtok(NULL, ".");
+    char * latestReleaseVersionPatchStr = strtok(NULL, ".");
 
-    int latestVersionMajor = 0;
-    int latestVersionMinor = 0;
-    int latestVersionPatch = 0;
+    int latestReleaseVersionMajor = 0;
+    int latestReleaseVersionMinor = 0;
+    int latestReleaseVersionPatch = 0;
 
-    if (latestVersionMajorStr != NULL) {
-        latestVersionMajor = atoi(latestVersionMajorStr);
+    if (latestReleaseVersionMajorStr != NULL) {
+        latestReleaseVersionMajor = atoi(latestReleaseVersionMajorStr);
     }
 
-    if (latestVersionMinorStr != NULL) {
-        latestVersionMinor = atoi(latestVersionMinorStr);
+    if (latestReleaseVersionMinorStr != NULL) {
+        latestReleaseVersionMinor = atoi(latestReleaseVersionMinorStr);
     }
 
-    if (latestVersionPatchStr != NULL) {
-        latestVersionPatch = atoi(latestVersionPatchStr);
+    if (latestReleaseVersionPatchStr != NULL) {
+        latestReleaseVersionPatch = atoi(latestReleaseVersionPatchStr);
     }
 
-    if (latestVersionMajor == 0 && latestVersionMinor == 0 && latestVersionPatch == 0) {
-        fprintf(stderr, "invalid version format: %s\n", latestVersion);
+    if (latestReleaseVersionMajor == 0 && latestReleaseVersionMinor == 0 && latestReleaseVersionPatch == 0) {
+        fprintf(stderr, "invalid version format: %s\n", latestReleaseVersion);
         return UPPM_ERROR;
     }
 
-    if (latestVersionMajor < UPPM_VERSION_MAJOR) {
+    if (latestReleaseVersionMajor < UPPM_VERSION_MAJOR) {
         LOG_SUCCESS1("this software is already the latest version.");
         return UPPM_OK;
-    } else if (latestVersionMajor == UPPM_VERSION_MAJOR) {
-        if (latestVersionMinor < UPPM_VERSION_MINOR) {
+    } else if (latestReleaseVersionMajor == UPPM_VERSION_MAJOR) {
+        if (latestReleaseVersionMinor < UPPM_VERSION_MINOR) {
             LOG_SUCCESS1("this software is already the latest version.");
             return UPPM_OK;
-        } else if (latestVersionMinor == UPPM_VERSION_MINOR) {
-            if (latestVersionPatch <= UPPM_VERSION_PATCH) {
+        } else if (latestReleaseVersionMinor == UPPM_VERSION_MINOR) {
+            if (latestReleaseVersionPatch <= UPPM_VERSION_PATCH) {
                 LOG_SUCCESS1("this software is already the latest version.");
                 return UPPM_OK;
             }
@@ -256,9 +256,47 @@ finalize:
         return UPPM_ERROR;
     }
 
-    size_t   tarballFileNameLength = latestVersionLength + strlen(osType) + strlen(osArch) + 26U;
-    char     tarballFileName[tarballFileNameLength];
-    snprintf(tarballFileName, tarballFileNameLength, "uppm-%s-%s-%s.tar.xz", latestVersion, osType, osArch);
+    size_t tarballFileNameLength = strlen(latestReleaseVersion) + strlen(osType) + strlen(osArch) + 15U + 5U;
+    char   tarballFileName[tarballFileNameLength];
+
+    if (strcmp(osType, "macos") == 0) {
+        char osVersion[31] = {0};
+
+        if (sysinfo_vers(osVersion, 30) != 0) {
+            return UPPM_ERROR;
+        }
+
+        int i = 0;
+
+        for (;;) {
+            char c = osVersion[i];
+
+            if (c == '.') {
+                osVersion[i] = '\0';
+                break;
+            }
+
+            if (c == '\0') {
+                break;
+            }
+        }
+
+        const char * x;
+
+        if (strcmp(osVersion, "10") == 0) {
+            x = "10.15";
+        } else if (strcmp(osVersion, "11") == 0) {
+            x = "11.0";
+        } else if (strcmp(osVersion, "12") == 0) {
+            x = "12.0";
+        } else {
+            x = "13.0";
+        }
+
+        snprintf(tarballFileName, tarballFileNameLength, "uppm-%s-%s%s-%s.tar.xz", latestReleaseVersion, osType, x, osArch);
+    } else {
+        snprintf(tarballFileName, tarballFileNameLength, "uppm-%s-%s-%s.tar.xz", latestReleaseVersion, osType, osArch);
+    }
 
     size_t   tarballUrlLength = tarballFileNameLength + strlen(latestReleaseTagName) + 66U;
     char     tarballUrl[tarballUrlLength];
@@ -323,7 +361,7 @@ finally:
     free(selfRealPath);
 
     if (ret == UPPM_OK) {
-        fprintf(stderr, "uppm is up to date with version %s\n", latestVersion);
+        fprintf(stderr, "uppm is up to date with version %s\n", latestReleaseVersion);
     } else {
         fprintf(stderr, "Can't upgrade self. the latest version of executable was downloaded to %s, you can manually replace the current running program with it.\n", upgradableExecutableFilePath);
     }

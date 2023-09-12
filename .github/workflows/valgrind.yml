@@ -129,3 +129,4 @@ jobs:
       - run:  $VALGRIND ./output/bin/uppm formula-repo-del my_repo
 
       - run:  $VALGRIND ./output/bin/uppm cleanup
+      - run:  $VALGRIND ./output/bin/uppm upgrade-self
