@@ -181,7 +181,7 @@ cmake --build   build.d
 cmake --install build.d
 ```
 
-**[FreeBSD](https://www.freebsd.org/)**
+**[FreeBSD](https://www.freebsd.org/)** and **[DragonFlyBSD](https://www.dragonflybsd.org/)**
 
 ```bash
 pkg install -y git cmake ninja pkgconf gcc curl openssl libgit2 libarchive libyaml jansson
