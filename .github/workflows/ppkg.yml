@@ -30,80 +30,80 @@ jobs:
       - run:  ./ppkg tree    uppm
 
 
-      - run:  echo "SSL_CERT_FILE=$HOME/.ppkg/core/etc/cacert.pem" >> $GITHUB_ENV
+      - run:  echo "SSL_CERT_FILE=$HOME/.ppkg/core/cacert.pem" >> $GITHUB_ENV
 
 
-      - run:  ~/.ppkg/installed/uppm/bin/uppm
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm
 
-      - run:  ~/.ppkg/installed/uppm/bin/uppm --help
-      - run:  ~/.ppkg/installed/uppm/bin/uppm --version
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm --help
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm --version
 
-      - run:  ~/.ppkg/installed/uppm/bin/uppm -h
-      - run:  ~/.ppkg/installed/uppm/bin/uppm -V
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm -h
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm -V
 
-      - run:  ~/.ppkg/installed/uppm/bin/uppm env
-      - run:  ~/.ppkg/installed/uppm/bin/uppm env -v
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm env
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm env -v
 
-      - run:  ~/.ppkg/installed/uppm/bin/uppm integrate zsh
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm integrate zsh
 
-      - run:  ~/.ppkg/installed/uppm/bin/uppm update
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm update
 
-      - run:  ~/.ppkg/installed/uppm/bin/uppm search zip
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm search zip
 
-      - run:  ~/.ppkg/installed/uppm/bin/uppm depends zip
-      - run:  ~/.ppkg/installed/uppm/bin/uppm depends android-sdk
-      - run:  ~/.ppkg/installed/uppm/bin/uppm depends android-sdk -t box
-      - run:  ~/.ppkg/installed/uppm/bin/uppm depends android-sdk -t dot
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm depends zip
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm depends android-sdk
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm depends android-sdk -t box
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm depends android-sdk -t dot
 
-      - run:  ~/.ppkg/installed/uppm/bin/uppm info @all
-      - run:  ~/.ppkg/installed/uppm/bin/uppm info gsed
-      - run:  ~/.ppkg/installed/uppm/bin/uppm info gsed --json
-      - run:  ~/.ppkg/installed/uppm/bin/uppm info gsed --yaml
-      - run:  ~/.ppkg/installed/uppm/bin/uppm info gsed version
-      - run:  ~/.ppkg/installed/uppm/bin/uppm info gsed license
-      - run:  ~/.ppkg/installed/uppm/bin/uppm info gsed summary
-      - run:  ~/.ppkg/installed/uppm/bin/uppm info gsed webpage
-      - run:  ~/.ppkg/installed/uppm/bin/uppm info gsed bin-url
-      - run:  ~/.ppkg/installed/uppm/bin/uppm info gsed bin-sha
-      - run:  ~/.ppkg/installed/uppm/bin/uppm info gsed install
-      - run:  ~/.ppkg/installed/uppm/bin/uppm info gsed formula
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info @all
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info gsed
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info gsed --json
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info gsed --yaml
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info gsed version
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info gsed license
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info gsed summary
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info gsed webpage
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info gsed bin-url
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info gsed bin-sha
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info gsed install
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info gsed formula
 
-      - run:  ~/.ppkg/installed/uppm/bin/uppm fetch   gtar
-      - run:  ~/.ppkg/installed/uppm/bin/uppm fetch   gtar -v
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm fetch   gtar
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm fetch   gtar -v
 
-      - run:  ~/.ppkg/installed/uppm/bin/uppm install gsed
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm install gsed
 
-      - run:  ~/.ppkg/installed/uppm/bin/uppm info gsed installed-dir
-      - run:  ~/.ppkg/installed/uppm/bin/uppm info gsed installed-files
-      - run:  ~/.ppkg/installed/uppm/bin/uppm info gsed installed-receipt-path
-      - run:  ~/.ppkg/installed/uppm/bin/uppm info gsed installed-receipt-json
-      - run:  ~/.ppkg/installed/uppm/bin/uppm info gsed installed-receipt-yaml
-      - run:  ~/.ppkg/installed/uppm/bin/uppm info gsed installed-timestamp-unix
-      - run:  ~/.ppkg/installed/uppm/bin/uppm info gsed installed-timestamp-iso-8601
-      - run:  ~/.ppkg/installed/uppm/bin/uppm info gsed installed-timestamp-rfc-3339
-      - run:  ~/.ppkg/installed/uppm/bin/uppm info gsed installed-version
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info gsed installed-dir
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info gsed installed-files
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info gsed installed-receipt-path
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info gsed installed-receipt-json
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info gsed installed-receipt-yaml
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info gsed installed-timestamp-unix
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info gsed installed-timestamp-iso-8601
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info gsed installed-timestamp-rfc-3339
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info gsed installed-version
 
-      - run:  ~/.ppkg/installed/uppm/bin/uppm tree gsed
-      - run:  ~/.ppkg/installed/uppm/bin/uppm tree gsed -L 3
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm tree gsed
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm tree gsed -L 3
 
       - run: |
           printf '%s\n' 'version: 1000' >> ~/.uppm/repos.d/offical-core/formula/gsed.yml
 
-      - run:  ~/.ppkg/installed/uppm/bin/uppm ls-available
-      - run:  ~/.ppkg/installed/uppm/bin/uppm ls-installed
-      - run:  ~/.ppkg/installed/uppm/bin/uppm ls-outdated
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm ls-available
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm ls-installed
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm ls-outdated
 
-      - run:  ~/.ppkg/installed/uppm/bin/uppm is-available curl
-      - run:  ~/.ppkg/installed/uppm/bin/uppm is-installed gsed
-      - run:  ~/.ppkg/installed/uppm/bin/uppm is-outdated  gsed
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm is-available curl
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm is-installed gsed
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm is-outdated  gsed
 
-      - run:  ~/.ppkg/installed/uppm/bin/uppm upgrade   gsed
-      - run:  ~/.ppkg/installed/uppm/bin/uppm reinstall gsed
-      - run:  ~/.ppkg/installed/uppm/bin/uppm uninstall gsed
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm upgrade   gsed
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm reinstall gsed
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm uninstall gsed
 
 
-      - run:  ~/.ppkg/installed/uppm/bin/uppm formula-repo-list
-      - run:  ~/.ppkg/installed/uppm/bin/uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-linux-x86_64
-      - run:  ~/.ppkg/installed/uppm/bin/uppm formula-repo-del my_repo
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm formula-repo-list
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-linux-x86_64
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm formula-repo-del my_repo
 
-      - run:  ~/.ppkg/installed/uppm/bin/uppm cleanup
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm cleanup
