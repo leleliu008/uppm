@@ -4,6 +4,7 @@
 
 #include <fcntl.h>
 #include <unistd.h>
+#include <limits.h>
 #include <sys/stat.h>
 
 #include "core/log.h"
@@ -11,10 +12,10 @@
 #include "uppm.h"
 
 int uppm_generate_url_transform_sample() {
-    char   uppmHomeDIR[256] = {0};
+    char   uppmHomeDIR[PATH_MAX];
     size_t uppmHomeDIRLength;
 
-    int ret = uppm_home_dir(uppmHomeDIR, 255, &uppmHomeDIRLength);
+    int ret = uppm_home_dir(uppmHomeDIR, PATH_MAX, &uppmHomeDIRLength);
 
     if (ret != UPPM_OK) {
         return ret;

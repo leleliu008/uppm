@@ -3,15 +3,16 @@
 #include <string.h>
 
 #include <unistd.h>
+#include <limits.h>
 #include <sys/stat.h>
 
 #include "uppm.h"
 
 int uppm_session_dir(char buf[], size_t bufSize, size_t * outSize) {
-    char   uppmHomeDIR[256] = {0};
+    char   uppmHomeDIR[PATH_MAX];
     size_t uppmHomeDIRLength;
 
-    int ret = uppm_home_dir(uppmHomeDIR, 255, &uppmHomeDIRLength);
+    int ret = uppm_home_dir(uppmHomeDIR, PATH_MAX, &uppmHomeDIRLength);
 
     if (ret != UPPM_OK) {
         return ret;
@@ -86,9 +87,13 @@ int uppm_session_dir(char buf[], size_t bufSize, size_t * outSize) {
 
     size_t sessionDIRLength = strlen(sessionDIR);
 
-    size_t n = sessionDIRLength > bufSize ? bufSize : sessionDIRLength;
+    size_t m = bufSize - 1U;
+
+    size_t n = sessionDIRLength > m ? m : sessionDIRLength;
 
     strncpy(buf, sessionDIR, n);
+
+    buf[n] = '\0';
 
     if (outSize != NULL) {
         (*outSize) = n;

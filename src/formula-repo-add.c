@@ -6,6 +6,7 @@
 
 #include <fcntl.h>
 #include <unistd.h>
+#include <limits.h>
 #include <sys/stat.h>
 
 #include "core/log.h"
@@ -35,10 +36,10 @@ int uppm_formula_repo_add(const char * formulaRepoName, const char * formulaRepo
 
     ///////////////////////////////////////////////////////////////////////////////////////
 
-    char   uppmHomeDIR[256] = {0};
+    char   uppmHomeDIR[PATH_MAX];
     size_t uppmHomeDIRLength;
 
-    int ret = uppm_home_dir(uppmHomeDIR, 255, &uppmHomeDIRLength);
+    int ret = uppm_home_dir(uppmHomeDIR, PATH_MAX, &uppmHomeDIRLength);
 
     if (ret != UPPM_OK) {
         return ret;

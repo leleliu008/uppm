@@ -2,16 +2,17 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <limits.h>
 #include <dirent.h>
 #include <sys/stat.h>
 
 #include "uppm.h"
 
 int uppm_formula_repo_list(UPPMFormulaRepoList * * out) {
-    char   uppmHomeDIR[256] = {0};
+    char   uppmHomeDIR[PATH_MAX];
     size_t uppmHomeDIRLength;
 
-    int ret = uppm_home_dir(uppmHomeDIR, 255, &uppmHomeDIRLength);
+    int ret = uppm_home_dir(uppmHomeDIR, PATH_MAX, &uppmHomeDIRLength);
 
     if (ret != UPPM_OK) {
         return ret;

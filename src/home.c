@@ -49,9 +49,13 @@ int uppm_home_dir(char buf[], size_t bufSize, size_t * outSize) {
             }
         }
 
-        size_t n = (bufSize > defaultUppmHomeDIRLength) ? defaultUppmHomeDIRLength : bufSize;
+        size_t m = bufSize - 1U;
+
+        size_t n = (m > defaultUppmHomeDIRLength) ? defaultUppmHomeDIRLength : m;
 
         strncpy(buf, defaultUppmHomeDIR, n);
+
+        buf[n] = '\0';
 
         if (outSize != NULL) {
             (*outSize) = n;
@@ -80,9 +84,13 @@ int uppm_home_dir(char buf[], size_t bufSize, size_t * outSize) {
 
         size_t uppmHomeDIRLength = strlen(uppmHomeDIR);
 
-        size_t n = (bufSize > uppmHomeDIRLength) ? uppmHomeDIRLength : bufSize;
+        size_t m = bufSize - 1U;
+
+        size_t n = (m > uppmHomeDIRLength) ? uppmHomeDIRLength : m;
 
         strncpy(buf, uppmHomeDIR, n);
+
+        buf[n] = '\0';
 
         if (outSize != NULL) {
             (*outSize) = n;

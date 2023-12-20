@@ -2,17 +2,18 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <dirent.h>
 #include <unistd.h>
+#include <limits.h>
+#include <dirent.h>
 #include <sys/stat.h>
 
 #include "uppm.h"
 
 static int uppm_cleanup_downloads(bool verbose) {
-    char   uppmHomeDIR[256] = {0};
+    char   uppmHomeDIR[PATH_MAX];
     size_t uppmHomeDIRLength;
 
-    int ret = uppm_home_dir(uppmHomeDIR, 255, &uppmHomeDIRLength);
+    int ret = uppm_home_dir(uppmHomeDIR, PATH_MAX, &uppmHomeDIRLength);
 
     if (ret != UPPM_OK) {
         return ret;
@@ -91,10 +92,10 @@ static int uppm_cleanup_downloads(bool verbose) {
 }
 
 static int uppm_cleanup_installed(bool verbose) {
-    char   uppmHomeDIR[256] = {0};
+    char   uppmHomeDIR[PATH_MAX];
     size_t uppmHomeDIRLength;
 
-    int ret = uppm_home_dir(uppmHomeDIR, 255, &uppmHomeDIRLength);
+    int ret = uppm_home_dir(uppmHomeDIR, PATH_MAX, &uppmHomeDIRLength);
 
     if (ret != UPPM_OK) {
         return ret;

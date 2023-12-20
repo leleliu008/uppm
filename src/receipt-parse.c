@@ -1,7 +1,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+
+#include <limits.h>
 #include <sys/stat.h>
+
 #include <yaml.h>
 
 #include "uppm.h"
@@ -338,10 +341,10 @@ int uppm_receipt_parse(const char * packageName, UPPMReceipt * * out) {
         return ret;
     }
 
-    char   uppmHomeDIR[256] = {0};
+    char   uppmHomeDIR[PATH_MAX];
     size_t uppmHomeDIRLength;
 
-    ret = uppm_home_dir(uppmHomeDIR, 255, &uppmHomeDIRLength);
+    ret = uppm_home_dir(uppmHomeDIR, PATH_MAX, &uppmHomeDIRLength);
 
     if (ret != UPPM_OK) {
         return ret;

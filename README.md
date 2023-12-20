@@ -8,36 +8,36 @@ Universal Prebuild Package Manager for Unix-like systems.
 
 - Please do NOT place your own files under `~/.uppm` directory, as `uppm` will change files under `~/.uppm` directory without notice.
 
-## dependences
+## Build from source dependencies
 
 |dependency|required?|purpose|
 |----|---------|-------|
 |[cmake](https://cmake.org/)|required |for generating `build.ninja`|
 |[ninja](https://ninja-build.org/)|required |for doing jobs that read from `build.ninja`|
-|[pkg-config>=0.18](https://www.freedesktop.org/wiki/Software/pkg-config/)|required|for finding libraries.|
+|[pkg-config>=0.18](https://www.freedesktop.org/wiki/Software/pkg-config/)|required|for finding libraries|
 ||||
 |[jansson](https://github.com/akheron/jansson)|required|for parsing and creating JSON.|
-|[libyaml](https://github.com/yaml/libyaml/)|required|for parsing formulas whose format is YAML.|
+|[libyaml](https://github.com/yaml/libyaml/)|required|for parsing formula files whose format is YAML.|
 |[libgit2](https://libgit2.org/)|required|for updating formula repositories.|
 |[libcurl](https://curl.se/)|required|for http requesting support.|
 |[openssl](https://www.openssl.org/)|required|for https requesting support and SHA-256 sum checking support.|
 |[libarchive](https://www.libarchive.org/)|required|for uncompressing .zip and .tar.* files.|
-|[zlib](https://www.zlib.net/)|required|for compressing and uncompressing.|
-|[pcre2](https://www.pcre.org/)||for Regular Expressions support.<br>only required on OpenBSD.|
+|[zlib](https://www.zlib.net/)|required|for compress and uncompress data.|
+|[pcre2](https://www.pcre.org/)||for Regular Expressions support. only required on OpenBSD.|
 
-## build and install uppm via [ppkg](https://github.com/leleliu008/ppkg)
+### Build from source via [ppkg](https://github.com/leleliu008/ppkg)
 
 ```bash
 ppkg install uppm
 ```
 
-## build and install uppm via [xcpkg](https://github.com/leleliu008/xcpkg)
+### Build from source via [xcpkg](https://github.com/leleliu008/xcpkg)
 
 ```bash
 xcpkg install uppm
 ```
 
-## build and install uppm using [vcpkg](https://github.com/microsoft/vcpkg)
+### Build from source using [vcpkg](https://github.com/microsoft/vcpkg)
 
 ```bash
 # install g++ curl zip unzip tar git
@@ -45,11 +45,12 @@ xcpkg install uppm
 git clone https://github.com/microsoft/vcpkg.git
 cd vcpkg
 ./bootstrap-vcpkg.sh
-./vcpkg install curl openssl libgit2 libarchive libyaml jansson
+export VCPKG_ROOT="$PWD/vcpkg"
+export PATH="$VCPKG_ROOT:$PATH"
 
-cd -
+vcpkg install curl openssl libgit2 libarchive libyaml jansson
 
-git clone --depth=1 https://github.com/leleliu008/uppm
+git clone --depth=1 --branch=c https://github.com/leleliu008/uppm
 cd uppm
 
 cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake
@@ -57,7 +58,7 @@ cmake --build   build.d
 cmake --install build.d
 ```
 
-## build and install uppm using your system's default package manager
+## Build from source using your system's default package manager
 
 **[Ubuntu](https://ubuntu.com/)**
 

@@ -1,9 +1,10 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <string.h>
+#include <stdbool.h>
 
+#include <limits.h>
 #include <sys/stat.h>
 
 #include "core/regex/regex.h"
@@ -73,10 +74,10 @@ int uppm_check_if_the_given_package_is_installed(const char * packageName) {
         return ret;
     }
 
-    char   uppmHomeDIR[256] = {0};
+    char   uppmHomeDIR[PATH_MAX];
     size_t uppmHomeDIRLength;
 
-    ret = uppm_home_dir(uppmHomeDIR, 255, &uppmHomeDIRLength);
+    ret = uppm_home_dir(uppmHomeDIR, PATH_MAX, &uppmHomeDIRLength);
 
     if (ret != UPPM_OK) {
         return ret;

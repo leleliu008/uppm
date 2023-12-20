@@ -2,6 +2,7 @@
 #include <errno.h>
 #include <string.h>
 
+#include <limits.h>
 #include <sys/stat.h>
 
 #include "core/sysinfo.h"
@@ -12,10 +13,10 @@
 #include "uppm.h"
 
 int uppm_upgrade_self(bool verbose) {
-    char   uppmHomeDIR[256] = {0};
+    char   uppmHomeDIR[PATH_MAX];
     size_t uppmHomeDIRLength;
 
-    int ret = uppm_home_dir(uppmHomeDIR, 255, &uppmHomeDIRLength);
+    int ret = uppm_home_dir(uppmHomeDIR, PATH_MAX, &uppmHomeDIRLength);
 
     if (ret != UPPM_OK) {
         return ret;
@@ -185,12 +186,12 @@ int uppm_upgrade_self(bool verbose) {
 finalize:
     fclose(file);
 
-    printf("latestReleaseTagName=%s\n", latestReleaseTagName);
-
     if (latestReleaseTagName == NULL) {
         fprintf(stderr, "%s return json has no tag_name key.\n", githubApiUrl);
         return UPPM_ERROR;
     }
+
+    printf("latestReleaseTagName=%s\n", latestReleaseTagName);
 
     if (latestReleaseVersion[0] == '\0') {
         fprintf(stderr, "%s return invalid json.\n", githubApiUrl);

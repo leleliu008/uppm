@@ -6,6 +6,7 @@
 
 #include <fcntl.h>
 #include <unistd.h>
+#include <limits.h>
 #include <sys/stat.h>
 
 #include <jansson.h>
@@ -273,10 +274,10 @@ int uppm_info(const char * packageName, const char * key) {
 
         uppm_formula_free(formula);
     } else if (strcmp(key, "bin-fp") == 0) {
-        char   uppmHomeDIR[256] = {0};
+        char   uppmHomeDIR[PATH_MAX];
         size_t uppmHomeDIRLength;
 
-        int ret = uppm_home_dir(uppmHomeDIR, 255, &uppmHomeDIRLength);
+        int ret = uppm_home_dir(uppmHomeDIR, PATH_MAX, &uppmHomeDIRLength);
 
         if (ret != UPPM_OK) {
             return ret;
@@ -331,10 +332,10 @@ int uppm_info(const char * packageName, const char * key) {
 
         uppm_formula_free(formula);
     } else if (strcmp(key, "installed-dir") == 0) {
-        char   uppmHomeDIR[256] = {0};
+        char   uppmHomeDIR[PATH_MAX];
         size_t uppmHomeDIRLength;
 
-        int ret = uppm_home_dir(uppmHomeDIR, 255, &uppmHomeDIRLength);
+        int ret = uppm_home_dir(uppmHomeDIR, PATH_MAX, &uppmHomeDIRLength);
 
         if (ret != UPPM_OK) {
             return ret;
@@ -368,10 +369,10 @@ int uppm_info(const char * packageName, const char * key) {
             return UPPM_ERROR_PACKAGE_IS_BROKEN;
         }
     } else if (strcmp(key, "installed-files") == 0) {
-        char   uppmHomeDIR[256] = {0};
+        char   uppmHomeDIR[PATH_MAX];
         size_t uppmHomeDIRLength;
 
-        int ret = uppm_home_dir(uppmHomeDIR, 255, &uppmHomeDIRLength);
+        int ret = uppm_home_dir(uppmHomeDIR, PATH_MAX, &uppmHomeDIRLength);
 
         if (ret != UPPM_OK) {
             return ret;
@@ -445,10 +446,10 @@ int uppm_info(const char * packageName, const char * key) {
             }
         }
     } else if (strcmp(key, "installed-receipt-path") == 0) {
-        char   uppmHomeDIR[256] = {0};
+        char   uppmHomeDIR[PATH_MAX];
         size_t uppmHomeDIRLength;
 
-        int ret = uppm_home_dir(uppmHomeDIR, 255, &uppmHomeDIRLength);
+        int ret = uppm_home_dir(uppmHomeDIR, PATH_MAX, &uppmHomeDIRLength);
 
         if (ret != UPPM_OK) {
             return ret;
@@ -482,10 +483,10 @@ int uppm_info(const char * packageName, const char * key) {
             return UPPM_ERROR_PACKAGE_IS_BROKEN;
         }
     } else if (strcmp(key, "installed-receipt-yaml") == 0) {
-        char   uppmHomeDIR[256] = {0};
+        char   uppmHomeDIR[PATH_MAX];
         size_t uppmHomeDIRLength;
 
-        int ret = uppm_home_dir(uppmHomeDIR, 255, &uppmHomeDIRLength);
+        int ret = uppm_home_dir(uppmHomeDIR, PATH_MAX, &uppmHomeDIRLength);
 
         if (ret != UPPM_OK) {
             return ret;

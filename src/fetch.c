@@ -2,10 +2,11 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include <unistd.h>
+#include <limits.h>
 #include <sys/stat.h>
 
 #include "core/http.h"
@@ -42,10 +43,10 @@ int uppm_fetch(const char * packageName, bool verbose) {
 
     //////////////////////////////////////////////////////////////////////////
 
-    char   uppmHomeDIR[256] = {0};
+    char   uppmHomeDIR[PATH_MAX];
     size_t uppmHomeDIRLength;
 
-    ret = uppm_home_dir(uppmHomeDIR, 255, &uppmHomeDIRLength);
+    ret = uppm_home_dir(uppmHomeDIR, PATH_MAX, &uppmHomeDIRLength);
 
     if (ret != UPPM_OK) {
         uppm_formula_free(formula);

@@ -6,6 +6,7 @@
 #include <string.h>
 #include <stdbool.h>
 
+#include <limits.h>
 #include <sys/stat.h>
 
 #include "core/tar.h"
@@ -13,7 +14,7 @@
 #include "sha256sum.h"
 #include "uppm.h"
 
-int uppm_download(const char * url, const char * sha256sum, const char * downloadDIR, const char * unpackDIR, size_t stripComponentsNumber, bool verbose) {
+int uppm_download(const char * url, const char * expectedSHA256SUM, const char * downloadDIR, const char * unpackDIR, size_t stripComponentsNumber, bool verbose) {
     if (url == NULL) {
         return UPPM_ERROR_ARG_IS_NULL;
     }
@@ -22,22 +23,22 @@ int uppm_download(const char * url, const char * sha256sum, const char * downloa
         return UPPM_ERROR_ARG_IS_NULL;
     }
 
-    if (sha256sum == NULL) {
+    if (expectedSHA256SUM == NULL) {
         return UPPM_ERROR_ARG_IS_NULL;
     }
 
-    if (sha256sum[0] == '\0') {
+    if (expectedSHA256SUM[0] == '\0') {
         return UPPM_ERROR_ARG_IS_NULL;
     }
 
-    if (strlen(sha256sum) != 64U) {
+    if (strlen(expectedSHA256SUM) != 64U) {
         return UPPM_ERROR_ARG_IS_INVALID;
     }
 
-    char   uppmHomeDIR[256] = {0};
+    char   uppmHomeDIR[PATH_MAX];
     size_t uppmHomeDIRLength;
 
-    int ret = uppm_home_dir(uppmHomeDIR, 255, &uppmHomeDIRLength);
+    int ret = uppm_home_dir(uppmHomeDIR, PATH_MAX, &uppmHomeDIRLength);
 
     if (ret != UPPM_OK) {
         return ret;
@@ -66,6 +67,7 @@ int uppm_download(const char * url, const char * sha256sum, const char * downloa
 
             if (mkdir(downloadDIR, S_IRWXU) != 0) {
                 if (errno != EEXIST) {
+                    perror(downloadDIR);
                     return UPPM_ERROR;
                 }
             }
@@ -73,6 +75,7 @@ int uppm_download(const char * url, const char * sha256sum, const char * downloa
     } else {
         if (mkdir(downloadDIR, S_IRWXU) != 0) {
             if (errno != EEXIST) {
+                perror(downloadDIR);
                 return UPPM_ERROR;
             }
         }
@@ -92,7 +95,7 @@ int uppm_download(const char * url, const char * sha256sum, const char * downloa
 
     size_t   fileNameLength = strlen(fileNameExtension) + 65U;
     char     fileName[fileNameLength];
-    snprintf(fileName, fileNameLength, "%s%s", sha256sum, fileNameExtension);
+    snprintf(fileName, fileNameLength, "%s%s", expectedSHA256SUM, fileNameExtension);
 
     size_t   filePathLength = downloadDIRLength + fileNameLength + 1U;
     char     filePath[filePathLength];
@@ -110,7 +113,7 @@ int uppm_download(const char * url, const char * sha256sum, const char * downloa
                 return UPPM_ERROR;
             }
 
-            if (strcmp(actualSHA256SUM, sha256sum) == 0) {
+            if (strcmp(actualSHA256SUM, expectedSHA256SUM) == 0) {
                 needFetch = false;
             }
         }
@@ -145,7 +148,7 @@ int uppm_download(const char * url, const char * sha256sum, const char * downloa
             return UPPM_ERROR;
         }
 
-        if (strcmp(actualSHA256SUM, sha256sum) == 0) {
+        if (strcmp(actualSHA256SUM, expectedSHA256SUM) == 0) {
             if (rename(tmpFilePath, filePath) == 0) {
                 printf("%s\n", filePath);
             } else {
@@ -161,7 +164,7 @@ int uppm_download(const char * url, const char * sha256sum, const char * downloa
                 }
             }
         } else {
-            fprintf(stderr, "sha256sum mismatch.\n    expect : %s\n    actual : %s\n", sha256sum, actualSHA256SUM);
+            fprintf(stderr, "sha256sum mismatch.\n    expect : %s\n    actual : %s\n", expectedSHA256SUM, actualSHA256SUM);
             return UPPM_ERROR_SHA256_MISMATCH;
         }
     } else {

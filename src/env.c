@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <limits.h>
 #include <dirent.h>
 #include <sys/stat.h>
 
@@ -68,10 +69,10 @@ static int uppm_list_dirs(const char * installedDIR, size_t installedDIRLength, 
 }
 
 int uppm_env(bool verbose) {
-    char   uppmHomeDIR[256] = {0};
+    char   uppmHomeDIR[PATH_MAX];
     size_t uppmHomeDIRLength;
 
-    int ret = uppm_home_dir(uppmHomeDIR, 255, &uppmHomeDIRLength);
+    int ret = uppm_home_dir(uppmHomeDIR, PATH_MAX, &uppmHomeDIRLength);
 
     if (ret != UPPM_OK) {
         return ret;

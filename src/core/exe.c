@@ -182,7 +182,7 @@ int exe_lookup(const char * commandName, char ** pathP, size_t * pathLength) {
     return 0;
 }
 
-int exe_lookup2(const char * commandName, char buf[], size_t * writtenSize, size_t maxSize) {
+int exe_where(const char * commandName, char buf[], size_t * writtenSize, size_t maxSize) {
     if (commandName == NULL) {
         errno = EINVAL;
         return -1;

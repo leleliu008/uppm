@@ -8,6 +8,7 @@
 
 #include <fcntl.h>
 #include <unistd.h>
+#include <limits.h>
 #include <libgen.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
@@ -62,10 +63,10 @@ int uppm_install(const char * packageName, bool verbose, bool force) {
 
     //////////////////////////////////////////////////////////////////////////
 
-    char   uppmHomeDIR[256] = {0};
+    char   uppmHomeDIR[PATH_MAX];
     size_t uppmHomeDIRLength;
 
-    ret = uppm_home_dir(uppmHomeDIR, 255, &uppmHomeDIRLength);
+    ret = uppm_home_dir(uppmHomeDIR, PATH_MAX, &uppmHomeDIRLength);
 
     if (ret != UPPM_OK) {
         return ret;
