@@ -1,0 +1,109 @@
+name: build with ppkg on macOS
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  ppkg:
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-13, macos-12, macos-11]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@main
+
+      - name: install ppkg
+        run: |
+          curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
+          chmod a+x ppkg
+          ./ppkg setup
+
+      - run:  ./ppkg update
+      - run:  ./ppkg install uppm
+      - run:  ./ppkg tree    uppm
+
+
+      - run:  echo "SSL_CERT_FILE=$HOME/.ppkg/core/cacert.pem" >> $GITHUB_ENV
+
+
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm
+
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm --help
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm --version
+
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm -h
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm -V
+
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm env
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm env -v
+
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm integrate zsh
+
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm update
+
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm search zip
+
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm depends zip
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm depends android-sdk
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm depends android-sdk -t box
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm depends android-sdk -t dot
+
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm info @all
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm info gsed
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm info gsed --json
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm info gsed --yaml
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm info gsed version
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm info gsed license
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm info gsed summary
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm info gsed webpage
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm info gsed bin-url
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm info gsed bin-sha
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm info gsed install
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm info gsed formula
+
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm fetch   gtar
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm fetch   gtar -v
+
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm install gsed
+
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm info gsed installed-dir
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm info gsed installed-files
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm info gsed installed-receipt-path
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm info gsed installed-receipt-json
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm info gsed installed-receipt-yaml
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm info gsed installed-timestamp-unix
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm info gsed installed-timestamp-iso-8601
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm info gsed installed-timestamp-rfc-3339
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm info gsed installed-version
+
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm tree gsed
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm tree gsed -L 3
+
+      - run: |
+          printf '%s\n' 'version: 1000' >> ~/.uppm/repos.d/offical-core/formula/gsed.yml
+
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm ls-available
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm ls-installed
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm ls-outdated
+
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm is-available curl
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm is-installed gsed
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm is-outdated  gsed
+
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm upgrade   gsed
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm reinstall gsed
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm uninstall gsed
+
+
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm formula-repo-list
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-macos-x86_64
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm formula-repo-del my_repo
+
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm cleanup

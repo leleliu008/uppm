@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-13, macos-12]
+        os: [macos-13, macos-12, macos-11]
 
     runs-on: ${{ matrix.os }}
 
@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@main
 
       - run:  brew update
-      - run:  brew install --overwrite python@3.10 python@3.11
+      - run:  brew install --overwrite python@3.10 python@3.11 python@3.12
       - run:  brew install cmake ninja pkg-config curl sqlite jansson libyaml libgit2 libarchive
 
       - run: sed -i '.bak' '/Requires.private:/d' "$(brew --prefix libarchive)/lib/pkgconfig/libarchive.pc"
