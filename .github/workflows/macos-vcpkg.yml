@@ -1,4 +1,4 @@
-name: build with brew on macOS
+name: build with vcpkg on macOS
 
 on:
   push:
@@ -7,37 +7,38 @@ on:
     branches: [ master ]
 
 jobs:
+  vcpkg:
 
-  brew:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-13, macos-12, macos-11]
+        version: [macos-13, macos-12]
 
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.version }}
 
     steps:
-      - uses: actions/checkout@main
-
       - run:  brew update
-      - run:  brew install --overwrite python@3.10 python@3.11 python@3.12
-      - run:  brew install cmake ninja pkg-config curl sqlite jansson libyaml libgit2 libarchive
+      - run:  brew install cmake ninja pkg-config
 
-      - run: sed -i '.bak' '/Requires.private:/d' "$(brew --prefix libarchive)/lib/pkgconfig/libarchive.pc"
+      - uses: actions/checkout@v3
+
+      - uses: actions/checkout@v3
+        with:
+          repository: microsoft/vcpkg
+          path: vcpkg
+
+      - run:  cd vcpkg && ./bootstrap-vcpkg.sh
+
+      - run:  cd vcpkg && ./vcpkg install curl openssl libgit2 libarchive libyaml jansson sqlite3
 
       - run:  |
-          export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:/usr/local/opt/openssl@1.1/lib/pkgconfig:/usr/local/opt/curl/lib/pkgconfig:/usr/local/opt/libarchive/lib/pkgconfig"
-          CMAKE_EXE_LINKER_FLAGS='-L/usr/local/lib -L/usr/local/opt/openssl@1.1/lib -lssl -liconv -framework CoreFoundation -framework Security'
-          CMAKE_FIND_ROOT_PATH="$(brew --prefix openssl@1.1);$(brew --prefix curl);$(brew --prefix sqlite);$(brew --prefix libarchive)"
-
           cmake \
               -S . \
               -B build.d \
               -G Ninja \
+              -DCMAKE_TOOLCHAIN_FILE=$PWD/vcpkg/scripts/buildsystems/vcpkg.cmake \
               -DCMAKE_INSTALL_PREFIX=./output \
-              -DCMAKE_VERBOSE_MAKEFILE=ON \
-              -DCMAKE_EXE_LINKER_FLAGS="$CMAKE_EXE_LINKER_FLAGS" \
-              -DCMAKE_FIND_ROOT_PATH="$CMAKE_FIND_ROOT_PATH"
+              -DCMAKE_VERBOSE_MAKEFILE=ON
 
       - run:  cmake --build   build.d
       - run:  cmake --install build.d
@@ -119,36 +120,39 @@ jobs:
       - run:  ./output/bin/uppm cleanup
       - run:  ./output/bin/uppm upgrade-self
 
-  brew-sanitizer:
+  vcpkg-sanitizer:
+
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-13, macos-12, macos-11]
+        version: [macos-13, macos-12]
 
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.version }}
 
     steps:
-      - uses: actions/checkout@main
-
       - run:  brew update
-      - run:  brew install --overwrite python@3.10 python@3.11
-      - run:  brew install cmake ninja llvm pkg-config curl sqlite jansson libyaml libgit2 libarchive
+      - run:  brew install --overwrite python@3.10 python@3.11 python@3.12
+      - run:  brew install cmake ninja llvm pkg-config
 
-      - run: sed -i '.bak' '/Requires.private:/d' "$(brew --prefix libarchive)/lib/pkgconfig/libarchive.pc"
+      - uses: actions/checkout@v3
+
+      - uses: actions/checkout@v3
+        with:
+          repository: microsoft/vcpkg
+          path: vcpkg
+
+      - run:  cd vcpkg && ./bootstrap-vcpkg.sh
+
+      - run:  cd vcpkg && ./vcpkg install curl openssl libgit2 libarchive libyaml jansson sqlite3
 
       - run:  |
-          export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:/usr/local/opt/openssl@1.1/lib/pkgconfig:/usr/local/opt/curl/lib/pkgconfig:/usr/local/opt/libarchive/lib/pkgconfig"
-          CMAKE_EXE_LINKER_FLAGS='-L/usr/local/lib -L/usr/local/opt/openssl@1.1/lib -lssl -liconv -framework CoreFoundation -framework Security'
-          CMAKE_FIND_ROOT_PATH="$(brew --prefix openssl@1.1);$(brew --prefix curl);$(brew --prefix sqlite);$(brew --prefix libarchive)"
-
           cmake \
               -S . \
               -B build.d \
               -G Ninja \
+              -DCMAKE_TOOLCHAIN_FILE=$PWD/vcpkg/scripts/buildsystems/vcpkg.cmake \
               -DCMAKE_INSTALL_PREFIX=./output \
               -DCMAKE_VERBOSE_MAKEFILE=ON \
-              -DCMAKE_EXE_LINKER_FLAGS="$CMAKE_EXE_LINKER_FLAGS" \
-              -DCMAKE_FIND_ROOT_PATH="$CMAKE_FIND_ROOT_PATH" \
               -DCMAKE_BUILD_TYPE=Debug \
               -DCMAKE_C_COMPILER=/usr/local/opt/llvm/bin/clang \
               -DCMAKE_C_FLAGS="-fsanitize=undefined -fsanitize=address -fsanitize=leak"
