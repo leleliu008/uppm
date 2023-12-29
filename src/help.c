@@ -45,13 +45,17 @@ int uppm_help() {
         COLOR_OFF
         "    update all available formula repositories.\n\n"
         COLOR_GREEN
-        "uppm search  <REGULAR-EXPRESSION>\n"
+        "uppm search <REGULAR-EXPRESSION> [-v]\n"
         COLOR_OFF
         "    search all available packages whose name matches the given regular expression pattern.\n\n"
         COLOR_GREEN
-        "uppm info <PACKAGE-NAME>\n"
+        "uppm info-available <PACKAGE-NAME>\n"
         COLOR_OFF
-        "    show information of the given package.\n\n"
+        "    show information of the given available package.\n\n"
+        COLOR_GREEN
+        "uppm info-installed <PACKAGE-NAME>\n"
+        COLOR_OFF
+        "    show information of the given installed package.\n\n"
         COLOR_GREEN
         "uppm tree <PACKAGE-NAME> [--dirsfirst | -L N]\n"
         COLOR_OFF
@@ -67,7 +71,7 @@ int uppm_help() {
         "    If <OUTPUT-PATH> is treated as a directory, then it will be expanded to <OUTPUT-PATH>/<PACKAGE-NAME>-dependencies.<OUTPUT-TYPE>\n\n"
         "    If -o <OUTPUT-PATH> option is specified, the result will be written to file, otherwize, the result will be written to stdout.\n\n"
         COLOR_GREEN
-        "uppm fetch   <PACKAGE-NAME>\n"
+        "uppm fetch   <PACKAGE-NAME> [-v]\n"
         COLOR_OFF
         "    download the prebuild binary archive file of the given package to the local cache.\n\n"
         COLOR_GREEN
@@ -83,19 +87,19 @@ int uppm_help() {
         COLOR_OFF
         "    reinstall the given packages.\n\n"
         COLOR_GREEN
-        "uppm uninstall <PACKAGE-NAME>\n"
+        "uppm uninstall <PACKAGE-NAME> [-v]\n"
         COLOR_OFF
         "    uninstall the given packages.\n\n"
         COLOR_GREEN
-        "uppm ls-available\n"
+        "uppm ls-available [-v]\n"
         COLOR_OFF
         "    list the available packages.\n\n"
         COLOR_GREEN
-        "uppm ls-installed\n"
+        "uppm ls-installed [-v]\n"
         COLOR_OFF
         "    list the installed packages.\n\n"
         COLOR_GREEN
-        "uppm ls-outdated\n"
+        "uppm ls-outdated [-v]\n"
         COLOR_OFF
         "    list the outdated  packages.\n\n"
         COLOR_GREEN
@@ -234,10 +238,12 @@ int uppm_help() {
         "    to apply this feature, you may need to run the command 'autoload -U compinit && compinit' in your terminal (your current running shell must be zsh).\n\n"
         "uppm update\n"
         "    update all available formula repositories.\n\n"
-        "uppm search  <REGULAR-EXPRESSION>\n"
+        "uppm search <REGULAR-EXPRESSION> [-v]\n"
         "    search all available packages whose name matches the given regular expression pattern.\n\n"
-        "uppm info <PACKAGE-NAME>\n"
-        "    show information of the given package.\n\n"
+        "uppm info-available <PACKAGE-NAME>\n"
+        "    show information of the given available package.\n\n"
+        "uppm info-installed <PACKAGE-NAME>\n"
+        "    show information of the given installed package.\n\n"
         "uppm tree <PACKAGE-NAME> [--dirsfirst | -L N]\n"
         "    list files of the given installed package in a tree-like format.\n\n"
         "uppm depends <PACKAGE-NAME> [-t <OUTPUT-TYPE>] [-o <OUTPUT-PATH>]\n"
@@ -258,11 +264,11 @@ int uppm_help() {
         "    reinstall the given packages.\n\n"
         "uppm uninstall <PACKAGE-NAME>\n"
         "    uninstall the given packages.\n\n"
-        "uppm ls-available\n"
+        "uppm ls-available [-v]\n"
         "    list the available packages.\n\n"
-        "uppm ls-installed\n"
+        "uppm ls-installed [-v]\n"
         "    list the installed packages.\n\n"
-        "uppm ls-outdated\n"
+        "uppm ls-outdated [-v]\n"
         "    list the outdated  packages.\n\n"
         "uppm is-available <PACKAGE-NAME>\n"
         "    check if the given package is available.\n\n"
