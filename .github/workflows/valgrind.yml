@@ -68,21 +68,20 @@ jobs:
 
       - run:  $VALGRIND ./output/bin/uppm search    and
 
-      - run:  $VALGRIND ./output/bin/uppm info      tree
-        #- run:  $VALGRIND ./output/bin/uppm info      tree @all
-      - run:  $VALGRIND ./output/bin/uppm info      tree --shell
-      - run:  $VALGRIND ./output/bin/uppm info      tree --json
-      - run:  $VALGRIND ./output/bin/uppm info      tree --yaml
+      - run:  $VALGRIND ./output/bin/uppm info-available      tree
+      - run:  $VALGRIND ./output/bin/uppm info-available      tree --shell
+      - run:  $VALGRIND ./output/bin/uppm info-available      tree --json
+      - run:  $VALGRIND ./output/bin/uppm info-available      tree --yaml
 
-      - run:  $VALGRIND ./output/bin/uppm info      tree summary
-      - run:  $VALGRIND ./output/bin/uppm info      tree version
-      - run:  $VALGRIND ./output/bin/uppm info      tree license
-      - run:  $VALGRIND ./output/bin/uppm info      tree webpage
-      - run:  $VALGRIND ./output/bin/uppm info      tree bin-url
-      - run:  $VALGRIND ./output/bin/uppm info      tree bin-sha
-      - run:  $VALGRIND ./output/bin/uppm info      tree dep-pkg
-      - run:  $VALGRIND ./output/bin/uppm info      tree install
-      - run:  $VALGRIND ./output/bin/uppm info      tree formula
+      - run:  $VALGRIND ./output/bin/uppm info-available      tree summary
+      - run:  $VALGRIND ./output/bin/uppm info-available      tree version
+      - run:  $VALGRIND ./output/bin/uppm info-available      tree license
+      - run:  $VALGRIND ./output/bin/uppm info-available      tree webpage
+      - run:  $VALGRIND ./output/bin/uppm info-available      tree bin-url
+      - run:  $VALGRIND ./output/bin/uppm info-available      tree bin-sha
+      - run:  $VALGRIND ./output/bin/uppm info-available      tree dep-pkg
+      - run:  $VALGRIND ./output/bin/uppm info-available      tree install
+      - run:  $VALGRIND ./output/bin/uppm info-available      tree formula
 
       - run:  $VALGRIND ./output/bin/uppm depends   tree
       - run:  $VALGRIND ./output/bin/uppm depends   android-sdk
@@ -94,18 +93,18 @@ jobs:
 
       - run:  $VALGRIND ./output/bin/uppm install   tree
 
-      - run:  $VALGRIND ./output/bin/uppm info      tree installed-dir
-      - run:  $VALGRIND ./output/bin/uppm info      tree installed-files
-      - run:  $VALGRIND ./output/bin/uppm info      tree installed-receipt-path
-      - run:  $VALGRIND ./output/bin/uppm info      tree installed-receipt-json
-      - run:  $VALGRIND ./output/bin/uppm info      tree installed-receipt-yaml
-      - run:  $VALGRIND ./output/bin/uppm info      tree installed-timestamp-iso-8601
-      - run:  $VALGRIND ./output/bin/uppm info      tree installed-timestamp-rfc-3339
-      - run:  $VALGRIND ./output/bin/uppm info      tree installed-timestamp-unix
-      - run:  $VALGRIND ./output/bin/uppm info      tree installed-version
+      - run:  $VALGRIND ./output/bin/uppm info-available      tree installed-dir
+      - run:  $VALGRIND ./output/bin/uppm info-available      tree installed-files
+      - run:  $VALGRIND ./output/bin/uppm info-available      tree installed-receipt-path
+      - run:  $VALGRIND ./output/bin/uppm info-available      tree installed-receipt-json
+      - run:  $VALGRIND ./output/bin/uppm info-available      tree installed-receipt-yaml
+      - run:  $VALGRIND ./output/bin/uppm info-available      tree installed-timestamp-iso-8601
+      - run:  $VALGRIND ./output/bin/uppm info-available      tree installed-timestamp-rfc-3339
+      - run:  $VALGRIND ./output/bin/uppm info-available      tree installed-timestamp-unix
+      - run:  $VALGRIND ./output/bin/uppm info-available      tree installed-version
 
       - run: |
-          sed -i '/^version: /c version: 2.0.3' $(./output/bin/uppm info tree formula)
+          sed -i '/^version: /c version: 2.0.3' $(./output/bin/uppm info-available tree formula)
 
       - run:  $VALGRIND ./output/bin/uppm ls-available
       - run:  $VALGRIND ./output/bin/uppm ls-installed

@@ -62,33 +62,32 @@ jobs:
 
             run ./output/bin/uppm depends gzip
 
-            run ./output/bin/uppm info @all
-            run ./output/bin/uppm info gsed
-            run ./output/bin/uppm info gsed --json
-            run ./output/bin/uppm info gsed --yaml
-            run ./output/bin/uppm info gsed version
-            run ./output/bin/uppm info gsed license
-            run ./output/bin/uppm info gsed summary
-            run ./output/bin/uppm info gsed webpage
-            run ./output/bin/uppm info gsed bin-url
-            run ./output/bin/uppm info gsed bin-sha
-            run ./output/bin/uppm info gsed install
-            run ./output/bin/uppm info gsed formula
+            run ./output/bin/uppm info-available gsed
+            run ./output/bin/uppm info-available gsed --json
+            run ./output/bin/uppm info-available gsed --yaml
+            run ./output/bin/uppm info-available gsed version
+            run ./output/bin/uppm info-available gsed license
+            run ./output/bin/uppm info-available gsed summary
+            run ./output/bin/uppm info-available gsed webpage
+            run ./output/bin/uppm info-available gsed bin-url
+            run ./output/bin/uppm info-available gsed bin-sha
+            run ./output/bin/uppm info-available gsed install
+            run ./output/bin/uppm info-available gsed formula
 
             run ./output/bin/uppm fetch   gzip
             run ./output/bin/uppm fetch   gtar -v
 
             run ./output/bin/uppm install gsed
 
-            run ./output/bin/uppm info gsed installed-dir
-            run ./output/bin/uppm info gsed installed-files
-            run ./output/bin/uppm info gsed installed-receipt-path
-            run ./output/bin/uppm info gsed installed-receipt-json
-            run ./output/bin/uppm info gsed installed-receipt-yaml
-            run ./output/bin/uppm info gsed installed-timestamp-unix
-            run ./output/bin/uppm info gsed installed-timestamp-iso-8601
-            run ./output/bin/uppm info gsed installed-timestamp-rfc-3339
-            run ./output/bin/uppm info gsed installed-version
+            run ./output/bin/uppm info-available gsed installed-dir
+            run ./output/bin/uppm info-available gsed installed-files
+            run ./output/bin/uppm info-available gsed installed-receipt-path
+            run ./output/bin/uppm info-available gsed installed-receipt-json
+            run ./output/bin/uppm info-available gsed installed-receipt-yaml
+            run ./output/bin/uppm info-available gsed installed-timestamp-unix
+            run ./output/bin/uppm info-available gsed installed-timestamp-iso-8601
+            run ./output/bin/uppm info-available gsed installed-timestamp-rfc-3339
+            run ./output/bin/uppm info-available gsed installed-version
 
             run ./output/bin/uppm tree gsed
             run ./output/bin/uppm tree gsed -L 3

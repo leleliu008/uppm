@@ -14,7 +14,7 @@
 #include "sha256sum.h"
 #include "uppm.h"
 
-int uppm_download(const char * url, const char * expectedSHA256SUM, const char * downloadDIR, const char * unpackDIR, size_t stripComponentsNumber, bool verbose) {
+int uppm_download(const char * url, const char * expectedSHA256SUM, const char * downloadDIR, const char * unpackDIR, const size_t stripComponentsNumber, const bool verbose) {
     if (url == NULL) {
         return UPPM_ERROR_ARG_IS_NULL;
     }
@@ -85,7 +85,7 @@ int uppm_download(const char * url, const char * expectedSHA256SUM, const char *
 
     char fileNameExtension[21] = {0};
 
-    ret = uppm_examine_file_extension_from_url(fileNameExtension, 20, url);
+    ret = uppm_examine_filetype_from_url(url, fileNameExtension, 20);
 
     if (ret != UPPM_OK) {
         return ret;

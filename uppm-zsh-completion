@@ -9,7 +9,8 @@ _commands=(
     'buildinfo:show build information about this software.'
     'sysinfo:show basic information about your current running operation system.'
     'search:search packages whose name match the given keyword.'
-    'info:show infomation of the given package or all available packages.'
+    'info-available:show infomation of the given available package.'
+    'info-installed:show infomation of the given installed package.'
     'formula-view:view the formula of the given package.'
     'formula-edit:edit the formula of the given package.'
     'tree:list files of the given installed package in a tree-like format.'
@@ -135,23 +136,15 @@ function _uppm() {
                         '--output-dir=-[set the output dir]:output-dir:{_files -/}' \
                         '-v[verbose mode]'
                     ;;
-                info)
-                    if [ "$words[2]" = '@all' ] ; then
-                        _arguments \
-                            '1:package-name:(@all)' \
-                            '2:output-format:(--json --yaml --shell)'
-                    else
-                        case $words[3] in
-                            installed-*)
-                                _arguments \
-                                    '1:package-name:()' \
-                                    '2:key:(installed-dir installed-receipt-path installed-receipt-json installed-receipt-yaml installed-timestamp-unix installed-timestamp-rfc-3339 installed-timestamp-iso-8601 installed-version installed-files)'
-                                ;;
-                            *)  _arguments \
-                                    '1:package-name:(@all $(uppm ls-available 2>/dev/null))' \
-                                    '2:key:(formula summary version license webpage bin-url bin-sha bin-ft bin-fp dep-pkg installed-dir installed-receipt-path installed-receipt-json installed-receipt-yaml installed-timestamp-unix installed-timestamp-rfc-3339 installed-timestamp-iso-8601 installed-version installed-files --json --yaml --shell)'
-                        esac
-                    fi
+                info-available)
+                    _arguments \
+                        '1:package-name:_uppm_available_packages' \
+                        '2:key:(summary version license webpage bin-url bin-sha bin-ft bin-fp dep-pkg unpackd install --json --yaml --shell formula)'
+                    ;;
+                info-installed)
+                    _arguments \
+                        '1:package-name:_uppm_installed_packages' \
+                        '2:key:(summary version license webpage bin-url bin-sha dep-pkg unpackd install --json --yaml --shell --prefix --files timestamp-unix timestamp-rfc-3339 timestamp-iso-8601)'
                     ;;
                 tree)
                     _arguments \
@@ -192,6 +185,23 @@ function _uppm() {
                         '-v[verbose mode.  many messages will be output to terminal]' \
                         '-q[silent mode. no any messages will be output to terminal]'
                     ;;
+
+                search)
+                    _arguments \
+                        '1:reg:()' \
+                        '-v[verbose mode]'
+                    ;;
+
+                ls-available)
+                    _arguments '-v[verbose mode]'
+                    ;;
+                ls-installed)
+                    _arguments '-v[verbose mode]'
+                    ;;
+                ls-outdated)
+                    _arguments '-v[verbose mode]'
+                    ;;
+
                 is-available)
                     _arguments \
                         '1:package-name:_uppm_available_packages'

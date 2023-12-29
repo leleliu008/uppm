@@ -112,7 +112,7 @@ typedef struct {
 int  uppm_formula_lookup(const char * packageName, UPPMFormula * * formula);
 int  uppm_formula_locate(const char * packageName, char * * out);
 int  uppm_formula_edit(const char * packageName, const char * editor);
-int  uppm_formula_view(const char * packageName, bool raw);
+int  uppm_formula_view(const char * packageName, const bool raw);
 int  uppm_formula_cat (const char * packageName);
 int  uppm_formula_bat (const char * packageName);
 
@@ -199,37 +199,38 @@ int uppm_sysinfo();
 
 int uppm_buildinfo();
 
-int uppm_env(bool verbose);
+int uppm_env(const bool verbose);
 
 int uppm_home_dir(char buf[], size_t bufSize, size_t * outSize);
 
 int uppm_session_dir(char buf[], size_t bufSize, size_t * outSize);
 
-int uppm_search(const char * regPattern);
+int uppm_search(const char * regPattern, const bool verbose);
 
-int uppm_info(const char * packageName, const char * key);
+int uppm_available_info(const char * packageName, const char * key);
+int uppm_installed_info(const char * packageName, const char * key);
 
 int uppm_tree(const char * packageName, size_t argc, char* argv[]);
 
 int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, const char * outputPath);
 
-int uppm_fetch(const char * packageName, bool verbose);
+int uppm_fetch(const char * packageName, const bool verbose);
 
-int uppm_install(const char * packageName, bool verbose, bool force);
+int uppm_install(const char * packageName, const bool verbose, const bool force);
 
-int uppm_reinstall(const char * packageName, bool verbose);
+int uppm_reinstall(const char * packageName, const bool verbose);
 
-int uppm_uninstall(const char * packageName, bool verbose);
+int uppm_uninstall(const char * packageName, const bool verbose);
 
-int uppm_upgrade(const char * packageName, bool verbose);
+int uppm_upgrade(const char * packageName, const bool verbose);
 
-int uppm_upgrade_self(bool verbose);
+int uppm_upgrade_self(const bool verbose);
 
-int uppm_integrate_zsh_completion (const char * outputDIR, bool verbose);
-int uppm_integrate_bash_completion(const char * outputDIR, bool verbose);
-int uppm_integrate_fish_completion(const char * outputDIR, bool verbose);
+int uppm_integrate_zsh_completion (const char * outputDIR, const bool verbose);
+int uppm_integrate_bash_completion(const char * outputDIR, const bool verbose);
+int uppm_integrate_fish_completion(const char * outputDIR, const bool verbose);
 
-int uppm_cleanup(bool verbose);
+int uppm_cleanup(const bool verbose);
 
 int uppm_check_if_the_given_argument_matches_package_name_pattern(const char * arg);
 
@@ -237,28 +238,27 @@ int uppm_check_if_the_given_package_is_available(const char * packageName);
 int uppm_check_if_the_given_package_is_installed(const char * packageName);
 int uppm_check_if_the_given_package_is_outdated (const char * packageName);
 
-typedef int (*UPPMPackageNameCallbak)(const char * packageName, size_t index, const void * payload);
+typedef int (*UPPMPackageNameFilter)(const char * packageName, const size_t index, const bool verbose, const void * payload);
 
-int uppm_list_the_available_packages(UPPMPackageNameCallbak packageNameCallbak, const void * payload);
-int uppm_list_the_installed_packages();
-int uppm_list_the_outdated__packages();
-
-int uppm_show_the_available_packages();
+int uppm_show_the_available_packages(const bool verbose);
+int uppm_list_the_available_packages(const bool verbose, UPPMPackageNameFilter packageNameCallbak, const void * payload);
+int uppm_list_the_installed_packages(const bool verbose);
+int uppm_list_the__outdated_packages(const bool verbose);
 
 int uppm_git_sync(const char * gitRepositoryDIRPath, const char * remoteUrl, const char * remoteRef, const char * remoteTrackingRef, const char * checkoutToBranchName);
 
 int uppm_generate_url_transform_sample();
 
-int uppm_examine_file_extension_from_url(char buf[], size_t maxSize, const char * url);
+int uppm_examine_filetype_from_url(const char * url, char buf[], const size_t bufSize);
 
-int uppm_http_fetch_to_file(const char * url, const char * outputFilePath, bool verbose, bool showProgress);
+int uppm_http_fetch_to_file(const char * url, const char * outputFilePath, const bool verbose, const bool showProgress);
 
-int uppm_download(const char * url, const char * sha256sum, const char * downloadDIR, const char * unpackDIR, size_t stripComponentsNumber, bool verbose);
+int uppm_download(const char * url, const char * sha256sum, const char * downloadDIR, const char * unpackDIR, const size_t stripComponentsNumber, const bool verbose);
 
 int uppm_copy_file(const char * fromFilePath, const char * toFilePath);
 
-int uppm_mkdir_p(const char * dirPath, bool verbose);
+int uppm_mkdir_p(const char * dirPath, const bool verbose);
 
-int uppm_rm_r(const char * dirPath, bool verbose);
+int uppm_rm_r(const char * dirPath, const bool verbose);
 
 #endif

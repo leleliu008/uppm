@@ -6,13 +6,22 @@
 
 #include "uppm.h"
 
-static int package_name_callback(const char * packageName, size_t i, const void * regPattern) {
-    if (regex_matched(packageName, (char*)regPattern) == 0) {
-        if (i != 0) {
-            printf("\n");
-        }
+static size_t j = 0U;
 
-        return uppm_info(packageName, NULL);
+static int package_name_filter(const char * packageName, const size_t i, const bool verbose, const void * regPattern) {
+    if (regex_matched(packageName, (char*)regPattern) == 0) {
+        if (verbose) {
+            if (j != 0U) {
+                printf("\n");
+            }
+
+            j++;
+
+            return uppm_available_info(packageName, NULL);
+        } else {
+            puts(packageName);
+            return UPPM_OK;
+        }
     } else {
         if (errno == 0) {
             return UPPM_OK;
@@ -21,11 +30,9 @@ static int package_name_callback(const char * packageName, size_t i, const void 
             return UPPM_ERROR;
         }
     }
-
-    return UPPM_OK;
 }
 
-int uppm_search(const char * regPattern) {
+int uppm_search(const char * regPattern, const bool verbose) {
     if (regPattern == NULL) {
         return UPPM_ERROR_ARG_IS_NULL;
     }
@@ -34,5 +41,5 @@ int uppm_search(const char * regPattern) {
         return UPPM_ERROR_ARG_IS_EMPTY;
     }
 
-    return uppm_list_the_available_packages(package_name_callback, regPattern);
+    return uppm_list_the_available_packages(verbose, package_name_filter, regPattern);
 }

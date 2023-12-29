@@ -8,7 +8,7 @@
 
 #include "uppm.h"
 
-int uppm_list_the_outdated__packages() {
+int uppm_list_the__outdated_packages(const bool verbose) {
     char   uppmHomeDIR[PATH_MAX];
     size_t uppmHomeDIRLength;
 

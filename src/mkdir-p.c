@@ -6,7 +6,7 @@
 
 #include "uppm.h"
 
-int uppm_mkdir_p(const char * dir, bool verbose) {
+int uppm_mkdir_p(const char * dir, const bool verbose) {
     if (dir == NULL) {
         return UPPM_ERROR_ARG_IS_NULL;
     }

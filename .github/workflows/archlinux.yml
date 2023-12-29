@@ -47,39 +47,37 @@ jobs:
       - run:  ./output/bin/uppm depends android-sdk -t box
       - run:  ./output/bin/uppm depends android-sdk -t dot
 
-      - run:  ./output/bin/uppm info @all
-      - run:  ./output/bin/uppm info unzip
-      - run:  ./output/bin/uppm info unzip --json
-      - run:  ./output/bin/uppm info unzip --yaml
-      - run:  ./output/bin/uppm info unzip version
-      - run:  ./output/bin/uppm info unzip license
-      - run:  ./output/bin/uppm info unzip summary
-      - run:  ./output/bin/uppm info unzip webpage
-      - run:  ./output/bin/uppm info unzip bin-url
-      - run:  ./output/bin/uppm info unzip bin-sha
-      - run:  ./output/bin/uppm info unzip install
-      - run:  ./output/bin/uppm info unzip formula
+      - run:  ./output/bin/uppm info-available unzip
+      - run:  ./output/bin/uppm info-available unzip --json
+      - run:  ./output/bin/uppm info-available unzip --yaml
+      - run:  ./output/bin/uppm info-available unzip version
+      - run:  ./output/bin/uppm info-available unzip license
+      - run:  ./output/bin/uppm info-available unzip summary
+      - run:  ./output/bin/uppm info-available unzip webpage
+      - run:  ./output/bin/uppm info-available unzip bin-url
+      - run:  ./output/bin/uppm info-available unzip bin-sha
+      - run:  ./output/bin/uppm info-available unzip install
+      - run:  ./output/bin/uppm info-available unzip formula
 
       - run:  ./output/bin/uppm fetch   gzip
       - run:  ./output/bin/uppm fetch   gsed -v
 
       - run:  ./output/bin/uppm install unzip
 
-      - run:  ./output/bin/uppm info unzip installed-dir
-      - run:  ./output/bin/uppm info unzip installed-files
-      - run:  ./output/bin/uppm info unzip installed-receipt-path
-      - run:  ./output/bin/uppm info unzip installed-receipt-json
-      - run:  ./output/bin/uppm info unzip installed-receipt-yaml
-      - run:  ./output/bin/uppm info unzip installed-timestamp-unix
-      - run:  ./output/bin/uppm info unzip installed-timestamp-iso-8601
-      - run:  ./output/bin/uppm info unzip installed-timestamp-rfc-3339
-      - run:  ./output/bin/uppm info unzip installed-version
+      - run:  ./output/bin/uppm info-installed unzip --prefix
+      - run:  ./output/bin/uppm info-installed unzip --files
+      - run:  ./output/bin/uppm info-installed unzip --json
+      - run:  ./output/bin/uppm info-installed unzip --yaml
+      - run:  ./output/bin/uppm info-installed unzip timestamp-unix
+      - run:  ./output/bin/uppm info-installed unzip timestamp-iso-8601
+      - run:  ./output/bin/uppm info-installed unzip timestamp-rfc-3339
+      - run:  ./output/bin/uppm info-installed unzip version
 
       - run:  ./output/bin/uppm tree unzip
       - run:  ./output/bin/uppm tree unzip -L 3
 
       - run: |
-          sed -i '/^version: /c version: 6.0.28' $(./output/bin/uppm info unzip formula)
+          sed -i '/^version: /c version: 6.0.28' $(./output/bin/uppm info-available unzip formula)
 
       - run:  ./output/bin/uppm ls-available
       - run:  ./output/bin/uppm ls-installed

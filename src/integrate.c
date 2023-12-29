@@ -8,7 +8,7 @@
 
 #include "uppm.h"
 
-int uppm_integrate_zsh_completion(const char * outputDIR, bool verbose) {
+int uppm_integrate_zsh_completion(const char * outputDIR, const bool verbose) {
     char   uppmHomeDIR[PATH_MAX];
     size_t uppmHomeDIRLength;
 
@@ -145,13 +145,13 @@ int uppm_integrate_zsh_completion(const char * outputDIR, bool verbose) {
     return UPPM_OK;
 }
 
-int uppm_integrate_bash_completion(const char * outputDIR, bool verbose) {
+int uppm_integrate_bash_completion(const char * outputDIR, const bool verbose) {
     (void)outputDIR;
     (void)verbose;
     return UPPM_OK;
 }
 
-int uppm_integrate_fish_completion(const char * outputDIR, bool verbose) {
+int uppm_integrate_fish_completion(const char * outputDIR, const bool verbose) {
     (void)outputDIR;
     (void)verbose;
     return UPPM_OK;

@@ -68,7 +68,7 @@ static int uppm_list_dirs(const char * installedDIR, size_t installedDIRLength, 
     return UPPM_OK;
 }
 
-int uppm_env(bool verbose) {
+int uppm_env(const bool verbose) {
     char   uppmHomeDIR[PATH_MAX];
     size_t uppmHomeDIRLength;
 

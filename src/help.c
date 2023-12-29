@@ -49,7 +49,7 @@ int uppm_help() {
         COLOR_OFF
         "    search all available packages whose name matches the given regular expression pattern.\n\n"
         COLOR_GREEN
-        "uppm info <PACKAGE-NAME|@all>\n"
+        "uppm info <PACKAGE-NAME>\n"
         COLOR_OFF
         "    show information of the given package.\n\n"
         COLOR_GREEN
@@ -67,7 +67,7 @@ int uppm_help() {
         "    If <OUTPUT-PATH> is treated as a directory, then it will be expanded to <OUTPUT-PATH>/<PACKAGE-NAME>-dependencies.<OUTPUT-TYPE>\n\n"
         "    If -o <OUTPUT-PATH> option is specified, the result will be written to file, otherwize, the result will be written to stdout.\n\n"
         COLOR_GREEN
-        "uppm fetch   <PACKAGE-NAME|@all>\n"
+        "uppm fetch   <PACKAGE-NAME>\n"
         COLOR_OFF
         "    download the prebuild binary archive file of the given package to the local cache.\n\n"
         COLOR_GREEN
@@ -236,7 +236,7 @@ int uppm_help() {
         "    update all available formula repositories.\n\n"
         "uppm search  <REGULAR-EXPRESSION>\n"
         "    search all available packages whose name matches the given regular expression pattern.\n\n"
-        "uppm info <PACKAGE-NAME|@all>\n"
+        "uppm info <PACKAGE-NAME>\n"
         "    show information of the given package.\n\n"
         "uppm tree <PACKAGE-NAME> [--dirsfirst | -L N]\n"
         "    list files of the given installed package in a tree-like format.\n\n"
@@ -248,7 +248,7 @@ int uppm_help() {
         "    If <OUTPUT-PATH> is an existing directory or ends with slash, then it will be treated as a directory, otherwize, it will be treated as a filepath.\n\n"
         "    If <OUTPUT-PATH> is treated as a directory, then it will be expanded to <OUTPUT-PATH>/<PACKAGE-NAME>-dependencies.<OUTPUT-TYPE>\n\n"
         "    If -o <OUTPUT-PATH> option is specified, the result will be written to file, otherwize, the result will be written to stdout.\n\n"
-        "uppm fetch   <PACKAGE-NAME|@all>\n"
+        "uppm fetch   <PACKAGE-NAME>\n"
         "    download the prebuild binary archive file of the given package to the local cache.\n\n"
         "uppm   install <PACKAGE-NAME>\n"
         "    install the given packages.\n\n"

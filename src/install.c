@@ -22,7 +22,7 @@
 
 extern int record_installed_files(const char * packageInstalledRootDIRPath);
 
-int uppm_install(const char * packageName, bool verbose, bool force) {
+int uppm_install(const char * packageName, const bool verbose, const bool force) {
     UPPMFormula * formula = NULL;
 
     int ret = uppm_formula_lookup(packageName, &formula);
@@ -154,7 +154,7 @@ int uppm_install(const char * packageName, bool verbose, bool force) {
 
     char binFileNameExtension[21] = {0};
 
-    ret = uppm_examine_file_extension_from_url(binFileNameExtension, 20, formula->bin_url);
+    ret = uppm_examine_filetype_from_url(formula->bin_url, binFileNameExtension, 20);
 
     if (ret != UPPM_OK) {
         uppm_formula_free(formula);

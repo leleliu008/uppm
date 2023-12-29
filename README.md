@@ -279,50 +279,53 @@ cmake --install build.d
 
     ```bash
     uppm search curl
-    uppm search lib
+    uppm search '^lib' -v
     ```
 
-- **show information of the given package**
+- **show information of the given available package**
 
     ```bash
-    uppm info curl
-    uppm info curl version
-    uppm info curl summary
-    uppm info curl webpage
-    uppm info curl bin-url
-    uppm info curl bin-sha
-    uppm info curl bin-ft  # filetype of bin-url
-    uppm info curl bin-fp  # filepath of bin-url
-    uppm info curl install
-    uppm info curl formula
+    uppm info-available curl
 
-    uppm info curl installed-dir
-    uppm info curl installed-files
-    uppm info curl installed-version
-    uppm info curl installed-receipt-path
-    uppm info curl installed-receipt-json
-    uppm info curl installed-receipt-yaml
-    uppm info curl installed-timestamp-unix
-    uppm info curl installed-timestamp-iso-8601
-    uppm info curl installed-timestamp-rfc-3339
+    uppm info-available curl --json
+    uppm info-available curl --json | jq .
 
-    uppm info curl --json
-    uppm info curl --json | jq .
+    uppm info-available curl --yaml
+    uppm info-available curl --yaml | yq .
 
-    uppm info curl --yaml
-    uppm info curl --yaml | yq .
+    uppm info-available curl version
+    uppm info-available curl summary
+    uppm info-available curl webpage
+    uppm info-available curl bin-url
+    uppm info-available curl bin-sha
+    uppm info-available curl bin-ft  # filetype of bin-url
+    uppm info-available curl bin-fp  # filepath of bin-url
+    uppm info-available curl install
+    uppm info-available curl formula
+    ```
 
-    uppm info curl --shell
+- **show information of the given installed package**
 
-    uppm info @all
+    ```bash
+    uppm info-installed curl --json
+    uppm info-installed curl --json | jq .
 
-    uppm info @all --shell
+    uppm info-installed curl --yaml
+    uppm info-installed curl --yaml | yq .
 
-    uppm info @all --json
-    uppm info @all --json | jq .
+    uppm info-installed curl --prefix
+    uppm info-installed curl --files
 
-    uppm info @all --yaml
-    uppm info @all --yaml | yq .
+    uppm info-installed curl
+    uppm info-installed curl version
+    uppm info-installed curl summary
+    uppm info-installed curl webpage
+    uppm info-installed curl bin-url
+    uppm info-installed curl bin-sha
+    uppm info-installed curl install
+    uppm info-installed curl timestamp-unix
+    uppm info-installed curl timestamp-iso-8601
+    uppm info-installed curl timestamp-rfc-3339
     ```
 
 - **show packages that are depended by the given package**
@@ -355,10 +358,7 @@ cmake --install build.d
 
     ```bash
     uppm fetch curl
-    uppm fetch @all
-
     uppm fetch curl -v
-    uppm fetch @all -v
     ```
 
 - **install packages**
@@ -469,19 +469,19 @@ cmake --install build.d
 - **list all available packages**
 
     ```bash
-    uppm ls-available
+    uppm ls-available -v
     ```
 
 - **list all installed packages**
 
     ```bash
-    uppm ls-installed
+    uppm ls-installed -v
     ```
 
 - **list all outdated packages**
 
     ```bash
-    uppm ls-outdated
+    uppm ls-outdated -v
     ```
 
 - **check if the given package is available ?**

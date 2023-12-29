@@ -71,7 +71,7 @@ int uppm_main(int argc, char* argv[]) {
     }
 
     if (strcmp(argv[1], "search") == 0) {
-        int ret = uppm_search(argv[2]);
+        int ret = uppm_search(argv[2], verbose);
 
         if (ret == UPPM_ERROR_ARG_IS_NULL) {
             fprintf(stderr, "Usage: %s search <REGULAR-EXPRESS_PATTERN>, <REGULAR-EXPRESS_PATTERN> is unspecified.\n", argv[0]);
@@ -88,17 +88,43 @@ int uppm_main(int argc, char* argv[]) {
         return ret;
     }
 
-    if (strcmp(argv[1], "info") == 0) {
-        int ret = uppm_info(argv[2], argv[3]);
+    if (strcmp(argv[1], "info-available") == 0) {
+        int ret = uppm_available_info(argv[2], argv[3]);
 
         if (ret == UPPM_ERROR_ARG_IS_NULL) {
-            fprintf(stderr, "Usage: %s info <PACKAGE-NAME> [KEY], <PACKAGE-NAME> is unspecified.\n", argv[0]);
+            fprintf(stderr, "Usage: %s info-available <PACKAGE-NAME> [KEY], <PACKAGE-NAME> is unspecified.\n", argv[0]);
         } else if (ret == UPPM_ERROR_ARG_IS_EMPTY) {
-            fprintf(stderr, "Usage: %s info <PACKAGE-NAME> [KEY], <PACKAGE-NAME> should be a non-empty string.\n", argv[0]);
+            fprintf(stderr, "Usage: %s info-available <PACKAGE-NAME> [KEY], <PACKAGE-NAME> should be a non-empty string.\n", argv[0]);
         } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
-            fprintf(stderr, "Usage: %s info <PACKAGE-NAME> [KEY], <PACKAGE-NAME> does not match pattern %s\n", argv[0], UPPM_PACKAGE_NAME_PATTERN);
+            fprintf(stderr, "Usage: %s info-available <PACKAGE-NAME> [KEY], <PACKAGE-NAME> does not match pattern %s\n", argv[0], UPPM_PACKAGE_NAME_PATTERN);
         } else if (ret == UPPM_ERROR_ARG_IS_UNKNOWN) {
-            fprintf(stderr, "Usage: %s info <PACKAGE-NAME> [KEY], unrecognized KEY: %s\n", argv[0], argv[3]);
+            fprintf(stderr, "Usage: %s info-available <PACKAGE-NAME> [KEY], unrecognized KEY: %s\n", argv[0], argv[3]);
+        } else if (ret == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
+            fprintf(stderr, "package '%s' is not available.\n", argv[2]);
+        } else if (ret == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
+            fprintf(stderr, "package '%s' is not installed.\n", argv[2]);
+        } else if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
+            fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
+        } else if (ret == UPPM_ERROR_ENV_PATH_NOT_SET) {
+            fprintf(stderr, "%s\n", "PATH environment variable is not set.\n");
+        } else if (ret == UPPM_ERROR) {
+            fprintf(stderr, "occurs error.\n");
+        }
+
+        return ret;
+    }
+
+    if (strcmp(argv[1], "info-installed") == 0) {
+        int ret = uppm_installed_info(argv[2], argv[3]);
+
+        if (ret == UPPM_ERROR_ARG_IS_NULL) {
+            fprintf(stderr, "Usage: %s info-installed <PACKAGE-NAME> [KEY], <PACKAGE-NAME> is unspecified.\n", argv[0]);
+        } else if (ret == UPPM_ERROR_ARG_IS_EMPTY) {
+            fprintf(stderr, "Usage: %s info-installed <PACKAGE-NAME> [KEY], <PACKAGE-NAME> should be a non-empty string.\n", argv[0]);
+        } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
+            fprintf(stderr, "Usage: %s info-installed <PACKAGE-NAME> [KEY], <PACKAGE-NAME> does not match pattern %s\n", argv[0], UPPM_PACKAGE_NAME_PATTERN);
+        } else if (ret == UPPM_ERROR_ARG_IS_UNKNOWN) {
+            fprintf(stderr, "Usage: %s info-installed <PACKAGE-NAME> [KEY], unrecognized KEY: %s\n", argv[0], argv[3]);
         } else if (ret == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
             fprintf(stderr, "package '%s' is not available.\n", argv[2]);
         } else if (ret == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
@@ -593,7 +619,7 @@ int uppm_main(int argc, char* argv[]) {
     }
 
     if (strcmp(argv[1], "ls-available") == 0) {
-        int ret = uppm_show_the_available_packages();
+        int ret = uppm_show_the_available_packages(verbose);
 
         if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
             fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
@@ -607,7 +633,7 @@ int uppm_main(int argc, char* argv[]) {
     }
 
     if (strcmp(argv[1], "ls-installed") == 0) {
-        int ret = uppm_list_the_installed_packages();
+        int ret = uppm_list_the_installed_packages(verbose);
 
         if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
             fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
@@ -621,7 +647,7 @@ int uppm_main(int argc, char* argv[]) {
     }
 
     if (strcmp(argv[1], "ls-outdated") == 0) {
-        int ret = uppm_list_the_outdated__packages();
+        int ret = uppm_list_the__outdated_packages(verbose);
 
         if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
             fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");

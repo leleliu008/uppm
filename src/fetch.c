@@ -14,25 +14,7 @@
 
 #include "uppm.h"
 
-static int package_name_callback(const char * packageName, size_t i, const void * payload) {
-    return uppm_fetch(packageName, *((bool*)payload));
-}
-
-int uppm_fetch(const char * packageName, bool verbose) {
-    if (packageName == NULL) {
-        return UPPM_ERROR_ARG_IS_NULL;
-    }
-
-    if (packageName[0] == '\0') {
-        return UPPM_ERROR_ARG_IS_EMPTY;
-    }
-
-    if (strcmp(packageName, "@all") == 0) {
-        return uppm_list_the_available_packages(package_name_callback, &verbose);
-    }
-
-    //////////////////////////////////////////////////////////////////////////
-
+int uppm_fetch(const char * packageName, const bool verbose) {
     UPPMFormula * formula = NULL;
 
     int ret = uppm_formula_lookup(packageName, &formula);
@@ -91,7 +73,7 @@ int uppm_fetch(const char * packageName, bool verbose) {
 
     char fileNameExtension[21] = {0};
 
-    ret = uppm_examine_file_extension_from_url(fileNameExtension, 20, formula->bin_url);
+    ret = uppm_examine_filetype_from_url(formula->bin_url, fileNameExtension, 20);
 
     if (ret != UPPM_OK) {
         uppm_formula_free(formula);

@@ -9,7 +9,7 @@
 
 #include "uppm.h"
 
-static int uppm_cleanup_downloads(bool verbose) {
+static int uppm_cleanup_downloads(const bool verbose) {
     char   uppmHomeDIR[PATH_MAX];
     size_t uppmHomeDIRLength;
 
@@ -91,7 +91,7 @@ static int uppm_cleanup_downloads(bool verbose) {
     }
 }
 
-static int uppm_cleanup_installed(bool verbose) {
+static int uppm_cleanup_installed(const bool verbose) {
     char   uppmHomeDIR[PATH_MAX];
     size_t uppmHomeDIRLength;
 
@@ -178,7 +178,7 @@ static int uppm_cleanup_installed(bool verbose) {
     }
 }
 
-int uppm_cleanup(bool verbose) {
+int uppm_cleanup(const bool verbose) {
     (void)verbose;
     return 0;
 }

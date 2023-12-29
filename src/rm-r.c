@@ -8,7 +8,7 @@
 
 #include "uppm.h"
 
-int uppm_rm_r(const char * dirPath, bool verbose) {
+int uppm_rm_r(const char * dirPath, const bool verbose) {
     if (dirPath == NULL) {
         return UPPM_ERROR_ARG_IS_NULL;
     }

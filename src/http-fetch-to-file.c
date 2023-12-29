@@ -6,7 +6,7 @@
 
 #include "uppm.h"
 
-int uppm_http_fetch_to_file(const char * url, const char * outputFilePath, bool verbose, bool showProgress) {
+int uppm_http_fetch_to_file(const char * url, const char * outputFilePath, const bool verbose, const bool showProgress) {
     const char * urlTransformCommandPath = getenv("UPPM_URL_TRANSFORM");
 
     if (urlTransformCommandPath == NULL || urlTransformCommandPath[0] == '\0') {

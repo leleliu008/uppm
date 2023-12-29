@@ -12,7 +12,7 @@
 
 #include "uppm.h"
 
-int uppm_upgrade_self(bool verbose) {
+int uppm_upgrade_self(const bool verbose) {
     char   uppmHomeDIR[PATH_MAX];
     size_t uppmHomeDIRLength;
 
