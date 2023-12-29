@@ -72,15 +72,13 @@ jobs:
 
       - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm install gsed
 
-      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm info-available gsed installed-dir
-      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm info-available gsed installed-files
-      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm info-available gsed installed-receipt-path
-      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm info-available gsed installed-receipt-json
-      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm info-available gsed installed-receipt-yaml
-      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm info-available gsed installed-timestamp-unix
-      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm info-available gsed installed-timestamp-iso-8601
-      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm info-available gsed installed-timestamp-rfc-3339
-      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm info-available gsed installed-version
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm info-installed gsed --files
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm info-installed gsed --json
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm info-installed gsed --yaml
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm info-installed gsed timestamp-unix
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm info-installed gsed timestamp-iso-8601
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm info-installed gsed timestamp-rfc-3339
+      - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm info-installed gsed version
 
       - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm tree gsed
       - run:  ~/.ppkg/installed/macos-*-x86_64/uppm/bin/uppm tree gsed -L 3

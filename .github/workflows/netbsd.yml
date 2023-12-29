@@ -79,15 +79,13 @@ jobs:
 
             run ./output/bin/uppm install gsed
 
-            run ./output/bin/uppm info-available gsed installed-dir
-            run ./output/bin/uppm info-available gsed installed-files
-            run ./output/bin/uppm info-available gsed installed-receipt-path
-            run ./output/bin/uppm info-available gsed installed-receipt-json
-            run ./output/bin/uppm info-available gsed installed-receipt-yaml
-            run ./output/bin/uppm info-available gsed installed-timestamp-unix
-            run ./output/bin/uppm info-available gsed installed-timestamp-iso-8601
-            run ./output/bin/uppm info-available gsed installed-timestamp-rfc-3339
-            run ./output/bin/uppm info-available gsed installed-version
+            run ./output/bin/uppm info-installed gsed --files
+            run ./output/bin/uppm info-installed gsed --json
+            run ./output/bin/uppm info-installed gsed --yaml
+            run ./output/bin/uppm info-installed gsed timestamp-unix
+            run ./output/bin/uppm info-installed gsed timestamp-iso-8601
+            run ./output/bin/uppm info-installed gsed timestamp-rfc-3339
+            run ./output/bin/uppm info-installed gsed version
 
             run ./output/bin/uppm tree gsed
             run ./output/bin/uppm tree gsed -L 3
