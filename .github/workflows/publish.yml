@@ -67,7 +67,7 @@ jobs:
       - run: ./ppkg install netbsd-${{ matrix.target-version }}-amd64/uppm --link-type=static-full
       - run: ./ppkg pack    netbsd-${{ matrix.target-version }}-amd64/uppm
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: uppm---netbsd-${{ matrix.target-version }}-amd64-tar-xz
           path: uppm-*-netbsd-${{ matrix.target-version }}-amd64.tar.xz
@@ -97,7 +97,7 @@ jobs:
       - run: ./ppkg install openbsd-${{ matrix.target-version }}-amd64/uppm --link-type=static-most
       - run: ./ppkg pack    openbsd-${{ matrix.target-version }}-amd64/uppm
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: uppm---openbsd-${{ matrix.target-version }}-amd64-tar-xz
           path: uppm-*-openbsd-${{ matrix.target-version }}-amd64.tar.xz
@@ -126,7 +126,7 @@ jobs:
       - run: ./ppkg install freebsd-${{ matrix.target-version }}-amd64/uppm --link-type=static-full
       - run: ./ppkg pack    freebsd-${{ matrix.target-version }}-amd64/uppm
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: uppm---freebsd-${{ matrix.target-version }}-amd64-tar-xz
           path: uppm-*-freebsd-${{ matrix.target-version }}-amd64.tar.xz
@@ -156,7 +156,7 @@ jobs:
       - run: ./xcpkg install MacOSX/${{ matrix.target-version }}/${{ matrix.target-arch }}/uppm --link-type=static-prefered --install-lib=static
       - run: ./xcpkg pack    MacOSX/${{ matrix.target-version }}/${{ matrix.target-arch }}/uppm -o .
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: uppm---macos${{ matrix.target-version }}-${{ matrix.target-arch }}-tar-xz
           path: uppm-*-macos*.tar.xz
@@ -174,7 +174,7 @@ jobs:
       - run: apk update
       - run: apk add wget g++ libc-dev linux-headers
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - run: wget https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
       - run: chmod a+x ppkg
@@ -187,7 +187,7 @@ jobs:
       - run: ./ppkg install uppm --link-type=static-only --install-lib=static
       - run: ./ppkg pack    uppm -o .
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: uppm---linux-x86_64-tar-xz
           path: uppm-*-linux-x86_64.tar.xz
@@ -241,7 +241,7 @@ jobs:
 
       - run: ls
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: uppm---linux-aarch64-tar-xz
           path: uppm-*-linux-aarch64.tar.xz
@@ -295,7 +295,7 @@ jobs:
 
       - run: ls
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: uppm---linux-ppc64le-tar-xz
           path: uppm-*-linux-ppc64le.tar.xz
@@ -349,7 +349,7 @@ jobs:
 
       - run: ls
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: uppm---linux-riscv64-tar-xz
           path: uppm-*-linux-riscv64.tar.xz
@@ -404,7 +404,7 @@ jobs:
 
       - run: ls
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: uppm---linux-s390x-tar-xz
           path: uppm-*-linux-s390x.tar.xz
@@ -420,110 +420,110 @@ jobs:
       GH_TOKEN: ${{ github.token }}
 
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: uctags---netbsd-9.1-amd64-tar-xz
           path: .
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: uctags---netbsd-9.2-amd64-tar-xz
           path: .
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: uctags---netbsd-9.3-amd64-tar-xz
           path: .
 
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: uctags---openbsd-7.2-amd64-tar-xz
           path: .
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: uctags---openbsd-7.3-amd64-tar-xz
           path: .
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: uctags---openbsd-7.4-amd64-tar-xz
           path: .
 
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: uctags---freebsd-13.0-amd64-tar-xz
           path: .
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: uctags---freebsd-13.1-amd64-tar-xz
           path: .
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: uctags---freebsd-13.2-amd64-tar-xz
           path: .
 
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: uppm---macos10.15-x86_64-tar-xz
           path: .
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: uppm---macos11.0-x86_64-tar-xz
           path: .
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: uppm---macos12.0-x86_64-tar-xz
           path: .
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: uppm---macos13.0-x86_64-tar-xz
           path: .
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: uppm---macos11.0-arm64-tar-xz
           path: .
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: uppm---macos12.0-arm64-tar-xz
           path: .
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: uppm---macos13.0-arm64-tar-xz
           path: .
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: uppm---linux-x86_64-tar-xz
           path: .
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: uppm---linux-aarch64-tar-xz
           path: .
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: uppm---linux-ppc64le-tar-xz
           path: .
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: uppm---linux-riscv64-tar-xz
           path: .
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: uppm---linux-s390x-tar-xz
           path: .

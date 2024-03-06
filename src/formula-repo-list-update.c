@@ -50,15 +50,15 @@ static int uppm_formula_repo_url_of_official_core(char buf[], const size_t bufSi
         osVersMajor = 13;
     }
 
-    ret = snprintf(buf, bufSize, "https://github.com/leleliu008/uppm-formula-repository-%s-%d.0-%s", osType, osVersMajor, osArch);
+    ret = snprintf(buf, bufSize, "https://github.com/leleliu008/uppm-package-repository-%s-%d.0-%s", osType, osVersMajor, osArch);
 #elif defined (__DragonFly__)
-    ret = snprintf(buf, bufSize, "https://github.com/leleliu008/uppm-formula-repository-%s-%s-%s", osType, osVers, osArch);
+    ret = snprintf(buf, bufSize, "https://github.com/leleliu008/uppm-package-repository-%s-%s-%s", osType, osVers, osArch);
 #elif defined (__FreeBSD__)
-    ret = snprintf(buf, bufSize, "https://github.com/leleliu008/uppm-formula-repository-%s-%s-%s", osType, osVers, osArch);
+    ret = snprintf(buf, bufSize, "https://github.com/leleliu008/uppm-package-repository-%s-%s-%s", osType, osVers, osArch);
 #elif defined (__OpenBSD__)
-    ret = snprintf(buf, bufSize, "https://github.com/leleliu008/uppm-formula-repository-%s-%s-%s", osType, osVers, osArch);
+    ret = snprintf(buf, bufSize, "https://github.com/leleliu008/uppm-package-repository-%s-%s-%s", osType, osVers, osArch);
 #elif defined (__NetBSD__)
-    ret = snprintf(buf, bufSize, "https://github.com/leleliu008/uppm-formula-repository-%s-%s-%s", osType, osVers, osArch);
+    ret = snprintf(buf, bufSize, "https://github.com/leleliu008/uppm-package-repository-%s-%s-%s", osType, osVers, osArch);
 #else
     ret = snprintf(buf, bufSize, "https://github.com/leleliu008/uppm-formula-repository-%s-%s", osType, osArch);
 #endif
