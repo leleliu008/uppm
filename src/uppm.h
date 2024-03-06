@@ -250,4 +250,8 @@ int uppm_examine_file_extension_from_url(char buf[], size_t maxSize, const char 
 
 int uppm_http_fetch_to_file(const char * url, const char * outputFilePath, bool verbose, bool showProgress);
 
+int uppm_copy_file(const char * fromFilePath, const char * toFilePath);
+
+int uppm_rm_r(const char * dirPath, const bool verbose);
+
 #endif

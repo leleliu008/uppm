@@ -10,13 +10,13 @@ int uppm_formula_repo_list_update() {
     int ret = uppm_formula_repo_list(&formulaRepoList);
 
     if (ret == UPPM_OK) {
-        bool officalCoreIsThere = false;
+        bool officialCoreIsThere = false;
 
         for (size_t i = 0; i < formulaRepoList->size; i++) {
             UPPMFormulaRepo * formulaRepo = formulaRepoList->repos[i];
 
-            if (strcmp(formulaRepo->name, "offical-core") == 0) {
-                officalCoreIsThere = true;
+            if (strcmp(formulaRepo->name, "official-core") == 0) {
+                officialCoreIsThere = true;
             }
 
             ret = uppm_formula_repo_sync(formulaRepo);
@@ -28,7 +28,7 @@ int uppm_formula_repo_list_update() {
 
         uppm_formula_repo_list_free(formulaRepoList);
 
-        if (!officalCoreIsThere) {
+        if (!officialCoreIsThere) {
             char osType[31] = {0};
 
             if (sysinfo_type(osType, 30) != 0) {
@@ -45,7 +45,7 @@ int uppm_formula_repo_list_update() {
             char     formulaRepoUrl[formulaRepoUrlLength];
             snprintf(formulaRepoUrl, formulaRepoUrlLength, "https://github.com/leleliu008/uppm-formula-repository-%s-%s", osType, osArch);
 
-            ret = uppm_formula_repo_add("offical-core", formulaRepoUrl, "master", false, true);
+            ret = uppm_formula_repo_add("official-core", formulaRepoUrl, "master", false, true);
         }
     }
 

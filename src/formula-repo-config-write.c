@@ -20,9 +20,17 @@ int uppm_formula_repo_config_write(const char * formulaRepoDirPath, const char *
         timestamp_updated = "";
     }
 
-    size_t strLength = strlen(formulaRepoUrl) + strlen(branchName) + strlen(timestamp_created) + strlen(timestamp_updated) + 75U;
-    char   str[strLength + 1U];
-    snprintf(str, strLength + 1U, "url: %s\nbranch: %s\npinned: %1d\nenabled: %1d\ntimestamp-created: %s\ntimestamp-updated: %s\n", formulaRepoUrl, branchName, pinned, enabled, timestamp_created, timestamp_updated);
+    size_t strCapacity = strlen(formulaRepoUrl) + strlen(branchName) + strlen(timestamp_created) + strlen(timestamp_updated) + 67U;
+    char   str[strCapacity];
+
+    int ret = snprintf(str, strCapacity, "url: %s\nbranch: %s\npinned: %1d\nenabled: %1d\ncreated: %s\nupdated: %s\n", formulaRepoUrl, branchName, pinned, enabled, timestamp_created, timestamp_updated);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
+
+    size_t strLength = ret;
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

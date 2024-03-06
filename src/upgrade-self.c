@@ -1,20 +1,88 @@
 #include <math.h>
+#include <errno.h>
 #include <string.h>
+
+#include <limits.h>
 #include <sys/stat.h>
 
 #include "core/sysinfo.h"
 #include "core/self.h"
 #include "core/tar.h"
 #include "core/log.h"
-#include "core/cp.h"
 
 #include "uppm.h"
 
-int uppm_upgrade_self(bool verbose) {
-    char   uppmHomeDir[256];
-    size_t uppmHomeDirLength;
+static int uppm_upgrade_tar_filename(char buf[], const size_t bufSize, const char * latestVersion) {
+    char osType[31] = {0};
 
-    int ret = uppm_home_dir(uppmHomeDir, 256, &uppmHomeDirLength);
+    if (sysinfo_type(osType, 30) != 0) {
+        return UPPM_ERROR;
+    }
+
+    char osArch[31] = {0};
+
+    if (sysinfo_arch(osArch, 30) != 0) {
+        return UPPM_ERROR;
+    }
+
+    char osVers[31] = {0};
+
+    if (sysinfo_vers(osVers, 30) != 0) {
+        return UPPM_ERROR;
+    }
+
+    int ret;
+
+#if defined (__APPLE__)
+    int osVersMajor = 0;
+
+    for (int i = 0; i < 31; i++) {
+        if (osVers[i] == '\0') {
+            break;
+        }
+
+        if (osVers[i] == '.') {
+            osVers[i] == '\0';
+            osVersMajor = atoi(osVers);
+            break;
+        }
+    }
+
+    if (osVersMajor < 10) {
+        fprintf(stderr, "MacOSX %d.x is not supported.\n", osVersMajor);
+        return UPPM_ERROR;
+    }
+
+    if (osVersMajor > 13) {
+        osVersMajor = 13;
+    }
+
+    ret = snprintf(buf, bufSize, "uppm-%s-%s-%s.0-%s.tar.xz", latestVersion, osType, osVersMajor, osArch);
+#elif defined (__DragonFly__)
+    ret = snprintf(buf, bufSize, "uppm-%s-%s-%s-%s.tar.xz", latestVersion, osType, osVers, osArch);
+#elif defined (__FreeBSD__)
+    ret = snprintf(buf, bufSize, "uppm-%s-%s-%s-%s.tar.xz", latestVersion, osType, osVers, osArch);
+#elif defined (__OpenBSD__)
+    ret = snprintf(buf, bufSize, "uppm-%s-%s-%s-%s.tar.xz", latestVersion, osType, osVers, osArch);
+#elif defined (__NetBSD__)
+    ret = snprintf(buf, bufSize, "uppm-%s-%s-%s-%s.tar.xz", latestVersion, osType, osVers, osArch);
+#else
+    ret = snprintf(buf, bufSize, "uppm-%s-%s-%s.tar.xz", latestVersion, osType, osArch);
+#endif
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    } else {
+        return UPPM_OK;
+    }
+}
+
+int uppm_upgrade_self(const bool verbose) {
+    char   uppmHomeDIR[PATH_MAX];
+    size_t uppmHomeDIRLength;
+
+    int ret = uppm_home_dir(uppmHomeDIR, PATH_MAX, &uppmHomeDIRLength);
 
     if (ret != UPPM_OK) {
         return ret;
@@ -24,18 +92,77 @@ int uppm_upgrade_self(bool verbose) {
 
     struct stat st;
 
-    size_t   uppmTmpDirLength = uppmHomeDirLength + 5U;
-    char     uppmTmpDir[uppmTmpDirLength];
-    snprintf(uppmTmpDir, uppmTmpDirLength, "%s/tmp", uppmHomeDir);
+    size_t uppmRunDIRCapacity = uppmHomeDIRLength + 5U;
+    char   uppmRunDIR[uppmRunDIRCapacity];
 
-    if (stat(uppmTmpDir, &st) == 0) {
+    ret = snprintf(uppmRunDIR, uppmRunDIRCapacity, "%s/run", uppmHomeDIR);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
+
+    if (stat(uppmRunDIR, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {
-            fprintf(stderr, "'%s\n' was expected to be a directory, but it was not.\n", uppmTmpDir);
-            return UPPM_ERROR;
+            if (unlink(uppmRunDIR) == 0) {
+                perror(uppmRunDIR);
+                return UPPM_ERROR;
+            }
+
+            if (mkdir(uppmRunDIR, S_IRWXU) != 0) {
+                if (errno != EEXIST) {
+                    perror(uppmRunDIR);
+                    return UPPM_ERROR;
+                }
+            }
         }
     } else {
-        if (mkdir(uppmTmpDir, S_IRWXU) != 0) {
-            perror(uppmTmpDir);
+        if (mkdir(uppmRunDIR, S_IRWXU) != 0) {
+            if (errno != EEXIST) {
+                perror(uppmRunDIR);
+                return UPPM_ERROR;
+            }
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
+    size_t sessionDIRCapacity = uppmRunDIRCapacity + 20U;
+    char   sessionDIR[sessionDIRCapacity];
+
+    ret = snprintf(sessionDIR, sessionDIRCapacity, "%s/%d", uppmRunDIR, getpid());
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
+
+    if (lstat(sessionDIR, &st) == 0) {
+        if (S_ISDIR(st.st_mode)) {
+            ret = uppm_rm_r(sessionDIR, verbose);
+
+            if (ret != UPPM_OK) {
+                return ret;
+            }
+
+            if (mkdir(sessionDIR, S_IRWXU) != 0) {
+                perror(sessionDIR);
+                return UPPM_ERROR;
+            }
+        } else {
+            if (unlink(sessionDIR) != 0) {
+                perror(sessionDIR);
+                return UPPM_ERROR;
+            }
+
+            if (mkdir(sessionDIR, S_IRWXU) != 0) {
+                perror(sessionDIR);
+                return UPPM_ERROR;
+            }
+        }
+    } else {
+        if (mkdir(sessionDIR, S_IRWXU) != 0) {
+            perror(sessionDIR);
             return UPPM_ERROR;
         }
     }
@@ -44,9 +171,15 @@ int uppm_upgrade_self(bool verbose) {
 
     const char * githubApiUrl = "https://api.github.com/repos/leleliu008/uppm/releases/latest";
 
-    size_t   githubApiResultJsonFilePathLength = uppmTmpDirLength + 13U;
-    char     githubApiResultJsonFilePath[githubApiResultJsonFilePathLength];
-    snprintf(githubApiResultJsonFilePath, githubApiResultJsonFilePathLength, "%s/latest.json", uppmTmpDir);
+    size_t githubApiResultJsonFilePathCapacity = sessionDIRCapacity + 13U;
+    char   githubApiResultJsonFilePath[githubApiResultJsonFilePathCapacity];
+
+    ret = snprintf(githubApiResultJsonFilePath, githubApiResultJsonFilePathCapacity, "%s/latest.json", sessionDIR);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     ret = uppm_http_fetch_to_file(githubApiUrl, githubApiResultJsonFilePath, verbose, verbose);
 
@@ -61,14 +194,18 @@ int uppm_upgrade_self(bool verbose) {
         return UPPM_ERROR;
     }
 
-    char * latestVersion = NULL;
+    char * latestReleaseTagName = NULL;
+    size_t latestReleaseTagNameLength = 0U;
+
+    char   latestVersion[11] = {0};
+    size_t latestVersionLength = 0U;
 
     char * p = NULL;
 
-    char line[30];
+    char line[70];
 
     for (;;) {
-        p = fgets(line, 30, file);
+        p = fgets(line, 70, file);
 
         if (p == NULL) {
             if (ferror(file)) {
@@ -104,21 +241,27 @@ int uppm_upgrade_self(bool verbose) {
                 }
             }
 
+            latestReleaseTagName = p;
+
             size_t n = 0;
-            char * q = p;
 
             for (;;) {
-                if (q[n] == '\0') {
+                if (p[n] == '\0') {
                     fprintf(stderr, "%s return invalid json.\n", githubApiUrl);
                     return UPPM_ERROR;
                 }
 
-                if (q[n] == '+') { // found right double quote
-                    q[n] = '\0';
-                    latestVersion = &q[0];
+                if (p[n] == '"') { // found right double quote
+                    p[n] = '\0';
+                    latestReleaseTagNameLength = n;
                     goto finalize;
                 } else {
                     n++;
+
+                    if (p[n] == '+') {
+                        latestVersionLength = n > 10 ? 10 : n;
+                        strncpy(latestVersion, p, latestVersionLength);
+                    }
                 }
             }
         }
@@ -127,16 +270,20 @@ int uppm_upgrade_self(bool verbose) {
 finalize:
     fclose(file);
 
-    printf("latestVersion=%s\n", latestVersion);
+    printf("latestReleaseTagName=%s\n", latestReleaseTagName);
 
-    if (latestVersion == NULL) {
+    if (latestReleaseTagName == NULL) {
         fprintf(stderr, "%s return json has no tag_name key.\n", githubApiUrl);
         return UPPM_ERROR;
     }
 
-    size_t latestVersionCopyLength = strlen(latestVersion) + 1U;
-    char   latestVersionCopy[latestVersionCopyLength];
-    strncpy(latestVersionCopy, latestVersion, latestVersionCopyLength);
+    if (latestVersion[0] == '\0') {
+        fprintf(stderr, "%s return invalid json.\n", githubApiUrl);
+        return UPPM_ERROR;
+    }
+
+    char    latestVersionCopy[latestVersionLength + 1U];
+    strncpy(latestVersionCopy, latestVersion, latestVersionLength + 1U);
 
     char * latestVersionMajorStr = strtok(latestVersionCopy, ".");
     char * latestVersionMinorStr = strtok(NULL, ".");
@@ -180,33 +327,34 @@ finalize:
 
     ////////////////////////////////////////////////////////////////////////////////////////////
 
-    char osType[31] = {0};
+    size_t tarballFileNameCapacity = 64U;
+    char   tarballFileName[tarballFileNameCapacity];
 
-    if (sysinfo_type(osType, 30) < 0) {
+    ret = uppm_upgrade_tar_filename(tarballFileName, tarballFileNameCapacity, latestVersion);
+
+    if (ret != UPPM_OK) {
+        return ret;
+    }
+
+    size_t tarballUrlCapacity = tarballFileNameCapacity + strlen(latestReleaseTagName) + 66U;
+    char   tarballUrl[tarballUrlCapacity];
+
+    ret = snprintf(tarballUrl, tarballUrlCapacity, "https://github.com/leleliu008/uppm/releases/download/%s/%s", latestReleaseTagName, tarballFileName);
+
+    if (ret < 0) {
         perror(NULL);
         return UPPM_ERROR;
     }
 
-    char osArch[31] = {0};
+    size_t tarballFilePathLength = sessionDIRCapacity + tarballFileNameCapacity + 2U;
+    char   tarballFilePath[tarballFilePathLength];
 
-    if (sysinfo_arch(osArch, 30) < 0) {
+    ret = snprintf(tarballFilePath, tarballFilePathLength, "%s/%s", sessionDIR, tarballFileName);
+
+    if (ret < 0) {
         perror(NULL);
         return UPPM_ERROR;
     }
-
-    size_t latestVersionLength = strlen(latestVersion);
-
-    size_t   tarballFileNameLength = latestVersionLength + strlen(osType) + strlen(osArch) + 26U;
-    char     tarballFileName[tarballFileNameLength];
-    snprintf(tarballFileName, tarballFileNameLength, "uppm-%s-%s-%s.tar.xz", latestVersion, osType, osArch);
-
-    size_t   tarballUrlLength = tarballFileNameLength + latestVersionLength + 66U;
-    char     tarballUrl[tarballUrlLength];
-    snprintf(tarballUrl, tarballUrlLength, "https://github.com/leleliu008/uppm/releases/download/%s/%s", latestVersion, tarballFileName);
-
-    size_t   tarballFilePathLength = uppmTmpDirLength + tarballFileNameLength + 2U;
-    char     tarballFilePath[tarballFilePathLength];
-    snprintf(tarballFilePath, tarballFilePathLength, "%s/%s", uppmTmpDir, tarballFileName);
 
     ret = uppm_http_fetch_to_file(tarballUrl, tarballFilePath, verbose, verbose);
 
@@ -216,19 +364,21 @@ finalize:
 
     //////////////////////////////////////////////////////////////////////////////////
 
-    size_t   tarballExtractDirLength = tarballFilePathLength + 3U;
-    char     tarballExtractDir[tarballExtractDirLength];
-    snprintf(tarballExtractDir, tarballExtractDirLength, "%s.d", tarballFilePath);
-
-    ret = tar_extract(tarballExtractDir, tarballFilePath, 0, verbose, 1);
+    ret = tar_extract(sessionDIR, tarballFilePath, 0, verbose, 1);
 
     if (ret != 0) {
         return abs(ret) + UPPM_ERROR_ARCHIVE_BASE;
     }
 
-    size_t   upgradableExecutableFilePathLength = tarballExtractDirLength + 10U;
-    char     upgradableExecutableFilePath[upgradableExecutableFilePathLength];
-    snprintf(upgradableExecutableFilePath, upgradableExecutableFilePathLength, "%s/bin/uppm", tarballExtractDir);
+    size_t upgradableExecutableFilePathCapacity = sessionDIRCapacity + 10U;
+    char   upgradableExecutableFilePath[upgradableExecutableFilePathCapacity];
+
+    ret = snprintf(upgradableExecutableFilePath, upgradableExecutableFilePathCapacity, "%s/bin/uppm", sessionDIR);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     char * selfRealPath = self_realpath();
 
@@ -238,21 +388,29 @@ finalize:
         goto finally;
     }
 
-    if (unlink(selfRealPath) != 0) {
-        perror(selfRealPath);
-        ret = UPPM_ERROR;
-        goto finally;
-    }
+    if (rename(upgradableExecutableFilePath, selfRealPath) != 0) {
+        if (errno == EXDEV) {
+            if (unlink(selfRealPath) != 0) {
+                perror(selfRealPath);
+                ret = UPPM_ERROR;
+                goto finally;
+            }
 
-    if (copy_file(upgradableExecutableFilePath, selfRealPath) != 0) {
-        perror(NULL);
-        ret = UPPM_ERROR;
-        goto finally;
-    }
+            ret = uppm_copy_file(upgradableExecutableFilePath, selfRealPath);
 
-    if (chmod(selfRealPath, S_IRWXU) != 0) {
-        perror(selfRealPath);
-        ret = UPPM_ERROR;
+            if (ret != UPPM_OK) {
+                goto finally;
+            }
+
+            if (chmod(selfRealPath, S_IRWXU) != 0) {
+                perror(selfRealPath);
+                ret = UPPM_ERROR;
+            }
+        } else {
+            perror(selfRealPath);
+            ret = UPPM_ERROR;
+            goto finally;
+        }
     }
 
 finally:

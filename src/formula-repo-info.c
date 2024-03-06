@@ -49,7 +49,7 @@ int uppm_formula_repo_info(UPPMFormulaRepo * formulaRepo) {
     buff[23] = buff[22];
     buff[22] = ':';
 
-    printf("timestamp-created: %s\n", buff);
+    printf("created: %s\n", buff);
 
     ////////////////////////////////////////////////////////////
 
@@ -64,7 +64,7 @@ int uppm_formula_repo_info(UPPMFormulaRepo * formulaRepo) {
         buff[23] = buff[22];
         buff[22] = ':';
 
-        printf("timestamp-updated: %s\n", buff);
+        printf("updated: %s\n", buff);
     }
 
     return UPPM_OK;

@@ -87,7 +87,7 @@ int uppm_main(int argc, char* argv[]) {
         return ret;
     }
 
-    if (strcmp(argv[1], "info") == 0) {
+    if (strcmp(argv[1], "info") == 0 || strcmp(argv[1], "info-available") == 0 || strcmp(argv[1], "info-installed") == 0) {
         int ret = uppm_info(argv[2], argv[3]);
 
         if (ret == UPPM_ERROR_ARG_IS_NULL) {

@@ -27,8 +27,8 @@ void uppm_formula_repo_dump(UPPMFormulaRepo * formulaRepo) {
     printf("branch: %s\n", formulaRepo->branch);
     printf("pinned: %s\n", formulaRepo->pinned ? "yes" : "no");
     printf("enabled: %s\n", formulaRepo->enabled ? "yes" : "no");
-    printf("timestamp-created: %s\n", formulaRepo->timestamp_created);
-    printf("timestamp-updated: %s\n", formulaRepo->timestamp_updated);
+    printf("created: %s\n", formulaRepo->timestamp_created);
+    printf("updated: %s\n", formulaRepo->timestamp_updated);
 }
 
 void uppm_formula_repo_free(UPPMFormulaRepo * formulaRepo) {
@@ -78,9 +78,9 @@ static UPPMFormulaRepoKeyCode uppm_formula_repo_key_code_from_key_name(char * ke
         return UPPMFormulaRepoKeyCode_pinned;
     } else if (strcmp(key, "enabled") == 0) {
         return UPPMFormulaRepoKeyCode_enabled;
-    } else if (strcmp(key, "timestamp-created") == 0) {
+    } else if (strcmp(key, "created") == 0) {
         return UPPMFormulaRepoKeyCode_timestamp_created;
-    } else if (strcmp(key, "timestamp-updated") == 0) {
+    } else if (strcmp(key, "updated") == 0) {
         return UPPMFormulaRepoKeyCode_timestamp_updated;
     } else {
         return UPPMFormulaRepoKeyCode_unknown;
@@ -177,7 +177,7 @@ static int uppm_formula_repo_check(UPPMFormulaRepo * formulaRepo, const char * f
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     if (formulaRepo->timestamp_created == NULL) {
-        fprintf(stderr, "scheme error in formula repo config file: %s : timestamp-created mapping not found.\n", formulaRepoConfigFilePath);
+        fprintf(stderr, "scheme error in formula repo config file: %s : created mapping not found.\n", formulaRepoConfigFilePath);
         return UPPM_ERROR_FORMULA_REPO_CONFIG_SCHEME;
     }
 
@@ -192,13 +192,13 @@ static int uppm_formula_repo_check(UPPMFormulaRepo * formulaRepo, const char * f
         }
 
         if ((c < '0') || (c > '9')) {
-            fprintf(stderr, "scheme error in formula repo config file: %s : timestamp-created mapping's value should only contains non-numeric characters.\n", formulaRepoConfigFilePath);
+            fprintf(stderr, "scheme error in formula repo config file: %s : created mapping's value should only contains non-numeric characters.\n", formulaRepoConfigFilePath);
             return UPPM_ERROR_FORMULA_REPO_CONFIG_SCHEME;
         }
     }
 
     if (i != 10) {
-        fprintf(stderr, "scheme error in formula repo config file: %s : timestamp-created mapping's value's length must be 10.\n", formulaRepoConfigFilePath);
+        fprintf(stderr, "scheme error in formula repo config file: %s : created mapping's value's length must be 10.\n", formulaRepoConfigFilePath);
         return UPPM_ERROR_FORMULA_REPO_CONFIG_SCHEME;
     }
 
@@ -215,13 +215,13 @@ static int uppm_formula_repo_check(UPPMFormulaRepo * formulaRepo, const char * f
             }
 
             if ((c < '0') || (c > '9')) {
-                fprintf(stderr, "scheme error in formula repo config file: %s : timestamp-updated mapping's value should only contains non-numeric characters.\n", formulaRepoConfigFilePath);
+                fprintf(stderr, "scheme error in formula repo config file: %s : updated mapping's value should only contains non-numeric characters.\n", formulaRepoConfigFilePath);
                 return UPPM_ERROR_FORMULA_REPO_CONFIG_SCHEME;
             }
         }
 
         if (i != 10) {
-            fprintf(stderr, "scheme error in formula repo config file: %s : timestamp-updated mapping's value's length must be 10.\n", formulaRepoConfigFilePath);
+            fprintf(stderr, "scheme error in formula repo config file: %s : updated mapping's value's length must be 10.\n", formulaRepoConfigFilePath);
             return UPPM_ERROR_FORMULA_REPO_CONFIG_SCHEME;
         }
     }
