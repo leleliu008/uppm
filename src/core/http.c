@@ -1,27 +1,49 @@
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include <unistd.h>
-#include <libgen.h>
 
 #include <curl/curl.h>
 #include <curl/curlver.h>
 
 #include "http.h"
 
-//static size_t write_callback(void * ptr, size_t size, size_t nmemb, void * stream) {
-//    return fwrite(ptr, size, nmemb, (FILE *)stream);
-//}
+int http_fetch_to_stream(const char * url, FILE * outputFile, const bool verbose, const bool showProgress) {
+    if (url == NULL || url[0] == '\0') {
+        errno = EINVAL;
+        return -1;
+    }
 
-int http_fetch_to_stream(const char * url, FILE * outputFile, bool verbose, bool showProgress) {
     if (outputFile == NULL) {
-        size_t  urlCopyLength = strlen(url) + 1U;
-        char    urlCopy[urlCopyLength];
-        strncpy(urlCopy, url, urlCopyLength);
+        size_t i = 0U;
+        size_t j = 0U;
 
-        const char * filename = basename(urlCopy);
+        for (;;) {
+            char c = url[i];
+
+            if (c == '\0') {
+                break;
+            }
+
+            if (c == '/') {
+                j = i;
+            }
+
+            i++;
+        }
+
+        if (j == 0U) {
+            errno = EINVAL;
+            return -1;
+        }
+
+        size_t size = i - j + 1U;
+        char   filename[size];
+
+        strncpy(filename, url + j + 1U, size);
 
         outputFile = fopen(filename, "wb");
 
@@ -50,7 +72,7 @@ int http_fetch_to_stream(const char * url, FILE * outputFile, bool verbose, bool
     curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1L);
 
     // https://curl.se/libcurl/c/CURLOPT_TIMEOUT.html
-    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 300L);
+    //curl_easy_setopt(curl, CURLOPT_TIMEOUT, 300L);
 
     // https://curl.se/libcurl/c/CURLOPT_VERBOSE.html
     curl_easy_setopt(curl, CURLOPT_VERBOSE, verbose ? 1 : 0);
@@ -76,8 +98,13 @@ int http_fetch_to_stream(const char * url, FILE * outputFile, bool verbose, bool
         curl_easy_setopt(curl, CURLOPT_CAPATH, SSL_CERT_DIR);
     }
 
-    char     userAgent[50];
-    snprintf(userAgent, 50, "User-Agent: libcurl-%s", LIBCURL_VERSION);
+    char userAgent[50];
+
+    int ret = snprintf(userAgent, 50, "User-Agent: curl-%s", LIBCURL_VERSION);
+
+    if (ret < 0) {
+        return -1;
+    }
 
     struct curl_slist *list = NULL;
 
@@ -103,7 +130,7 @@ int http_fetch_to_stream(const char * url, FILE * outputFile, bool verbose, bool
     return curlcode;
 }
 
-int http_fetch_to_file(const char * url, const char * outputFilePath, bool verbose, bool showProgress) {
+int http_fetch_to_file(const char * url, const char * outputFilePath, const bool verbose, const bool showProgress) {
     FILE * file = fopen(outputFilePath, "wb");
 
     if (file == NULL) {

@@ -51,11 +51,18 @@ int uppm_check_if_the_given_package_is_available(const char * packageName) {
     struct stat st;
 
     for (size_t i = 0; i < formulaRepoList->size; i++) {
-        char *   formulaRepoPath = formulaRepoList->repos[i]->path;
+        char * formulaRepoPath = formulaRepoList->repos[i]->path;
 
-        size_t   formulaFilePathLength = strlen(formulaRepoPath) + strlen(packageName) + 15U;
-        char     formulaFilePath[formulaFilePathLength];
-        snprintf(formulaFilePath, formulaFilePathLength, "%s/formula/%s.yml", formulaRepoPath, packageName);
+        size_t formulaFilePathLength = strlen(formulaRepoPath) + strlen(packageName) + 15U;
+        char   formulaFilePath[formulaFilePathLength];
+
+        ret = snprintf(formulaFilePath, formulaFilePathLength, "%s/formula/%s.yml", formulaRepoPath, packageName);
+
+        if (ret < 0) {
+            perror(NULL);
+            uppm_formula_repo_list_free(formulaRepoList);
+            return UPPM_ERROR;
+        }
 
         if (lstat(formulaFilePath, &st) == 0 && S_ISREG(st.st_mode)) {
             uppm_formula_repo_list_free(formulaRepoList);
@@ -85,9 +92,15 @@ int uppm_check_if_the_given_package_is_installed(const char * packageName) {
 
     struct stat st;
 
-    size_t   packageInstalledDIRLength = uppmHomeDIRLength + strlen(packageName) + 12U;
-    char     packageInstalledDIR[packageInstalledDIRLength];
-    snprintf(packageInstalledDIR, packageInstalledDIRLength, "%s/installed/%s", uppmHomeDIR, packageName);
+    size_t packageInstalledDIRLength = uppmHomeDIRLength + strlen(packageName) + 12U;
+    char   packageInstalledDIR[packageInstalledDIRLength];
+
+    ret = snprintf(packageInstalledDIR, packageInstalledDIRLength, "%s/installed/%s", uppmHomeDIR, packageName);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     if (lstat(packageInstalledDIR, &st) == 0) {
         if (!S_ISLNK(st.st_mode)) {
@@ -97,9 +110,15 @@ int uppm_check_if_the_given_package_is_installed(const char * packageName) {
         return UPPM_ERROR_PACKAGE_NOT_INSTALLED;
     }
 
-    size_t   receiptFilePathLength = packageInstalledDIRLength + 19U;
-    char     receiptFilePath[receiptFilePathLength];
-    snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", packageInstalledDIR);
+    size_t receiptFilePathLength = packageInstalledDIRLength + 19U;
+    char   receiptFilePath[receiptFilePathLength];
+
+    ret = snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", packageInstalledDIR);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     if (lstat(receiptFilePath, &st) == 0) {
         if (S_ISREG(st.st_mode)) {

@@ -23,7 +23,14 @@ int uppm_list_the_available_packages(const bool verbose, UPPMPackageNameFilter p
 
         size_t formulaDIRLength = strlen(formulaRepoPath) + 10U;
         char   formulaDIR[formulaDIRLength];
-        snprintf(formulaDIR, formulaDIRLength, "%s/formula", formulaRepoPath);
+
+        ret = snprintf(formulaDIR, formulaDIRLength, "%s/formula", formulaRepoPath);
+
+        if (ret < 0) {
+            perror(NULL);
+            uppm_formula_repo_list_free(formulaRepoList);
+            return UPPM_ERROR;
+        }
 
         struct stat status;
 

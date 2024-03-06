@@ -3,6 +3,7 @@
 
 #include <config.h>
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 
@@ -111,6 +112,7 @@ typedef struct {
 
 int  uppm_formula_lookup(const char * packageName, UPPMFormula * * formula);
 int  uppm_formula_locate(const char * packageName, char * * out);
+int  uppm_formula_path(const char * packageName, char buf[], size_t * len);
 int  uppm_formula_edit(const char * packageName, const char * editor);
 int  uppm_formula_view(const char * packageName, const bool raw);
 int  uppm_formula_cat (const char * packageName);
@@ -126,8 +128,8 @@ typedef struct {
     char * url;
     char * branch;
     char * path;
-    char * timestamp_created;
-    char * timestamp_updated;
+    char * createdAt;
+    char * updatedAt;
     int    pinned;
     int    enabled;
 } UPPMFormulaRepo ;
@@ -143,7 +145,7 @@ int  uppm_formula_repo_remove(const char * formulaRepoName);
 int  uppm_formula_repo_sync_ (const char * formulaRepoName);
 int  uppm_formula_repo_info_ (const char * formulaRepoName);
 int  uppm_formula_repo_config(const char * formulaRepoName, const char * formulaRepoUrl, const char * branchName, int pinned, int enabled);
-int  uppm_formula_repo_config_write(const char * formulaRepoDIRPath, const char * formulaRepoUrl, const char * branchName, int pinned, int enabled, const char * timestamp_created, const char * timestamp_updated);
+int  uppm_formula_repo_config_write(const char * formulaRepoDIRPath, const char * formulaRepoUrl, const char * branchName, int pinned, int enabled, const char * createdAt, const char * updatedAt);
 int  uppm_formula_repo_lookup(const char * formulaRepoName, UPPMFormulaRepo * * formulaRepo);
 int  uppm_formula_repo_parse (const char * formulaRepoConfigFilePath, UPPMFormulaRepo * * formulaRepo);
 
@@ -245,15 +247,24 @@ int uppm_list_the_available_packages(const bool verbose, UPPMPackageNameFilter p
 int uppm_list_the_installed_packages(const bool verbose);
 int uppm_list_the__outdated_packages(const bool verbose);
 
-int uppm_git_sync(const char * gitRepositoryDIRPath, const char * remoteUrl, const char * remoteRef, const char * remoteTrackingRef, const char * checkoutToBranchName);
+int uppm_git_sync(const char * gitRepositoryDIRPath, const char * remoteUrl, const char * remoteRef, const char * remoteTrackingRef, const char * checkoutToBranchName, const size_t fetchDepth);
 
 int uppm_generate_url_transform_sample();
 
 int uppm_examine_filetype_from_url(const char * url, char buf[], const size_t bufSize);
 
+int uppm_examine_filename_from_url(const char * url, char buf[], const size_t bufSize);
+
 int uppm_http_fetch_to_file(const char * url, const char * outputFilePath, const bool verbose, const bool showProgress);
 
-int uppm_download(const char * url, const char * sha256sum, const char * downloadDIR, const char * unpackDIR, const size_t stripComponentsNumber, const bool verbose);
+int uppm_http_fetch_to_stream(const char * url, FILE * stream, const bool verbose, const bool showProgress);
+
+int uppm_download(const char * url, const char * uri, const char * expectedSHA256SUM, const char * outputPath, const bool verbose);
+
+int uppm_uncompress(const char * filePath, const char * unpackDIR, const size_t stripComponentsNumber, const bool verbose);
+
+
+int uppm_rename_or_copy_file(const char * fromFilePath, const char * toFilePath);
 
 int uppm_copy_file(const char * fromFilePath, const char * toFilePath);
 

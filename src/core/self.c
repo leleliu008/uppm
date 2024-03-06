@@ -103,29 +103,37 @@ char* self_realpath() {
             return NULL;
         }
 
+        size_t PATHLength = strlen(PATH);
+
         // in fact, it shouldn’t happen
-        if (PATH[0] == '\0') {
+        if (PATHLength == 0U) {
             return NULL;
         }
 
-        size_t  PATH2Length = strlen(PATH) + 1U;
+        size_t  PATH2Length = PATHLength + 1U;
         char    PATH2[PATH2Length];
         strncpy(PATH2, PATH, PATH2Length);
+
+        struct stat st;
+
+        char buf[PATH_MAX];
+
+        int ret;
 
         size_t commandNameLength = strlen(argv[0]);
 
         char * PATHItem = strtok(PATH2, ":");
 
-        struct stat st;
-
         while (PATHItem != NULL) {
             if ((stat(PATHItem, &st) == 0) && S_ISDIR(st.st_mode)) {
-                size_t   fullPathLength = strlen(PATHItem) + commandNameLength + 2U;
-                char     fullPath[fullPathLength];
-                snprintf(fullPath, fullPathLength, "%s/%s", PATHItem, argv[0]);
+                ret = snprintf(buf, PATH_MAX, "%s/%s", PATHItem, argv[0]);
 
-                if (access(fullPath, X_OK) == 0) {
-                    char * p = strdup(fullPath);
+                if (ret < 0) {
+                    return -1;
+                }
+
+                if (access(buf, X_OK) == 0) {
+                    char * p = strdup(buf);
 
                     if (p == NULL) {
                         errno = ENOMEM;

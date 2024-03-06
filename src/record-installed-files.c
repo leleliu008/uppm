@@ -9,7 +9,7 @@
 
 #include "uppm.h"
 
-static int record_installed_files_r(const char * dirPath, size_t offset, int outputFD) {
+static int uppm_record_installed_files_r(const char * dirPath, size_t offset, int outputFD) {
     if (dirPath == NULL) {
         return UPPM_ERROR_ARG_IS_NULL;
     }
@@ -27,7 +27,7 @@ static int record_installed_files_r(const char * dirPath, size_t offset, int out
         return UPPM_ERROR;
     }
 
-    int ret = UPPM_OK;
+    int ret;
 
     struct stat st;
 
@@ -39,7 +39,7 @@ static int record_installed_files_r(const char * dirPath, size_t offset, int out
         if (dir_entry == NULL) {
             if (errno == 0) {
                 closedir(dir);
-                break;
+                return UPPM_OK;
             } else {
                 perror(dirPath);
                 closedir(dir);
@@ -51,9 +51,16 @@ static int record_installed_files_r(const char * dirPath, size_t offset, int out
             continue;
         }
 
-        size_t   filePathLength = dirPathLength + strlen(dir_entry->d_name) + 2U;
-        char     filePath[filePathLength];
-        snprintf(filePath, filePathLength, "%s/%s", dirPath, dir_entry->d_name);
+        size_t filePathLength = dirPathLength + strlen(dir_entry->d_name) + 2U;
+        char   filePath[filePathLength];
+
+        ret = snprintf(filePath, filePathLength, "%s/%s", dirPath, dir_entry->d_name);
+
+        if (ret < 0) {
+            perror(NULL);
+            closedir(dir);
+            return UPPM_ERROR;
+        }
 
         if (stat(filePath, &st) != 0) {
             perror(filePath);
@@ -62,28 +69,44 @@ static int record_installed_files_r(const char * dirPath, size_t offset, int out
         }
 
         if (S_ISDIR(st.st_mode)) {
-            dprintf(outputFD, "d|%s/\n", &filePath[offset]);
+            ret = dprintf(outputFD, "d|%s/\n", &filePath[offset]);
 
-            ret = record_installed_files_r(filePath, offset, outputFD);
+            if (ret < 0) {
+                perror(NULL);
+                closedir(dir);
+                return UPPM_ERROR;
+            }
+
+            ret = uppm_record_installed_files_r(filePath, offset, outputFD);
 
             if (ret != UPPM_OK) {
                 closedir(dir);
                 return ret;
             }
         } else {
-            dprintf(outputFD, "f|%s\n", &filePath[offset]);
+            ret = dprintf(outputFD, "f|%s\n", &filePath[offset]);
+
+            if (ret < 0) {
+                perror(NULL);
+                closedir(dir);
+                return UPPM_ERROR;
+            }
         }
     }
-
-    return ret;
 }
 
-int record_installed_files(const char * installedDIRPath) {
-    size_t   installedDIRLength = strlen(installedDIRPath);
+int uppm_record_installed_files(const char * installedDIRPath) {
+    size_t installedDIRLength = strlen(installedDIRPath);
 
-    size_t   installedManifestFilePathLength = installedDIRLength + 20U;
-    char     installedManifestFilePath[installedManifestFilePathLength];
-    snprintf(installedManifestFilePath, installedManifestFilePathLength, "%s/.uppm/manifest.txt", installedDIRPath);
+    size_t installedManifestFilePathLength = installedDIRLength + 20U;
+    char   installedManifestFilePath[installedManifestFilePathLength];
+
+    int ret = snprintf(installedManifestFilePath, installedManifestFilePathLength, "%s/.uppm/manifest.txt", installedDIRPath);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     int fd = open(installedManifestFilePath, O_CREAT | O_TRUNC | O_WRONLY, 0666);
 
@@ -92,7 +115,7 @@ int record_installed_files(const char * installedDIRPath) {
         return UPPM_ERROR;
     }
 
-    int ret = record_installed_files_r(installedDIRPath, installedDIRLength + 1, fd);
+    ret = uppm_record_installed_files_r(installedDIRPath, installedDIRLength + 1, fd);
 
     close(fd);
 

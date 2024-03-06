@@ -23,9 +23,15 @@ int uppm_tree(const char * packageName, size_t argc, char* argv[]) {
         return ret;
     }
 
-    size_t   packageInstalledDIRLength = uppmHomeDIRLength + strlen(packageName) + 12U;
-    char     packageInstalledDIR[packageInstalledDIRLength];
-    snprintf(packageInstalledDIR, packageInstalledDIRLength, "%s/installed/%s", uppmHomeDIR, packageName);
+    size_t packageInstalledDIRLength = uppmHomeDIRLength + strlen(packageName) + 12U;
+    char   packageInstalledDIR[packageInstalledDIRLength];
+
+    ret = snprintf(packageInstalledDIR, packageInstalledDIRLength, "%s/installed/%s", uppmHomeDIR, packageName);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     struct stat st;
 
@@ -33,9 +39,15 @@ int uppm_tree(const char * packageName, size_t argc, char* argv[]) {
         return UPPM_ERROR_PACKAGE_NOT_INSTALLED;
     }
 
-    size_t   receiptFilePathLength = packageInstalledDIRLength + 20U;
-    char     receiptFilePath[receiptFilePathLength];
-    snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", packageInstalledDIR);
+    size_t receiptFilePathLength = packageInstalledDIRLength + 20U;
+    char   receiptFilePath[receiptFilePathLength];
+
+    ret = snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", packageInstalledDIR);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     if (stat(receiptFilePath, &st) != 0 || (!S_ISREG(st.st_mode))) {
         return UPPM_ERROR_PACKAGE_IS_BROKEN;
@@ -53,9 +65,15 @@ int uppm_tree(const char * packageName, size_t argc, char* argv[]) {
         return ret;
     }
 
-    size_t   treeCommandPathLength = uppmHomeDIRLength + 25U;
-    char     treeCommandPath[treeCommandPathLength];
-    snprintf(treeCommandPath, treeCommandPathLength, "%s/installed/tree/bin/tree", uppmHomeDIR);
+    size_t treeCommandPathLength = uppmHomeDIRLength + 25U;
+    char   treeCommandPath[treeCommandPathLength];
+
+    ret = snprintf(treeCommandPath, treeCommandPathLength, "%s/installed/tree/bin/tree", uppmHomeDIR);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     size_t n = argc + 5U;
     char*  p[n];

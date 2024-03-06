@@ -1,8 +1,8 @@
 #include <math.h>
 #include <errno.h>
 #include <stdio.h>
-#include <stdbool.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include <unistd.h>
 #include <dirent.h>
@@ -62,9 +62,15 @@ int git_credential_acquire_callback(git_credential **credential, const char *url
         return 1;
     }
 
-    size_t   sshPrivateKeyFilePathLength = strlen(userHomeDIR) + 20U;
-    char     sshPrivateKeyFilePath[sshPrivateKeyFilePathLength];
-    snprintf(sshPrivateKeyFilePath, sshPrivateKeyFilePathLength, "%s/.ssh/id_rsa", userHomeDIR);
+    size_t sshPrivateKeyFilePathLength = strlen(userHomeDIR) + 20U;
+    char   sshPrivateKeyFilePath[sshPrivateKeyFilePathLength];
+
+    int ret = snprintf(sshPrivateKeyFilePath, sshPrivateKeyFilePathLength, "%s/.ssh/id_rsa", userHomeDIR);
+
+    if (ret < 0) {
+        perror(NULL);
+        return 1;
+    }
 
     struct stat st;
 
@@ -73,7 +79,12 @@ int git_credential_acquire_callback(git_credential **credential, const char *url
         return 0;
     }
 
-    snprintf(sshPrivateKeyFilePath, sshPrivateKeyFilePathLength, "%s/.ssh/id_ed25519", userHomeDIR);
+    ret = snprintf(sshPrivateKeyFilePath, sshPrivateKeyFilePathLength, "%s/.ssh/id_ed25519", userHomeDIR);
+
+    if (ret < 0) {
+        perror(NULL);
+        return 1;
+    }
 
     if ((stat(sshPrivateKeyFilePath, &st) == 0) && S_ISREG(st.st_mode)) {
         git_credential_ssh_key_new(credential, username_from_url, NULL, sshPrivateKeyFilePath, NULL);
@@ -135,10 +146,10 @@ int check_if_is_a_empty_dir(const char * dirpath, bool * value) {
 
 // implement following steps:
 // git -c init.defaultBranch=master init
-// git remote add origin https://github.com/leleliu008/uppm-formula-repository-offical-core.git
+// git remote add origin https://github.com/leleliu008/uppm-formula-repository-official-core.git
 // git fetch --progress origin +refs/heads/master:refs/remotes/origin/master
 // git checkout --progress --force -B master refs/remotes/origin/master
-int uppm_git_sync(const char * repositoryDIR, const char * remoteUrl, const char * remoteRefPath, const char * remoteTrackingRefPath, const char * checkoutToBranchName) {
+int uppm_git_sync(const char * repositoryDIR, const char * remoteUrl, const char * remoteRefPath, const char * remoteTrackingRefPath, const char * checkoutToBranchName, const size_t fetchDepth) {
     if ((repositoryDIR == NULL) || (repositoryDIR[0] == '\0')) {
         repositoryDIR = ".";
     }
@@ -219,15 +230,15 @@ int uppm_git_sync(const char * repositoryDIR, const char * remoteUrl, const char
 
     if (stat(repositoryDIR, &st) == 0) {
         if (S_ISDIR(st.st_mode)) {
-            bool isAEmptyDIR = false;
+            bool isEmptyDIR = false;
 
-            int ret = check_if_is_a_empty_dir(repositoryDIR, &isAEmptyDIR);
+            int ret = check_if_is_a_empty_dir(repositoryDIR, &isEmptyDIR);
 
             if (ret != UPPM_OK) {
                 return UPPM_ERROR;
             }
 
-            if (isAEmptyDIR) {
+            if (isEmptyDIR) {
                 needInitGitRepo = true;
             } else {
                 needInitGitRepo = false;
@@ -247,9 +258,15 @@ int uppm_git_sync(const char * repositoryDIR, const char * remoteUrl, const char
 
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-    size_t   checkoutToBranchRefPathLength = strlen(checkoutToBranchName) + 12U;
-    char     checkoutToBranchRefPath[checkoutToBranchRefPathLength];
-    snprintf(checkoutToBranchRefPath, checkoutToBranchRefPathLength, "refs/heads/%s", checkoutToBranchName);
+    size_t checkoutToBranchRefPathLength = strlen(checkoutToBranchName) + 12U;
+    char   checkoutToBranchRefPath[checkoutToBranchRefPathLength];
+
+    int ret = snprintf(checkoutToBranchRefPath, checkoutToBranchRefPathLength, "refs/heads/%s", checkoutToBranchName);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -268,8 +285,6 @@ int uppm_git_sync(const char * repositoryDIR, const char * remoteUrl, const char
     git_tree      * remoteTrackingRefHEADCommitPointToTree   = NULL;
 
     const git_error * gitError        = NULL;
-
-    int ret = UPPM_OK;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -341,6 +356,7 @@ int uppm_git_sync(const char * repositoryDIR, const char * remoteUrl, const char
 
     git_fetch_options gitFetchOptions = GIT_FETCH_OPTIONS_INIT;
     gitFetchOptions.callbacks = gitRemoteCallbacks;
+    //gitFetchOptions.depth = (int)fetchDepth;
 
     git_checkout_options gitCheckoutOptions = GIT_CHECKOUT_OPTIONS_INIT;
     gitCheckoutOptions.checkout_strategy    = GIT_CHECKOUT_FORCE;
@@ -350,9 +366,15 @@ int uppm_git_sync(const char * repositoryDIR, const char * remoteUrl, const char
     if (remoteRefPath == NULL && remoteTrackingRefPath == NULL) {
         ret = git_remote_fetch(gitRemote, NULL, &gitFetchOptions, NULL);
     } else {
-        size_t   refspecLength = strlen(remoteRefPath) + strlen(remoteTrackingRefPath) + 2;
-        char     refspec[refspecLength];
-        snprintf(refspec, refspecLength, "%s:%s", remoteRefPath, remoteTrackingRefPath);
+        size_t refspecLength = strlen(remoteRefPath) + strlen(remoteTrackingRefPath) + 2;
+        char   refspec[refspecLength];
+
+        ret = snprintf(refspec, refspecLength, "%s:%s", remoteRefPath, remoteTrackingRefPath);
+
+        if (ret < 0) {
+            perror(NULL);
+            return UPPM_ERROR;
+        }
 
         git_strarray refspecArray = {.count = 1};
         char* strings[1] = {(char*)refspec};

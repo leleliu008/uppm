@@ -5,7 +5,7 @@
 
 #include "uppm.h"
 
-int uppm_formula_locate(const char * packageName, char ** out) {
+int uppm_formula_path(const char * packageName, char buf[], size_t * len) {
     int ret = uppm_check_if_the_given_argument_matches_package_name_pattern(packageName);
 
     if (ret != UPPM_OK) {
@@ -25,13 +25,13 @@ int uppm_formula_locate(const char * packageName, char ** out) {
 
     size_t packageNameLength = strlen(packageName);
 
-    for (size_t i = 0; i < formulaRepoList->size; i++) {
+    for (size_t i = 0U; i < formulaRepoList->size; i++) {
         char * formulaRepoPath = formulaRepoList->repos[i]->path;
 
-        size_t formulaFilePathLength =  strlen(formulaRepoPath) + packageNameLength + 15U;
+        size_t formulaFilePathLength = strlen(formulaRepoPath) + packageNameLength + 15U;
         char   formulaFilePath[formulaFilePathLength];
 
-        ret = snprintf(formulaFilePath, formulaFilePathLength, "%s/formula/%s.yml", formulaRepoPath, packageName);
+        int ret = snprintf(formulaFilePath, formulaFilePathLength, "%s/formula/%s.yml", formulaRepoPath, packageName);
 
         if (ret < 0) {
             perror(NULL);
@@ -42,13 +42,15 @@ int uppm_formula_locate(const char * packageName, char ** out) {
         if (stat(formulaFilePath, &st) == 0 && S_ISREG(st.st_mode)) {
             uppm_formula_repo_list_free(formulaRepoList);
 
-            (*out) = strdup(formulaFilePath);
+            strncpy(buf, formulaFilePath, ret);
 
-            if (*out == NULL) {
-                return UPPM_ERROR_MEMORY_ALLOCATE;
-            } else {
-                return UPPM_OK;
+            buf[ret] = '\0';
+
+            if (len != NULL) {
+                (*len) = ret;
             }
+
+            return UPPM_OK;
         }
     }
 

@@ -3,8 +3,8 @@
 #include <string.h>
 
 #include <fcntl.h>
-#include <unistd.h>
 #include <limits.h>
+#include <unistd.h>
 #include <sys/stat.h>
 
 #include "core/log.h"
@@ -25,9 +25,15 @@ int uppm_generate_url_transform_sample() {
 
     struct stat st;
 
-    size_t   uppmRunDIRLength = uppmHomeDIRLength + 5U;
-    char     uppmRunDIR[uppmRunDIRLength];
-    snprintf(uppmRunDIR, uppmRunDIRLength, "%s/run", uppmHomeDIR);
+    size_t uppmRunDIRCapacity = uppmHomeDIRLength + 5U;
+    char   uppmRunDIR[uppmRunDIRCapacity];
+
+    ret = snprintf(uppmRunDIR, uppmRunDIRCapacity, "%s/run", uppmHomeDIR);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     if (lstat(uppmRunDIR, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {
@@ -54,9 +60,15 @@ int uppm_generate_url_transform_sample() {
 
     ////////////////////////////////////////////////////////////////////////////////////////////
 
-    size_t   sessionDIRLength = uppmRunDIRLength + 20U;
-    char     sessionDIR[sessionDIRLength];
-    snprintf(sessionDIR, sessionDIRLength, "%s/%d", uppmRunDIR, getpid());
+    size_t sessionDIRCapacity = uppmRunDIRCapacity + 20U;
+    char   sessionDIR[sessionDIRCapacity];
+
+    ret = snprintf(sessionDIR, sessionDIRCapacity, "%s/%d", uppmRunDIR, getpid());
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     if (lstat(sessionDIR, &st) == 0) {
         if (S_ISDIR(st.st_mode)) {
@@ -90,9 +102,15 @@ int uppm_generate_url_transform_sample() {
 
     ////////////////////////////////////////////////////////////////////////////////////////////
 
-    size_t   tmpFilePathLength = sessionDIRLength + 22U;
-    char     tmpFilePath[tmpFilePathLength];
-    snprintf(tmpFilePath, tmpFilePathLength, "%s/url-transform.sample", sessionDIR);
+    size_t tmpFilePathCapacity = sessionDIRCapacity + 22U;
+    char   tmpFilePath[tmpFilePathCapacity];
+
+    ret = snprintf(tmpFilePath, tmpFilePathCapacity, "%s/url-transform.sample", sessionDIR);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     int fd = open(tmpFilePath, O_CREAT | O_TRUNC | O_WRONLY, 0666);
 
@@ -105,10 +123,10 @@ int uppm_generate_url_transform_sample() {
         "#!/bin/sh\n"
         "case $1 in\n"
         "    *githubusercontent.com/*)\n"
-        "        printf 'https://ghproxy.com/%s\\n' \"$1\"\n"
+        "        printf '%s\\n' \"$1\" | sed 's|githubusercontent|gitmirror|'\n"
         "        ;;\n"
         "    https://github.com/*)\n"
-        "        printf 'https://ghproxy.com/%s\\n' \"$1\"\n"
+        "        printf 'https://hub.gitmirror.com/%s\\n' \"$1\"\n"
         "        ;;\n"
         "    '') printf '%s\\n' \"$0 <URL>, <URL> is unspecified.\" >&2 ; exit 1 ;;\n"
         "    *)  printf '%s\\n' \"$1\"\n"
@@ -140,9 +158,15 @@ int uppm_generate_url_transform_sample() {
 
     ////////////////////////////////////////////////////////////////////////////////////////////
 
-    size_t   outFilePathLength = uppmHomeDIRLength + 22U;
-    char     outFilePath[outFilePathLength];
-    snprintf(outFilePath, outFilePathLength, "%s/url-transform.sample", uppmHomeDIR);
+    size_t outFilePathCapacity = uppmHomeDIRLength + 22U;
+    char   outFilePath[outFilePathCapacity];
+
+    ret = snprintf(outFilePath, outFilePathCapacity, "%s/url-transform.sample", uppmHomeDIR);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     if (rename(tmpFilePath, outFilePath) != 0) {
         if (errno == EXDEV) {
@@ -161,7 +185,7 @@ int uppm_generate_url_transform_sample() {
 
     fprintf(stderr, "%surl-transform sample has been written into %s%s\n\n", COLOR_GREEN, outFilePath, COLOR_OFF);
 
-    outFilePath[outFilePathLength - 9] = '\0';
+    outFilePath[outFilePathCapacity - 9U] = '\0';
 
     fprintf(stderr, "%sYou can rename url-transform.sample to url-transform then edit it to meet your needs.\n\nTo apply this, you should run 'export UPPM_URL_TRANSFORM=%s' in your terminal.\n%s", COLOR_GREEN, outFilePath, COLOR_OFF);
 

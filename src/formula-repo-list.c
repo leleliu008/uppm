@@ -18,9 +18,15 @@ int uppm_formula_repo_list(UPPMFormulaRepoList * * out) {
         return ret;
     }
 
-    size_t   uppmFormulaRepoDIRLength = uppmHomeDIRLength + 9U;
-    char     uppmFormulaRepoDIR[uppmFormulaRepoDIRLength];
-    snprintf(uppmFormulaRepoDIR, uppmFormulaRepoDIRLength, "%s/repos.d", uppmHomeDIR);
+    size_t uppmFormulaRepoDIRCapacity = uppmHomeDIRLength + 9U;
+    char   uppmFormulaRepoDIR[uppmFormulaRepoDIRCapacity];
+
+    ret = snprintf(uppmFormulaRepoDIR, uppmFormulaRepoDIRCapacity, "%s/repos.d", uppmHomeDIR);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     struct stat st;
 
@@ -72,13 +78,29 @@ int uppm_formula_repo_list(UPPMFormulaRepoList * * out) {
             continue;
         }
 
-        size_t formulaRepoPathLength = uppmFormulaRepoDIRLength + strlen(dir_entry->d_name) + 2U;
-        char   formulaRepoPath[formulaRepoPathLength];
-        snprintf(formulaRepoPath, formulaRepoPathLength, "%s/%s", uppmFormulaRepoDIR, dir_entry->d_name);
+        size_t formulaRepoPathCapacity = uppmFormulaRepoDIRCapacity + strlen(dir_entry->d_name) + 2U;
+        char   formulaRepoPath[formulaRepoPathCapacity];
 
-        size_t formulaRepoConfigFilePathLength = formulaRepoPathLength + 24U;
-        char   formulaRepoConfigFilePath[formulaRepoConfigFilePathLength];
-        snprintf(formulaRepoConfigFilePath, formulaRepoConfigFilePathLength, "%s/.uppm-formula-repo.yml", formulaRepoPath);
+        ret = snprintf(formulaRepoPath, formulaRepoPathCapacity, "%s/%s", uppmFormulaRepoDIR, dir_entry->d_name);
+
+        if (ret < 0) {
+            perror(NULL);
+            closedir(dir);
+            uppm_formula_repo_list_free(formulaRepoList);
+            return UPPM_ERROR;
+        }
+
+        size_t formulaRepoConfigFilePathCapacity = formulaRepoPathCapacity + 24U;
+        char   formulaRepoConfigFilePath[formulaRepoConfigFilePathCapacity];
+
+        ret = snprintf(formulaRepoConfigFilePath, formulaRepoConfigFilePathCapacity, "%s/.uppm-formula-repo.yml", formulaRepoPath);
+
+        if (ret < 0) {
+            perror(NULL);
+            closedir(dir);
+            uppm_formula_repo_list_free(formulaRepoList);
+            return UPPM_ERROR;
+        }
 
         if (stat(formulaRepoConfigFilePath, &st) != 0) {
             continue;

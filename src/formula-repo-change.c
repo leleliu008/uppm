@@ -25,7 +25,7 @@ int uppm_formula_repo_config(const char * formulaRepoName, const char * url, con
         enabled = formulaRepo->enabled;
     }
 
-    ret = uppm_formula_repo_config_write(formulaRepo->path, url, branch, pinned, enabled, formulaRepo->timestamp_created, formulaRepo->timestamp_updated);
+    ret = uppm_formula_repo_config_write(formulaRepo->path, url, branch, pinned, enabled, formulaRepo->createdAt, formulaRepo->updatedAt);
 
     uppm_formula_repo_free(formulaRepo);
 

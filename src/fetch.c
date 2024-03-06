@@ -39,9 +39,15 @@ int uppm_fetch(const char * packageName, const bool verbose) {
 
     struct stat st;
 
-    size_t   downloadDIRLength = uppmHomeDIRLength + 11U;
-    char     downloadDIR[downloadDIRLength];
-    snprintf(downloadDIR, downloadDIRLength, "%s/downloads", uppmHomeDIR);
+    size_t downloadDIRLength = uppmHomeDIRLength + 11U;
+    char   downloadDIR[downloadDIRLength];
+
+    ret = snprintf(downloadDIR, downloadDIRLength, "%s/downloads", uppmHomeDIR);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     if (lstat(downloadDIR, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {
@@ -82,13 +88,25 @@ int uppm_fetch(const char * packageName, const bool verbose) {
 
     //////////////////////////////////////////////////////////////////////////
 
-    size_t   fileNameLength = strlen(formula->bin_sha) + strlen(fileNameExtension) + 1U;
-    char     fileName[fileNameLength];
-    snprintf(fileName, fileNameLength, "%s%s", formula->bin_sha, fileNameExtension);
+    size_t fileNameLength = strlen(formula->bin_sha) + strlen(fileNameExtension) + 1U;
+    char   fileName[fileNameLength];
 
-    size_t   filePathLength = downloadDIRLength + fileNameLength + 1U;
-    char     filePath[filePathLength];
-    snprintf(filePath, filePathLength, "%s/%s", downloadDIR, fileName);
+    ret = snprintf(fileName, fileNameLength, "%s%s", formula->bin_sha, fileNameExtension);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
+
+    size_t filePathLength = downloadDIRLength + fileNameLength + 1U;
+    char   filePath[filePathLength];
+
+    ret = snprintf(filePath, filePathLength, "%s/%s", downloadDIR, fileName);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -109,9 +127,15 @@ int uppm_fetch(const char * packageName, const bool verbose) {
 
     //////////////////////////////////////////////////////////////////////////
 
-    size_t   tmpStrLength = strlen(formula->bin_url) + 30U;
-    char     tmpStr[tmpStrLength];
-    snprintf(tmpStr, tmpStrLength, "%s|%ld|%d", formula->bin_url, time(NULL), getpid());
+    size_t tmpStrLength = strlen(formula->bin_url) + 30U;
+    char   tmpStr[tmpStrLength];
+
+    ret = snprintf(tmpStr, tmpStrLength, "%s|%ld|%d", formula->bin_url, time(NULL), getpid());
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     char tmpFileName[65] = {0};
 
@@ -122,9 +146,15 @@ int uppm_fetch(const char * packageName, const bool verbose) {
         return UPPM_ERROR;
     }
 
-    size_t   tmpFilePathLength = downloadDIRLength + 66U;
-    char     tmpFilePath[tmpFilePathLength];
-    snprintf(tmpFilePath, tmpFilePathLength, "%s/%s", downloadDIR, tmpFileName);
+    size_t tmpFilePathLength = downloadDIRLength + 66U;
+    char   tmpFilePath[tmpFilePathLength];
+
+    ret = snprintf(tmpFilePath, tmpFilePathLength, "%s/%s", downloadDIR, tmpFileName);
+ 
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     //////////////////////////////////////////////////////////////////////////
 

@@ -23,21 +23,39 @@ int uppm_uninstall(const char * packageName, const bool verbose) {
         return ret;
     }
 
-    size_t   packageInstalledRootDIRLength = uppmHomeDIRLength + strlen(packageName) + 11U;
-    char     packageInstalledRootDIR[packageInstalledRootDIRLength];
-    snprintf(packageInstalledRootDIR, packageInstalledRootDIRLength, "%s/installed", uppmHomeDIR);
+    size_t packageInstalledRootDIRLength = uppmHomeDIRLength + strlen(packageName) + 11U;
+    char   packageInstalledRootDIR[packageInstalledRootDIRLength];
 
-    size_t   packageInstalledLinkDIRLength = packageInstalledRootDIRLength + strlen(packageName) + 2U;
-    char     packageInstalledLinkDIR[packageInstalledLinkDIRLength];
-    snprintf(packageInstalledLinkDIR, packageInstalledLinkDIRLength, "%s/%s", packageInstalledRootDIR, packageName);
+    ret = snprintf(packageInstalledRootDIR, packageInstalledRootDIRLength, "%s/installed", uppmHomeDIR);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
+
+    size_t packageInstalledLinkDIRLength = packageInstalledRootDIRLength + strlen(packageName) + 2U;
+    char   packageInstalledLinkDIR[packageInstalledLinkDIRLength];
+
+    ret = snprintf(packageInstalledLinkDIR, packageInstalledLinkDIRLength, "%s/%s", packageInstalledRootDIR, packageName);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     struct stat st;
 
     if (lstat(packageInstalledLinkDIR, &st) == 0) {
         if (S_ISLNK(st.st_mode)) {
-            size_t   receiptFilePathLength = packageInstalledLinkDIRLength + 20U;
-            char     receiptFilePath[receiptFilePathLength];
-            snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", packageInstalledLinkDIR);
+            size_t receiptFilePathLength = packageInstalledLinkDIRLength + 20U;
+            char   receiptFilePath[receiptFilePathLength];
+
+            ret = snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", packageInstalledLinkDIR);
+
+            if (ret < 0) {
+                perror(NULL);
+                return UPPM_ERROR;
+            }
 
             if (lstat(receiptFilePath, &st) == 0 && S_ISREG(st.st_mode)) {
                 char buf[256] = {0};
@@ -52,9 +70,15 @@ int uppm_uninstall(const char * packageName, const bool verbose) {
                     return UPPM_ERROR_PACKAGE_NOT_INSTALLED;
                 }
 
-                size_t   packageInstalledRealDIRLength = packageInstalledRootDIRLength + 66U;
-                char     packageInstalledRealDIR[packageInstalledRealDIRLength];
-                snprintf(packageInstalledRealDIR, packageInstalledRealDIRLength, "%s/%s", packageInstalledRootDIR, buf);
+                size_t packageInstalledRealDIRLength = packageInstalledRootDIRLength + 66U;
+                char   packageInstalledRealDIR[packageInstalledRealDIRLength];
+
+                ret = snprintf(packageInstalledRealDIR, packageInstalledRealDIRLength, "%s/%s", packageInstalledRootDIR, buf);
+
+                if (ret < 0) {
+                    perror(NULL);
+                    return UPPM_ERROR;
+                }
 
                 if (lstat(packageInstalledRealDIR, &st) == 0) {
                     if (S_ISDIR(st.st_mode)) {

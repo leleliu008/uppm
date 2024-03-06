@@ -52,9 +52,15 @@ int uppm_formula_repo_create(const char * formulaRepoName, const char * formulaR
 
     struct stat st;
 
-    size_t   formulaRepoDIRLength = uppmHomeDIRLength + strlen(formulaRepoName) + 10U;
-    char     formulaRepoDIR[formulaRepoDIRLength];
-    snprintf(formulaRepoDIR, formulaRepoDIRLength, "%s/repos.d/%s", uppmHomeDIR, formulaRepoName);
+    size_t formulaRepoDIRCapacity = uppmHomeDIRLength + strlen(formulaRepoName) + 10U;
+    char   formulaRepoDIR[formulaRepoDIRCapacity];
+
+    ret = snprintf(formulaRepoDIR, formulaRepoDIRCapacity, "%s/repos.d/%s", uppmHomeDIR, formulaRepoName);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     if (stat(formulaRepoDIR, &st) == 0) {
         if (S_ISDIR(st.st_mode)) {
@@ -68,9 +74,15 @@ int uppm_formula_repo_create(const char * formulaRepoName, const char * formulaR
 
     ///////////////////////////////////////////////////////////////////////////////////////
 
-    size_t   uppmRunDIRLength = uppmHomeDIRLength + 5U;
-    char     uppmRunDIR[uppmRunDIRLength];
-    snprintf(uppmRunDIR, uppmRunDIRLength, "%s/run", uppmHomeDIR);
+    size_t uppmRunDIRCapacity = uppmHomeDIRLength + 5U;
+    char   uppmRunDIR[uppmRunDIRCapacity];
+
+    ret = snprintf(uppmRunDIR, uppmRunDIRCapacity, "%s/run", uppmHomeDIR);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     if (lstat(uppmRunDIR, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {
@@ -97,9 +109,15 @@ int uppm_formula_repo_create(const char * formulaRepoName, const char * formulaR
 
     ////////////////////////////////////////////////////////////////////////////////////////////
 
-    size_t   sessionDIRLength = uppmRunDIRLength + 20U;
-    char     sessionDIR[sessionDIRLength];
-    snprintf(sessionDIR, sessionDIRLength, "%s/%d", uppmRunDIR, getpid());
+    size_t sessionDIRCapacity = uppmRunDIRCapacity + 20U;
+    char   sessionDIR[sessionDIRCapacity];
+
+    ret = snprintf(sessionDIR, sessionDIRCapacity, "%s/%d", uppmRunDIR, getpid());
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     if (lstat(sessionDIR, &st) == 0) {
         if (S_ISDIR(st.st_mode)) {
@@ -133,9 +151,15 @@ int uppm_formula_repo_create(const char * formulaRepoName, const char * formulaR
 
     ////////////////////////////////////////////////////////////////////////////////////////
 
-    size_t   subDIRLength = sessionDIRLength + 9U;
-    char     subDIR[subDIRLength];
-    snprintf(subDIR, subDIRLength, "%s/formula", sessionDIR);
+    size_t subDIRCapacity = sessionDIRCapacity + 9U;
+    char   subDIR[subDIRCapacity];
+
+    ret = snprintf(subDIR, subDIRCapacity, "%s/formula", sessionDIR);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     if (mkdir(subDIR, S_IRWXU) != 0) {
         perror(subDIR);
@@ -181,7 +205,13 @@ int uppm_formula_repo_create(const char * formulaRepoName, const char * formulaR
     ////////////////////////////////////////////////////////////////////////////////////////
 
     char ts[11];
-    snprintf(ts, 11, "%ld", time(NULL));
+
+    ret = snprintf(ts, 11, "%ld", time(NULL));
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     ret = uppm_formula_repo_config_write(sessionDIR, formulaRepoUrl, branchName, pinned, enabled, ts, NULL);
 
@@ -191,9 +221,15 @@ int uppm_formula_repo_create(const char * formulaRepoName, const char * formulaR
 
     ////////////////////////////////////////////////////////////////////////////////////////
 
-    size_t   formulaRepoRootDIRLength = uppmHomeDIRLength + 9U;
-    char     formulaRepoRootDIR[formulaRepoRootDIRLength];
-    snprintf(formulaRepoRootDIR, formulaRepoRootDIRLength, "%s/repos.d", uppmHomeDIR);
+    size_t formulaRepoRootDIRCapacity = uppmHomeDIRLength + 9U;
+    char   formulaRepoRootDIR[formulaRepoRootDIRCapacity];
+
+    ret = snprintf(formulaRepoRootDIR, formulaRepoRootDIRCapacity, "%s/repos.d", uppmHomeDIR);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     if (lstat(formulaRepoRootDIR, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {

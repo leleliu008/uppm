@@ -7,7 +7,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <limits.h>
-#include <libgen.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
 
@@ -16,46 +15,21 @@
 
 #include "uppm.h"
 
-static inline int rename_or_copy_file_to_destination(const char * fromFilePath, const char * toFilePath) {
-    size_t  outputFilePathCopyLength = strlen(toFilePath) + 1U;
-    char    outputFilePathCopy[outputFilePathCopyLength];
-    strncpy(outputFilePathCopy, toFilePath, outputFilePathCopyLength);
+static int string_append(char ** outP, size_t * outSize, size_t * outCapacity, const char * buf, size_t bufLength) {
+    size_t  oldCapacity = (*outCapacity);
+    size_t needCapacity = oldCapacity + bufLength + 1U;
 
-    char * outputDIR = dirname(outputFilePathCopy);
+    if (needCapacity > oldCapacity) {
+        size_t newCapacity = needCapacity + 256U;
 
-    int ret = uppm_mkdir_p(outputDIR, false);
-
-    if (ret != UPPM_OK) {
-        return ret;
-    }
-
-    if (rename(fromFilePath, toFilePath) == 0) {
-        return UPPM_OK;
-    } else {
-        if (errno == EXDEV) {
-            return uppm_copy_file(fromFilePath, toFilePath);
-        } else {
-            perror(toFilePath);
-            return UPPM_ERROR;
-        }
-    }
-}
-
-static int string_append(char ** outP, size_t * outSize, size_t * outCapcity, const char * buf, size_t bufLength) {
-    size_t  oldCapcity = (*outCapcity);
-    size_t needCapcity = oldCapcity + bufLength + 1U;
-
-    if (needCapcity > oldCapcity) {
-        size_t newCapcity = needCapcity + 256U;
-
-        char * p = (char*)realloc(*outP, newCapcity * sizeof(char));
+        char * p = (char*)realloc(*outP, newCapacity * sizeof(char));
 
         if (p == NULL) {
             free(*outP);
             return UPPM_ERROR_MEMORY_ALLOCATE;
         } else {
             (*outP) = p;
-            (*outCapcity) = newCapcity;
+            (*outCapacity) = newCapacity;
             memset(&p[*outSize], 0, 256U + bufLength + 1U);
         }
     }
@@ -63,6 +37,40 @@ static int string_append(char ** outP, size_t * outSize, size_t * outCapcity, co
     strncat(*outP, buf, bufLength);
         
     (*outSize) += bufLength;
+
+    return UPPM_OK;
+}
+
+static int get_output_file_path(char outputFilePath[PATH_MAX], const char * packageName, UPPMDependsOutputType outputType, const char * outputPath) {
+    const char * outputFileNameSuffix;
+
+    switch (outputType) {
+        case UPPMDependsOutputType_DOT: outputFileNameSuffix = "dot"; break;
+        case UPPMDependsOutputType_BOX: outputFileNameSuffix = "box"; break;
+        case UPPMDependsOutputType_SVG: outputFileNameSuffix = "svg"; break;
+        case UPPMDependsOutputType_PNG: outputFileNameSuffix = "png"; break;
+    }
+
+    int ret;
+
+    if (outputPath == NULL || outputPath[0] == '\0') {
+        ret = snprintf(outputFilePath, strlen(packageName) + 20U, "%s-dependencies.%s", packageName, outputFileNameSuffix);
+    } else {
+        size_t outputPathLength = strlen(outputPath);
+
+        if (outputPath[outputPathLength - 1] == '/') {
+           ret = snprintf(outputFilePath, strlen(outputPath) + strlen(packageName) + 20U, "%s%s-dependencies.%s", outputPath, packageName, outputFileNameSuffix);
+        } else {
+            size_t n = strlen(outputPath);
+            strncpy(outputFilePath, outputPath, n);
+            outputFilePath[n] = '\0';
+        }
+    }
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     return UPPM_OK;
 }
@@ -75,27 +83,27 @@ typedef struct {
 typedef struct {
     char * nodeList;
     size_t nodeListSize;
-    size_t nodeListCapcity;
+    size_t nodeListCapacity;
 } DIRectedPath;
 
-static int uppm_depends2(const char * packageName, UPPMDependsOutputType outputType, const char * outputFilePath) {
+int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, const char * outputPath) {
     int ret = UPPM_OK;
 
     ////////////////////////////////////////////////////////////////
 
     char * p = NULL;
     size_t pSize = 0;
-    size_t pCapcity = 0;
+    size_t pCapacity = 0;
 
     ////////////////////////////////////////////////////////////////
 
-    size_t         packageSetCapcity = 0;
+    size_t         packageSetCapacity = 0;
     size_t         packageSetSize    = 0;
     UPPMPackage ** packageSet        = NULL;
 
     ////////////////////////////////////////////////////////////////
 
-    size_t   packageNameStackCapcity = 1;
+    size_t   packageNameStackCapacity = 1;
     size_t   packageNameStackSize    = 0;
     char * * packageNameStack = (char**)calloc(1, sizeof(char*));
 
@@ -138,8 +146,8 @@ static int uppm_depends2(const char * packageName, UPPMDependsOutputType outputT
                 goto finalize;
             }
 
-            if (packageSetSize == packageSetCapcity) {
-                UPPMPackage ** p = (UPPMPackage**)realloc(packageSet, (packageSetCapcity + 10U) * sizeof(UPPMPackage*));
+            if (packageSetSize == packageSetCapacity) {
+                UPPMPackage ** p = (UPPMPackage**)realloc(packageSet, (packageSetCapacity + 10U) * sizeof(UPPMPackage*));
 
                 if (p == NULL) {
                     free(packageName);
@@ -148,10 +156,10 @@ static int uppm_depends2(const char * packageName, UPPMDependsOutputType outputT
                     goto finalize;
                 }
 
-                memset(p + packageSetCapcity, 0, 10);
+                memset(p + packageSetCapacity, 0, 10);
 
                 packageSet = p;
-                packageSetCapcity += 10;
+                packageSetCapacity += 10;
             }
 
             UPPMPackage * package = (UPPMPackage*)malloc(sizeof(UPPMPackage));
@@ -185,11 +193,17 @@ static int uppm_depends2(const char * packageName, UPPMDependsOutputType outputT
 
         ////////////////////////////////////////////////////////////////
 
-        size_t   bufLength = strlen(packageName) + 12U;
-        char     buf[bufLength];
-        snprintf(buf, bufLength, "    \"%s\" -> {", packageName);
+        size_t bufLength = strlen(packageName) + 12U;
+        char   buf[bufLength];
 
-        ret = string_append(&p, &pSize, &pCapcity, buf, bufLength - 1);
+        ret = snprintf(buf, bufLength, "    \"%s\" -> {", packageName);
+
+        if (ret < 0) {
+            perror(NULL);
+            return UPPM_ERROR;
+        }
+
+        ret = string_append(&p, &pSize, &pCapacity, buf, bufLength - 1);
 
         if (ret != UPPM_OK) {
             goto finalize;
@@ -214,11 +228,17 @@ static int uppm_depends2(const char * packageName, UPPMDependsOutputType outputT
 
             ////////////////////////////////////////////////////////////////
 
-            size_t  bufLength = strlen(depPackageName) + 4U;
-            char    buf[bufLength];
-            snprintf(buf, bufLength, " \"%s\"", depPackageName);
+            size_t bufLength = strlen(depPackageName) + 4U;
+            char   buf[bufLength];
 
-            ret = string_append(&p, &pSize, &pCapcity, buf, bufLength - 1U);
+            ret = snprintf(buf, bufLength, " \"%s\"", depPackageName);
+
+            if (ret < 0) {
+                perror(NULL);
+                return UPPM_ERROR;
+            }
+
+            ret = string_append(&p, &pSize, &pCapacity, buf, bufLength - 1U);
 
             if (ret != UPPM_OK) {
                 goto finalize;
@@ -228,18 +248,18 @@ static int uppm_depends2(const char * packageName, UPPMDependsOutputType outputT
 
             ////////////////////////////////////////////////////////////////
 
-            if (packageNameStackSize == packageNameStackCapcity) {
-                char ** p = (char**)realloc(packageNameStack, (packageNameStackCapcity + 10U) * sizeof(char*));
+            if (packageNameStackSize == packageNameStackCapacity) {
+                char ** p = (char**)realloc(packageNameStack, (packageNameStackCapacity + 10U) * sizeof(char*));
 
                 if (p == NULL) {
                     ret = UPPM_ERROR_MEMORY_ALLOCATE;
                     goto finalize;
                 }
 
-                memset(p + packageNameStackCapcity, 0, 10);
+                memset(p + packageNameStackCapacity, 0, 10);
 
                 packageNameStack = p;
-                packageNameStackCapcity += 10;
+                packageNameStackCapacity += 10;
             }
 
             char * p = strdup(depPackageName);
@@ -255,7 +275,7 @@ static int uppm_depends2(const char * packageName, UPPMDependsOutputType outputT
             depPackageName = strtok (NULL, " ");
         }
 
-        ret = string_append(&p, &pSize, &pCapcity, " }\n", 3);
+        ret = string_append(&p, &pSize, &pCapacity, " }\n", 3);
     }
 
 finalize:
@@ -298,9 +318,16 @@ finalize:
 
     ////////////////////////////////////////////////////////////////
 
-    size_t   dotScriptStrLength = pSize + 14U;
-    char     dotScriptStr[dotScriptStrLength];
-    snprintf(dotScriptStr, dotScriptStrLength, "digraph G {\n%s}", p);
+    size_t dotScriptStrLength = pSize + 14U;
+    char   dotScriptStr[dotScriptStrLength];
+
+    ret = snprintf(dotScriptStr, dotScriptStrLength, "digraph G {\n%s}", p);
+
+    if (ret < 0) {
+        perror(NULL);
+        free(p);
+        return UPPM_ERROR;
+    }
 
     free(p);
 
@@ -309,7 +336,7 @@ finalize:
     ////////////////////////////////////////////////////////////////
 
     if (outputType == UPPMDependsOutputType_DOT) {
-        if (outputFilePath == NULL) {
+        if (outputPath == NULL) {
             printf("%s\n", dotScriptStr);
             return UPPM_OK;
         }
@@ -330,9 +357,15 @@ finalize:
 
     struct stat st;
 
-    size_t   uppmRunDIRLength = uppmHomeDIRLength + 5U;
-    char     uppmRunDIR[uppmRunDIRLength];
-    snprintf(uppmRunDIR, uppmRunDIRLength, "%s/run", uppmHomeDIR);
+    size_t uppmRunDIRCapacity = uppmHomeDIRLength + 5U;
+    char   uppmRunDIR[uppmRunDIRCapacity];
+
+    ret = snprintf(uppmRunDIR, uppmRunDIRCapacity, "%s/run", uppmHomeDIR);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     if (lstat(uppmRunDIR, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {
@@ -359,9 +392,15 @@ finalize:
 
     ////////////////////////////////////////////////////////////////
 
-    size_t   sessionDIRLength = uppmRunDIRLength + 20U;
-    char     sessionDIR[sessionDIRLength];
-    snprintf(sessionDIR, sessionDIRLength, "%s/%d", uppmRunDIR, getpid());
+    size_t sessionDIRCapacity = uppmRunDIRCapacity + 20U;
+    char   sessionDIR[sessionDIRCapacity];
+
+    ret = snprintf(sessionDIR, sessionDIRCapacity, "%s/%d", uppmRunDIR, getpid());
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     if (lstat(sessionDIR, &st) == 0) {
         if (S_ISDIR(st.st_mode)) {
@@ -407,13 +446,19 @@ finalize:
             return UPPM_ERROR;
         }
 
-        size_t   urlLength = urlEncodedRealLength + 66U;
-        char     url[urlLength];
-        snprintf(url, urlLength, "https://dot-to-ascii.ggerganov.com/dot-to-ascii.php?boxart=1&src=%s", urlEncodedBuf);
+        size_t urlCapacity = urlEncodedRealLength + 66U;
+        char   url[urlCapacity];
+
+        ret = snprintf(url, urlCapacity, "https://dot-to-ascii.ggerganov.com/dot-to-ascii.php?boxart=1&src=%s", urlEncodedBuf);
+
+        if (ret < 0) {
+            perror(NULL);
+            return UPPM_ERROR;
+        }
 
         //printf("url=%s\n", url);
 
-        if (outputFilePath == NULL) {
+        if (outputPath == NULL) {
             int ret = http_fetch_to_stream(url, stdout, false, false);
 
             if (ret == -1) {
@@ -426,30 +471,50 @@ finalize:
 
             return UPPM_OK;
         } else {
-            size_t   boxFilePathLength = sessionDIRLength + 18U;
-            char     boxFilePath[boxFilePathLength];
-            snprintf(boxFilePath, boxFilePathLength, "%s/dependencies.box", sessionDIR);
+            size_t boxFilePathLength = sessionDIRCapacity + 18U;
+            char   boxFilePath[boxFilePathLength];
 
-            int ret = http_fetch_to_file(url, boxFilePath, false, false);
+            ret = snprintf(boxFilePath, boxFilePathLength, "%s/dependencies.box", sessionDIR);
+
+            if (ret < 0) {
+                perror(NULL);
+                return UPPM_ERROR;
+            }
+
+            ret = http_fetch_to_file(url, boxFilePath, false, false);
 
             if (ret == -1) {
-                perror(outputFilePath);
+                perror(boxFilePath);
                 return UPPM_ERROR;
             }
 
             if (ret > 0) {
                 return UPPM_ERROR_NETWORK_BASE + ret;
             } else {
-                return rename_or_copy_file_to_destination(boxFilePath, outputFilePath);
+                char outputFilePath[PATH_MAX];
+
+                ret = get_output_file_path(outputFilePath, packageName, outputType, outputPath);
+
+                if (ret != UPPM_OK) {
+                    return ret;
+                }
+
+                return uppm_rename_or_copy_file(boxFilePath, outputFilePath);
             }
         }
     } 
 
     ////////////////////////////////////////////////////////////////
 
-    size_t   dotFilePathLength = sessionDIRLength + 18U;
-    char     dotFilePath[dotFilePathLength];
-    snprintf(dotFilePath, dotFilePathLength, "%s/dependencies.dot", sessionDIR);
+    size_t dotFilePathCapacity = sessionDIRCapacity + 18U;
+    char   dotFilePath[dotFilePathCapacity];
+
+    ret = snprintf(dotFilePath, dotFilePathCapacity, "%s/dependencies.dot", sessionDIR);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     int dotFD = open(dotFilePath, O_CREAT | O_WRONLY | O_TRUNC, 0666);
 
@@ -476,14 +541,28 @@ finalize:
     ////////////////////////////////////////////////////////////////
 
     if (outputType == UPPMDependsOutputType_DOT) {
-        return rename_or_copy_file_to_destination(dotFilePath, outputFilePath);
+        char outputFilePath[PATH_MAX];
+
+        ret = get_output_file_path(outputFilePath, packageName, outputType, outputPath);
+
+        if (ret != UPPM_OK) {
+            return ret;
+        }
+
+        return uppm_rename_or_copy_file(dotFilePath, outputFilePath);
     }
 
     ////////////////////////////////////////////////////////////////
 
-    size_t   tmpFilePathLength = sessionDIRLength + 18U;
-    char     tmpFilePath[tmpFilePathLength];
-    snprintf(tmpFilePath, tmpFilePathLength, "%s/dependencies.tmp", sessionDIR);
+    size_t tmpFilePathCapacity = sessionDIRCapacity + 18U;
+    char   tmpFilePath[tmpFilePathCapacity];
+
+    ret = snprintf(tmpFilePath, tmpFilePathCapacity, "%s/dependencies.tmp", sessionDIR);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     ////////////////////////////////////////////////////////////////
 
@@ -512,7 +591,15 @@ finalize:
         }
 
         if (childProcessExitStatusCode == 0) {
-            return rename_or_copy_file_to_destination(tmpFilePath, outputFilePath);
+            char outputFilePath[PATH_MAX];
+
+            ret = get_output_file_path(outputFilePath, packageName, outputType, outputPath);
+
+            if (ret != UPPM_OK) {
+                return ret;
+            }
+
+            return uppm_rename_or_copy_file(tmpFilePath, outputFilePath);
         }
 
         const char * type;
@@ -533,68 +620,4 @@ finalize:
 
         return UPPM_ERROR;
     }
-}
-
-int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, const char * outputPath) {
-    char * outputFilePath = NULL;
-
-    if (outputPath != NULL) {
-        struct stat st;
-
-        if (stat(outputPath, &st) == 0 && S_ISDIR(st.st_mode)) {
-            size_t outputFilePathLength = strlen(outputPath) + strlen(packageName) + 20U;
-
-            outputFilePath = (char*) malloc(outputFilePathLength);
-
-            if (outputFilePath == NULL) {
-                return UPPM_ERROR_MEMORY_ALLOCATE;
-            }
-
-            const char * outputFileNameSuffix;
-
-            switch (outputType) {
-                case UPPMDependsOutputType_DOT: outputFileNameSuffix = "dot"; break;
-                case UPPMDependsOutputType_BOX: outputFileNameSuffix = "box"; break;
-                case UPPMDependsOutputType_SVG: outputFileNameSuffix = "svg"; break;
-                case UPPMDependsOutputType_PNG: outputFileNameSuffix = "png"; break;
-            }
-
-            snprintf(outputFilePath, outputFilePathLength, "%s/%s-dependencies.%s", outputPath, packageName, outputFileNameSuffix);
-        } else {
-            size_t outputPathLength = strlen(outputPath);
-
-            if (outputPath[outputPathLength - 1] == '/') {
-                size_t outputFilePathLength = strlen(outputPath) + strlen(packageName) + 20U;
-
-                outputFilePath = (char*) malloc(outputFilePathLength);
-
-                if (outputFilePath == NULL) {
-                    return UPPM_ERROR_MEMORY_ALLOCATE;
-                }
-
-                const char * outputFileNameSuffix;
-
-                switch (outputType) {
-                    case UPPMDependsOutputType_DOT: outputFileNameSuffix = "dot"; break;
-                    case UPPMDependsOutputType_BOX: outputFileNameSuffix = "box"; break;
-                    case UPPMDependsOutputType_SVG: outputFileNameSuffix = "svg"; break;
-                    case UPPMDependsOutputType_PNG: outputFileNameSuffix = "png"; break;
-                }
-
-                snprintf(outputFilePath, outputFilePathLength, "%s%s-dependencies.%s", outputPath, packageName, outputFileNameSuffix);
-            } else {
-                outputFilePath = strdup(outputPath);
-
-                if (outputFilePath == NULL) {
-                    return UPPM_ERROR_MEMORY_ALLOCATE;
-                }
-            }
-        }
-    }
-
-    int ret = uppm_depends2(packageName, outputType, outputFilePath);
-
-    free(outputFilePath);
-
-    return ret;
 }

@@ -1,19 +1,15 @@
-#include <stdio.h>
-
 #include "core/sysinfo.h"
-
 #include "uppm.h"
 
 int uppm_sysinfo() {
     SysInfo sysinfo = {0};
 
-    if (sysinfo_make(&sysinfo) != 0) {
-        perror(NULL);
-        return UPPM_ERROR;
+    int ret = sysinfo_make(&sysinfo);
+
+    if (ret == UPPM_OK) {
+        sysinfo_dump(&sysinfo);
+        sysinfo_free(&sysinfo);
     }
 
-    sysinfo_dump(sysinfo);
-    sysinfo_free(sysinfo);
-   
-    return UPPM_OK;
+    return ret;
 }

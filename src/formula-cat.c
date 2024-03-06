@@ -1,15 +1,15 @@
 #include <stdio.h>
-#include <stdlib.h>
 
 #include <fcntl.h>
 #include <unistd.h>
+#include <limits.h>
 
 #include "uppm.h"
 
 int uppm_formula_cat(const char * packageName) {
-    char * formulaFilePath = NULL;
+    char formulaFilePath[PATH_MAX];
 
-    int ret = uppm_formula_locate(packageName, &formulaFilePath);
+    int ret = uppm_formula_path(packageName, formulaFilePath, NULL);
 
     if (ret != UPPM_OK) {
         return ret;
@@ -19,14 +19,10 @@ int uppm_formula_cat(const char * packageName) {
 
     if (fd == -1) {
         perror(formulaFilePath);
-        free(formulaFilePath);
         return UPPM_ERROR;
     }
 
     printf("formula: %s\n", formulaFilePath);
-
-    free(formulaFilePath);
-    formulaFilePath = NULL;
 
     char buf[1024];
 

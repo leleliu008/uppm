@@ -19,9 +19,15 @@ static int uppm_cleanup_downloads(const bool verbose) {
         return ret;
     }
 
-    size_t   downloadDIRLength = uppmHomeDIRLength + 11U;
-    char     downloadDIR[downloadDIRLength];
-    snprintf(downloadDIR, downloadDIRLength, "%s/downloads", uppmHomeDIR);
+    size_t downloadDIRLength = uppmHomeDIRLength + 11U;
+    char   downloadDIR[downloadDIRLength];
+
+    ret = snprintf(downloadDIR, downloadDIRLength, "%s/downloads", uppmHomeDIR);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     if (chdir(downloadDIR) != 0) {
         if (errno == ENOENT) {
@@ -101,9 +107,15 @@ static int uppm_cleanup_installed(const bool verbose) {
         return ret;
     }
 
-    size_t   installedDIRLength = uppmHomeDIRLength + 11U;
-    char     installedDIR[installedDIRLength];
-    snprintf(installedDIR, installedDIRLength, "%s/installed", uppmHomeDIR);
+    size_t installedDIRLength = uppmHomeDIRLength + 11U;
+    char   installedDIR[installedDIRLength];
+
+    ret = snprintf(installedDIR, installedDIRLength, "%s/installed", uppmHomeDIR);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     if (chdir(installedDIR) != 0) {
         if (errno == ENOENT) {

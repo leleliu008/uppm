@@ -18,9 +18,15 @@ int uppm_formula_repo_lookup(const char * formulaRepoName, UPPMFormulaRepo * * f
 
     size_t formulaRepoNameLength = strlen(formulaRepoName);
 
-    size_t formulaRepoDIRPathLength = uppmHomeDIRLength + formulaRepoNameLength + 10U;
-    char   formulaRepoDIRPath[formulaRepoDIRPathLength];
-    snprintf(formulaRepoDIRPath, formulaRepoDIRPathLength, "%s/repos.d/%s", uppmHomeDIR, formulaRepoName);
+    size_t formulaRepoDIRPathCapacity = uppmHomeDIRLength + formulaRepoNameLength + 10U;
+    char   formulaRepoDIRPath[formulaRepoDIRPathCapacity];
+
+    ret = snprintf(formulaRepoDIRPath, formulaRepoDIRPathCapacity, "%s/repos.d/%s", uppmHomeDIR, formulaRepoName);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     struct stat st;
 
@@ -33,9 +39,15 @@ int uppm_formula_repo_lookup(const char * formulaRepoName, UPPMFormulaRepo * * f
         return UPPM_ERROR_FORMULA_REPO_NOT_FOUND;
     }
 
-    size_t formulaRepoConfigFilePathLength = formulaRepoDIRPathLength + 24U;
-    char   formulaRepoConfigFilePath[formulaRepoConfigFilePathLength];
-    snprintf(formulaRepoConfigFilePath, formulaRepoConfigFilePathLength, "%s/.uppm-formula-repo.yml", formulaRepoDIRPath);
+    size_t formulaRepoConfigFilePathCapacity = formulaRepoDIRPathCapacity + 24U;
+    char   formulaRepoConfigFilePath[formulaRepoConfigFilePathCapacity];
+
+    ret = snprintf(formulaRepoConfigFilePath, formulaRepoConfigFilePathCapacity, "%s/.uppm-formula-repo.yml", formulaRepoDIRPath);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     if (!((stat(formulaRepoConfigFilePath, &st) == 0) && S_ISREG(st.st_mode))) {
         return UPPM_ERROR_FORMULA_REPO_NOT_FOUND;

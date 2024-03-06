@@ -16,8 +16,8 @@ int uppm_formula_repo_remove(const char * formulaRepoName) {
         return UPPM_ERROR_ARG_IS_EMPTY;
     }
 
-    if (strcmp(formulaRepoName, "offical-core") == 0) {
-        fprintf(stderr, "offical-core formula repo is not allowed to delete.\n");
+    if (strcmp(formulaRepoName, "official-core") == 0) {
+        fprintf(stderr, "official-core formula repo is not allowed to delete.\n");
         return UPPM_ERROR;
     }
 
@@ -30,9 +30,15 @@ int uppm_formula_repo_remove(const char * formulaRepoName) {
         return ret;
     }
 
-    size_t   formulaRepoPathLength = uppmHomeDIRLength + strlen(formulaRepoName) + 10U;
-    char     formulaRepoPath[formulaRepoPathLength];
-    snprintf(formulaRepoPath, formulaRepoPathLength, "%s/repos.d/%s", uppmHomeDIR, formulaRepoName);
+    size_t formulaRepoPathCapacity = uppmHomeDIRLength + strlen(formulaRepoName) + 10U;
+    char   formulaRepoPath[formulaRepoPathCapacity];
+
+    ret = snprintf(formulaRepoPath, formulaRepoPathCapacity, "%s/repos.d/%s", uppmHomeDIR, formulaRepoName);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     struct stat st;
 
@@ -41,9 +47,15 @@ int uppm_formula_repo_remove(const char * formulaRepoName) {
         return UPPM_ERROR;
     }
 
-    size_t   formulaRepoConfigFilePathLength = formulaRepoPathLength + 24U;
-    char     formulaRepoConfigFilePath[formulaRepoConfigFilePathLength];
-    snprintf(formulaRepoConfigFilePath, formulaRepoConfigFilePathLength, "%s/.uppm-formula-repo.yml", formulaRepoPath);
+    size_t formulaRepoConfigFilePathCapacity = formulaRepoPathCapacity + 24U;
+    char   formulaRepoConfigFilePath[formulaRepoConfigFilePathCapacity];
+
+    ret = snprintf(formulaRepoConfigFilePath, formulaRepoConfigFilePathCapacity, "%s/.uppm-formula-repo.yml", formulaRepoPath);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     if (stat(formulaRepoConfigFilePath, &st) == 0 && S_ISREG(st.st_mode)) {
         return uppm_rm_r(formulaRepoPath, false);

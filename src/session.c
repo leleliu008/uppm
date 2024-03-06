@@ -22,9 +22,15 @@ int uppm_session_dir(char buf[], size_t bufSize, size_t * outSize) {
 
     struct stat st;
 
-    size_t   uppmRunDIRLength = uppmHomeDIRLength + 5U;
-    char     uppmRunDIR[uppmRunDIRLength];
-    snprintf(uppmRunDIR, uppmRunDIRLength, "%s/run", uppmHomeDIR);
+    size_t uppmRunDIRLength = uppmHomeDIRLength + 5U;
+    char   uppmRunDIR[uppmRunDIRLength];
+
+    ret = snprintf(uppmRunDIR, uppmRunDIRLength, "%s/run", uppmHomeDIR);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     if (lstat(uppmRunDIR, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {
@@ -51,9 +57,15 @@ int uppm_session_dir(char buf[], size_t bufSize, size_t * outSize) {
 
     ////////////////////////////////////////////////////////////////
 
-    size_t   sessionDIRCapcity = uppmRunDIRLength + 20U;
-    char     sessionDIR[sessionDIRCapcity];
-    snprintf(sessionDIR, sessionDIRCapcity, "%s/%d", uppmRunDIR, getpid());
+    size_t sessionDIRCapcity = uppmRunDIRLength + 20U;
+    char   sessionDIR[sessionDIRCapcity];
+
+    ret = snprintf(sessionDIR, sessionDIRCapcity, "%s/%d", uppmRunDIR, getpid());
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     if (lstat(sessionDIR, &st) == 0) {
         if (S_ISDIR(st.st_mode)) {

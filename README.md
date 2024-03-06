@@ -662,8 +662,8 @@ url: https://github.com/leleliu008/uppm-formula-repository-linux-x86_64
 branch: master
 pinned: 0
 enabled: 1
-timestamp-created: 1673684639
-timestamp-updated: 1673684767
+created: 1673684639
+updated: 1673684767
 ```
 
 If a uppm formula repository is `pinned`, which means it would not be updated.

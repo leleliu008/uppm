@@ -26,9 +26,15 @@ int uppm_upgrade_self(const bool verbose) {
 
     struct stat st;
 
-    size_t   uppmRunDIRLength = uppmHomeDIRLength + 5U;
-    char     uppmRunDIR[uppmRunDIRLength];
-    snprintf(uppmRunDIR, uppmRunDIRLength, "%s/run", uppmHomeDIR);
+    size_t uppmRunDIRCapacity = uppmHomeDIRLength + 5U;
+    char   uppmRunDIR[uppmRunDIRCapacity];
+
+    ret = snprintf(uppmRunDIR, uppmRunDIRCapacity, "%s/run", uppmHomeDIR);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     if (stat(uppmRunDIR, &st) == 0) {
         if (!S_ISDIR(st.st_mode)) {
@@ -55,9 +61,15 @@ int uppm_upgrade_self(const bool verbose) {
 
     ////////////////////////////////////////////////////////////////////////////////////////////
 
-    size_t   sessionDIRLength = uppmRunDIRLength + 20U;
-    char     sessionDIR[sessionDIRLength];
-    snprintf(sessionDIR, sessionDIRLength, "%s/%d", uppmRunDIR, getpid());
+    size_t sessionDIRCapacity = uppmRunDIRCapacity + 20U;
+    char   sessionDIR[sessionDIRCapacity];
+
+    ret = snprintf(sessionDIR, sessionDIRCapacity, "%s/%d", uppmRunDIR, getpid());
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     if (lstat(sessionDIR, &st) == 0) {
         if (S_ISDIR(st.st_mode)) {
@@ -93,9 +105,15 @@ int uppm_upgrade_self(const bool verbose) {
 
     const char * githubApiUrl = "https://api.github.com/repos/leleliu008/uppm/releases/latest";
 
-    size_t   githubApiResultJsonFilePathLength = sessionDIRLength + 13U;
-    char     githubApiResultJsonFilePath[githubApiResultJsonFilePathLength];
-    snprintf(githubApiResultJsonFilePath, githubApiResultJsonFilePathLength, "%s/latest.json", sessionDIR);
+    size_t githubApiResultJsonFilePathCapacity = sessionDIRCapacity + 13U;
+    char   githubApiResultJsonFilePath[githubApiResultJsonFilePathCapacity];
+
+    ret = snprintf(githubApiResultJsonFilePath, githubApiResultJsonFilePathCapacity, "%s/latest.json", sessionDIR);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     ret = uppm_http_fetch_to_file(githubApiUrl, githubApiResultJsonFilePath, verbose, verbose);
 
@@ -113,8 +131,8 @@ int uppm_upgrade_self(const bool verbose) {
     char * latestReleaseTagName = NULL;
     size_t latestReleaseTagNameLength = 0U;
 
-    char   latestReleaseVersion[11] = {0};
-    size_t latestReleaseVersionLength = 0U;
+    char   latestVersion[11] = {0};
+    size_t latestVersionLength = 0U;
 
     char * p = NULL;
 
@@ -175,8 +193,8 @@ int uppm_upgrade_self(const bool verbose) {
                     n++;
 
                     if (p[n] == '+') {
-                        latestReleaseVersionLength = n > 10 ? 10 : n;
-                        strncpy(latestReleaseVersion, p, latestReleaseVersionLength);
+                        latestVersionLength = n > 10 ? 10 : n;
+                        strncpy(latestVersion, p, latestVersionLength);
                     }
                 }
             }
@@ -186,55 +204,55 @@ int uppm_upgrade_self(const bool verbose) {
 finalize:
     fclose(file);
 
+    printf("latestReleaseTagName=%s\n", latestReleaseTagName);
+
     if (latestReleaseTagName == NULL) {
         fprintf(stderr, "%s return json has no tag_name key.\n", githubApiUrl);
         return UPPM_ERROR;
     }
 
-    printf("latestReleaseTagName=%s\n", latestReleaseTagName);
-
-    if (latestReleaseVersion[0] == '\0') {
+    if (latestVersion[0] == '\0') {
         fprintf(stderr, "%s return invalid json.\n", githubApiUrl);
         return UPPM_ERROR;
     }
 
-    char    latestReleaseVersionCopy[latestReleaseVersionLength + 1U];
-    strncpy(latestReleaseVersionCopy, latestReleaseVersion, latestReleaseVersionLength + 1U);
+    char    latestVersionCopy[latestVersionLength + 1U];
+    strncpy(latestVersionCopy, latestVersion, latestVersionLength + 1U);
 
-    char * latestReleaseVersionMajorStr = strtok(latestReleaseVersionCopy, ".");
-    char * latestReleaseVersionMinorStr = strtok(NULL, ".");
-    char * latestReleaseVersionPatchStr = strtok(NULL, ".");
+    char * latestVersionMajorStr = strtok(latestVersionCopy, ".");
+    char * latestVersionMinorStr = strtok(NULL, ".");
+    char * latestVersionPatchStr = strtok(NULL, ".");
 
-    int latestReleaseVersionMajor = 0;
-    int latestReleaseVersionMinor = 0;
-    int latestReleaseVersionPatch = 0;
+    int latestVersionMajor = 0;
+    int latestVersionMinor = 0;
+    int latestVersionPatch = 0;
 
-    if (latestReleaseVersionMajorStr != NULL) {
-        latestReleaseVersionMajor = atoi(latestReleaseVersionMajorStr);
+    if (latestVersionMajorStr != NULL) {
+        latestVersionMajor = atoi(latestVersionMajorStr);
     }
 
-    if (latestReleaseVersionMinorStr != NULL) {
-        latestReleaseVersionMinor = atoi(latestReleaseVersionMinorStr);
+    if (latestVersionMinorStr != NULL) {
+        latestVersionMinor = atoi(latestVersionMinorStr);
     }
 
-    if (latestReleaseVersionPatchStr != NULL) {
-        latestReleaseVersionPatch = atoi(latestReleaseVersionPatchStr);
+    if (latestVersionPatchStr != NULL) {
+        latestVersionPatch = atoi(latestVersionPatchStr);
     }
 
-    if (latestReleaseVersionMajor == 0 && latestReleaseVersionMinor == 0 && latestReleaseVersionPatch == 0) {
-        fprintf(stderr, "invalid version format: %s\n", latestReleaseVersion);
+    if (latestVersionMajor == 0 && latestVersionMinor == 0 && latestVersionPatch == 0) {
+        fprintf(stderr, "invalid version format: %s\n", latestVersion);
         return UPPM_ERROR;
     }
 
-    if (latestReleaseVersionMajor < UPPM_VERSION_MAJOR) {
+    if (latestVersionMajor < UPPM_VERSION_MAJOR) {
         LOG_SUCCESS1("this software is already the latest version.");
         return UPPM_OK;
-    } else if (latestReleaseVersionMajor == UPPM_VERSION_MAJOR) {
-        if (latestReleaseVersionMinor < UPPM_VERSION_MINOR) {
+    } else if (latestVersionMajor == UPPM_VERSION_MAJOR) {
+        if (latestVersionMinor < UPPM_VERSION_MINOR) {
             LOG_SUCCESS1("this software is already the latest version.");
             return UPPM_OK;
-        } else if (latestReleaseVersionMinor == UPPM_VERSION_MINOR) {
-            if (latestReleaseVersionPatch <= UPPM_VERSION_PATCH) {
+        } else if (latestVersionMinor == UPPM_VERSION_MINOR) {
+            if (latestVersionPatch <= UPPM_VERSION_PATCH) {
                 LOG_SUCCESS1("this software is already the latest version.");
                 return UPPM_OK;
             }
@@ -257,55 +275,35 @@ finalize:
         return UPPM_ERROR;
     }
 
-    size_t tarballFileNameLength = strlen(latestReleaseVersion) + strlen(osType) + strlen(osArch) + 15U + 5U;
-    char   tarballFileName[tarballFileNameLength];
+    size_t tarballFileNameCapacity = latestVersionLength + strlen(osType) + strlen(osArch) + 26U;
+    char   tarballFileName[tarballFileNameCapacity];
 
-    if (strcmp(osType, "macos") == 0) {
-        char osVersion[31] = {0};
+    ret = snprintf(tarballFileName, tarballFileNameCapacity, "uppm-%s-%s-%s.tar.xz", latestVersion, osType, osArch);
 
-        if (sysinfo_vers(osVersion, 30) != 0) {
-            return UPPM_ERROR;
-        }
-
-        int i = 0;
-
-        for (;;) {
-            char c = osVersion[i];
-
-            if (c == '.') {
-                osVersion[i] = '\0';
-                break;
-            }
-
-            if (c == '\0') {
-                break;
-            }
-        }
-
-        const char * x;
-
-        if (strcmp(osVersion, "10") == 0) {
-            x = "10.15";
-        } else if (strcmp(osVersion, "11") == 0) {
-            x = "11.0";
-        } else if (strcmp(osVersion, "12") == 0) {
-            x = "12.0";
-        } else {
-            x = "13.0";
-        }
-
-        snprintf(tarballFileName, tarballFileNameLength, "uppm-%s-%s%s-%s.tar.xz", latestReleaseVersion, osType, x, osArch);
-    } else {
-        snprintf(tarballFileName, tarballFileNameLength, "uppm-%s-%s-%s.tar.xz", latestReleaseVersion, osType, osArch);
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
     }
 
-    size_t   tarballUrlLength = tarballFileNameLength + strlen(latestReleaseTagName) + 66U;
-    char     tarballUrl[tarballUrlLength];
-    snprintf(tarballUrl, tarballUrlLength, "https://github.com/leleliu008/uppm/releases/download/%s/%s", latestReleaseTagName, tarballFileName);
+    size_t tarballUrlCapacity = tarballFileNameCapacity + strlen(latestReleaseTagName) + 66U;
+    char   tarballUrl[tarballUrlCapacity];
 
-    size_t   tarballFilePathLength = sessionDIRLength + tarballFileNameLength + 2U;
-    char     tarballFilePath[tarballFilePathLength];
-    snprintf(tarballFilePath, tarballFilePathLength, "%s/%s", sessionDIR, tarballFileName);
+    ret = snprintf(tarballUrl, tarballUrlCapacity, "https://github.com/leleliu008/uppm/releases/download/%s/%s", latestReleaseTagName, tarballFileName);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
+
+    size_t tarballFilePathLength = sessionDIRCapacity + tarballFileNameCapacity + 2U;
+    char   tarballFilePath[tarballFilePathLength];
+
+    ret = snprintf(tarballFilePath, tarballFilePathLength, "%s/%s", sessionDIR, tarballFileName);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     ret = uppm_http_fetch_to_file(tarballUrl, tarballFilePath, verbose, verbose);
 
@@ -321,9 +319,15 @@ finalize:
         return abs(ret) + UPPM_ERROR_ARCHIVE_BASE;
     }
 
-    size_t   upgradableExecutableFilePathLength = sessionDIRLength + 10U;
-    char     upgradableExecutableFilePath[upgradableExecutableFilePathLength];
-    snprintf(upgradableExecutableFilePath, upgradableExecutableFilePathLength, "%s/bin/uppm", sessionDIR);
+    size_t upgradableExecutableFilePathCapacity = sessionDIRCapacity + 10U;
+    char   upgradableExecutableFilePath[upgradableExecutableFilePathCapacity];
+
+    ret = snprintf(upgradableExecutableFilePath, upgradableExecutableFilePathCapacity, "%s/bin/uppm", sessionDIR);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     char * selfRealPath = self_realpath();
 
@@ -362,7 +366,7 @@ finally:
     free(selfRealPath);
 
     if (ret == UPPM_OK) {
-        fprintf(stderr, "uppm is up to date with version %s\n", latestReleaseVersion);
+        fprintf(stderr, "uppm is up to date with version %s\n", latestVersion);
     } else {
         fprintf(stderr, "Can't upgrade self. the latest version of executable was downloaded to %s, you can manually replace the current running program with it.\n", upgradableExecutableFilePath);
     }

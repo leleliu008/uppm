@@ -350,9 +350,15 @@ int uppm_receipt_parse(const char * packageName, UPPMReceipt * * out) {
         return ret;
     }
 
-    size_t   packageInstalledDIRLength = uppmHomeDIRLength + strlen(packageName) + 12U;
-    char     packageInstalledDIR[packageInstalledDIRLength];
-    snprintf(packageInstalledDIR, packageInstalledDIRLength, "%s/installed/%s", uppmHomeDIR, packageName);
+    size_t packageInstalledDIRLength = uppmHomeDIRLength + strlen(packageName) + 12U;
+    char   packageInstalledDIR[packageInstalledDIRLength];
+
+    ret = snprintf(packageInstalledDIR, packageInstalledDIRLength, "%s/installed/%s", uppmHomeDIR, packageName);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     struct stat st;
 
@@ -360,9 +366,15 @@ int uppm_receipt_parse(const char * packageName, UPPMReceipt * * out) {
         return UPPM_ERROR_PACKAGE_NOT_INSTALLED;
     }
 
-    size_t   receiptFilePathLength = packageInstalledDIRLength + 20U;
-    char     receiptFilePath[receiptFilePathLength];
-    snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", packageInstalledDIR);
+    size_t receiptFilePathLength = packageInstalledDIRLength + 20U;
+    char   receiptFilePath[receiptFilePathLength];
+
+    ret = snprintf(receiptFilePath, receiptFilePathLength, "%s/.uppm/receipt.yml", packageInstalledDIR);
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    }
 
     if (stat(receiptFilePath, &st) != 0 || (!S_ISREG(st.st_mode))) {
         return UPPM_ERROR_PACKAGE_IS_BROKEN;

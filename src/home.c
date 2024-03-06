@@ -29,9 +29,17 @@ int uppm_home_dir(char buf[], size_t bufSize, size_t * outSize) {
             return UPPM_ERROR_ENV_HOME_NOT_SET;
         }
 
-        size_t   defaultUppmHomeDIRLength = strlen(userHomeDIR) + 6U;
-        char     defaultUppmHomeDIR[defaultUppmHomeDIRLength + 1U];
-        snprintf(defaultUppmHomeDIR, defaultUppmHomeDIRLength + 1U, "%s/.uppm", userHomeDIR);
+        size_t defaultUppmHomeDIRCapacity = strlen(userHomeDIR) + 7U;
+        char   defaultUppmHomeDIR[defaultUppmHomeDIRCapacity];
+
+        int ret = snprintf(defaultUppmHomeDIR, defaultUppmHomeDIRCapacity, "%s/.uppm", userHomeDIR);
+
+        if (ret < 0) {
+            perror(NULL);
+            return UPPM_ERROR;
+        }
+
+        size_t defaultUppmHomeDIRLength = ret;
 
         struct stat st;
 

@@ -1012,7 +1012,7 @@ int uppm_main(int argc, char* argv[]) {
             }
         }
 
-        return uppm_download(argv[2], argv[3], outputDIR, unpackDIR, stripComponents, verbose);
+        return uppm_download(argv[2], NULL, argv[3], outputDIR, verbose);
     }
 
     LOG_ERROR2("unrecognized action: ", argv[1]);
