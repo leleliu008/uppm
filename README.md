@@ -670,9 +670,9 @@ If a uppm formula repository is `pinned`, which means it would not be updated.
 
 If a uppm formula repository is `disabled`, which means uppm would not search formulas in this formula repository.
 
-## uppm offical formula repository
+## uppm official formula repository
 
-uppm offical formula repository's url:
+uppm official formula repository's url:
 
 - <https://github.com/leleliu008/uppm-formula-repository-android-aarch64>
 - <https://github.com/leleliu008/uppm-formula-repository-linux-x86_64>
@@ -683,6 +683,6 @@ uppm offical formula repository's url:
 - <https://github.com/leleliu008/uppm-formula-repository-openbsd-amd64>
 - <https://github.com/leleliu008/uppm-formula-repository-netbsd-amd64>
 
-uppm offical formula repository would be automatically fetched to local cache as name `offical-core` when you run `uppm update` command.
+uppm official formula repository would be automatically fetched to local cache as name `official-core` when you run `uppm update` command.
 
-**Note:** If you find that a package is not in uppm offical formula repository yet, PR is welcomed.
+**Note:** If you find that a package is not in uppm official formula repository yet, PR is welcomed.

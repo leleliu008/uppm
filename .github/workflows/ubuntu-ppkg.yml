@@ -84,7 +84,7 @@ jobs:
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm tree gsed -L 3
 
       - run: |
-          printf '%s\n' 'version: 1000' >> ~/.uppm/repos.d/offical-core/formula/gsed.yml
+          printf '%s\n' 'version: 1000' >> ~/.uppm/repos.d/official-core/formula/gsed.yml
 
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm ls-available
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm ls-installed

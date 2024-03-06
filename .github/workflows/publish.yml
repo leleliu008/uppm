@@ -62,7 +62,7 @@ jobs:
       - run: ./ppkg update
 
       - run: |
-          ~/.uppm/installed/gsed/bin/gsed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/offical-core/formula/uppm.yml
+          ~/.uppm/installed/gsed/bin/gsed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
 
       - run: ./ppkg install netbsd-${{ matrix.target-version }}-amd64/uppm --link-type=static-full
       - run: ./ppkg pack    netbsd-${{ matrix.target-version }}-amd64/uppm
@@ -92,7 +92,7 @@ jobs:
       - run: ./ppkg update
 
       - run: |
-          ~/.uppm/installed/gsed/bin/gsed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/offical-core/formula/uppm.yml
+          ~/.uppm/installed/gsed/bin/gsed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
 
       - run: ./ppkg install openbsd-${{ matrix.target-version }}-amd64/uppm --link-type=static-most
       - run: ./ppkg pack    openbsd-${{ matrix.target-version }}-amd64/uppm
@@ -121,7 +121,7 @@ jobs:
       - run: ./ppkg update
 
       - run: |
-          ~/.uppm/installed/gsed/bin/gsed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/offical-core/formula/uppm.yml
+          ~/.uppm/installed/gsed/bin/gsed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
 
       - run: ./ppkg install freebsd-${{ matrix.target-version }}-amd64/uppm --link-type=static-full
       - run: ./ppkg pack    freebsd-${{ matrix.target-version }}-amd64/uppm
@@ -151,7 +151,7 @@ jobs:
       - run: ./xcpkg update
 
       - run: |
-          ~/.uppm/installed/gsed/bin/gsed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.xcpkg/repos.d/offical-core/formula/uppm.yml
+          ~/.uppm/installed/gsed/bin/gsed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.xcpkg/repos.d/official-core/formula/uppm.yml
 
       - run: ./xcpkg install MacOSX/${{ matrix.target-version }}/${{ matrix.target-arch }}/uppm --link-type=static-prefered --install-lib=static
       - run: ./xcpkg pack    MacOSX/${{ matrix.target-version }}/${{ matrix.target-arch }}/uppm -o .
@@ -182,7 +182,7 @@ jobs:
       - run: ./ppkg update
 
       - run: |
-          sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/offical-core/formula/uppm.yml
+          sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
 
       - run: ./ppkg install uppm --link-type=static-only --install-lib=static
       - run: ./ppkg pack    uppm -o .
@@ -227,7 +227,7 @@ jobs:
           run ./ppkg setup
           run ./ppkg update
 
-          sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/offical-core/formula/uppm.yml
+          sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
 
           run ./ppkg install uppm --link-type=static-only --install-lib=static
           run ./ppkg pack    uppm -o .
@@ -281,7 +281,7 @@ jobs:
           run ./ppkg setup
           run ./ppkg update
 
-          sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/offical-core/formula/uppm.yml
+          sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
 
           run ./ppkg install uppm --link-type=static-only --install-lib=static
           run ./ppkg pack    uppm -o .
@@ -335,7 +335,7 @@ jobs:
           run ./ppkg setup
           run ./ppkg update
 
-          sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/offical-core/formula/uppm.yml
+          sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
 
           run ./ppkg install uppm --link-type=static-only --install-lib=static
           run ./ppkg pack    uppm -o .
@@ -390,7 +390,7 @@ jobs:
           run ./ppkg setup
           run ./ppkg update
 
-          sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/offical-core/formula/uppm.yml
+          sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
 
           run ./ppkg install uppm gh --link-type=static-only --install-lib=static
           run ./ppkg pack    uppm -o .
