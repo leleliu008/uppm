@@ -187,7 +187,7 @@ jobs:
       - run: |
           sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
 
-      - run: ./ppkg install uppm --link-type=static-only --install-lib=static
+      - run: ./ppkg install uppm --link-type=static-full --install-lib=static
       - run: ./ppkg pack    uppm -o .
 
       - uses: actions/upload-artifact@v4
@@ -232,7 +232,7 @@ jobs:
 
           sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
 
-          run ./ppkg install uppm --link-type=static-only --install-lib=static
+          run ./ppkg install uppm --link-type=static-full --install-lib=static
           run ./ppkg pack    uppm -o .
           EOF
 
@@ -286,7 +286,7 @@ jobs:
 
           sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
 
-          run ./ppkg install uppm --link-type=static-only --install-lib=static
+          run ./ppkg install uppm --link-type=static-full --install-lib=static
           run ./ppkg pack    uppm -o .
           EOF
 
@@ -340,7 +340,7 @@ jobs:
 
           sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
 
-          run ./ppkg install uppm --link-type=static-only --install-lib=static
+          run ./ppkg install uppm --link-type=static-full --install-lib=static
           run ./ppkg pack    uppm -o .
           EOF
 
@@ -395,7 +395,7 @@ jobs:
 
           sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
 
-          run ./ppkg install uppm gh --link-type=static-only --install-lib=static
+          run ./ppkg install uppm gh --link-type=static-full --install-lib=static
           run ./ppkg pack    uppm -o .
           EOF
 
