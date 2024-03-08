@@ -42,7 +42,7 @@ static int uppm_upgrade_tar_filename(char buf[], const size_t bufSize, const cha
         }
 
         if (osVers[i] == '.') {
-            osVers[i] == '\0';
+            osVers[i] = '\0';
             osVersMajor = atoi(osVers);
             break;
         }
@@ -53,8 +53,8 @@ static int uppm_upgrade_tar_filename(char buf[], const size_t bufSize, const cha
         return UPPM_ERROR;
     }
 
-    if (osVersMajor > 13) {
-        osVersMajor = 13;
+    if (osVersMajor > 14) {
+        osVersMajor = 14;
     }
 
     ret = snprintf(buf, bufSize, "uppm-%s-%s-%s.0-%s.tar.xz", latestVersion, osType, osVersMajor, osArch);

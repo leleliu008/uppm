@@ -144,7 +144,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target-version: ['11.0', '12.0', '13.0', '14.0']
+        target-version: ['10.15', '11.0', '12.0', '13.0', '14.0']
         target-arch: [x86_64, arm64]
 
     steps:
@@ -363,7 +363,8 @@ jobs:
 
   linux-s390x:
     needs: [check, linux-riscv64]
-    if: needs.check.outputs.if-has-new-commit == 'yes'
+      #if: needs.check.outputs.if-has-new-commit == 'yes'
+    if: false
 
     runs-on: ubuntu-latest
 
@@ -417,7 +418,7 @@ jobs:
 
 
   android:
-    needs: [check, linux-s390x]
+    needs: [check, linux-riscv64]
     if: needs.check.outputs.if-has-new-commit == 'yes'
 
     runs-on: ubuntu-latest
@@ -562,10 +563,10 @@ jobs:
           name: uppm---linux-riscv64-tar-xz
           path: .
 
-      - uses: actions/download-artifact@v4
-        with:
-          name: uppm---linux-s390x-tar-xz
-          path: .
+            #- uses: actions/download-artifact@v4
+            #with:
+            #name: uppm---linux-s390x-tar-xz
+            #path: .
 
       - uses: actions/download-artifact@v4
         with:
