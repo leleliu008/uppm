@@ -2,9 +2,9 @@ name: archlinux
 
 on:
   push:
-    branches: [ * ]
+    branches: [ 0.15.1 ]
   pull_request:
-    branches: [ * ]
+    branches: [ 0.15.1 ]
 
 jobs:
   archlinux:
