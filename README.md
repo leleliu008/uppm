@@ -8,10 +8,11 @@ Universal Prebuild Package Manager for Unix-like systems.
 
 - Please do NOT place your own files under `~/.uppm` directory, as `uppm` will change files under `~/.uppm` directory without notice.
 
-## Build from source dependencies
+## Build from C source locally dependencies
 
 |dependency|required?|purpose|
 |----|---------|-------|
+|[GCC](https://gcc.gnu.org/) or [LLVM+clang](https://llvm.org/)|required |for compiling C source code|
 |[cmake](https://cmake.org/)|required |for generating `build.ninja`|
 |[ninja](https://ninja-build.org/)|required |for doing jobs that read from `build.ninja`|
 |[pkg-config>=0.18](https://www.freedesktop.org/wiki/Software/pkg-config/)|required|for finding libraries|
@@ -25,19 +26,19 @@ Universal Prebuild Package Manager for Unix-like systems.
 |[zlib](https://www.zlib.net/)|required|for compress and uncompress data.|
 |[pcre2](https://www.pcre.org/)||for Regular Expressions support. only required on OpenBSD.|
 
-### Build from source via [ppkg](https://github.com/leleliu008/ppkg)
+## Build from C source locally via [ppkg](https://github.com/leleliu008/ppkg)
 
 ```bash
 ppkg install uppm
 ```
 
-### Build from source via [xcpkg](https://github.com/leleliu008/xcpkg)
+## Build from C source locally via [xcpkg](https://github.com/leleliu008/xcpkg)
 
 ```bash
 xcpkg install uppm
 ```
 
-### Build from source using [vcpkg](https://github.com/microsoft/vcpkg)
+## Build from C source locally using [vcpkg](https://github.com/microsoft/vcpkg)
 
 ```bash
 # install g++ curl zip unzip tar git
@@ -50,15 +51,21 @@ export PATH="$VCPKG_ROOT:$PATH"
 
 vcpkg install curl openssl libgit2 libarchive libyaml jansson
 
-git clone --depth=1 --branch=c https://github.com/leleliu008/uppm
-cd uppm
+git clone --depth=1 https://github.com/leleliu008/uppm
+cd ppkg
 
 cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake
 cmake --build   build.d
 cmake --install build.d
 ```
 
-## Build from source using your system's default package manager
+## Build from C source locally via [HomeBrew](https://brew.sh/)
+
+```bash
+brew install --HEAD leleliu008/fpliu/uppm
+```
+
+## Build from C source locally using your system's default package manager
 
 **[Ubuntu](https://ubuntu.com/)**
 
@@ -152,32 +159,6 @@ git clone --depth=1 https://github.com/leleliu008/uppm
 cd uppm
 
 cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=/usr/local
-cmake --build   build.d
-cmake --install build.d
-```
-
-**[macOS](https://www.apple.com/macos/)**
-
-```bash
-brew update
-brew install git cmake pkg-config ninja curl jansson libyaml libgit2 libarchive
-
-git clone --depth=1 https://github.com/leleliu008/uppm
-cd uppm
-
-export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:/usr/local/opt/openssl@1.1/lib/pkgconfig:/usr/local/opt/curl/lib/pkgconfig:/usr/local/opt/libarchive/lib/pkgconfig"
-
-CMAKE_EXE_LINKER_FLAGS='-L/usr/local/lib -L/usr/local/opt/openssl@1.1/lib -lssl -liconv -framework CoreFoundation -framework Security'
-CMAKE_FIND_ROOT_PATH="$(brew --prefix openssl@1.1);$(brew --prefix curl);$(brew --prefix libarchive)"
-
-cmake \
-    -S . \
-    -B build.d \
-    -G Ninja \
-    -DCMAKE_INSTALL_PREFIX=./output \
-    -DCMAKE_EXE_LINKER_FLAGS="$CMAKE_EXE_LINKER_FLAGS" \
-    -DCMAKE_FIND_ROOT_PATH="$CMAKE_FIND_ROOT_PATH"
-
 cmake --build   build.d
 cmake --install build.d
 ```
