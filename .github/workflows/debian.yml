@@ -90,7 +90,7 @@ jobs:
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm tree unzip -L 3
 
       - run: |
-          sed -i '/^version: /c version: 6.0.28' $(~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info-available unzip formula)
+          sed -i '/^version: /c version: 1000' $(~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info-available unzip formula)
 
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm ls-available
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm ls-installed
