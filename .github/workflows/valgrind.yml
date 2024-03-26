@@ -111,7 +111,7 @@ jobs:
 
       - run:  $VALGRIND ./output/bin/uppm is-available tree
       - run:  $VALGRIND ./output/bin/uppm is-installed tree
-      - run:  $VALGRIND ./output/bin/uppm is-outdated  tree
+      - run:  $VALGRIND ./output/bin/uppm is-outdated  tree || echo not outdated
 
       - run:  $VALGRIND ./output/bin/uppm tree      tree
       - run:  $VALGRIND ./output/bin/uppm tree      tree -L 2

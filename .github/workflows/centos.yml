@@ -99,7 +99,7 @@ jobs:
 
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm is-available curl
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm is-installed unzip
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm is-outdated  unzip
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm is-outdated  unzip || echo not outdated
 
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm upgrade   unzip
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm reinstall unzip
@@ -200,7 +200,7 @@ jobs:
 
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm is-available curl
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm is-installed unzip
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm is-outdated  unzip
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm is-outdated  unzip || echo not outdated
 
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm upgrade   unzip
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm reinstall unzip
@@ -305,7 +305,7 @@ jobs:
 
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm is-available curl
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm is-installed unzip
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm is-outdated  unzip
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm is-outdated  unzip || echo not outdated
 
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm upgrade   unzip
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm reinstall unzip

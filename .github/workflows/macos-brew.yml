@@ -102,7 +102,7 @@ jobs:
 
       - run:  ./output/bin/uppm is-available curl
       - run:  ./output/bin/uppm is-installed gsed
-      - run:  ./output/bin/uppm is-outdated  gsed
+      - run:  ./output/bin/uppm is-outdated  gsed || echo not outdated
 
       - run:  ./output/bin/uppm upgrade   gsed
       - run:  ./output/bin/uppm reinstall gsed
@@ -213,7 +213,7 @@ jobs:
 
       - run:  ./output/bin/uppm is-available curl
       - run:  ./output/bin/uppm is-installed gsed
-      - run:  ./output/bin/uppm is-outdated  gsed
+      - run:  ./output/bin/uppm is-outdated  gsed || echo not outdated
 
       - run:  ./output/bin/uppm upgrade   gsed
       - run:  ./output/bin/uppm reinstall gsed

@@ -85,7 +85,7 @@ jobs:
 
       - run:  ./output/bin/uppm is-available curl
       - run:  ./output/bin/uppm is-installed unzip
-      - run:  ./output/bin/uppm is-outdated  unzip
+      - run:  ./output/bin/uppm is-outdated  unzip || echo not outdated
 
       - run:  ./output/bin/uppm upgrade   unzip
       - run:  ./output/bin/uppm reinstall unzip

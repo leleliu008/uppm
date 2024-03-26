@@ -92,7 +92,7 @@ jobs:
 
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm is-available curl
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm is-installed gsed
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm is-outdated  gsed
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm is-outdated  gsed || echo not outdated
 
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm upgrade   gsed
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm reinstall gsed
