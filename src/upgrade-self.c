@@ -61,10 +61,54 @@ static int uppm_upgrade_tar_filename(char buf[], const size_t bufSize, const cha
 #elif defined (__DragonFly__)
     ret = snprintf(buf, bufSize, "uppm-%s-%s-%s-%s.tar.xz", latestVersion, osType, osVers, osArch);
 #elif defined (__FreeBSD__)
+    double v = atof(osVers * 10);
+
+    if (v < 130) {
+        osVers[0] = '1';
+        osVers[1] = '3';
+        osVers[2] = '.';
+        osVers[3] = '0';
+        osVers[4] = '\0';
+    } else if (v > 132) {
+        osVers[0] = '1';
+        osVers[1] = '3';
+        osVers[2] = '.';
+        osVers[3] = '2';
+        osVers[4] = '\0';
+    }
+
     ret = snprintf(buf, bufSize, "uppm-%s-%s-%s-%s.tar.xz", latestVersion, osType, osVers, osArch);
 #elif defined (__OpenBSD__)
+    double v = atof(osVers * 10);
+
+    if (v < 73) {
+        osVers[0] = '7';
+        osVers[1] = '.';
+        osVers[2] = '3';
+        osVers[3] = '\0';
+    } else if (v > 74) {
+        osVers[0] = '7';
+        osVers[1] = '.';
+        osVers[2] = '4';
+        osVers[3] = '\0';
+    }
+
     ret = snprintf(buf, bufSize, "uppm-%s-%s-%s-%s.tar.xz", latestVersion, osType, osVers, osArch);
 #elif defined (__NetBSD__)
+    double v = atof(osVers * 10);
+
+    if (v < 92) {
+        osVers[0] = '9';
+        osVers[1] = '.';
+        osVers[2] = '2';
+        osVers[3] = '\0';
+    } else if (v > 93) {
+        osVers[0] = '9';
+        osVers[1] = '.';
+        osVers[2] = '3';
+        osVers[3] = '\0';
+    }
+
     ret = snprintf(buf, bufSize, "uppm-%s-%s-%s-%s.tar.xz", latestVersion, osType, osVers, osArch);
 #else
     ret = snprintf(buf, bufSize, "uppm-%s-%s-%s.tar.xz", latestVersion, osType, osArch);
