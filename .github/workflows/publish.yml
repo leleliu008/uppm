@@ -67,7 +67,7 @@ jobs:
       - run: ./ppkg update
 
       - run: |
-          ~/.uppm/installed/gsed/bin/gsed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
+          ~/.ppkg/uppm/installed/gsed/bin/gsed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
 
       - run: ./ppkg install netbsd-${{ matrix.target-version }}-amd64/uppm --link-type=static-full
       - run: ./ppkg pack    netbsd-${{ matrix.target-version }}-amd64/uppm
@@ -96,7 +96,7 @@ jobs:
       - run: ./ppkg update
 
       - run: |
-          ~/.uppm/installed/gsed/bin/gsed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
+          ~/.ppkg/uppm/installed/gsed/bin/gsed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
 
       - run: ./ppkg install openbsd-${{ matrix.target-version }}-amd64/uppm --link-type=static-most
       - run: ./ppkg pack    openbsd-${{ matrix.target-version }}-amd64/uppm
@@ -125,7 +125,7 @@ jobs:
       - run: ./ppkg update
 
       - run: |
-          ~/.uppm/installed/gsed/bin/gsed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
+          ~/.ppkg/uppm/installed/gsed/bin/gsed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
 
       - run: ./ppkg install freebsd-${{ matrix.target-version }}-amd64/uppm --link-type=static-full
       - run: ./ppkg pack    freebsd-${{ matrix.target-version }}-amd64/uppm
@@ -363,8 +363,7 @@ jobs:
 
   linux-s390x:
     needs: [check, linux-riscv64]
-      #if: needs.check.outputs.if-has-new-commit == 'yes'
-    if: false
+    if: needs.check.outputs.if-has-new-commit == 'yes'
 
     runs-on: ubuntu-latest
 
@@ -416,41 +415,8 @@ jobs:
           path: uppm-*-linux-s390x.tar.xz
 
 
-
-  android:
-    needs: [check, linux-riscv64]
-    if: needs.check.outputs.if-has-new-commit == 'yes'
-
-    runs-on: ubuntu-latest
-
-    container: fpliu/ndk-pkg
-
-    steps:
-      - run: /usr/bin/ndk-pkg env
-      - run: /usr/bin/ndk-pkg setup
-      - run: /usr/bin/ndk-pkg sysinfo
-      - run: /usr/bin/ndk-pkg update
-
-      - run: |
-          sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ndk-pkg/repos.d/official-core/formula/uppm.yml
-
-      - run: /usr/bin/ndk-pkg install android-34-arm64-v8a,armeabi-v7a,x86,x86_64/uppm --link-type=static-full
-      - run: /usr/bin/ndk-pkg pack    android-34-arm64-v8a/uppm   -o .
-      - run: /usr/bin/ndk-pkg pack    android-34-armeabi-v7a/uppm -o .
-      - run: /usr/bin/ndk-pkg pack    android-34-x86/uppm         -o .
-      - run: /usr/bin/ndk-pkg pack    android-34-x86_64/uppm      -o .
-
-      - run: ls
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: uppm---android---tar-xz
-          path: uppm-*-android-*.tar.xz
-
-
-
   publish:
-    needs: [check, android]
+    needs: [check, linux-s390x]
     if: needs.check.outputs.if-has-new-commit == 'yes'
 
     runs-on: ubuntu-latest
@@ -461,119 +427,9 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: uppm---netbsd-9.1-amd64-tar-xz
+          pattern: '*'
           path: .
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: uppm---netbsd-9.2-amd64-tar-xz
-          path: .
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: uppm---netbsd-9.3-amd64-tar-xz
-          path: .
-
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: uppm---openbsd-7.3-amd64-tar-xz
-          path: .
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: uppm---openbsd-7.4-amd64-tar-xz
-          path: .
-
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: uppm---freebsd-13.0-amd64-tar-xz
-          path: .
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: uppm---freebsd-13.1-amd64-tar-xz
-          path: .
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: uppm---freebsd-13.2-amd64-tar-xz
-          path: .
-
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: uppm---macos-11.0-x86_64-tar-xz
-          path: .
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: uppm---macos-12.0-x86_64-tar-xz
-          path: .
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: uppm---macos-13.0-x86_64-tar-xz
-          path: .
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: uppm---macos-14.0-x86_64-tar-xz
-          path: .
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: uppm---macos-11.0-arm64-tar-xz
-          path: .
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: uppm---macos-12.0-arm64-tar-xz
-          path: .
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: uppm---macos-13.0-arm64-tar-xz
-          path: .
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: uppm---macos-14.0-arm64-tar-xz
-          path: .
-
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: uppm---linux-x86_64-tar-xz
-          path: .
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: uppm---linux-aarch64-tar-xz
-          path: .
-
-            #- uses: actions/download-artifact@v4
-            #with:
-            #name: uppm---linux-ppc64le-tar-xz
-            #path: .
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: uppm---linux-riscv64-tar-xz
-          path: .
-
-            #- uses: actions/download-artifact@v4
-            #with:
-            #name: uppm---linux-s390x-tar-xz
-            #path: .
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: uppm---android---tar-xz
-          path: .
-
-
+          merge-multiple: true
 
       - run: ls -a
 
