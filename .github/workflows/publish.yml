@@ -66,6 +66,7 @@ jobs:
     steps:
       - run: curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
       - run: chmod a+x ppkg
+
       - run: ./ppkg setup
       - run: ./ppkg update
 
@@ -192,7 +193,7 @@ jobs:
             docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
           fi
 
-          docker run -v $PWD:$PWD -w $PWD $IMAGE run.sh
+          docker run -v $PWD:$PWD -w $PWD $IMAGE sh run.sh
 
       - run: ls
 
