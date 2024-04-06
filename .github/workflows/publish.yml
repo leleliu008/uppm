@@ -71,23 +71,23 @@ jobs:
       - run: ./ppkg update
 
       - run: |
-          ~/.uppm/installed/gsed/bin/gsed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uctags.yml
+          ~/.uppm/installed/gsed/bin/gsed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
 
       - if:  ${{ startsWith(matrix.target, 'openbsd') }}
-        run: ./ppkg install ${{ matrix.target }}/uctags --link-type=static-most
+        run: ./ppkg install ${{ matrix.target }}/uppm --link-type=static-most
 
       - if:  ${{ ! startsWith(matrix.target, 'openbsd') }}
-        run: ./ppkg install ${{ matrix.target }}/uctags --link-type=static-full
+        run: ./ppkg install ${{ matrix.target }}/uppm --link-type=static-full
 
-      - run: ./ppkg pack ${{ matrix.target }}/uctags -t tar.gz
-      - run: ./ppkg pack ${{ matrix.target }}/uctags -t tar.xz
-      - run: ./ppkg pack ${{ matrix.target }}/uctags -t tar.lz
-      - run: ./ppkg pack ${{ matrix.target }}/uctags -t tar.bz2
+      - run: ./ppkg pack ${{ matrix.target }}/uppm -t tar.gz
+      - run: ./ppkg pack ${{ matrix.target }}/uppm -t tar.xz
+      - run: ./ppkg pack ${{ matrix.target }}/uppm -t tar.lz
+      - run: ./ppkg pack ${{ matrix.target }}/uppm -t tar.bz2
 
       - uses: actions/upload-artifact@v4
         with:
-          name: uctags---${{ matrix.target }}-tar
-          path: uctags-*-${{ matrix.target }}.tar.*
+          name: uppm---${{ matrix.target }}-tar
+          path: uppm-*-${{ matrix.target }}.tar.*
 
 
   macos:
@@ -110,19 +110,19 @@ jobs:
       - run: ./xcpkg update
 
       - run: |
-          ~/.xcpkg/uppm/installed/gsed/bin/gsed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.xcpkg/repos.d/official-core/formula/uctags.yml
+          ~/.xcpkg/uppm/installed/gsed/bin/gsed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.xcpkg/repos.d/official-core/formula/uppm.yml
 
-      - run: ./xcpkg install MacOSX-${{ matrix.target-version }}-${{ matrix.target-arch }}/uctags --link-type=static-most
+      - run: ./xcpkg install MacOSX-${{ matrix.target-version }}-${{ matrix.target-arch }}/uppm --link-type=static-most
 
-      - run: ./xcpkg pack    MacOSX-${{ matrix.target-version }}-${{ matrix.target-arch }}/uctags -t tar.gz
-      - run: ./xcpkg pack    MacOSX-${{ matrix.target-version }}-${{ matrix.target-arch }}/uctags -t tar.xz
-      - run: ./xcpkg pack    MacOSX-${{ matrix.target-version }}-${{ matrix.target-arch }}/uctags -t tar.lz
-      - run: ./xcpkg pack    MacOSX-${{ matrix.target-version }}-${{ matrix.target-arch }}/uctags -t tar.bz2
+      - run: ./xcpkg pack    MacOSX-${{ matrix.target-version }}-${{ matrix.target-arch }}/uppm -t tar.gz
+      - run: ./xcpkg pack    MacOSX-${{ matrix.target-version }}-${{ matrix.target-arch }}/uppm -t tar.xz
+      - run: ./xcpkg pack    MacOSX-${{ matrix.target-version }}-${{ matrix.target-arch }}/uppm -t tar.lz
+      - run: ./xcpkg pack    MacOSX-${{ matrix.target-version }}-${{ matrix.target-arch }}/uppm -t tar.bz2
 
       - uses: actions/upload-artifact@v4
         with:
-          name: uctags---MacOSX-${{ matrix.target-version }}-${{ matrix.target-arch }}-tar
-          path: uctags-*-MacOSX-${{ matrix.target-version }}-${{ matrix.target-arch }}.tar.*
+          name: uppm---MacOSX-${{ matrix.target-version }}-${{ matrix.target-arch }}-tar
+          path: uppm-*-MacOSX-${{ matrix.target-version }}-${{ matrix.target-arch }}.tar.*
 
 
   linux:
@@ -164,14 +164,14 @@ jobs:
           run ./ppkg setup
           run ./ppkg update
 
-          sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uctags.yml
+          sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
 
-          run ./ppkg install uctags --link-type=static-full
+          run ./ppkg install uppm --link-type=static-full
 
-          run ./ppkg pack    uctags -t tar.gz
-          run ./ppkg pack    uctags -t tar.xz
-          run ./ppkg pack    uctags -t tar.lz
-          run ./ppkg pack    uctags -t tar.bz2
+          run ./ppkg pack    uppm -t tar.gz
+          run ./ppkg pack    uppm -t tar.xz
+          run ./ppkg pack    uppm -t tar.lz
+          run ./ppkg pack    uppm -t tar.bz2
           EOF
 
           chmod +x run.sh
@@ -199,8 +199,8 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: uctags---linux-${{ matrix.target-arch }}-tar
-          path: uctags-*-linux-${{ matrix.target-arch }}.tar.*
+          name: uppm---linux-${{ matrix.target-arch }}-tar
+          path: uppm-*-linux-${{ matrix.target-arch }}.tar.*
 
 
   publish:
