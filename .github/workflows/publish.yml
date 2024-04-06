@@ -48,7 +48,8 @@ jobs:
       if-has-new-commit: ${{ steps.check-if-has-new-commit.outputs.HAS_NEW_COMMIT }}
       git-sha:           ${{ steps.check-if-has-new-commit.outputs.GIT_SHA }}
 
-  netbsd-amd64:
+
+  bsd:
     needs: [check]
     if: needs.check.outputs.if-has-new-commit == 'yes'
 
@@ -58,65 +59,9 @@ jobs:
       fail-fast: false
       matrix:
         # https://ftp.netbsd.org/pub/NetBSD/
-        target-version: ['9.1', '9.2', '9.3']
-
-    steps:
-      - run: curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
-      - run: chmod a+x ppkg
-      - run: ./ppkg setup
-      - run: ./ppkg update
-
-      - run: |
-          ~/.uppm/installed/gsed/bin/gsed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
-
-      - run: ./ppkg install netbsd-${{ matrix.target-version }}-amd64/uppm --link-type=static-full
-      - run: ./ppkg pack    netbsd-${{ matrix.target-version }}-amd64/uppm
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: uppm---netbsd-${{ matrix.target-version }}-amd64-tar-xz
-          path: uppm-*-netbsd-${{ matrix.target-version }}-amd64.tar.xz
-
-  openbsd-amd64:
-    needs: [check, netbsd-amd64]
-    if: needs.check.outputs.if-has-new-commit == 'yes'
-
-    runs-on: ubuntu-latest
-
-    strategy:
-      fail-fast: false
-      matrix:
         # https://cdn.openbsd.org/pub/OpenBSD/
-        target-version: ['7.4', '7.3']
-
-    steps:
-      - run: curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
-      - run: chmod a+x ppkg
-      - run: ./ppkg setup
-      - run: ./ppkg update
-
-      - run: |
-          ~/.uppm/installed/gsed/bin/gsed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
-
-      - run: ./ppkg install openbsd-${{ matrix.target-version }}-amd64/uppm --link-type=static-most
-      - run: ./ppkg pack    openbsd-${{ matrix.target-version }}-amd64/uppm
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: uppm---openbsd-${{ matrix.target-version }}-amd64-tar-xz
-          path: uppm-*-openbsd-${{ matrix.target-version }}-amd64.tar.xz
-
-  freebsd-amd64:
-    needs: [check, openbsd-amd64]
-    if: needs.check.outputs.if-has-new-commit == 'yes'
-
-    runs-on: ubuntu-latest
-
-    strategy:
-      fail-fast: false
-      matrix:
         # https://archive.freebsd.org/old-releases/amd64/
-        target-version: ['13.0', '13.1', '13.2']
+        target: ['netbsd-9.1-amd64', 'netbsd-9.2-amd64', 'netbsd-9.3-amd64', 'freebsd-13.2-amd64', 'freebsd-13.1-amd64', 'freebsd-13.0-amd64']
 
     steps:
       - run: curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
@@ -125,18 +70,27 @@ jobs:
       - run: ./ppkg update
 
       - run: |
-          ~/.uppm/installed/gsed/bin/gsed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
+          ~/.uppm/installed/gsed/bin/gsed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uctags.yml
 
-      - run: ./ppkg install freebsd-${{ matrix.target-version }}-amd64/uppm --link-type=static-full
-      - run: ./ppkg pack    freebsd-${{ matrix.target-version }}-amd64/uppm
+      - if:  ${{ startsWith(matrix.target, 'openbsd') }}
+        run: ./ppkg install ${{ matrix.target }}/uctags --link-type=static-most
+
+      - if:  ${{ ! startsWith(matrix.target, 'openbsd') }}
+        run: ./ppkg install ${{ matrix.target }}/uctags --link-type=static-full
+
+      - run: ./ppkg pack ${{ matrix.target }}/uctags -t tar.gz
+      - run: ./ppkg pack ${{ matrix.target }}/uctags -t tar.xz
+      - run: ./ppkg pack ${{ matrix.target }}/uctags -t tar.lz
+      - run: ./ppkg pack ${{ matrix.target }}/uctags -t tar.bz2
 
       - uses: actions/upload-artifact@v4
         with:
-          name: uppm---freebsd-${{ matrix.target-version }}-amd64-tar-xz
-          path: uppm-*-freebsd-${{ matrix.target-version }}-amd64.tar.xz
+          name: uctags---${{ matrix.target }}-tar
+          path: uctags-*-${{ matrix.target }}.tar.*
+
 
   macos:
-    needs: [check, freebsd-amd64]
+    needs: check
     if: needs.check.outputs.if-has-new-commit == 'yes'
 
     runs-on: macos-14
@@ -150,55 +104,34 @@ jobs:
     steps:
       - run: curl -LO https://raw.githubusercontent.com/leleliu008/xcpkg/master/xcpkg
       - run: chmod a+x xcpkg
+
       - run: ./xcpkg setup
       - run: ./xcpkg update
 
       - run: |
-          ~/.ppkg/uppm/installed/gsed/bin/gsed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.xcpkg/repos.d/official-core/formula/uppm.yml
+          ~/.xcpkg/uppm/installed/gsed/bin/gsed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.xcpkg/repos.d/official-core/formula/uctags.yml
 
-      - run: ./xcpkg install MacOSX-${{ matrix.target-version }}-${{ matrix.target-arch }}/uppm --link-type=static-most
-      - run: ./xcpkg pack    MacOSX-${{ matrix.target-version }}-${{ matrix.target-arch }}/uppm
+      - run: ./xcpkg install MacOSX-${{ matrix.target-version }}-${{ matrix.target-arch }}/uctags --link-type=static-most
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: uppm---macos-${{ matrix.target-version }}-${{ matrix.target-arch }}-tar-xz
-          path: uppm-*.tar.xz
-
-
-  linux-x86_64:
-    needs: [check, macos]
-    if: needs.check.outputs.if-has-new-commit == 'yes'
-
-    runs-on: ubuntu-latest
-
-    container: alpine:3.18
-
-    steps:
-      - run: apk update
-      - run: apk add wget g++ libc-dev linux-headers
-
-      - uses: actions/checkout@v4
-
-      - run: wget https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
-      - run: chmod a+x ppkg
-      - run: ./ppkg setup
-      - run: ./ppkg update
-
-      - run: |
-          sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
-
-      - run: ./ppkg install uppm --link-type=static-full
-      - run: ./ppkg pack    uppm -o .
+      - run: ./xcpkg pack    MacOSX-${{ matrix.target-version }}-${{ matrix.target-arch }}/uctags -t tar.gz
+      - run: ./xcpkg pack    MacOSX-${{ matrix.target-version }}-${{ matrix.target-arch }}/uctags -t tar.xz
+      - run: ./xcpkg pack    MacOSX-${{ matrix.target-version }}-${{ matrix.target-arch }}/uctags -t tar.lz
+      - run: ./xcpkg pack    MacOSX-${{ matrix.target-version }}-${{ matrix.target-arch }}/uctags -t tar.bz2
 
       - uses: actions/upload-artifact@v4
         with:
-          name: uppm---linux-x86_64-tar-xz
-          path: uppm-*-linux-x86_64.tar.xz
+          name: uctags---MacOSX-${{ matrix.target-version }}-${{ matrix.target-arch }}-tar
+          path: uctags-*-MacOSX-${{ matrix.target-version }}-${{ matrix.target-arch }}.tar.*
 
 
-  linux-aarch64:
-    needs: [check, linux-x86_64]
+  linux:
+    needs: check
     if: needs.check.outputs.if-has-new-commit == 'yes'
+
+    strategy:
+      fail-fast: false
+      matrix:
+        target-arch: [x86_64, aarch64, ppc64le, riscv64, s390x]
 
     runs-on: ubuntu-latest
 
@@ -223,200 +156,54 @@ jobs:
           run uname -a
 
           run apk update
-          run apk add wget g++ libc-dev linux-headers
+          run apk add g++ libc-dev linux-headers
 
           run wget https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
           run chmod a+x ppkg
           run ./ppkg setup
           run ./ppkg update
 
-          sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
+          sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uctags.yml
 
-          run ./ppkg install uppm --link-type=static-full
-          run ./ppkg pack    uppm -o .
+          run ./ppkg install uctags --link-type=static-full
+
+          run ./ppkg pack    uctags -t tar.gz
+          run ./ppkg pack    uctags -t tar.xz
+          run ./ppkg pack    uctags -t tar.lz
+          run ./ppkg pack    uctags -t tar.bz2
           EOF
 
           chmod +x run.sh
 
-      # https://github.com/multiarch/qemu-user-static
-      - run: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-      - run: docker run -v $PWD:$PWD -w $PWD --name alpine arm64v8/alpine sh run.sh
-
-      - run: ls
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: uppm---linux-aarch64-tar-xz
-          path: uppm-*-linux-aarch64.tar.xz
-
-
-  linux-ppc64le:
-    needs: [check, linux-aarch64]
-    if: false
-      #if: needs.check.outputs.if-has-new-commit == 'yes'
-      # https://github.com/openssl/openssl/issues/21286
-
-    runs-on: ubuntu-latest
-
-    steps:
+      - name: start container
       - run: |
-          cat > run.sh <<EOF
-          set -e
+          set -x
 
-          COLOR_GREEN='\033[0;32m'        # Green
-          COLOR_PURPLE='\033[0;35m'       # Purple
-          COLOR_OFF='\033[0m'             # Reset
+          targetArch = ${{ matrix.target-arch }}
 
-          echo() {
-              printf '%b\n' "\$*"
-          }
+          case $targetArch in
+            x86_64)  IMAGE=alpine ;;
+            aarch64) IMAGE=arm64v8/alpine ;;
+            *)       IMAGE=${{ matrix.target-arch }}/alpine ;;
+          esac
 
-          run() {
-              echo "\${COLOR_PURPLE}==>\${COLOR_OFF} \${COLOR_GREEN}\$@\${COLOR_OFF}"
-              eval "\$*"
-          }
+          if [ ${{ matrix.target-arch }} != x86_64 ] ; then
+            # https://github.com/multiarch/qemu-user-static
+            docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+          fi
 
-          run uname -a
-
-          run apk update
-          run apk add wget g++ libc-dev linux-headers
-
-          run wget https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
-          run chmod a+x ppkg
-          run ./ppkg setup
-          run ./ppkg update
-
-          sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
-
-          run ./ppkg install uppm --link-type=static-full
-          run ./ppkg pack    uppm -o .
-          EOF
-
-          chmod +x run.sh
-
-      # https://github.com/multiarch/qemu-user-static
-      - run: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-      - run: docker run -v $PWD:$PWD -w $PWD --name alpine ppc64le/alpine sh run.sh
+          docker run -v $PWD:$PWD -w $PWD $IMAGE run.sh
 
       - run: ls
 
       - uses: actions/upload-artifact@v4
         with:
-          name: uppm---linux-ppc64le-tar-xz
-          path: uppm-*-linux-ppc64le.tar.xz
-
-
-  linux-riscv64:
-    needs: [check, linux-aarch64]
-    if: needs.check.outputs.if-has-new-commit == 'yes'
-
-    runs-on: ubuntu-latest
-
-    steps:
-      - run: |
-          cat > run.sh <<EOF
-          set -e
-
-          COLOR_GREEN='\033[0;32m'        # Green
-          COLOR_PURPLE='\033[0;35m'       # Purple
-          COLOR_OFF='\033[0m'             # Reset
-
-          echo() {
-              printf '%b\n' "\$*"
-          }
-
-          run() {
-              echo "\${COLOR_PURPLE}==>\${COLOR_OFF} \${COLOR_GREEN}\$@\${COLOR_OFF}"
-              eval "\$*"
-          }
-
-          run uname -a
-
-          run apk update
-          run apk add wget g++ libc-dev linux-headers
-
-          run wget https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
-          run chmod a+x ppkg
-          run ./ppkg setup
-          run ./ppkg update
-
-          sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
-
-          run ./ppkg install uppm --link-type=static-full
-          run ./ppkg pack    uppm -o .
-          EOF
-
-          chmod +x run.sh
-
-      # https://github.com/multiarch/qemu-user-static
-      - run: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-      - run: docker run -v $PWD:$PWD -w $PWD --name alpine riscv64/alpine:edge sh run.sh
-
-      - run: ls
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: uppm---linux-riscv64-tar-xz
-          path: uppm-*-linux-riscv64.tar.xz
-
-
-
-  linux-s390x:
-    needs: [check, linux-riscv64]
-    if: needs.check.outputs.if-has-new-commit == 'yes'
-
-    runs-on: ubuntu-latest
-
-    steps:
-      - run: |
-          cat > run.sh <<EOF
-          set -e
-
-          COLOR_GREEN='\033[0;32m'        # Green
-          COLOR_PURPLE='\033[0;35m'       # Purple
-          COLOR_OFF='\033[0m'             # Reset
-
-          echo() {
-              printf '%b\n' "\$*"
-          }
-
-          run() {
-              echo "\${COLOR_PURPLE}==>\${COLOR_OFF} \${COLOR_GREEN}\$@\${COLOR_OFF}"
-              eval "\$*"
-          }
-
-          run uname -a
-
-          run apk update
-          run apk add wget g++ libc-dev linux-headers
-
-          run wget https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
-          run chmod a+x ppkg
-          run ./ppkg setup
-          run ./ppkg update
-
-          sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
-
-          run ./ppkg install uppm gh --link-type=static-full
-          run ./ppkg pack    uppm -o .
-          EOF
-
-          chmod +x run.sh
-
-      # https://github.com/multiarch/qemu-user-static
-      - run: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-      - run: docker run -v $PWD:$PWD -w $PWD --name alpine s390x/alpine sh run.sh
-
-      - run: ls
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: uppm---linux-s390x-tar-xz
-          path: uppm-*-linux-s390x.tar.xz
+          name: uctags---linux-${{ matrix.target-arch }}-tar
+          path: uctags-*-linux-${{ matrix.target-arch }}.tar.*
 
 
   publish:
-    needs: [check, linux-s390x]
+    needs: [check, bsd, macos, linux]
     if: needs.check.outputs.if-has-new-commit == 'yes'
 
     runs-on: ubuntu-latest
@@ -435,7 +222,7 @@ jobs:
 
       - run: |
           printf 'build-from: https://github.com/leleliu008/uppm/tree/%s\n\n' ${{ needs.check.outputs.git-sha }} > notes.md
-          printf 'sha256sum:\n```\n%s\n```\n' "$(sha256sum uppm-*.tar.xz)" >> notes.md
+          printf 'sha256sum:\n```\n%s\n```\n' "$(sha256sum uppm-*.tar.*)" >> notes.md
 
           VERSION="$(ls uppm-*-linux-x86_64.tar.xz | cut -d- -f2)"
           TAGNAME="$VERSION+${{ needs.check.outputs.git-sha }}"
@@ -444,4 +231,4 @@ jobs:
           git -c init.defaultBranch=master init
           git remote add origin ${{ github.repositoryUrl }}
 
-          gh release create "$TAGNAME" uppm-*.tar.xz --title "$TAGNAME" --notes-file notes.md
+          gh release create "$TAGNAME" uppm-*.tar.* --title "$TAGNAME" --notes-file notes.md
