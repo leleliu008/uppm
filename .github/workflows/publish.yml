@@ -179,7 +179,7 @@ jobs:
         run: |
           set -x
 
-          targetArch = ${{ matrix.target-arch }}
+          targetArch=${{ matrix.target-arch }}
 
           case $targetArch in
             x86_64)  IMAGE=alpine ;;
