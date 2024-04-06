@@ -176,7 +176,7 @@ jobs:
           chmod +x run.sh
 
       - name: start container
-      - run: |
+        run: |
           set -x
 
           targetArch = ${{ matrix.target-arch }}
