@@ -122,7 +122,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: uppm---MacOSX-${{ matrix.target-version }}-${{ matrix.target-arch }}-tar
-          path: uppm-*-MacOSX-${{ matrix.target-version }}-${{ matrix.target-arch }}.tar.*
+          path: uppm-*-macos-${{ matrix.target-version }}-${{ matrix.target-arch }}.tar.*
 
 
   linux:
@@ -132,7 +132,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target-arch: [x86_64, aarch64, ppc64le, riscv64, s390x]
+        target-arch: [x86_64, aarch64, riscv64, s390x]
 
     runs-on: ubuntu-latest
 
@@ -185,6 +185,7 @@ jobs:
           case $targetArch in
             x86_64)  IMAGE=alpine ;;
             aarch64) IMAGE=arm64v8/alpine ;;
+            riscv64) IMAGE=riscv64/alpine:edge ;;
             *)       IMAGE=${{ matrix.target-arch }}/alpine ;;
           esac
 
