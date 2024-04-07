@@ -132,7 +132,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target-arch: [x86_64, aarch64, riscv64, s390x]
+        target-arch: [x86_64, aarch64, riscv64]
 
     runs-on: ubuntu-latest
 
