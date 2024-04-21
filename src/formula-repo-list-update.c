@@ -2,52 +2,113 @@
 #include <string.h>
 
 #include "core/sysinfo.h"
+
 #include "uppm.h"
+
+static int uppm_formula_repo_url_of_official_core(char buf[], const size_t bufSize) {
+    char osType[31] = {0};
+
+    if (sysinfo_type(osType, 30) != 0) {
+        return UPPM_ERROR;
+    }
+
+    char osArch[31] = {0};
+
+    if (sysinfo_arch(osArch, 30) != 0) {
+        return UPPM_ERROR;
+    }
+
+    char osVers[31] = {0};
+
+    if (sysinfo_vers(osVers, 30) != 0) {
+        return UPPM_ERROR;
+    }
+
+    int ret;
+
+#if defined (__APPLE__)
+    int osVersMajor = 0;
+
+    for (int i = 0; i < 31; i++) {
+        if (osVers[i] == '\0') {
+            break;
+        }
+
+        if (osVers[i] == '.') {
+            osVers[i] = '\0';
+            osVersMajor = atoi(osVers);
+            break;
+        }
+    }
+
+    if (osVersMajor < 10) {
+        fprintf(stderr, "MacOSX %d.x is not supported.\n", osVersMajor);
+        return UPPM_ERROR;
+    }
+
+    if (osVersMajor > 13) {
+        osVersMajor = 13;
+    }
+
+    ret = snprintf(buf, bufSize, "https://github.com/leleliu008/uppm-package-repository-%s-%d.0-%s", osType, osVersMajor, osArch);
+#elif defined (__DragonFly__)
+    ret = snprintf(buf, bufSize, "https://github.com/leleliu008/uppm-package-repository-%s-%s-%s", osType, osVers, osArch);
+#elif defined (__FreeBSD__)
+    ret = snprintf(buf, bufSize, "https://github.com/leleliu008/uppm-package-repository-%s-%s-%s", osType, osVers, osArch);
+#elif defined (__OpenBSD__)
+    ret = snprintf(buf, bufSize, "https://github.com/leleliu008/uppm-package-repository-%s-%s-%s", osType, osVers, osArch);
+#elif defined (__NetBSD__)
+    ret = snprintf(buf, bufSize, "https://github.com/leleliu008/uppm-package-repository-%s-%s-%s", osType, osVers, osArch);
+#else
+    ret = snprintf(buf, bufSize, "https://github.com/leleliu008/uppm-formula-repository-%s-%s", osType, osArch);
+#endif
+
+    if (ret < 0) {
+        perror(NULL);
+        return UPPM_ERROR;
+    } else {
+        return UPPM_OK;
+    }
+}
 
 int uppm_formula_repo_list_update() {
     UPPMFormulaRepoList * formulaRepoList = NULL;
 
     int ret = uppm_formula_repo_list(&formulaRepoList);
 
-    if (ret == UPPM_OK) {
-        bool officialCoreIsThere = false;
+    if (ret != UPPM_OK) {
+        return ret;
+    }
 
-        for (size_t i = 0; i < formulaRepoList->size; i++) {
-            UPPMFormulaRepo * formulaRepo = formulaRepoList->repos[i];
+    bool officialCoreIsThere = false;
 
-            if (strcmp(formulaRepo->name, "official-core") == 0) {
-                officialCoreIsThere = true;
-            }
+    for (size_t i = 0U; i < formulaRepoList->size; i++) {
+        UPPMFormulaRepo * formulaRepo = formulaRepoList->repos[i];
 
-            ret = uppm_formula_repo_sync(formulaRepo);
-
-            if (ret != UPPM_OK) {
-                break;
-            }
+        if (strcmp(formulaRepo->name, "official-core") == 0) {
+            officialCoreIsThere = true;
         }
 
-        uppm_formula_repo_list_free(formulaRepoList);
+        ret = uppm_formula_repo_sync(formulaRepo);
 
-        if (!officialCoreIsThere) {
-            char osType[31] = {0};
-
-            if (sysinfo_type(osType, 30) != 0) {
-                return UPPM_ERROR;
-            }
-
-            char osArch[31] = {0};
-
-            if (sysinfo_arch(osArch, 30) != 0) {
-                return UPPM_ERROR;
-            }
-
-            size_t   formulaRepoUrlLength = strlen(osType) + strlen(osArch) + 56U;
-            char     formulaRepoUrl[formulaRepoUrlLength];
-            snprintf(formulaRepoUrl, formulaRepoUrlLength, "https://github.com/leleliu008/uppm-formula-repository-%s-%s", osType, osArch);
-
-            ret = uppm_formula_repo_add("official-core", formulaRepoUrl, "master", false, true);
+        if (ret != UPPM_OK) {
+            break;
         }
     }
 
-    return ret;
+    uppm_formula_repo_list_free(formulaRepoList);
+
+    if (officialCoreIsThere) {
+        return UPPM_OK;
+    }
+
+    char formulaRepoUrl[120];
+
+    ret = uppm_formula_repo_url_of_official_core(formulaRepoUrl, 120);
+
+    if (ret != UPPM_OK) {
+        return ret;
+    }
+
+    return uppm_formula_repo_add("official-core", formulaRepoUrl, "master", false, true);
 }

@@ -99,9 +99,9 @@ int uppm_main(int argc, char* argv[]) {
         } else if (ret == UPPM_ERROR_ARG_IS_UNKNOWN) {
             fprintf(stderr, "Usage: %s info <PACKAGE-NAME> [KEY], unrecognized KEY: %s\n", argv[0], argv[3]);
         } else if (ret == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
-            fprintf(stderr, "package [%s] is not available.\n", argv[2]);
+            fprintf(stderr, "uppm package '%s' is not available.\n", argv[2]);
         } else if (ret == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
-            fprintf(stderr, "package [%s] is not installed.\n", argv[2]);
+            fprintf(stderr, "uppm package '%s' is not installed.\n", argv[2]);
         } else if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
             fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
         } else if (ret == UPPM_ERROR_ENV_PATH_NOT_SET) {
@@ -138,9 +138,9 @@ int uppm_main(int argc, char* argv[]) {
         } else if (ret == UPPM_ERROR_ARG_IS_UNKNOWN) {
             fprintf(stderr, "Usage: %s view <PACKAGE-NAME> [KEY], unrecognized KEY: %s\n", argv[0], argv[3]);
         } else if (ret == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
-            fprintf(stderr, "package [%s] is not available.\n", argv[2]);
+            fprintf(stderr, "uppm package '%s' is not available.\n", argv[2]);
         } else if (ret == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
-            fprintf(stderr, "package [%s] is not installed.\n", argv[2]);
+            fprintf(stderr, "uppm package '%s' is not installed.\n", argv[2]);
         } else if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
             fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
         } else if (ret == UPPM_ERROR_ENV_PATH_NOT_SET) {
@@ -177,9 +177,9 @@ int uppm_main(int argc, char* argv[]) {
         } else if (ret == UPPM_ERROR_ARG_IS_UNKNOWN) {
             fprintf(stderr, "Usage: %s edit <PACKAGE-NAME> [KEY], unrecognized KEY: %s\n", argv[0], argv[3]);
         } else if (ret == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
-            fprintf(stderr, "package [%s] is not available.\n", argv[2]);
+            fprintf(stderr, "uppm package '%s' is not available.\n", argv[2]);
         } else if (ret == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
-            fprintf(stderr, "package [%s] is not installed.\n", argv[2]);
+            fprintf(stderr, "uppm package '%s' is not installed.\n", argv[2]);
         } else if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
             fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
         } else if (ret == UPPM_ERROR_ENV_PATH_NOT_SET) {
@@ -201,9 +201,9 @@ int uppm_main(int argc, char* argv[]) {
         } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
             fprintf(stderr, "Usage: %s tree <PACKAGE-NAME> [KEY], <PACKAGE-NAME> does not match pattern %s\n", argv[0], UPPM_PACKAGE_NAME_PATTERN);
         } else if (ret == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
-            fprintf(stderr, "package [%s] is not available.\n", argv[2]);
+            fprintf(stderr, "uppm package '%s' is not available.\n", argv[2]);
         } else if (ret == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
-            fprintf(stderr, "package [%s] is not installed.\n", argv[2]);
+            fprintf(stderr, "uppm package '%s' is not installed.\n", argv[2]);
         } else if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
             fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
         } else if (ret == UPPM_ERROR_ENV_PATH_NOT_SET) {
@@ -366,9 +366,9 @@ int uppm_main(int argc, char* argv[]) {
         } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
             fprintf(stderr, "Usage: %s depends <PACKAGE-NAME>, <PACKAGE-NAME> does not match pattern %s\n", argv[0], UPPM_PACKAGE_NAME_PATTERN);
         } else if (ret == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
-            fprintf(stderr, "package [%s] is not available.\n", argv[2]);
+            fprintf(stderr, "uppm package '%s' is not available.\n", argv[2]);
         } else if (ret == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
-            fprintf(stderr, "package [%s] is not installed.\n", argv[2]);
+            fprintf(stderr, "uppm package '%s' is not installed.\n", argv[2]);
         } else if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
             fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
         } else if (ret == UPPM_ERROR_ENV_PATH_NOT_SET) {
@@ -392,9 +392,9 @@ int uppm_main(int argc, char* argv[]) {
         } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
             fprintf(stderr, "Usage: %s fetch <PACKAGE-NAME>, <PACKAGE-NAME> does not match pattern %s\n", argv[0], UPPM_PACKAGE_NAME_PATTERN);
         } else if (ret == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
-            fprintf(stderr, "package [%s] is not available.\n", argv[2]);
+            fprintf(stderr, "uppm package '%s' is not available.\n", argv[2]);
         } else if (ret == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
-            fprintf(stderr, "package [%s] is not installed.\n", argv[2]);
+            fprintf(stderr, "uppm package '%s' is not installed.\n", argv[2]);
         } else if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
             fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
         } else if (ret == UPPM_ERROR_ENV_PATH_NOT_SET) {
@@ -408,7 +408,7 @@ int uppm_main(int argc, char* argv[]) {
 
     if (strcmp(argv[1], "install") == 0) {
         if (argv[2] == NULL) {
-            LOG_ERROR1("package name is unspecified.");
+            LOG_ERROR1("uppm package name is unspecified.");
             return UPPM_ERROR;
         }
 
@@ -425,9 +425,9 @@ int uppm_main(int argc, char* argv[]) {
                     packageNameIndexArray[packageNameIndexArraySize] = i;
                     packageNameIndexArraySize++;
                 } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
-                    LOG_ERROR4("package name [", argv[i], "] does not match pattern ", UPPM_PACKAGE_NAME_PATTERN);
+                    LOG_ERROR4("uppm package name '", argv[i], "' does not match pattern ", UPPM_PACKAGE_NAME_PATTERN);
                 } else if (ret == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
-                    LOG_ERROR3("package [", argv[i], "] is not available.");
+                    LOG_ERROR3("uppm package '", argv[i], "' is not available.");
                 }
 
                 if (ret != UPPM_OK) {
@@ -437,7 +437,7 @@ int uppm_main(int argc, char* argv[]) {
         }
 
         if (packageNameIndexArraySize == 0) {
-            LOG_ERROR1("package name is unspecified.");
+            LOG_ERROR1("uppm package name is unspecified.");
             return UPPM_ERROR;
         }
 
@@ -453,9 +453,9 @@ int uppm_main(int argc, char* argv[]) {
             } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
                 fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> does not match pattern %s\n", argv[0], argv[1], UPPM_PACKAGE_NAME_PATTERN);
             } else if (ret == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
-                fprintf(stderr, "package [%s] is not available.\n", packageName);
+                fprintf(stderr, "uppm package '%s' is not available.\n", packageName);
             } else if (ret == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
-                fprintf(stderr, "package [%s] is not installed.\n", packageName);
+                fprintf(stderr, "uppm package '%s' is not installed.\n", packageName);
             } else if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
                 fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
             } else if (ret == UPPM_ERROR_ENV_PATH_NOT_SET) {
@@ -474,7 +474,7 @@ int uppm_main(int argc, char* argv[]) {
 
     if (strcmp(argv[1], "uninstall") == 0) {
         if (argv[2] == NULL) {
-            LOG_ERROR1("package name is unspecified.");
+            LOG_ERROR1("uppm package name is unspecified.");
             return UPPM_ERROR;
         }
 
@@ -491,9 +491,9 @@ int uppm_main(int argc, char* argv[]) {
                     packageNameIndexArray[packageNameIndexArraySize] = i;
                     packageNameIndexArraySize++;
                 } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
-                    LOG_ERROR4("package name [", argv[i], "] does not match pattern ", UPPM_PACKAGE_NAME_PATTERN);
+                    LOG_ERROR4("uppm package name '", argv[i], "' does not match pattern ", UPPM_PACKAGE_NAME_PATTERN);
                 } else if (ret == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
-                    LOG_ERROR3("package [", argv[i], "] is not installed.");
+                    LOG_ERROR3("uppm package '", argv[i], "' is not installed.");
                 }
 
                 if (ret != UPPM_OK) {
@@ -503,7 +503,7 @@ int uppm_main(int argc, char* argv[]) {
         }
 
         if (packageNameIndexArraySize == 0) {
-            LOG_ERROR1("package name is unspecified.");
+            LOG_ERROR1("uppm package name is unspecified.");
             return UPPM_ERROR;
         }
 
@@ -519,9 +519,9 @@ int uppm_main(int argc, char* argv[]) {
             } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
                 fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> does not match pattern %s\n", argv[0], argv[1], UPPM_PACKAGE_NAME_PATTERN);
             } else if (ret == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
-                fprintf(stderr, "package [%s] is not available.\n", packageName);
+                fprintf(stderr, "uppm package '%s' is not available.\n", packageName);
             } else if (ret == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
-                fprintf(stderr, "package [%s] is not installed.\n", packageName);
+                fprintf(stderr, "uppm package '%s' is not installed.\n", packageName);
             } else if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
                 fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
             } else if (ret == UPPM_ERROR_ENV_PATH_NOT_SET) {
@@ -540,7 +540,7 @@ int uppm_main(int argc, char* argv[]) {
 
     if (strcmp(argv[1], "reinstall") == 0) {
         if (argv[2] == NULL) {
-            LOG_ERROR1("package name is unspecified.");
+            LOG_ERROR1("uppm package name is unspecified.");
             return UPPM_ERROR;
         }
 
@@ -554,9 +554,9 @@ int uppm_main(int argc, char* argv[]) {
                 int ret = uppm_check_if_the_given_package_is_available(argv[i]);
 
                 if (ret == UPPM_ERROR_ARG_IS_INVALID) {
-                    LOG_ERROR4("package name [", argv[i], "] does not match pattern ", UPPM_PACKAGE_NAME_PATTERN);
+                    LOG_ERROR4("uppm package name '", argv[i], "' does not match pattern ", UPPM_PACKAGE_NAME_PATTERN);
                 } else if (ret == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
-                    LOG_ERROR3("package [", argv[i], "] is not available.");
+                    LOG_ERROR3("uppm package '", argv[i], "' is not available.");
                 }
 
                 if (ret != UPPM_OK) {
@@ -569,9 +569,9 @@ int uppm_main(int argc, char* argv[]) {
                     packageNameIndexArray[packageNameIndexArraySize] = i;
                     packageNameIndexArraySize++;
                 } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
-                    LOG_ERROR4("package name [", argv[i], "] does not match pattern ", UPPM_PACKAGE_NAME_PATTERN);
+                    LOG_ERROR4("uppm package name '", argv[i], "' does not match pattern ", UPPM_PACKAGE_NAME_PATTERN);
                 } else if (ret == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
-                    LOG_ERROR3("package [", argv[i], "] is not available.");
+                    LOG_ERROR3("uppm package '", argv[i], "' is not available.");
                 }
 
                 if (ret != UPPM_OK) {
@@ -581,7 +581,7 @@ int uppm_main(int argc, char* argv[]) {
         }
 
         if (packageNameIndexArraySize == 0) {
-            LOG_ERROR1("package name is unspecified.");
+            LOG_ERROR1("uppm package name is unspecified.");
             return UPPM_ERROR;
         }
 
@@ -597,9 +597,9 @@ int uppm_main(int argc, char* argv[]) {
             } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
                 fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> does not match pattern %s\n", argv[0], argv[1], UPPM_PACKAGE_NAME_PATTERN);
             } else if (ret == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
-                fprintf(stderr, "package [%s] is not available.\n", packageName);
+                fprintf(stderr, "uppm package '%s' is not available.\n", packageName);
             } else if (ret == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
-                fprintf(stderr, "package [%s] is not installed.\n", packageName);
+                fprintf(stderr, "uppm package '%s' is not installed.\n", packageName);
             } else if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
                 fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
             } else if (ret == UPPM_ERROR_ENV_PATH_NOT_SET) {
@@ -630,13 +630,13 @@ int uppm_main(int argc, char* argv[]) {
                     packageNameIndexArray[packageNameIndexArraySize] = i;
                     packageNameIndexArraySize++;
                 } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
-                    LOG_ERROR4("package name [", argv[i], "] does not match pattern ", UPPM_PACKAGE_NAME_PATTERN);
+                    LOG_ERROR4("uppm package name '", argv[i], "' does not match pattern ", UPPM_PACKAGE_NAME_PATTERN);
                 } else if (ret == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
-                    LOG_ERROR3("package [", argv[i], "] is not available.");
+                    LOG_ERROR3("uppm package '", argv[i], "' is not available.");
                 } else if (ret == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
-                    LOG_ERROR3("package [", argv[i], "] is not installed.");
+                    LOG_ERROR3("uppm package '", argv[i], "' is not installed.");
                 } else if (ret == UPPM_ERROR_PACKAGE_NOT_OUTDATED) {
-                    LOG_ERROR3("package [", argv[i], "] is not outdated.");
+                    LOG_ERROR3("uppm package '", argv[i], "' is not outdated.");
                 }
 
                 if (ret != UPPM_OK) {
@@ -657,11 +657,11 @@ int uppm_main(int argc, char* argv[]) {
             } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
                 fprintf(stderr, "Usage: %s %s <PACKAGE-NAME>, <PACKAGE-NAME> does not match pattern %s\n", argv[0], argv[1], UPPM_PACKAGE_NAME_PATTERN);
             } else if (ret == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
-                fprintf(stderr, "package [%s] is not available.\n", packageName);
+                fprintf(stderr, "uppm package '%s' is not available.\n", packageName);
             } else if (ret == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
-                fprintf(stderr, "package [%s] is not installed.\n", packageName);
+                fprintf(stderr, "uppm package '%s' is not installed.\n", packageName);
             } else if (ret == UPPM_ERROR_PACKAGE_NOT_OUTDATED) {
-                fprintf(stderr, "package [%s] is not outdated.\n", packageName);
+                fprintf(stderr, "uppm package '%s' is not outdated.\n", packageName);
             } else if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
                 fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
             } else if (ret == UPPM_ERROR_ENV_PATH_NOT_SET) {
@@ -730,9 +730,9 @@ int uppm_main(int argc, char* argv[]) {
         } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
             fprintf(stderr, "Usage: %s is-available <PACKAGE-NAME>, <PACKAGE-NAME> does not match pattern %s\n", argv[0], UPPM_PACKAGE_NAME_PATTERN);
         } else if (ret == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
-            fprintf(stderr, "package [%s] is not available.\n", argv[2]);
+            fprintf(stderr, "uppm package '%s' is not available.\n", argv[2]);
         } else if (ret == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
-            fprintf(stderr, "package [%s] is not installed.\n", argv[2]);
+            fprintf(stderr, "uppm package '%s' is not installed.\n", argv[2]);
         } else if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
             fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
         } else if (ret == UPPM_ERROR_ENV_PATH_NOT_SET) {
@@ -754,9 +754,9 @@ int uppm_main(int argc, char* argv[]) {
         } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
             fprintf(stderr, "Usage: %s is-installed <PACKAGE-NAME>, <PACKAGE-NAME> does not match pattern %s\n", argv[0], UPPM_PACKAGE_NAME_PATTERN);
         } else if (ret == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
-            fprintf(stderr, "package [%s] is not available.\n", argv[2]);
+            fprintf(stderr, "uppm package '%s' is not available.\n", argv[2]);
         } else if (ret == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
-            fprintf(stderr, "package [%s] is not installed.\n", argv[2]);
+            fprintf(stderr, "uppm package '%s' is not installed.\n", argv[2]);
         } else if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
             fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
         } else if (ret == UPPM_ERROR_ENV_PATH_NOT_SET) {
@@ -778,9 +778,9 @@ int uppm_main(int argc, char* argv[]) {
         } else if (ret == UPPM_ERROR_ARG_IS_INVALID) {
             fprintf(stderr, "Usage: %s is-outdated <PACKAGE-NAME>, <PACKAGE-NAME> does not match pattern %s\n", argv[0], UPPM_PACKAGE_NAME_PATTERN);
         } else if (ret == UPPM_ERROR_PACKAGE_NOT_AVAILABLE) {
-            fprintf(stderr, "package [%s] is not available.\n", argv[2]);
+            fprintf(stderr, "uppm package '%s' is not available.\n", argv[2]);
         } else if (ret == UPPM_ERROR_PACKAGE_NOT_INSTALLED) {
-            fprintf(stderr, "package [%s] is not installed.\n", argv[2]);
+            fprintf(stderr, "uppm package '%s' is not installed.\n", argv[2]);
         } else if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
             fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
         } else if (ret == UPPM_ERROR_ENV_PATH_NOT_SET) {

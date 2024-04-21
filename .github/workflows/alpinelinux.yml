@@ -2,9 +2,9 @@ name: alpinelinux
 
 on:
   push:
-    branches: [ 0.15.1 ]
+    branches: [ 0.15.2 ]
   pull_request:
-    branches: [ 0.15.1 ]
+    branches: [ 0.15.2 ]
 
 jobs:
   alpinelinux:

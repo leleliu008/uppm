@@ -84,13 +84,13 @@ int uppm_install(const char * packageName, bool verbose) {
 
     if (stat(receiptFilePath, &st) == 0 && S_ISREG(st.st_mode)) {
         uppm_formula_free(formula);
-        fprintf(stderr, "package [%s] already has been installed.\n", packageName);
+        fprintf(stderr, "uppm package '%s' already has been installed.\n", packageName);
         return UPPM_OK;
     }
 
     //////////////////////////////////////////////////////////////////////////
 
-    fprintf(stderr, "prepare to install package [%s].\n", packageName);
+    fprintf(stderr, "uppm package '%s' to be installed.\n", packageName);
 
     size_t   uppmDownloadDirLength = uppmHomeDirLength + 11U;
     char     uppmDownloadDir[uppmDownloadDirLength];
@@ -418,7 +418,7 @@ int uppm_install(const char * packageName, bool verbose) {
 
     fclose(receiptFile);
 
-    fprintf(stderr, "\npackage [%s] successfully installed.\n", packageName);
+    fprintf(stderr, "\nuppm package '%s' was successfully installed.\n", packageName);
 
     return UPPM_OK;
 }

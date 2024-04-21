@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: 0.15.1
+          ref: 0.15.2
 
       - id:  check-if-has-new-commit
         run: |
