@@ -104,13 +104,19 @@ int uppm_formula_repo_list_update() {
         return UPPM_OK;
     }
 
-    char formulaRepoUrl[120];
+    const char * UPPM_FORMULA_REPO_URL_OFFICIAL_CORE = getenv("UPPM_FORMULA_REPO_URL_OFFICIAL_CORE");
 
-    ret = uppm_formula_repo_url_of_official_core(formulaRepoUrl, 120);
+    if (UPPM_FORMULA_REPO_URL_OFFICIAL_CORE == NULL || UPPM_FORMULA_REPO_URL_OFFICIAL_CORE[0] == '\0') {
+        char formulaRepoUrl[120];
 
-    if (ret != UPPM_OK) {
-        return ret;
+        ret = uppm_formula_repo_url_of_official_core(formulaRepoUrl, 120);
+
+        if (ret != UPPM_OK) {
+            return ret;
+        }
+
+        return uppm_formula_repo_add("official-core", formulaRepoUrl, "master", false, true);
+    } else {
+        return uppm_formula_repo_add("official-core", UPPM_FORMULA_REPO_URL_OFFICIAL_CORE, "master", false, true);
     }
-
-    return uppm_formula_repo_add("official-core", formulaRepoUrl, "master", false, true);
 }
