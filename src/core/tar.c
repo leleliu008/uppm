@@ -44,7 +44,13 @@ int tar_list(const char * inputFilePath, int flags) {
 
 finalize:
     if (ret != ARCHIVE_OK) {
-        fprintf(stdout, "%s\n", archive_error_string(ar));
+        const char * errorMessage = archive_error_string(ar);
+
+        if (errorMessage == NULL || errorMessage[0] == '\0') {
+            fprintf(stderr, "unknown error.\n");
+        } else {
+            fprintf(stderr, "%s\n", errorMessage);
+        }
     }
 
 	archive_read_close(ar);
@@ -97,11 +103,9 @@ int tar_extract(const char * outputDir, const char * inputFilePath, int flags, b
         const char * entry_pathname = archive_entry_pathname(entry);
 
         if (stripComponentsNumber > 0U) {
-            size_t entry_pathname_length = strlen(entry_pathname);
-
-            for (size_t i = 0; i < entry_pathname_length; i++) {
+            for (size_t i = 0; entry_pathname[i] != '\0'; i++) {
                 if (entry_pathname[i] == '/') {
-                    entry_pathname = entry_pathname + i + 1U;
+                    entry_pathname += i + 1U;
                     break;
                 }
             }
@@ -131,10 +135,9 @@ int tar_extract(const char * outputDir, const char * inputFilePath, int flags, b
 
         if (hardlinkname != NULL) {
             if (stripComponentsNumber > 0U) {
-                size_t hardlinkname_length = strlen(hardlinkname);
-                for (size_t i = 0; i < hardlinkname_length; i++) {
+                for (size_t i = 0; hardlinkname[i] != '\0'; i++) {
                     if (hardlinkname[i] == '/') {
-                        hardlinkname = hardlinkname + i + 1U;
+                        hardlinkname += i + 1U;
                         break;
                     }
                 }
@@ -194,7 +197,15 @@ int tar_extract(const char * outputDir, const char * inputFilePath, int flags, b
 
 finalize:
     if (ret != ARCHIVE_OK) {
-        fprintf(stdout, "%s\n", archive_error_string(ar));
+        const char * errorMessage = archive_error_string(ar);
+
+        if (errorMessage == NULL || errorMessage[0] == '\0') {
+            fprintf(stderr, "unknown error.\n");
+        } else {
+            fprintf(stderr, "%s\n", errorMessage);
+        }
+
+        fprintf(stderr, "%s\n", errorMessage);
     }
 
 	archive_read_close(ar);
@@ -427,7 +438,14 @@ int tar_create(const char * inputDir, const char * outputFilePath, ArchiveType t
 
 finalize:
     if (ret != ARCHIVE_OK) {
-        fprintf(stdout, "%s\n", archive_error_string(ar));
+        const char * errorMessage = archive_error_string(ar);
+
+        if (errorMessage == NULL || errorMessage[0] == '\0') {
+            fprintf(stderr, "unknown error.\n");
+        } else {
+            fprintf(stderr, "%s\n", errorMessage);
+        }
+
         archive_read_close(ar);
         archive_read_free(ar);
     }
