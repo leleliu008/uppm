@@ -56,6 +56,8 @@ int http_fetch_to_stream(const char * url, FILE * outputFile, bool verbose, bool
     //curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
     //curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 2L);
 
+    ///////////////////////////////////////////////////////////////////////////////////
+
     // https://www.openssl.org/docs/man1.1.1/man3/SSL_CTX_set_default_verify_paths.html
     const char * const SSL_CERT_FILE = getenv("SSL_CERT_FILE");
 
@@ -64,12 +66,25 @@ int http_fetch_to_stream(const char * url, FILE * outputFile, bool verbose, bool
         curl_easy_setopt(curl, CURLOPT_CAINFO, SSL_CERT_FILE);
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////
+
     const char * const SSL_CERT_DIR = getenv("SSL_CERT_DIR");
 
     if ((SSL_CERT_DIR != NULL) && (SSL_CERT_DIR[0] != '\0')) {
         // https://curl.se/libcurl/c/CURLOPT_CAPATH.html
         curl_easy_setopt(curl, CURLOPT_CAPATH, SSL_CERT_DIR);
     }
+
+    ///////////////////////////////////////////////////////////////////////////////////
+
+    const char * const DNS_SERVERS = getenv("CURLOPT_DNS_SERVERS");
+
+    if ((DNS_SERVERS != NULL) && (DNS_SERVERS[0] != '\0')) {
+        // https://curl.se/libcurl/c/CURLOPT_DNS_SERVERS.html
+        curl_easy_setopt(curl, CURLOPT_DNS_SERVERS, DNS_SERVERS);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////
 
     char     userAgent[50];
     snprintf(userAgent, 50, "User-Agent: libcurl-%s", LIBCURL_VERSION);
