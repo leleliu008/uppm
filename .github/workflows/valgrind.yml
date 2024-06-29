@@ -55,8 +55,8 @@ jobs:
       - run:  $VALGRIND ./output/bin/uppm -h
       - run:  $VALGRIND ./output/bin/uppm -V
 
-      - run:  $VALGRIND ./output/bin/uppm env
-      - run:  $VALGRIND ./output/bin/uppm env -v
+      - run:  $VALGRIND ./output/bin/uppm about
+      - run:  $VALGRIND ./output/bin/uppm about -v
 
       - run:  $VALGRIND ./output/bin/uppm integrate zsh
 

@@ -198,7 +198,7 @@ int uppm_sysinfo();
 
 int uppm_buildinfo();
 
-int uppm_env(bool verbose);
+int uppm_about(bool verbose);
 
 int uppm_home_dir(char buf[], size_t bufSize, size_t * outSize);
 

@@ -244,13 +244,7 @@ all relevant directories and files are located in `~/.uppm` directory.
 * **show basic information about this software**
 
     ```bash
-    uppm env
-    ```
-
-* **show build information about this software**
-
-    ```bash
-    uppm buildinfo
+    uppm about
     ```
 
 * **show basic information about your current running operation system**

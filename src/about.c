@@ -66,7 +66,7 @@ static int uppm_list_dirs(const char * installedDir, size_t installedDirLength, 
     return UPPM_OK;
 }
 
-int uppm_env(bool verbose) {
+int uppm_about(bool verbose) {
     char   uppmHomeDir[256];
     size_t uppmHomeDirLength;
 
@@ -90,7 +90,9 @@ int uppm_env(bool verbose) {
 
     free(selfRealPath);
 
-    printf("uppm.website : %s\n", "https://github.com/leleliu008/uppm");
+    printf("uppm.website : %s\n\n", "https://github.com/leleliu008/uppm");
+
+    uppm_buildinfo();
 
     if (!verbose) {
         return UPPM_OK;

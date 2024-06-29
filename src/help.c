@@ -17,7 +17,7 @@ int uppm_help() {
         COLOR_OFF
         "    show version of this command.\n\n"
         COLOR_GREEN
-        "uppm env\n"
+        "uppm about\n"
         COLOR_OFF
         "    show basic information about this software.\n\n"
         COLOR_GREEN
@@ -214,7 +214,7 @@ int uppm_help() {
         "uppm --version\n"
         "uppm -V\n"
         "    show version of this command.\n\n"
-        "uppm env\n"
+        "uppm about\n"
         "    show basic information about this software.\n\n"
         "uppm buildinfo\n"
         "    show build information about this software.\n\n"

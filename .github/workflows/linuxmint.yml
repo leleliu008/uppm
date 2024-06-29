@@ -24,15 +24,17 @@ jobs:
 
       - uses: actions/checkout@main
 
-      - name: install ppkg
-        run: |
-          curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
-          chmod a+x ppkg
-          ./ppkg setup
+      - run: curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
+      - run: chmod a+x ppkg
 
-      - run:  ./ppkg update
-      - run:  ./ppkg install uppm
-      - run:  ./ppkg tree    uppm
+      - run: ./ppkg setup
+      - run: ./ppkg update
+
+      - run: |
+          echo "src-url: dir://$PWD" >> ~/.ppkg/repos.d/official-core/formula/uppm.yml
+
+      - run: ./ppkg install uppm
+      - run: ./ppkg tree    uppm
 
 
 
@@ -47,8 +49,8 @@ jobs:
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm -h
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm -V
 
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm env
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm env -v
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm about
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm about -v
 
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm integrate zsh
 
