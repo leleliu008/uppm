@@ -117,6 +117,8 @@ jobs:
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm cleanup
 
   centos7:
+    if: false
+
     runs-on: ubuntu-latest
 
     container: centos:7
@@ -218,7 +220,7 @@ jobs:
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm cleanup
 
   centos_6_10:
-    if: ${{ false }}
+    if: false
 
     runs-on: ubuntu-latest
 
