@@ -29,7 +29,7 @@ jobs:
               eval "$@"
             }
 
-            run sudo pkg_add cmake ninja llvm pkgconf curl libgit2 libarchive libyaml jansson sqlite
+            run sudo pkg_add cmake ninja llvm pkgconf curl libgit2 libarchive libyaml jansson sqlite pcre2
 
             run cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_VERBOSE_MAKEFILE=ON
             run cmake --build   build.d
