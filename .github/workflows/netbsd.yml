@@ -7,22 +7,28 @@ on:
     branches: [ master ]
 
 jobs:
-  netbsd:
-    runs-on: macos-12
-    
+  test:
+    runs-on: ubuntu-latest
+
     strategy:
       fail-fast: false
       matrix:
-        version: [9]
+        netbsd-version: ['10.0', '9.4', '9.3', '9.2']
 
     steps:
       - uses: actions/checkout@v4
 
-      - uses: leleliu008/github-actions-vagrant@v1
+      - uses: cross-platform-actions/action@v0.25.0
         with:
-          mem: 2048
-          box: generic/netbsd${{ matrix.version }}
+          operating_system: netbsd
+          version: ${{ matrix.netbsd-version }}
+          shell: bash
           run: |
+            run() {
+              printf "\033[0;35m==>\033[0m \033[0;32m%b\n\033[0m" "$*"
+              eval "$@"
+            }
+
             run sudo pkgin -y install cmake ninja-build pkg-config clang curl libgit2 libarchive libyaml jansson sqlite
 
             run cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_VERBOSE_MAKEFILE=ON
@@ -42,7 +48,6 @@ jobs:
                 export SSL_CERT_FILE=/etc/openssl/certs/ca-certificates.crt
             fi
 
-
             run ./output/bin/uppm
 
             run ./output/bin/uppm --help
@@ -51,8 +56,8 @@ jobs:
             run ./output/bin/uppm -h
             run ./output/bin/uppm -V
 
-            run ./output/bin/uppm env
-            run ./output/bin/uppm env -v
+            run ./output/bin/uppm about
+            run ./output/bin/uppm about -v
 
             run ./output/bin/uppm integrate zsh
 

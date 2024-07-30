@@ -154,6 +154,10 @@ void uppm_formula_repo_dump(UPPMFormulaRepo * formulaRepo);
 int  uppm_formula_repo_info(UPPMFormulaRepo * formulaRepo);
 int  uppm_formula_repo_sync(UPPMFormulaRepo * formulaRepo);
 
+typedef int (*UPPMFormulaRepoCallback)(UPPMFormulaRepo * formulaRepo, const void * payload);
+
+int  uppm_formula_repo_scan     (UPPMFormulaRepoCallback callback, const void * payload);
+
 int  uppm_formula_repo_list     (UPPMFormulaRepoList * * p);
 void uppm_formula_repo_list_free(UPPMFormulaRepoList   * p);
 
@@ -201,7 +205,7 @@ int uppm_sysinfo();
 
 int uppm_buildinfo();
 
-int uppm_env(const bool verbose);
+int uppm_about(const bool verbose);
 
 int uppm_home_dir(char buf[], size_t bufSize, size_t * outSize);
 
@@ -240,10 +244,11 @@ int uppm_check_if_the_given_package_is_available(const char * packageName);
 int uppm_check_if_the_given_package_is_installed(const char * packageName);
 int uppm_check_if_the_given_package_is_outdated (const char * packageName);
 
-typedef int (*UPPMPackageNameFilter)(const char * packageName, const size_t index, const bool verbose, const void * payload);
+typedef int (*UPPMPackageNameFilter)(const char * packageName, const void * payload);
 
-int uppm_show_the_available_packages(const bool verbose);
-int uppm_list_the_available_packages(const bool verbose, UPPMPackageNameFilter packageNameCallbak, const void * payload);
+int uppm_scan_the_available_packages(UPPMPackageNameFilter packageNameCallbak, const void * payload);
+
+int uppm_list_the_available_packages(const bool verbose);
 int uppm_list_the_installed_packages(const bool verbose);
 int uppm_list_the__outdated_packages(const bool verbose);
 

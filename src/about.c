@@ -6,7 +6,7 @@
 
 #include "uppm.h"
 
-int uppm_env(const bool verbose) {
+int uppm_about(const bool verbose) {
     char   uppmHomeDIR[PATH_MAX];
     size_t uppmHomeDIRLength;
 
@@ -32,5 +32,5 @@ int uppm_env(const bool verbose) {
 
     printf("uppm.website : %s\n", "https://github.com/leleliu008/uppm");
    
-    return UPPM_OK;
+    return uppm_buildinfo();
 }

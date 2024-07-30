@@ -8,9 +8,9 @@
 
 static size_t j = 0U;
 
-static int package_name_filter(const char * packageName, const size_t i, const bool verbose, const void * regPattern) {
+static int package_name_filter(const char * packageName, const void * regPattern) {
     if (regex_matched(packageName, (char*)regPattern) == 0) {
-        if (verbose) {
+        if (false) {
             if (j != 0U) {
                 printf("\n");
             }
@@ -41,5 +41,5 @@ int uppm_search(const char * regPattern, const bool verbose) {
         return UPPM_ERROR_ARG_IS_EMPTY;
     }
 
-    return uppm_list_the_available_packages(verbose, package_name_filter, regPattern);
+    return uppm_scan_the_available_packages(package_name_filter, regPattern);
 }

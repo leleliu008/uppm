@@ -47,8 +47,8 @@ jobs:
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm -h
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm -V
 
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm env
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm env -v
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm about
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm about -v
 
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm integrate zsh
 
@@ -148,8 +148,8 @@ jobs:
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm -h
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm -V
 
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm env
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm env -v
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm about
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm about -v
 
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm integrate zsh
 
@@ -253,8 +253,8 @@ jobs:
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm -h
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm -V
 
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm env
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm env -v
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm about
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm about -v
 
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm integrate zsh
 

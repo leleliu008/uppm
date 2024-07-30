@@ -9,7 +9,7 @@
 
 #include "uppm.h"
 
-static int uppm_record_installed_files_r(const char * dirPath, size_t offset, int outputFD) {
+static int uppm_record_installed_files_r(const char * dirPath, const size_t offset, const int outputFD) {
     if (dirPath == NULL) {
         return UPPM_ERROR_ARG_IS_NULL;
     }

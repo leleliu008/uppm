@@ -7,7 +7,7 @@
 
 #include "uppm.h"
 
-int uppm_list_the_available_packages(const bool verbose, UPPMPackageNameFilter packageNameFilter, const void * payload) {
+int uppm_scan_the_available_packages(UPPMPackageNameFilter packageNameFilter, const void * payload) {
     UPPMFormulaRepoList * formulaRepoList = NULL;
 
     int ret = uppm_formula_repo_list(&formulaRepoList);
@@ -82,7 +82,7 @@ int uppm_list_the_available_packages(const bool verbose, UPPMPackageNameFilter p
                 if (strcmp(fileNameSuffix, ".yml") == 0) {
                     fileName[fileNameLength - 4] = '\0';
 
-                    ret = packageNameFilter(fileName, j, verbose, payload);
+                    ret = packageNameFilter(fileName, payload);
 
                     j++;
 
@@ -103,8 +103,8 @@ int uppm_list_the_available_packages(const bool verbose, UPPMPackageNameFilter p
 
 static size_t j = 0U;
 
-static int package_name_filter(const char * packageName, const size_t i, const bool verbose, const void * payload) {
-    if (verbose) {
+static int package_name_filter(const char * packageName, const void * payload) {
+    if (false) {
         if (j != 0U) {
             printf("\n");
         }
@@ -118,7 +118,6 @@ static int package_name_filter(const char * packageName, const size_t i, const b
     }
 }
 
-
-int uppm_show_the_available_packages(const bool verbose) {
-    return uppm_list_the_available_packages(verbose, package_name_filter, NULL);
+int uppm_list_the_available_packages(const bool verbose) {
+    return uppm_scan_the_available_packages(package_name_filter, &verbose);
 }

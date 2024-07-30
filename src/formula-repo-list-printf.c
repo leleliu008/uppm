@@ -4,26 +4,28 @@
 
 #include "uppm.h"
 
-int uppm_formula_repo_list_printf() {
-    UPPMFormulaRepoList * formulaRepoList = NULL;
+static int j = 0;
 
-    int ret = uppm_formula_repo_list(&formulaRepoList);
+static int uppm_formula_repo_scan_callback(UPPMFormulaRepo * formulaRepo, const void * payload __attribute__((unused))) {
+    if (j > 0) {
+        if (isatty(STDOUT_FILENO)) {
+            printf("\n");
+        } else {
+            printf("---\n");
+        }
+    }
+
+    j++;
+
+    int ret = uppm_formula_repo_info(formulaRepo);
 
     if (ret == UPPM_OK) {
-        for (size_t i = 0; i < formulaRepoList->size; i++) {
-            if (i > 0) {
-                if (isatty(STDOUT_FILENO)) {
-                    printf("\n");
-                } else {
-                    printf("---\n");
-                }
-            }
-
-            uppm_formula_repo_info(formulaRepoList->repos[i]);
-        }
-
-        uppm_formula_repo_list_free(formulaRepoList);
+        uppm_formula_repo_free(formulaRepo);
     }
 
     return ret;
+}
+
+int uppm_formula_repo_list_printf() {
+    return uppm_formula_repo_scan(uppm_formula_repo_scan_callback, NULL);
 }

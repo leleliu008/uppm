@@ -38,12 +38,8 @@ int uppm_main(int argc, char* argv[]) {
         return uppm_sysinfo();
     }
 
-    if (strcmp(argv[1], "buildinfo") == 0) {
-        return uppm_buildinfo();
-    }
-
-    if (strcmp(argv[1], "env") == 0) {
-        int ret = uppm_env(verbose);
+    if (strcmp(argv[1], "about") == 0) {
+        int ret = uppm_about(verbose);
 
         if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
             fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");
@@ -619,7 +615,7 @@ int uppm_main(int argc, char* argv[]) {
     }
 
     if (strcmp(argv[1], "ls-available") == 0) {
-        int ret = uppm_show_the_available_packages(verbose);
+        int ret = uppm_list_the_available_packages(verbose);
 
         if (ret == UPPM_ERROR_ENV_HOME_NOT_SET) {
             fprintf(stderr, "%s\n", "HOME environment variable is not set.\n");

@@ -220,16 +220,10 @@ cmake --install build.d
     uppm --version
     ```
 
-- **show basic information about this software**
+- **show information about this software**
 
     ```bash
-    uppm env
-    ```
-
-- **show build information about this software**
-
-    ```bash
-    uppm buildinfo
+    uppm about
     ```
 
 - **show basic information about your current running operation system**

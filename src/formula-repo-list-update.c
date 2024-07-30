@@ -35,7 +35,7 @@ static int uppm_formula_repo_url_of_official_core(char buf[], const size_t bufSi
         }
 
         if (osVers[i] == '.') {
-            osVers[i] == '\0';
+            osVers[i] = '\0';
             osVersMajor = atoi(osVers);
             break;
         }
@@ -46,8 +46,8 @@ static int uppm_formula_repo_url_of_official_core(char buf[], const size_t bufSi
         return UPPM_ERROR;
     }
 
-    if (osVersMajor > 13) {
-        osVersMajor = 13;
+    if (osVersMajor > 14) {
+        osVersMajor = 14;
     }
 
     ret = snprintf(buf, bufSize, "https://github.com/leleliu008/uppm-package-repository-%s-%d.0-%s", osType, osVersMajor, osArch);
@@ -102,13 +102,19 @@ int uppm_formula_repo_list_update() {
         return UPPM_OK;
     }
 
-    char formulaRepoUrl[120];
+    const char * UPPM_FORMULA_REPO_URL_OFFICIAL_CORE = getenv("UPPM_FORMULA_REPO_URL_OFFICIAL_CORE");
 
-    ret = uppm_formula_repo_url_of_official_core(formulaRepoUrl, 120);
+    if (UPPM_FORMULA_REPO_URL_OFFICIAL_CORE == NULL || UPPM_FORMULA_REPO_URL_OFFICIAL_CORE[0] == '\0') {
+        char formulaRepoUrl[120];
 
-    if (ret != UPPM_OK) {
-        return ret;
+        ret = uppm_formula_repo_url_of_official_core(formulaRepoUrl, 120);
+
+        if (ret != UPPM_OK) {
+            return ret;
+        }
+
+        return uppm_formula_repo_add("official-core", formulaRepoUrl, "master", false, true);
+    } else {
+        return uppm_formula_repo_add("official-core", UPPM_FORMULA_REPO_URL_OFFICIAL_CORE, "master", false, true);
     }
-
-    return uppm_formula_repo_add("official-core", formulaRepoUrl, "master", false, true);
 }
