@@ -41,7 +41,7 @@ jobs:
       - run:  ./ppkg tree    uppm
       - run:  ./ppkg pack    uppm
 
-      - run: tar vxf uppm-*-.tar.xz --strip-components=1
+      - run: tar vxf uppm-*.tar.xz --strip-components=1
 
       - run:  echo "SSL_CERT_FILE=$HOME/.ppkg/core/cacert.pem" >> "$GITHUB_ENV"
 
@@ -150,7 +150,7 @@ jobs:
       - run:  ./ppkg tree    uppm
       - run:  ./ppkg pack    uppm
 
-      - run: tar vxf uppm-*-.tar.xz --strip-components=1
+      - run: tar vxf uppm-*.tar.xz --strip-components=1
 
       - run:  echo "SSL_CERT_FILE=$HOME/.ppkg/core/cacert.pem" >> "$GITHUB_ENV"
 
