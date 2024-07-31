@@ -104,6 +104,8 @@ int uppm_uninstall(const char * packageName, const bool verbose) {
                 // package is broken. is not installed completely?
                 return UPPM_ERROR_PACKAGE_NOT_INSTALLED;
             }
+        } else {
+            return UPPM_ERROR_PACKAGE_NOT_INSTALLED;
         }
     } else {
         return UPPM_ERROR_PACKAGE_NOT_INSTALLED;

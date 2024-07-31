@@ -38,9 +38,9 @@ static int uppm_formula_repo_scan_callback(UPPMFormulaRepo * formulaRepo, const 
         if (args->len != NULL) {
             (*(args->len)) = ret;
         }
-
-        return UPPM_OK;
     }
+
+    return UPPM_OK;
 }
 
 int uppm_formula_path(const char * packageName, char buf[], size_t * len) {

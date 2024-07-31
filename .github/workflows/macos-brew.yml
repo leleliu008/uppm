@@ -38,7 +38,7 @@ jobs:
             depends_on "libarchive"
 
             def install
-              system "cmake", "-S", ".", "-B", "build", "-DCMAKE_BUILD_TYPE=Debug", "-DCMAKE_VERBOSE_MAKEFILE=ON", *std_cmake_args
+              system "cmake", "-S", ".", "-B", "build", "-DCMAKE_BUILD_TYPE=Release", "-DCMAKE_VERBOSE_MAKEFILE=ON"
               system "cmake", "--build",   "build"
               system "cmake", "--install", "build"
             end
@@ -162,7 +162,7 @@ jobs:
             depends_on "libarchive"
 
             def install
-              system "cmake", "-S", ".", "-B", "build", "-DCMAKE_BUILD_TYPE=Debug", "-DCMAKE_VERBOSE_MAKEFILE=ON", "-DCMAKE_C_FLAGS='-fsanitize=undefined -fsanitize=address -fsanitize=leak'", "-DCMAKE_C_COMPILER=#{Formula["llvm"].opt_prefix}/bin/clang", *std_cmake_args
+              system "cmake", "-S", ".", "-B", "build", "-DCMAKE_BUILD_TYPE=Debug", "-DCMAKE_VERBOSE_MAKEFILE=ON", "-DCMAKE_C_FLAGS='-fsanitize=undefined -fsanitize=address -fsanitize=leak'", "-DCMAKE_C_COMPILER=#{Formula["llvm"].opt_prefix}/bin/clang"
               system "cmake", "--build",   "build"
               system "cmake", "--install", "build"
             end

@@ -53,7 +53,7 @@ static int uppm_cleanup_downloads(const bool verbose) {
         if (dir_entry == NULL) {
             if (errno == 0) {
                 closedir(dir);
-                break;
+                return UPPM_OK;
             } else {
                 perror(downloadDIR);
                 closedir(dir);
