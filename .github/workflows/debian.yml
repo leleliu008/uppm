@@ -22,13 +22,12 @@ jobs:
       - run:  apt -y update
       - run:  apt -y install curl g++ xz-utils
 
-      - uses: actions/checkout@main
-
       - name: create ppkg formula for uppm package
         run: |
           tee uppm.yml <<EOF
           summary: Universal Prebuild Package Manager
-          src-url: dir://$PWD
+          git-url: https://github.com/leleliu008/uppm
+          git-sha: ${{ github.sha }}
           license: Apache-2.0
           dep-pkg: libcurl libgit2 libarchive libyaml libjansson
           install: cmakew -DLINK_STATIC_LIBS=ON
