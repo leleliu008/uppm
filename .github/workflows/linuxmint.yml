@@ -28,6 +28,7 @@ jobs:
           summary: Universal Prebuild Package Manager
           git-url: https://github.com/leleliu008/uppm
           git-sha: ${{ github.sha }}
+          version: 0.0.0
           license: Apache-2.0
           dep-pkg: libcurl libgit2 libarchive libyaml libjansson
           install: cmakew -DLINK_STATIC_LIBS=ON
