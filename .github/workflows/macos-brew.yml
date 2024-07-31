@@ -12,217 +12,245 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-13, macos-12, macos-14]
+        os: [macos-14, macos-13, macos-12]
 
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@main
+      - name: create homebrew formula for uppm package
+        run:  |
+          tee uppm.rb <<EOF
+          class Uppm < Formula
+            desc     "Universal Prebuild Package Manager for Unix-like systems"
+            homepage "https://github.com/leleliu008/uppm"
+            url      "https://github.com/leleliu008/uppm.git", revision: "${{ github.sha }}"
+            version  "0.0.0"
+            license  "Apache-2.0"
+
+            depends_on "cmake" => :build
+            depends_on "ninja" => :build
+            depends_on "pkg-config" => :build
+
+            depends_on "curl"
+            depends_on "jansson"
+            depends_on "libyaml"
+            depends_on "libgit2"
+            depends_on "libarchive"
+
+            def install
+              system "cmake", "-S", ".", "-B", "build", "-DCMAKE_BUILD_TYPE=Debug", "-DCMAKE_VERBOSE_MAKEFILE=ON", *std_cmake_args
+              system "cmake", "--build",   "build"
+              system "cmake", "--install", "build"
+            end
+
+            test do
+              system "#{bin}/uppm", "--help"
+            end
+          end
+          EOF
 
       - run:  brew update
-      - run:  brew install --overwrite python@3.10 python@3.11 python@3.12
-      - run:  brew install cmake ninja pkg-config curl sqlite jansson libyaml libgit2 libarchive
 
-      - run: sed -i '.bak' '/Requires.private:/d' "$(brew --prefix libarchive)/lib/pkgconfig/libarchive.pc"
+      - run:  brew tap leleliu008/fpliu
 
-      - run:  |
-          export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:/usr/local/opt/openssl@1.1/lib/pkgconfig:/usr/local/opt/curl/lib/pkgconfig:/usr/local/opt/libarchive/lib/pkgconfig"
-          CMAKE_EXE_LINKER_FLAGS='-L/usr/local/lib -L/usr/local/opt/openssl@1.1/lib -lssl -liconv -framework CoreFoundation -framework Security'
-          CMAKE_FIND_ROOT_PATH="$(brew --prefix openssl@1.1);$(brew --prefix curl);$(brew --prefix sqlite);$(brew --prefix libarchive)"
+      - run:  mv uppm.rb "$(brew --repo leleliu008/fpliu)/Formula/uppm.rb"
 
-          cmake \
-              -S . \
-              -B build.d \
-              -G Ninja \
-              -DCMAKE_INSTALL_PREFIX=./output \
-              -DCMAKE_VERBOSE_MAKEFILE=ON \
-              -DCMAKE_EXE_LINKER_FLAGS="$CMAKE_EXE_LINKER_FLAGS" \
-              -DCMAKE_FIND_ROOT_PATH="$CMAKE_FIND_ROOT_PATH"
+      - run:  brew info    uppm
+      - run:  brew install uppm -v
 
-      - run:  cmake --build   build.d
-      - run:  cmake --install build.d
+      - run:  uppm
 
+      - run:  uppm --help
+      - run:  uppm --version
 
-      - run:  ./output/bin/uppm
+      - run:  uppm -h
+      - run:  uppm -V
 
-      - run:  ./output/bin/uppm --help
-      - run:  ./output/bin/uppm --version
+      - run:  uppm about
+      - run:  uppm about -v
 
-      - run:  ./output/bin/uppm -h
-      - run:  ./output/bin/uppm -V
+      - run:  uppm integrate zsh -v
 
-      - run:  ./output/bin/uppm about
-      - run:  ./output/bin/uppm about -v
+      - run:  uppm update
 
-      - run:  ./output/bin/uppm integrate zsh -v
+      - run:  uppm search zip
 
-      - run:  ./output/bin/uppm update
+      - run:  uppm depends zip
+      - run:  uppm depends android-sdk
+      - run:  uppm depends android-sdk -t box
+      - run:  uppm depends android-sdk -t dot
 
-      - run:  ./output/bin/uppm search zip
+      - run:  uppm info-available gsed
+      - run:  uppm info-available gsed --json
+      - run:  uppm info-available gsed --yaml
+      - run:  uppm info-available gsed version
+      - run:  uppm info-available gsed license
+      - run:  uppm info-available gsed summary
+      - run:  uppm info-available gsed webpage
+      - run:  uppm info-available gsed bin-url
+      - run:  uppm info-available gsed bin-sha
+      - run:  uppm info-available gsed install
+      - run:  uppm info-available gsed formula
 
-      - run:  ./output/bin/uppm depends zip
-      - run:  ./output/bin/uppm depends android-sdk
-      - run:  ./output/bin/uppm depends android-sdk -t box
-      - run:  ./output/bin/uppm depends android-sdk -t dot
+      - run:  uppm fetch   gzip
+      - run:  uppm fetch   gtar -v
 
-      - run:  ./output/bin/uppm info-available gsed
-      - run:  ./output/bin/uppm info-available gsed --json
-      - run:  ./output/bin/uppm info-available gsed --yaml
-      - run:  ./output/bin/uppm info-available gsed version
-      - run:  ./output/bin/uppm info-available gsed license
-      - run:  ./output/bin/uppm info-available gsed summary
-      - run:  ./output/bin/uppm info-available gsed webpage
-      - run:  ./output/bin/uppm info-available gsed bin-url
-      - run:  ./output/bin/uppm info-available gsed bin-sha
-      - run:  ./output/bin/uppm info-available gsed install
-      - run:  ./output/bin/uppm info-available gsed formula
+      - run:  uppm install gsed
 
-      - run:  ./output/bin/uppm fetch   gzip
-      - run:  ./output/bin/uppm fetch   gtar -v
+      - run:  uppm info-installed gsed --files
+      - run:  uppm info-installed gsed --json
+      - run:  uppm info-installed gsed --yaml
+      - run:  uppm info-installed gsed timestamp-unix
+      - run:  uppm info-installed gsed timestamp-iso-8601
+      - run:  uppm info-installed gsed timestamp-rfc-3339
+      - run:  uppm info-installed gsed version
 
-      - run:  ./output/bin/uppm install gsed
-
-      - run:  ./output/bin/uppm info-installed gsed --files
-      - run:  ./output/bin/uppm info-installed gsed --json
-      - run:  ./output/bin/uppm info-installed gsed --yaml
-      - run:  ./output/bin/uppm info-installed gsed timestamp-unix
-      - run:  ./output/bin/uppm info-installed gsed timestamp-iso-8601
-      - run:  ./output/bin/uppm info-installed gsed timestamp-rfc-3339
-      - run:  ./output/bin/uppm info-installed gsed version
-
-      - run:  ./output/bin/uppm tree gsed
-      - run:  ./output/bin/uppm tree gsed -L 3
+      - run:  uppm tree gsed
+      - run:  uppm tree gsed -L 3
 
       - run: |
           printf '%s\n' 'version: 1000' >> ~/.uppm/repos.d/official-core/formula/gsed.yml
 
-      - run:  ./output/bin/uppm ls-available
-      - run:  ./output/bin/uppm ls-installed
-      - run:  ./output/bin/uppm ls-outdated
+      - run:  uppm ls-available
+      - run:  uppm ls-installed
+      - run:  uppm ls-outdated
 
-      - run:  ./output/bin/uppm is-available curl
-      - run:  ./output/bin/uppm is-installed gsed
-      - run:  ./output/bin/uppm is-outdated  gsed || echo not outdated
+      - run:  uppm is-available curl
+      - run:  uppm is-installed gsed
+      - run:  uppm is-outdated  gsed || echo not outdated
 
-      - run:  ./output/bin/uppm upgrade   gsed
-      - run:  ./output/bin/uppm reinstall gsed
-      - run:  ./output/bin/uppm uninstall gsed
+      - run:  uppm upgrade   gsed
+      - run:  uppm reinstall gsed
+      - run:  uppm uninstall gsed
 
 
-      - run:  ./output/bin/uppm formula-repo-list
-      - run:  ./output/bin/uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-linux-x86_64
-      - run:  ./output/bin/uppm formula-repo-del my_repo
+      - run:  uppm formula-repo-list
+      - run:  uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-linux-x86_64
+      - run:  uppm formula-repo-del my_repo
 
-      - run:  ./output/bin/uppm cleanup
-      - run:  ./output/bin/uppm upgrade-self
+      - run:  uppm cleanup
+      - run:  uppm upgrade-self
 
   brew-sanitizer:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-13, macos-12, macos-14]
+        os: [macos-14, macos-13, macos-12]
 
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@main
+      - name: create homebrew formula for uppm package
+        run:  |
+          tee uppm.rb <<EOF
+          class Uppm < Formula
+            desc     "Universal Prebuild Package Manager for Unix-like systems"
+            homepage "https://github.com/leleliu008/uppm"
+            url      "https://github.com/leleliu008/uppm.git", revision: "${{ github.sha }}"
+            version  "0.0.0"
+            license  "Apache-2.0"
+
+            depends_on "llvm"  => :build
+            depends_on "cmake" => :build
+            depends_on "ninja" => :build
+            depends_on "pkg-config" => :build
+
+            depends_on "curl"
+            depends_on "jansson"
+            depends_on "libyaml"
+            depends_on "libgit2"
+            depends_on "libarchive"
+
+            def install
+              system "cmake", "-S", ".", "-B", "build", "-DCMAKE_BUILD_TYPE=Debug", "-DCMAKE_VERBOSE_MAKEFILE=ON", "-DCMAKE_C_FLAGS='-fsanitize=undefined -fsanitize=address -fsanitize=leak'", "-DCMAKE_C_COMPILER=#{Formula["llvm"].opt_prefix}/bin/clang", *std_cmake_args
+              system "cmake", "--build",   "build"
+              system "cmake", "--install", "build"
+            end
+
+            test do
+              system "#{bin}/uppm", "--help"
+            end
+          end
+          EOF
 
       - run:  brew update
-      - run:  brew install --overwrite python@3.10 python@3.11 python@3.12
-      - run:  brew install cmake ninja llvm pkg-config curl sqlite jansson libyaml libgit2 libarchive
 
-      - run: sed -i '.bak' '/Requires.private:/d' "$(brew --prefix libarchive)/lib/pkgconfig/libarchive.pc"
+      - run:  brew tap leleliu008/fpliu
 
-      - run:  |
-          export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:/usr/local/opt/openssl@1.1/lib/pkgconfig:/usr/local/opt/curl/lib/pkgconfig:/usr/local/opt/libarchive/lib/pkgconfig"
-          CMAKE_EXE_LINKER_FLAGS='-L/usr/local/lib -L/usr/local/opt/openssl@1.1/lib -lssl -liconv -framework CoreFoundation -framework Security'
-          CMAKE_FIND_ROOT_PATH="$(brew --prefix openssl@1.1);$(brew --prefix curl);$(brew --prefix sqlite);$(brew --prefix libarchive)"
+      - run:  mv uppm.rb "$(brew --repo leleliu008/fpliu)/Formula/uppm.rb"
 
-          cmake \
-              -S . \
-              -B build.d \
-              -G Ninja \
-              -DCMAKE_INSTALL_PREFIX=./output \
-              -DCMAKE_VERBOSE_MAKEFILE=ON \
-              -DCMAKE_EXE_LINKER_FLAGS="$CMAKE_EXE_LINKER_FLAGS" \
-              -DCMAKE_FIND_ROOT_PATH="$CMAKE_FIND_ROOT_PATH" \
-              -DCMAKE_BUILD_TYPE=Debug \
-              -DCMAKE_C_COMPILER="$(brew --prefix llvm)/bin/clang" \
-              -DCMAKE_C_FLAGS="-fsanitize=undefined -fsanitize=address -fsanitize=leak"
+      - run:  brew info    uppm
+      - run:  brew install uppm -v
 
-      - run:  cmake --build   build.d
-      - run:  cmake --install build.d
+      - run:  uppm
 
+      - run:  uppm --help
+      - run:  uppm --version
 
-      - run:  ./output/bin/uppm
+      - run:  uppm -h
+      - run:  uppm -V
 
-      - run:  ./output/bin/uppm --help
-      - run:  ./output/bin/uppm --version
+      - run:  uppm about
+      - run:  uppm about -v
 
-      - run:  ./output/bin/uppm -h
-      - run:  ./output/bin/uppm -V
+      - run:  uppm integrate zsh -v
 
-      - run:  ./output/bin/uppm about
-      - run:  ./output/bin/uppm about -v
+      - run:  uppm update
 
-      - run:  ./output/bin/uppm integrate zsh -v
+      - run:  uppm search zip
 
-      - run:  ./output/bin/uppm update
+      - run:  uppm depends zip
+      - run:  uppm depends android-sdk
+      - run:  uppm depends android-sdk -t box
+      - run:  uppm depends android-sdk -t dot
 
-      - run:  ./output/bin/uppm search zip
+      - run:  uppm info-available gsed
+      - run:  uppm info-available gsed --json
+      - run:  uppm info-available gsed --yaml
+      - run:  uppm info-available gsed version
+      - run:  uppm info-available gsed license
+      - run:  uppm info-available gsed summary
+      - run:  uppm info-available gsed webpage
+      - run:  uppm info-available gsed bin-url
+      - run:  uppm info-available gsed bin-sha
+      - run:  uppm info-available gsed install
+      - run:  uppm info-available gsed formula
 
-      - run:  ./output/bin/uppm depends zip
-      - run:  ./output/bin/uppm depends android-sdk
-      - run:  ./output/bin/uppm depends android-sdk -t box
-      - run:  ./output/bin/uppm depends android-sdk -t dot
+      - run:  uppm fetch   gzip
+      - run:  uppm fetch   gtar -v
 
-      - run:  ./output/bin/uppm info-available gsed
-      - run:  ./output/bin/uppm info-available gsed --json
-      - run:  ./output/bin/uppm info-available gsed --yaml
-      - run:  ./output/bin/uppm info-available gsed version
-      - run:  ./output/bin/uppm info-available gsed license
-      - run:  ./output/bin/uppm info-available gsed summary
-      - run:  ./output/bin/uppm info-available gsed webpage
-      - run:  ./output/bin/uppm info-available gsed bin-url
-      - run:  ./output/bin/uppm info-available gsed bin-sha
-      - run:  ./output/bin/uppm info-available gsed install
-      - run:  ./output/bin/uppm info-available gsed formula
+      - run:  uppm install gsed
 
-      - run:  ./output/bin/uppm fetch   gzip
-      - run:  ./output/bin/uppm fetch   gtar -v
+      - run:  uppm info-installed gsed --files
+      - run:  uppm info-installed gsed --json
+      - run:  uppm info-installed gsed --yaml
+      - run:  uppm info-installed gsed timestamp-unix
+      - run:  uppm info-installed gsed timestamp-iso-8601
+      - run:  uppm info-installed gsed timestamp-rfc-3339
+      - run:  uppm info-installed gsed version
 
-      - run:  ./output/bin/uppm install gsed
-
-      - run:  ./output/bin/uppm info-installed gsed --files
-      - run:  ./output/bin/uppm info-installed gsed --json
-      - run:  ./output/bin/uppm info-installed gsed --yaml
-      - run:  ./output/bin/uppm info-installed gsed timestamp-unix
-      - run:  ./output/bin/uppm info-installed gsed timestamp-iso-8601
-      - run:  ./output/bin/uppm info-installed gsed timestamp-rfc-3339
-      - run:  ./output/bin/uppm info-installed gsed version
-
-      - run:  ./output/bin/uppm tree gsed
-      - run:  ./output/bin/uppm tree gsed -L 3
+      - run:  uppm tree gsed
+      - run:  uppm tree gsed -L 3
 
       - run: |
           printf '%s\n' 'version: 1000' >> ~/.uppm/repos.d/official-core/formula/gsed.yml
 
-      - run:  ./output/bin/uppm ls-available
-      - run:  ./output/bin/uppm ls-installed
-      - run:  ./output/bin/uppm ls-outdated
+      - run:  uppm ls-available
+      - run:  uppm ls-installed
+      - run:  uppm ls-outdated
 
-      - run:  ./output/bin/uppm is-available curl
-      - run:  ./output/bin/uppm is-installed gsed
-      - run:  ./output/bin/uppm is-outdated  gsed || echo not outdated
+      - run:  uppm is-available curl
+      - run:  uppm is-installed gsed
+      - run:  uppm is-outdated  gsed || echo not outdated
 
-      - run:  ./output/bin/uppm upgrade   gsed
-      - run:  ./output/bin/uppm reinstall gsed
-      - run:  ./output/bin/uppm uninstall gsed
+      - run:  uppm upgrade   gsed
+      - run:  uppm reinstall gsed
+      - run:  uppm uninstall gsed
 
 
-      - run:  ./output/bin/uppm formula-repo-list
-      - run:  ./output/bin/uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-linux-x86_64
-      - run:  ./output/bin/uppm formula-repo-del my_repo
+      - run:  uppm formula-repo-list
+      - run:  uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-linux-x86_64
+      - run:  uppm formula-repo-del my_repo
 
-      - run:  ./output/bin/uppm cleanup
-      - run:  ./output/bin/uppm upgrade-self
+      - run:  uppm cleanup
+      - run:  uppm upgrade-self
