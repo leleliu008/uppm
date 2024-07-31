@@ -53,7 +53,7 @@ jobs:
       fail-fast: false
       matrix:
         # https://ftp.netbsd.org/pub/NetBSD/
-        target-version: ['9.1', '9.2', '9.3']
+        target-version: ['9.1', '9.2', '9.3', '9.4', '10.0']
 
     steps:
       - run: curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
@@ -64,7 +64,7 @@ jobs:
       - run: |
           ~/.ppkg/uppm/installed/gsed/bin/gsed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
 
-      - run: ./ppkg install netbsd-${{ matrix.target-version }}-amd64/uppm --link-type=static-full
+      - run: ./ppkg install netbsd-${{ matrix.target-version }}-amd64/uppm --static
       - run: ./ppkg pack    netbsd-${{ matrix.target-version }}-amd64/uppm
 
       - uses: actions/upload-artifact@v4
@@ -83,7 +83,7 @@ jobs:
       fail-fast: false
       matrix:
         # https://cdn.openbsd.org/pub/OpenBSD/
-        target-version: ['7.2', '7.3', '7.4']
+        target-version: ['7.5', '7.4', '7.3']
 
     steps:
       - run: curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
@@ -94,7 +94,7 @@ jobs:
       - run: |
           ~/.ppkg/uppm/installed/gsed/bin/gsed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
 
-      - run: ./ppkg install openbsd-${{ matrix.target-version }}-amd64/uppm --link-type=static-most
+      - run: ./ppkg install openbsd-${{ matrix.target-version }}-amd64/uppm
       - run: ./ppkg pack    openbsd-${{ matrix.target-version }}-amd64/uppm
 
       - uses: actions/upload-artifact@v4
@@ -112,7 +112,7 @@ jobs:
       fail-fast: false
       matrix:
         # https://archive.freebsd.org/old-releases/amd64/
-        target-version: ['13.0', '13.1', '13.2']
+        target-version: ['13.0', '13.1', '13.2', '13.3', '14.0']
 
     steps:
       - run: curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
@@ -123,7 +123,7 @@ jobs:
       - run: |
           ~/.ppkg/uppm/installed/gsed/bin/gsed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
 
-      - run: ./ppkg install freebsd-${{ matrix.target-version }}-amd64/uppm --link-type=static-full
+      - run: ./ppkg install freebsd-${{ matrix.target-version }}-amd64/uppm --static
       - run: ./ppkg pack    freebsd-${{ matrix.target-version }}-amd64/uppm
 
       - uses: actions/upload-artifact@v4
@@ -141,7 +141,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target-version: ['10.15', '11.0', '12.0', '13.0']
+        target-version: ['10.15', '11.0', '12.0', '13.0', '14.0']
         target-arch: [x86_64, arm64]
 
     steps:
@@ -153,8 +153,8 @@ jobs:
       - run: |
           ~/.uppm/installed/gsed/bin/gsed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.xcpkg/repos.d/official-core/formula/uppm.yml
 
-      - run: ./xcpkg install MacOSX/${{ matrix.target-version }}/${{ matrix.target-arch }}/uppm --link-type=static-prefered --install-lib=static
-      - run: ./xcpkg pack    MacOSX/${{ matrix.target-version }}/${{ matrix.target-arch }}/uppm -o .
+      - run: ./xcpkg install MacOSX/${{ matrix.target-version }}/${{ matrix.target-arch }}/uppm
+      - run: ./xcpkg pack    MacOSX/${{ matrix.target-version }}/${{ matrix.target-arch }}/uppm
 
       - uses: actions/upload-artifact@v4
         with:
@@ -168,7 +168,7 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    container: alpine:3.16
+    container: alpine:3.19
 
     steps:
       - run: apk update
@@ -184,8 +184,8 @@ jobs:
       - run: |
           sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
 
-      - run: ./ppkg install uppm --link-type=static-only --install-lib=static
-      - run: ./ppkg pack    uppm -o .
+      - run: ./ppkg install uppm --static
+      - run: ./ppkg pack    uppm
 
       - uses: actions/upload-artifact@v4
         with:
@@ -229,8 +229,8 @@ jobs:
 
           sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
 
-          run ./ppkg install uppm --link-type=static-only --install-lib=static
-          run ./ppkg pack    uppm -o .
+          run ./ppkg install uppm --static
+          run ./ppkg pack    uppm
           EOF
 
           chmod +x run.sh
@@ -283,8 +283,8 @@ jobs:
 
           sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
 
-          run ./ppkg install uppm --link-type=static-only --install-lib=static
-          run ./ppkg pack    uppm -o .
+          run ./ppkg install uppm --static
+          run ./ppkg pack    uppm
           EOF
 
           chmod +x run.sh
@@ -337,8 +337,8 @@ jobs:
 
           sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
 
-          run ./ppkg install uppm --link-type=static-only --install-lib=static
-          run ./ppkg pack    uppm -o .
+          run ./ppkg install uppm --static
+          run ./ppkg pack    uppm
           EOF
 
           chmod +x run.sh
@@ -392,8 +392,8 @@ jobs:
 
           sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
 
-          run ./ppkg install uppm gh --link-type=static-only --install-lib=static
-          run ./ppkg pack    uppm -o .
+          run ./ppkg install uppm --static
+          run ./ppkg pack    uppm
           EOF
 
           chmod +x run.sh

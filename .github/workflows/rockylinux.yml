@@ -26,90 +26,98 @@ jobs:
 
       - uses: actions/checkout@main
 
-      - name: install ppkg
+      - name: create ppkg formula for uppm package
         run: |
-          curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
-          chmod a+x ppkg
-          ./ppkg setup
+          tee uppm.yml <<EOF
+          summary: Universal Prebuild Package Manager
+          src-url: dir://$PWD
+          license: Apache-2.0
+          dep-pkg: libcurl libgit2 libarchive libyaml libjansson
+          install: cmakew -DLINK_STATIC_LIBS=ON
+          EOF
 
+      - run:  curl -LO https://raw.githubusercontent.com/leleliu008/ppkg/master/ppkg
+      - run:  chmod a+x ppkg
+      - run:  ./ppkg setup
       - run:  ./ppkg update
-      - run:  ./ppkg install uppm
+      - run:  ./ppkg install uppm -I .
       - run:  ./ppkg tree    uppm
+      - run:  ./ppkg pack    uppm
+
+      - run: tar vxf uppm-*-.tar.xz --strip-components=1
+
+      - run:  echo "SSL_CERT_FILE=$HOME/.ppkg/core/cacert.pem" >> "$GITHUB_ENV"
 
 
+      - run:  bin/uppm
 
-      - run:  echo "SSL_CERT_FILE=$HOME/.ppkg/core/cacert.pem" >> $GITHUB_ENV
+      - run:  bin/uppm --help
+      - run:  bin/uppm --version
 
+      - run:  bin/uppm -h
+      - run:  bin/uppm -V
 
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm
+      - run:  bin/uppm about
+      - run:  bin/uppm about -v
 
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm --help
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm --version
+      - run:  bin/uppm integrate zsh
 
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm -h
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm -V
+      - run:  bin/uppm update
 
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm about
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm about -v
+      - run:  bin/uppm search zip
 
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm integrate zsh
+      - run:  bin/uppm depends zip
+      - run:  bin/uppm depends android-sdk
+      - run:  bin/uppm depends android-sdk -t box
+      - run:  bin/uppm depends android-sdk -t dot
 
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm update
+      - run:  bin/uppm info-available unzip
+      - run:  bin/uppm info-available unzip --json
+      - run:  bin/uppm info-available unzip --yaml
+      - run:  bin/uppm info-available unzip version
+      - run:  bin/uppm info-available unzip license
+      - run:  bin/uppm info-available unzip summary
+      - run:  bin/uppm info-available unzip webpage
+      - run:  bin/uppm info-available unzip bin-url
+      - run:  bin/uppm info-available unzip bin-sha
+      - run:  bin/uppm info-available unzip install
+      - run:  bin/uppm info-available unzip formula
 
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm search zip
+      - run:  bin/uppm fetch   gzip
+      - run:  bin/uppm fetch   gsed -v
 
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm depends zip
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm depends android-sdk
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm depends android-sdk -t box
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm depends android-sdk -t dot
+      - run:  bin/uppm install unzip
 
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info-available unzip
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info-available unzip --json
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info-available unzip --yaml
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info-available unzip version
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info-available unzip license
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info-available unzip summary
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info-available unzip webpage
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info-available unzip bin-url
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info-available unzip bin-sha
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info-available unzip install
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info-available unzip formula
+      - run:  bin/uppm info-installed unzip --prefix
+      - run:  bin/uppm info-installed unzip --files
+      - run:  bin/uppm info-installed unzip --json
+      - run:  bin/uppm info-installed unzip --yaml
+      - run:  bin/uppm info-installed unzip timestamp-unix
+      - run:  bin/uppm info-installed unzip timestamp-iso-8601
+      - run:  bin/uppm info-installed unzip timestamp-rfc-3339
+      - run:  bin/uppm info-installed unzip version
 
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm fetch   gzip
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm fetch   gsed -v
-
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm install unzip
-
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info-installed unzip --prefix
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info-installed unzip --files
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info-installed unzip --json
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info-installed unzip --yaml
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info-installed unzip timestamp-unix
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info-installed unzip timestamp-iso-8601
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info-installed unzip timestamp-rfc-3339
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info-installed unzip version
-
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm tree unzip
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm tree unzip -L 3
+      - run:  bin/uppm tree unzip
+      - run:  bin/uppm tree unzip -L 3
 
       - run: |
-          sed -i '/^version: /c version: 1000' $(~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info-available unzip formula)
+          sed -i '/^version: /c version: 1000' $(bin/uppm info-available unzip formula)
 
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm ls-available
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm ls-installed
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm ls-outdated
+      - run:  bin/uppm ls-available
+      - run:  bin/uppm ls-installed
+      - run:  bin/uppm ls-outdated
 
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm is-available curl
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm is-installed unzip
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm is-outdated  unzip || echo not outdated
+      - run:  bin/uppm is-available curl
+      - run:  bin/uppm is-installed unzip
+      - run:  bin/uppm is-outdated  unzip || echo not outdated
 
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm upgrade   unzip
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm reinstall unzip
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm uninstall unzip
+      - run:  bin/uppm upgrade   unzip
+      - run:  bin/uppm reinstall unzip
+      - run:  bin/uppm uninstall unzip
 
 
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm formula-repo-list
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-linux-x86_64
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm formula-repo-del my_repo
+      - run:  bin/uppm formula-repo-list
+      - run:  bin/uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-linux-x86_64
+      - run:  bin/uppm formula-repo-del my_repo
 
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm cleanup
+      - run:  bin/uppm cleanup
