@@ -147,7 +147,7 @@ jobs:
               -DCMAKE_EXE_LINKER_FLAGS="$CMAKE_EXE_LINKER_FLAGS" \
               -DCMAKE_FIND_ROOT_PATH="$CMAKE_FIND_ROOT_PATH" \
               -DCMAKE_BUILD_TYPE=Debug \
-              -DCMAKE_C_COMPILER=/usr/local/opt/llvm/bin/clang \
+              -DCMAKE_C_COMPILER="$(brew --prefix llvm)/bin/clang" \
               -DCMAKE_C_FLAGS="-fsanitize=undefined -fsanitize=address -fsanitize=leak"
 
       - run:  cmake --build   build.d
