@@ -628,14 +628,17 @@ If a uppm formula repository is `disabled`, which means uppm would not search fo
 
 uppm official formula repository's url:
 
-* <https://github.com/leleliu008/uppm-formula-repository-android-aarch64>
-* <https://github.com/leleliu008/uppm-formula-repository-linux-x86_64>
-* <https://github.com/leleliu008/uppm-formula-repository-linux-aarch64>
-* <https://github.com/leleliu008/uppm-formula-repository-macos-x86_64>
-* <https://github.com/leleliu008/uppm-formula-repository-macos-arm64>
-* <https://github.com/leleliu008/uppm-formula-repository-freebsd-amd64>
-* <https://github.com/leleliu008/uppm-formula-repository-openbsd-amd64>
-* <https://github.com/leleliu008/uppm-formula-repository-netbsd-amd64>
+* <https://github.com/leleliu008/uppm-package-repository-android-aarch64>
+* <https://github.com/leleliu008/uppm-package-repository-linux-x86_64>
+* <https://github.com/leleliu008/uppm-package-repository-linux-aarch64>
+* <https://github.com/leleliu008/uppm-package-repository-linux-riscv64>
+* <https://github.com/leleliu008/uppm-package-repository-linux-ppc64le>
+* <https://github.com/leleliu008/uppm-package-repository-linux-s390x>
+* <https://github.com/leleliu008/uppm-package-repository-macos-x86_64>
+* <https://github.com/leleliu008/uppm-package-repository-macos-arm64>
+* <https://github.com/leleliu008/uppm-package-repository-freebsd-amd64>
+* <https://github.com/leleliu008/uppm-package-repository-openbsd-amd64>
+* <https://github.com/leleliu008/uppm-package-repository-netbsd-amd64>
 
 uppm official formula repository would be automatically fetched to local cache as name `official-core` when you run `uppm update` command.
 
