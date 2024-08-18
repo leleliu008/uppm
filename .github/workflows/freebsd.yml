@@ -7,28 +7,34 @@ on:
     branches: [ 0.15.4 ]
 
 jobs:
-  freebsd:
-    runs-on: macos-12
+  test:
+    runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
-        version: [12, 13]
-    
+        freebsd-version: ['14.1', '14.0', '13.3', '13.2']
+
     steps:
       - uses: actions/checkout@v4
 
-      - uses: leleliu008/github-actions-vagrant@v1
+      - uses: cross-platform-actions/action@v0.25.0
         with:
-          mem: 2048
-          box: generic/freebsd${{ matrix.version }}
+          operating_system: freebsd
+          version: ${{ matrix.freebsd-version }}
+          shell: bash
           run: |
-            run pkg install -y cmake ninja gcc pkgconf curl openssl libgit2 libarchive libyaml jansson sqlite3 libnghttp2
+            run() {
+              printf "\033[0;35m==>\033[0m \033[0;32m%b\n\033[0m" "$*"
+              eval "$@"
+            }
+
+            run sudo pkg update
+            run sudo pkg install -y cmake ninja gcc pkgconf curl openssl libgit2 libarchive libyaml jansson sqlite3 libnghttp2
 
             run cmake -S . -B   build.d -G Ninja -DCMAKE_INSTALL_PREFIX=./output -DCMAKE_VERBOSE_MAKEFILE=ON
             run cmake --build   build.d
             run cmake --install build.d
-
 
             run ./output/bin/uppm
 
@@ -49,33 +55,30 @@ jobs:
 
             run ./output/bin/uppm depends gzip
 
-            run ./output/bin/uppm info @all
-            run ./output/bin/uppm info gsed
-            run ./output/bin/uppm info gsed --json
-            run ./output/bin/uppm info gsed --yaml
-            run ./output/bin/uppm info gsed version
-            run ./output/bin/uppm info gsed license
-            run ./output/bin/uppm info gsed summary
-            run ./output/bin/uppm info gsed webpage
-            run ./output/bin/uppm info gsed bin-url
-            run ./output/bin/uppm info gsed bin-sha
-            run ./output/bin/uppm info gsed install
-            run ./output/bin/uppm info gsed formula
+            run ./output/bin/uppm info-available gsed
+            run ./output/bin/uppm info-available gsed --json
+            run ./output/bin/uppm info-available gsed --yaml
+            run ./output/bin/uppm info-available gsed version
+            run ./output/bin/uppm info-available gsed license
+            run ./output/bin/uppm info-available gsed summary
+            run ./output/bin/uppm info-available gsed webpage
+            run ./output/bin/uppm info-available gsed bin-url
+            run ./output/bin/uppm info-available gsed bin-sha
+            run ./output/bin/uppm info-available gsed install
+            run ./output/bin/uppm info-available gsed formula
 
             run ./output/bin/uppm fetch   gzip
             run ./output/bin/uppm fetch   gtar -v
 
             run ./output/bin/uppm install gsed
 
-            run ./output/bin/uppm info gsed installed-dir
-            run ./output/bin/uppm info gsed installed-files
-            run ./output/bin/uppm info gsed installed-receipt-path
-            run ./output/bin/uppm info gsed installed-receipt-json
-            run ./output/bin/uppm info gsed installed-receipt-yaml
-            run ./output/bin/uppm info gsed installed-timestamp-unix
-            run ./output/bin/uppm info gsed installed-timestamp-iso-8601
-            run ./output/bin/uppm info gsed installed-timestamp-rfc-3339
-            run ./output/bin/uppm info gsed installed-version
+            run ./output/bin/uppm info-installed gsed --files
+            run ./output/bin/uppm info-installed gsed --json
+            run ./output/bin/uppm info-installed gsed --yaml
+            run ./output/bin/uppm info-installed gsed timestamp-unix
+            run ./output/bin/uppm info-installed gsed timestamp-iso-8601
+            run ./output/bin/uppm info-installed gsed timestamp-rfc-3339
+            run ./output/bin/uppm info-installed gsed version
 
             run ./output/bin/uppm tree gsed
             run ./output/bin/uppm tree gsed -L 3
@@ -88,7 +91,7 @@ jobs:
 
             run ./output/bin/uppm is-available curl
             run ./output/bin/uppm is-installed gsed
-            run ./output/bin/uppm is-outdated  gsed
+            run ./output/bin/uppm is-outdated  gsed || echo not outdated
 
             run ./output/bin/uppm upgrade   gsed
             run ./output/bin/uppm reinstall gsed

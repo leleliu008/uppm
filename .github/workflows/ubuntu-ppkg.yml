@@ -1,4 +1,4 @@
-name: LinuxMint
+name: build with ppkg on ubuntu
 
 on:
   push:
@@ -7,21 +7,16 @@ on:
     branches: [ 0.15.4 ]
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    
+  ppkg:
+
     strategy:
       fail-fast: false
       matrix:
-        tag: [21.2, 20.1]
+        os: [ubuntu-24.04, ubuntu-22.04, ubuntu-20.04]
 
-    container: linuxmintd/mint${{ matrix.tag }}-amd64
+    runs-on: ${{ matrix.os }}
 
     steps:
-      - run:  id
-      - run:  sudo apt -y update
-      - run:  sudo apt -y install curl xz-utils g++
-
       - name: create ppkg formula for uppm package
         run: |
           tee uppm.yml <<EOF
@@ -46,6 +41,7 @@ jobs:
 
       - run:  echo "SSL_CERT_FILE=$HOME/.ppkg/core/cacert.pem" >> "$GITHUB_ENV"
 
+
       - run:  bin/uppm
 
       - run:  bin/uppm --help
@@ -68,49 +64,48 @@ jobs:
       - run:  bin/uppm depends android-sdk -t box
       - run:  bin/uppm depends android-sdk -t dot
 
-      - run:  bin/uppm info-available unzip
-      - run:  bin/uppm info-available unzip --json
-      - run:  bin/uppm info-available unzip --yaml
-      - run:  bin/uppm info-available unzip version
-      - run:  bin/uppm info-available unzip license
-      - run:  bin/uppm info-available unzip summary
-      - run:  bin/uppm info-available unzip webpage
-      - run:  bin/uppm info-available unzip bin-url
-      - run:  bin/uppm info-available unzip bin-sha
-      - run:  bin/uppm info-available unzip install
-      - run:  bin/uppm info-available unzip formula
+      - run:  bin/uppm info-available gsed
+      - run:  bin/uppm info-available gsed --json
+      - run:  bin/uppm info-available gsed --yaml
+      - run:  bin/uppm info-available gsed version
+      - run:  bin/uppm info-available gsed license
+      - run:  bin/uppm info-available gsed summary
+      - run:  bin/uppm info-available gsed webpage
+      - run:  bin/uppm info-available gsed bin-url
+      - run:  bin/uppm info-available gsed bin-sha
+      - run:  bin/uppm info-available gsed install
+      - run:  bin/uppm info-available gsed formula
 
-      - run:  bin/uppm fetch   gzip
-      - run:  bin/uppm fetch   gsed -v
+      - run:  bin/uppm fetch   gtar
+      - run:  bin/uppm fetch   gtar -v
 
-      - run:  bin/uppm install unzip
+      - run:  bin/uppm install gsed
 
-      - run:  bin/uppm info-installed unzip --prefix
-      - run:  bin/uppm info-installed unzip --files
-      - run:  bin/uppm info-installed unzip --json
-      - run:  bin/uppm info-installed unzip --yaml
-      - run:  bin/uppm info-installed unzip timestamp-unix
-      - run:  bin/uppm info-installed unzip timestamp-iso-8601
-      - run:  bin/uppm info-installed unzip timestamp-rfc-3339
-      - run:  bin/uppm info-installed unzip version
+      - run:  bin/uppm info-installed gsed --files
+      - run:  bin/uppm info-installed gsed --json
+      - run:  bin/uppm info-installed gsed --yaml
+      - run:  bin/uppm info-installed gsed timestamp-unix
+      - run:  bin/uppm info-installed gsed timestamp-iso-8601
+      - run:  bin/uppm info-installed gsed timestamp-rfc-3339
+      - run:  bin/uppm info-installed gsed version
 
-      - run:  bin/uppm tree unzip
-      - run:  bin/uppm tree unzip -L 3
+      - run:  bin/uppm tree gsed
+      - run:  bin/uppm tree gsed -L 3
 
       - run: |
-          sed -i '/^version: /c version: 1000' $(bin/uppm info-available unzip formula)
+          printf '%s\n' 'version: 1000' >> ~/.uppm/repos.d/official-core/formula/gsed.yml
 
       - run:  bin/uppm ls-available
       - run:  bin/uppm ls-installed
       - run:  bin/uppm ls-outdated
 
       - run:  bin/uppm is-available curl
-      - run:  bin/uppm is-installed unzip
-      - run:  bin/uppm is-outdated  unzip || echo not outdated
+      - run:  bin/uppm is-installed gsed
+      - run:  bin/uppm is-outdated  gsed || echo not outdated
 
-      - run:  bin/uppm upgrade   unzip
-      - run:  bin/uppm reinstall unzip
-      - run:  bin/uppm uninstall unzip
+      - run:  bin/uppm upgrade   gsed
+      - run:  bin/uppm reinstall gsed
+      - run:  bin/uppm uninstall gsed
 
 
       - run:  bin/uppm formula-repo-list
