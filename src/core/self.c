@@ -15,7 +15,7 @@
 #include <limits.h>
 #endif
 
-#if defined (__FreeBSD__) || defined (__OpenBSD__)
+#if defined (__OpenBSD__) || defined (__FreeBSD__) || defined (__DragonFly__)
 #include <sys/types.h>
 #include <sys/sysctl.h>
 #endif
@@ -50,7 +50,7 @@ char* self_realpath() {
     _NSGetExecutablePath(path, &bufSize);
 
     return realpath(path, NULL);
-#elif defined (__FreeBSD__)
+#elif defined (__FreeBSD__) || defined (__DragonFly__)
     const int mib[] = { CTL_KERN, KERN_PROC, KERN_PROC_PATHNAME, -1 };
 
     size_t bufLength = 0U;
