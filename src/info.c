@@ -391,7 +391,7 @@ int uppm_info(const char * packageName, const char * key) {
         } else {
             return UPPM_ERROR_PACKAGE_IS_BROKEN;
         }
-    } else if (strcmp(key, "installed-files") == 0) {
+    } else if (strcmp(key, "--files") == 0) {
         char   uppmHomeDir[256];
         size_t uppmHomeDirLength;
 
