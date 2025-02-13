@@ -40,7 +40,7 @@ jobs:
       - run:  ./ppkg update
       - run:  ./ppkg install uppm -I .
       - run:  ./ppkg tree    uppm
-      - run:  ./ppkg bundle    uppm
+      - run:  ./ppkg bundle    uppm .tar.xz
 
       - run: tar vxf uppm-*.tar.xz --strip-components=1
 
@@ -148,7 +148,7 @@ jobs:
       - run:  ./ppkg update
       - run:  ./ppkg install uppm -I .
       - run:  ./ppkg tree    uppm
-      - run:  ./ppkg bundle    uppm
+      - run:  ./ppkg bundle    uppm .tar.xz
 
       - run: tar vxf uppm-*.tar.xz --strip-components=1
 
