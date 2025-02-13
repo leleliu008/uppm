@@ -65,7 +65,7 @@ jobs:
           ~/.ppkg/uppm/installed/gsed/bin/gsed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
 
       - run: ./ppkg install netbsd-${{ matrix.target-version }}-amd64/uppm --static
-      - run: ./ppkg pack    netbsd-${{ matrix.target-version }}-amd64/uppm
+      - run: ./ppkg bundle    netbsd-${{ matrix.target-version }}-amd64/uppm
 
       - uses: actions/upload-artifact@v4
         with:
@@ -95,7 +95,7 @@ jobs:
           ~/.ppkg/uppm/installed/gsed/bin/gsed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
 
       - run: ./ppkg install openbsd-${{ matrix.target-version }}-amd64/uppm
-      - run: ./ppkg pack    openbsd-${{ matrix.target-version }}-amd64/uppm
+      - run: ./ppkg bundle    openbsd-${{ matrix.target-version }}-amd64/uppm
 
       - uses: actions/upload-artifact@v4
         with:
@@ -124,7 +124,7 @@ jobs:
           ~/.ppkg/uppm/installed/gsed/bin/gsed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
 
       - run: ./ppkg install freebsd-${{ matrix.target-version }}-amd64/uppm --static
-      - run: ./ppkg pack    freebsd-${{ matrix.target-version }}-amd64/uppm
+      - run: ./ppkg bundle    freebsd-${{ matrix.target-version }}-amd64/uppm
 
       - uses: actions/upload-artifact@v4
         with:
@@ -154,7 +154,7 @@ jobs:
           ~/.uppm/installed/gsed/bin/gsed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.xcpkg/repos.d/official-core/formula/uppm.yml
 
       - run: ./xcpkg install MacOSX/${{ matrix.target-version }}/${{ matrix.target-arch }}/uppm
-      - run: ./xcpkg pack    MacOSX/${{ matrix.target-version }}/${{ matrix.target-arch }}/uppm
+      - run: ./xcpkg bundle    MacOSX/${{ matrix.target-version }}/${{ matrix.target-arch }}/uppm
 
       - uses: actions/upload-artifact@v4
         with:
@@ -185,7 +185,7 @@ jobs:
           sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
 
       - run: ./ppkg install uppm --static
-      - run: ./ppkg pack    uppm
+      - run: ./ppkg bundle    uppm
 
       - uses: actions/upload-artifact@v4
         with:
@@ -230,7 +230,7 @@ jobs:
           sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
 
           run ./ppkg install uppm --static
-          run ./ppkg pack    uppm
+          run ./ppkg bundle    uppm
           EOF
 
           chmod +x run.sh
@@ -284,7 +284,7 @@ jobs:
           sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
 
           run ./ppkg install uppm --static
-          run ./ppkg pack    uppm
+          run ./ppkg bundle    uppm
           EOF
 
           chmod +x run.sh
@@ -338,7 +338,7 @@ jobs:
           sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
 
           run ./ppkg install uppm --static
-          run ./ppkg pack    uppm
+          run ./ppkg bundle    uppm
           EOF
 
           chmod +x run.sh
@@ -393,7 +393,7 @@ jobs:
           sed -i "/git-url/a git-sha: ${{ needs.check.outputs.git-sha }}" ~/.ppkg/repos.d/official-core/formula/uppm.yml
 
           run ./ppkg install uppm --static
-          run ./ppkg pack    uppm
+          run ./ppkg bundle    uppm
           EOF
 
           chmod +x run.sh
