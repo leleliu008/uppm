@@ -212,6 +212,11 @@ int uppm_main(int argc, char* argv[]) {
     }
 
     if (strcmp(argv[1], "depends") == 0) {
+        if (argv[2] == NULL || argv[2][0] == '\0') {
+            fprintf(stderr, "Usage: %s depends <PACKAGE-NAME>, <PACKAGE-NAME> is unspecified.\n", argv[0]);
+            return 1;
+        }
+
         int    outputType     = 0;
 
         char * outputPath     = NULL;

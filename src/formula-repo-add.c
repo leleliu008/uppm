@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <inttypes.h>
+
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -104,7 +106,7 @@ int uppm_formula_repo_add(const char * formulaRepoName, const char * formulaRepo
     ////////////////////////////////////////////////////////////////////////////////////////
 
     char ts[11];
-    snprintf(ts, 11, "%ld", time(NULL));
+    snprintf(ts, 11, "%" PRIdMAX, time(NULL));
 
     return uppm_formula_repo_config_write(formulaRepoDir, formulaRepoUrl, branchName, pinned, enabled, ts, NULL);
 }

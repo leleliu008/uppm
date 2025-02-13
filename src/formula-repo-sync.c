@@ -2,6 +2,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <time.h>
+#include <inttypes.h>
 
 #include "core/log.h"
 #include "uppm.h"
@@ -60,7 +61,7 @@ int uppm_formula_repo_sync(UPPMFormulaRepo * formulaRepo) {
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     char ts[11];
-    snprintf(ts, 11, "%ld", time(NULL));
+    snprintf(ts, 11, "%" PRIdMAX, time(NULL));
 
     return uppm_formula_repo_config_write(formulaRepo->path, formulaRepo->url, formulaRepo->branch, formulaRepo->pinned, formulaRepo->enabled, formulaRepo->timestamp_created, ts);
 }

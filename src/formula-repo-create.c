@@ -2,9 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <inttypes.h>
+
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+
 #include <git2.h>
 
 #include "core/log.h"
@@ -132,7 +135,7 @@ int uppm_formula_repo_create(const char * formulaRepoName, const char * formulaR
     ////////////////////////////////////////////////////////////////////////////////////////
 
     char ts[11];
-    snprintf(ts, 11, "%ld", time(NULL));
+    snprintf(ts, 11, "%" PRIdMAX, time(NULL));
 
     return uppm_formula_repo_config_write(formulaRepoDir, formulaRepoUrl, branchName, pinned, enabled, ts, NULL);
 }

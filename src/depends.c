@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include <inttypes.h>
+
 #include <unistd.h>
 #include <sys/stat.h>
 
@@ -81,7 +83,7 @@ static int uppm_depends_make_xxx(const char * dotScriptStr, size_t len, const ch
     ////////////////////////////////////////////////////////////////
 
     char ts[11] = {0};
-    snprintf(ts, 11, "%ld", time(NULL));
+    snprintf(ts, 11, "%" PRIdMAX, time(NULL));
 
     size_t filepathLength = uppmTmpDirLength + strlen(ts) + 6U;
     char   filepath[filepathLength];

@@ -2,8 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include <time.h>
 #include <math.h>
+#include <time.h>
+#include <inttypes.h>
+
 #include <libgen.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
@@ -414,7 +416,7 @@ int uppm_install(const char * packageName, bool verbose) {
         }
     }
 
-    fprintf(receiptFile, "\nsignature: %s\ntimestamp: %lu\n", UPPM_VERSION, time(NULL));
+    fprintf(receiptFile, "\nsignature: %s\ntimestamp: %" PRIdMAX "\n", UPPM_VERSION, time(NULL));
 
     fclose(receiptFile);
 
