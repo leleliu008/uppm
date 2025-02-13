@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-14, macos-13, macos-12]
+        os: [macos-14, macos-13, macos-15]
 
     runs-on: ${{ matrix.os }}
 
@@ -83,7 +83,7 @@ jobs:
       - run:  bin/uppm info-installed gsed --files
       - run:  bin/uppm info-installed gsed --json
       - run:  bin/uppm info-installed gsed --yaml
-      - run:  bin/uppm info-installed gsed timestamp-unix
+      - run:  bin/uppm info-installed gsed installed-timestamp-unix
       - run:  bin/uppm info-installed gsed timestamp-iso-8601
       - run:  bin/uppm info-installed gsed timestamp-rfc-3339
       - run:  bin/uppm info-installed gsed version

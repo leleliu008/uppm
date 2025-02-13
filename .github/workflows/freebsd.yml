@@ -75,7 +75,7 @@ jobs:
             run ./output/bin/uppm info-installed gsed --files
             run ./output/bin/uppm info-installed gsed --json
             run ./output/bin/uppm info-installed gsed --yaml
-            run ./output/bin/uppm info-installed gsed timestamp-unix
+            run ./output/bin/uppm info-installed gsed installed-timestamp-unix
             run ./output/bin/uppm info-installed gsed timestamp-iso-8601
             run ./output/bin/uppm info-installed gsed timestamp-rfc-3339
             run ./output/bin/uppm info-installed gsed version

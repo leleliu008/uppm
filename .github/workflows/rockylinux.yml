@@ -92,7 +92,7 @@ jobs:
       - run:  bin/uppm info-installed unzip --files
       - run:  bin/uppm info-installed unzip --json
       - run:  bin/uppm info-installed unzip --yaml
-      - run:  bin/uppm info-installed unzip timestamp-unix
+      - run:  bin/uppm info-installed unzip installed-timestamp-unix
       - run:  bin/uppm info-installed unzip timestamp-iso-8601
       - run:  bin/uppm info-installed unzip timestamp-rfc-3339
       - run:  bin/uppm info-installed unzip version

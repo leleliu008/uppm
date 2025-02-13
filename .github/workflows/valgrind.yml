@@ -99,7 +99,7 @@ jobs:
       - run:  $VALGRIND ./output/bin/uppm info-installed tree --json
       - run:  $VALGRIND ./output/bin/uppm info-installed tree timestamp-iso-8601
       - run:  $VALGRIND ./output/bin/uppm info-installed tree timestamp-rfc-3339
-      - run:  $VALGRIND ./output/bin/uppm info-installed tree timestamp-unix
+      - run:  $VALGRIND ./output/bin/uppm info-installed tree installed-timestamp-unix
       - run:  $VALGRIND ./output/bin/uppm info-installed tree version
 
       - run: |

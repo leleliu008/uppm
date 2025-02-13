@@ -136,7 +136,7 @@ jobs:
     needs: [check, freebsd-amd64]
     if: needs.check.outputs.if-has-new-commit == 'yes' 
 
-    runs-on: macos-12
+    runs-on: macos-15
 
     strategy:
       fail-fast: false

@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        tag: [38, 37]
+        tag: [41, 40, 39, 38, 37]
 
     container: fedora:${{ matrix.tag }}
 
@@ -71,7 +71,7 @@ jobs:
       - run:  ./output/bin/uppm info-installed unzip --files
       - run:  ./output/bin/uppm info-installed unzip --json
       - run:  ./output/bin/uppm info-installed unzip --yaml
-      - run:  ./output/bin/uppm info-installed unzip timestamp-unix
+      - run:  ./output/bin/uppm info-installed unzip installed-timestamp-unix
       - run:  ./output/bin/uppm info-installed unzip timestamp-iso-8601
       - run:  ./output/bin/uppm info-installed unzip timestamp-rfc-3339
       - run:  ./output/bin/uppm info-installed unzip version
