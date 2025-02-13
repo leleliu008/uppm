@@ -66,8 +66,8 @@ jobs:
       - run:  ./output/bin/uppm info-installed unzip --json
       - run:  ./output/bin/uppm info-installed unzip --yaml
       - run:  ./output/bin/uppm info-installed unzip installed-timestamp-unix
-      - run:  ./output/bin/uppm info-installed unzip timestamp-iso-8601
-      - run:  ./output/bin/uppm info-installed unzip timestamp-rfc-3339
+      - run:  ./output/bin/uppm info-installed unzip installed-timestamp-iso-8601
+      - run:  ./output/bin/uppm info-installed unzip installed-timestamp-rfc-3339
       - run:  ./output/bin/uppm info-installed unzip version
 
       - run:  ./output/bin/uppm tree unzip

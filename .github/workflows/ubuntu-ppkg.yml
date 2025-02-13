@@ -85,8 +85,8 @@ jobs:
       - run:  bin/uppm info-installed gsed --json
       - run:  bin/uppm info-installed gsed --yaml
       - run:  bin/uppm info-installed gsed installed-timestamp-unix
-      - run:  bin/uppm info-installed gsed timestamp-iso-8601
-      - run:  bin/uppm info-installed gsed timestamp-rfc-3339
+      - run:  bin/uppm info-installed gsed installed-timestamp-iso-8601
+      - run:  bin/uppm info-installed gsed installed-timestamp-rfc-3339
       - run:  bin/uppm info-installed gsed version
 
       - run:  bin/uppm tree gsed

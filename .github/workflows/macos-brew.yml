@@ -101,8 +101,8 @@ jobs:
       - run:  uppm info-installed gsed --json
       - run:  uppm info-installed gsed --yaml
       - run:  uppm info-installed gsed installed-timestamp-unix
-      - run:  uppm info-installed gsed timestamp-iso-8601
-      - run:  uppm info-installed gsed timestamp-rfc-3339
+      - run:  uppm info-installed gsed installed-timestamp-iso-8601
+      - run:  uppm info-installed gsed installed-timestamp-rfc-3339
       - run:  uppm info-installed gsed version
 
       - run:  uppm tree gsed
@@ -225,8 +225,8 @@ jobs:
       - run:  uppm info-installed gsed --json
       - run:  uppm info-installed gsed --yaml
       - run:  uppm info-installed gsed installed-timestamp-unix
-      - run:  uppm info-installed gsed timestamp-iso-8601
-      - run:  uppm info-installed gsed timestamp-rfc-3339
+      - run:  uppm info-installed gsed installed-timestamp-iso-8601
+      - run:  uppm info-installed gsed installed-timestamp-rfc-3339
       - run:  uppm info-installed gsed version
 
       - run:  uppm tree gsed
