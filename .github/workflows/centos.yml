@@ -98,7 +98,7 @@ jobs:
       - run:  bin/uppm tree unzip -L 3
 
       - run: |
-          sed -i '/^version: /c version: 1000' $(bin/uppm info-available unzip formula)
+          sed -i '/^version: /c version: 1000' ~/.uppm/repos.d/official-core/formula/unzip.yml
 
       - run:  bin/uppm ls-available
       - run:  bin/uppm ls-installed
@@ -207,7 +207,7 @@ jobs:
       - run:  bin/uppm tree unzip -L 3
 
       - run: |
-          sed -i '/^version: /c version: 1000' $(bin/uppm info-available unzip formula)
+          sed -i '/^version: /c version: 1000' ~/.uppm/repos.d/official-core/formula/unzip.yml
 
       - run:  bin/uppm ls-available
       - run:  bin/uppm ls-installed
@@ -297,7 +297,7 @@ jobs:
       - run:  bin/uppm tree unzip -L 3
 
       - run: |
-          sed -i '/^version: /c version: 1000' $(bin/uppm info-available unzip formula)
+          sed -i '/^version: /c version: 1000' ~/.uppm/repos.d/official-core/formula/unzip.yml
 
       - run:  bin/uppm ls-available
       - run:  bin/uppm ls-installed
