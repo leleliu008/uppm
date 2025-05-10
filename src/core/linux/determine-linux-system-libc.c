@@ -354,9 +354,7 @@ static int handle_elf64(const int fd, const char * const fp) {
     return ERROR_NOT_DETERMINED;
 }
 
-int determine_by_inspect_sbin_init() {
-    const char * const fp = "/sbin/init";
-
+static int determine_by_inspect_elf_file(const char * fp) {
     struct stat st;
 
     if (stat(fp, &st) == -1) {
@@ -431,8 +429,24 @@ int determine_by_inspect_sbin_init() {
     return ret;
 }
 
+int determine_by_inspect_elf_files() {
+    const char* list[2] = {"/sbin/init", "/bin/sh"};
+
+    int ret;
+
+    for (int i = 0; i < 2; i++) {
+        ret = determine_by_inspect_elf_file(list[i]);
+
+        if (ret == LIBC_GNU || ret == LIBC_MUSL) {
+            return ret;
+        }
+    }
+
+    return ret;
+}
+
 static int xx() {
-    int ret = determine_by_inspect_sbin_init();
+    int ret = determine_by_inspect_elf_files();
 
     switch (ret) {
         case LIBC_GNU: puts("glibc"); return 0;

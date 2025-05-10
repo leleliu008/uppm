@@ -451,9 +451,9 @@ int sysinfo_vers(char * buf, size_t bufSize) {
 }
 
 #if defined (__linux__)
-int determine_by_inspect_sbin_init();
+int determine_by_inspect_elf_files();
 int sysinfo_libc() {
-    return determine_by_inspect_sbin_init();
+    return determine_by_inspect_elf_files();
 }
 #else
 int sysinfo_libc() {
