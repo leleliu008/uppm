@@ -51,9 +51,10 @@ jobs:
 
       - run:  brew update
 
-      - run:  brew tap leleliu008/fpliu
-
-      - run:  mv uppm.rb "$(brew --repo leleliu008/fpliu)/Formula/uppm.rb"
+      - run: |
+          MY_FORMULA_DIR="$(brew --repository)/Library/Taps/leleliu008/homebrew-tmp/Formula"
+          install -d "$MY_FORMULA_DIR/"
+          mv uppm.rb "$MY_FORMULA_DIR/"
 
       - run:  brew info    uppm
       - run:  brew install uppm -v
@@ -175,9 +176,10 @@ jobs:
 
       - run:  brew update
 
-      - run:  brew tap leleliu008/fpliu
-
-      - run:  mv uppm.rb "$(brew --repo leleliu008/fpliu)/Formula/uppm.rb"
+      - run: |
+          MY_FORMULA_DIR="$(brew --repository)/Library/Taps/leleliu008/homebrew-tmp/Formula"
+          install -d "$MY_FORMULA_DIR/"
+          mv uppm.rb "$MY_FORMULA_DIR/"
 
       - run:  brew info    uppm
       - run:  brew install uppm -v
