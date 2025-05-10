@@ -102,6 +102,12 @@ int http_fetch_to_stream(const char * url, FILE * outputFile, bool verbose, bool
     // https://curl.se/libcurl/c/libcurl-errors.html
     if (curlcode != CURLE_OK) {
         fprintf(stderr, "%s\n", curl_easy_strerror(curlcode));
+
+        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status
+        // https://curl.se/libcurl/c/CURLINFO_RESPONSE_CODE.html
+        long httpResponseCode;
+        curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpResponseCode);
+        fprintf(stderr, "%ld: %s\n", httpResponseCode, url);
     }
 
     curl_slist_free_all(list);

@@ -79,7 +79,7 @@ jobs:
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm install gsed
 
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info gsed installed-dir
-      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info gsed installed-files
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info gsed --files
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info gsed installed-receipt-path
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info gsed installed-receipt-json
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm info gsed installed-receipt-yaml
