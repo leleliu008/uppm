@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04, ubuntu-20.04, macos-15]
+        os: [ubuntu-22.04, ubuntu-24.04, macos-15]
 
     runs-on: ${{ matrix.os }}
 
@@ -46,6 +46,8 @@ jobs:
 
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm about
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm about -v
+
+      - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm sysinfo
 
       - run:  ~/.ppkg/installed/linux-glibc-x86_64/uppm/bin/uppm integrate zsh
 

@@ -19,6 +19,7 @@ jobs:
 
     steps:
       - run:  id
+      - run:  ls -l /sbin/
       - run:  apt -y update
       - run:  apt -y install curl g++ xz-utils
 

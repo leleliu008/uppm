@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, ubuntu-22.04, ubuntu-20.04]
+        os: [ubuntu-24.04, ubuntu-22.04]
 
     runs-on: ${{ matrix.os }}
 
@@ -35,7 +35,7 @@ jobs:
       - run:  ./ppkg update
       - run:  ./ppkg install uppm -I .
       - run:  ./ppkg tree    uppm
-      - run:  ./ppkg bundle    uppm .tar.xz
+      - run:  ./ppkg bundle  uppm .tar.xz
 
       - run: tar vxf uppm-*.tar.xz --strip-components=1
 
@@ -52,6 +52,8 @@ jobs:
 
       - run:  bin/uppm about
       - run:  bin/uppm about -v
+
+      - run:  bin/uppm sysinfo
 
       - run:  bin/uppm integrate zsh
 

@@ -58,6 +58,8 @@ jobs:
       - run:  $VALGRIND ./output/bin/uppm about
       - run:  $VALGRIND ./output/bin/uppm about -v
 
+      - run:  $VALGRIND ./output/bin/uppm sysinfo
+
       - run:  $VALGRIND ./output/bin/uppm integrate zsh
 
       - run:            ./output/bin/uppm update
@@ -103,7 +105,7 @@ jobs:
       - run:  $VALGRIND ./output/bin/uppm info-installed tree version
 
       - run: |
-          sed -i '/^version: /c version: 2.0.3' $(./output/bin/uppm info-available tree formula)
+          sed -i '/^version: /c version: 2.0.3' ~/.uppm/repos.d/official-core/formula/tree.yml
 
       - run:  $VALGRIND ./output/bin/uppm ls-available
       - run:  $VALGRIND ./output/bin/uppm ls-installed
