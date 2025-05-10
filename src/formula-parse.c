@@ -461,7 +461,7 @@ int uppm_formula_lookup(const char * packageName, UPPMFormula * * out) {
         perror(NULL);
         return UPPM_ERROR;
     } else {
-        isLinuxMuslLibc = libc == 2;
+        isLinuxMuslLibc = (libc == 2);
     }
 
     char * formulaFilePath = NULL;

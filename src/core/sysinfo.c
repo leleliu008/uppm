@@ -1,16 +1,18 @@
 #include <stdio.h>
 #include <string.h>
+
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/utsname.h>
 
-#include "sysinfo.h"
-
 #if defined (__APPLE__)
-#include <regex.h>
+#include <fcntl.h>
+#include <sys/mman.h>
 #elif defined (__ANDROID__)
 #include <sys/system_properties.h>
 #endif
+
+#include "sysinfo.h"
 
 int sysinfo_kind(char * buf, size_t bufSize) {
 #if defined (_WIN32)
@@ -143,7 +145,7 @@ int sysinfo_code(char * buf, size_t bufSize) {
     strncpy(buf, "android", (bufSize > 7U) ? 7U : bufSize);
     return 0;
 #else
-    const char * filepath = "/etc/os-release";
+    const char * const filepath = "/etc/os-release";
     struct stat sb;
 
     if ((stat(filepath, &sb) == 0) && (S_ISREG(sb.st_mode) || S_ISLNK(sb.st_mode))) {
@@ -220,7 +222,7 @@ int sysinfo_name(char * buf, size_t bufSize) {
     strncpy(buf, "Android", (bufSize > 7U) ? 7U : bufSize);
     return 0;
 #else
-    const char * filepath = "/etc/os-release";
+    const char * const filepath = "/etc/os-release";
     struct stat sb;
 
     if ((stat(filepath, &sb) == 0) && (S_ISREG(sb.st_mode) || S_ISLNK(sb.st_mode))) {
@@ -299,101 +301,101 @@ int sysinfo_vers(char * buf, size_t bufSize) {
         return -1;
     }
 #elif defined (__APPLE__)
-    const char * filepath = "/System/Library/CoreServices/SystemVersion.plist";
-    struct stat sb;
+    const char * const fp = "/System/Library/CoreServices/SystemVersion.plist";
 
-    if ((stat(filepath, &sb) == 0) && (S_ISREG(sb.st_mode) || S_ISLNK(sb.st_mode))) {
-        FILE * file = fopen(filepath, "r");
+    struct stat st;
 
-        if (file == NULL) {
-            return -1;
-        }
-
-        char line[512];
-
-        for (;;) {
-            if (fgets(line, 512, file) == NULL) {
-                if (ferror(file)) {
-                    perror(filepath);
-                    fclose(file);
-                    return -1;
-                } else {
-                    fclose(file);
-                    return -1;
-                }
-            }
-
-            regex_t regex;
-
-            if (regcomp(&regex, "ProductVersion", REG_EXTENDED) != 0) {
-                regfree(&regex);
-                fclose(file);
-                return -1;
-            }
-
-            regmatch_t regmatch[2];
-
-            if (regexec(&regex, line, 2, regmatch, 0) != 0) {
-                regfree(&regex);
-                continue;
-            }
-
-            //printf("regmatch[0].rm_so=%d\n", regmatch[0].rm_so);
-            //printf("regmatch[0].rm_eo=%d\n", regmatch[0].rm_eo);
-            if (regmatch[0].rm_so >= 0 && regmatch[0].rm_eo > regmatch[0].rm_so) {
-                regfree(&regex);
-
-                if (fgets(line, 512, file) == NULL) {
-                    if (ferror(file)) {
-                        perror(filepath);
-                        fclose(file);
-                        return -1;
-                    } else {
-                        fclose(file);
-                        return -1;
-                    }
-                }
-
-                regex_t regex;
-
-                if (regcomp(&regex, "[1-9][0-9.]+[0-9]", REG_EXTENDED) != 0) {
-                    regfree(&regex);
-                    fclose(file);
-                    return -1;
-                }
-
-                regmatch_t regmatch[2];
-
-                if (regexec(&regex, line, 2, regmatch, 0) != 0) {
-                    regfree(&regex);
-                    fclose(file);
-                    return -1;
-                }
-
-                //printf("regmatch[0].rm_so=%d\n", regmatch[0].rm_so);
-                //printf("regmatch[0].rm_eo=%d\n", regmatch[0].rm_eo);
-                if (regmatch[0].rm_so >= 0 && regmatch[0].rm_eo > regmatch[0].rm_so) {
-                    int n = regmatch[0].rm_eo - regmatch[0].rm_so;
-
-                    strncpy(buf, line + regmatch[0].rm_so, (bufSize > n) ? n : bufSize);
-
-                    regfree(&regex);
-                    fclose(file);
-                    return 0;
-                } else {
-                    regfree(&regex);
-                    fclose(file);
-                    return -1;
-                }
-            } else {
-                regfree(&regex);
-            }
-        }
+    if (stat(fp, &st) == -1) {
+        perror(fp);
+        return -1;
     }
 
-    return -1;
+    if (st.st_size == 0) {
+        fprintf(stderr, "empty file: %s\n", fp);
+        return -1;
+    }
+
+    int fd = open(fp, O_RDONLY);
+
+    if (fd == -1) {
+        perror(fp);
+        return -1;
+    }
+
+    char * data = mmap(NULL, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
+
+    if (data == MAP_FAILED) {
+        perror(fp);
+        close(fd);
+        return -1;
+    }
+
+    char * p = strstr(data, "<key>ProductVersion</key>");
+
+    if (p == NULL) {
+        fprintf(stderr, "no <key>ProductVersion</key> in file : %s\n", fp);
+
+        if (munmap(data, st.st_size) == -1) {
+            perror("Failed to unmap file");
+        }
+
+        close(fd);
+
+        return -1;
+    }
+
+    p = strstr(p, "<string>");
+
+    if (p == NULL) {
+        fprintf(stderr, "no <string> after <key>ProductVersion</key> in file : %s\n", fp);
+
+        if (munmap(data, st.st_size) == -1) {
+            perror("Failed to unmap file");
+        }
+
+        close(fd);
+
+        return -1;
+    }
+
+    p += 8;
+
+    char * q = strstr(p, "</string>");
+
+    if (q == NULL) {
+        fprintf(stderr, "no </string> after <key>ProductVersion</key> in file : %s\n", fp);
+
+        if (munmap(data, st.st_size) == -1) {
+            perror("Failed to unmap file");
+        }
+
+        close(fd);
+
+        return -1;
+    }
+
+    ////////////////////////////////////////////
+
+    size_t m = bufSize - 1U;
+    size_t n = q - p;
+
+    size_t len = (m > n) ? n : m;
+
+    for (size_t i = 0; i < len; i++) {
+        buf[i] = p[i];
+    }
+
+    buf[len] = '\0';
+
+    if (munmap(data, st.st_size) == -1) {
+        perror("Failed to unmap file");
+    }
+
+    close(fd);
+
+    return 0;
 #else
-    const char * filepath = "/etc/os-release";
+    const char * const filepath = "/etc/os-release";
     struct stat sb;
 
     if ((stat(filepath, &sb) == 0) && (S_ISREG(sb.st_mode) || S_ISLNK(sb.st_mode))) {
@@ -448,61 +450,16 @@ int sysinfo_vers(char * buf, size_t bufSize) {
 #endif
 }
 
+#if defined (__linux__)
+int determine_by_inspect_sbin_init();
 int sysinfo_libc() {
-#if defined (__ANDROID__)
-    return 3;
-#else
-    struct utsname uts;
-
-    if (uname(&uts) < 0) {
-        return -1;
-    }
-
-    if (strcmp(uts.sysname, "Linux") == 0) {
-        size_t osArchLength = strlen(uts.machine);
-
-        struct stat sb;
-
-        if (strcmp(uts.machine, "x86_64") == 0) {
-            if ((stat("/lib64/ld-linux-x86-64.so.2", &sb) == 0) && (S_ISREG(sb.st_mode) || S_ISLNK(sb.st_mode))) {
-                return 1;
-            }
-
-            if ((stat("/lib/ld-musl-x86_64.so.1", &sb) == 0) && (S_ISREG(sb.st_mode) || S_ISLNK(sb.st_mode))) {
-                return 2;
-            }
-        }
-
-        if (strcmp(uts.machine, "ppc64le") == 0) {
-            if ((stat("/lib/powerpc64le-linux-gnu/ld64.so.2", &sb) == 0) && (S_ISREG(sb.st_mode) || S_ISLNK(sb.st_mode))) {
-                return 1;
-            }
-
-            if ((stat("/lib/ld-musl-powerpc64le.so.1", &sb) == 0) && (S_ISREG(sb.st_mode) || S_ISLNK(sb.st_mode))) {
-                return 2;
-            }
-        }
-
-        size_t   muslDynamicLoaderPathLength = osArchLength + 19U;
-        char     muslDynamicLoaderPath[muslDynamicLoaderPathLength];
-        snprintf(muslDynamicLoaderPath, muslDynamicLoaderPathLength, "/lib/ld-musl-%s.so.1", uts.machine);
-
-        if ((stat(muslDynamicLoaderPath, &sb) == 0) && (S_ISREG(sb.st_mode) || S_ISLNK(sb.st_mode))) {
-            return 2;
-        }
-
-        size_t   dynamicLoaderPathLength = osArchLength + 22U;
-        char     dynamicLoaderPath[dynamicLoaderPathLength];
-        snprintf(dynamicLoaderPath, dynamicLoaderPathLength, "/lib64/ld-linux-%s.so.2", uts.machine);
-
-        if ((stat(dynamicLoaderPath, &sb) == 0) && (S_ISREG(sb.st_mode) || S_ISLNK(sb.st_mode))) {
-            return 1;
-        }
-    }
-
-    return 0;
-#endif
+    return determine_by_inspect_sbin_init();
 }
+#else
+int sysinfo_libc() {
+    return 0;
+}
+#endif
 
 int sysinfo_ncpu() {
     long nprocs;

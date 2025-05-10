@@ -125,6 +125,10 @@ endif()
 aux_source_directory(src/core CORE_SRCS)
 aux_source_directory(src           SRCS)
 
+if (CMAKE_SYSTEM_NAME STREQUAL Linux)
+    list(APPEND CORE_SRCS src/core/linux/determine-linux-system-libc.c)
+endif()
+
 add_executable(uppm "${CORE_SRCS};${REGEX_SRC};${SRCS}")
 
 ########################################################################################
