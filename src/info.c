@@ -354,6 +354,20 @@ int uppm_info(const char * packageName, const char * key) {
         }
 
         uppm_formula_free(formula);
+    } else if (strcmp(key, "unpackd") == 0) {
+        UPPMFormula * formula = NULL;
+
+        ret = uppm_formula_lookup(packageName, &formula);
+
+        if (ret != UPPM_OK) {
+            return ret;
+        }
+
+        if (formula->unpackd != NULL) {
+            printf("%s\n", formula->unpackd);
+        }
+
+        uppm_formula_free(formula);
     } else if (strcmp(key, "installed-dir") == 0 || strcmp(key, "--prefix") == 0) {
         char   uppmHomeDir[256];
         size_t uppmHomeDirLength;

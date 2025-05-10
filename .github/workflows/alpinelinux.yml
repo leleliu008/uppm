@@ -39,6 +39,8 @@ jobs:
       - run:  ./output/bin/uppm about
       - run:  ./output/bin/uppm about -v
 
+      - run:  ./output/bin/uppm sysinfo
+
       - run:  ./output/bin/uppm integrate zsh
       - run:  ./output/bin/uppm integrate zsh -v
 
