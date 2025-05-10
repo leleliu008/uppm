@@ -80,7 +80,7 @@ jobs:
       - run:  ./output/bin/uppm tree unzip -L 3
 
       - run: |
-          sed -i '/^version: /c version: 1000' $(./output/bin/uppm info-available unzip formula)
+          sed -i '/^version: /c version: 1000' ~/.uppm/repos.d/official-core/formula/unzip.yml
 
       - run:  ./output/bin/uppm ls-available
       - run:  ./output/bin/uppm ls-installed
