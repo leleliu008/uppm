@@ -70,6 +70,8 @@ jobs:
       - run:  uppm about
       - run:  uppm about -v
 
+      - run:  uppm sysinfo
+
       - run:  uppm integrate zsh -v
 
       - run:  uppm update
