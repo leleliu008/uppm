@@ -8,6 +8,8 @@
 
 #include "uppm.h"
 
+int uppm_sysinfo_main(int argc, char *argv[]);
+
 int uppm_main(int argc, char* argv[]) {
     if (argc == 1) {
         uppm_help();
@@ -34,7 +36,7 @@ int uppm_main(int argc, char* argv[]) {
     }
 
     if (strcmp(argv[1], "sysinfo") == 0) {
-        return uppm_sysinfo();
+        return uppm_sysinfo_main(argc, argv);
     }
 
     if (strcmp(argv[1], "about") == 0) {

@@ -194,8 +194,6 @@ int uppm_util(int argc, char* argv[]);
 
 int uppm_help();
 
-int uppm_sysinfo();
-
 int uppm_buildinfo();
 
 int uppm_about(bool verbose);

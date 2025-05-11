@@ -324,8 +324,6 @@ int uppm_install(const char * packageName, bool verbose) {
                 packageInstalledDir,
                 formula->install);
 
-        sysinfo_free(sysinfo);
-
         printf("run shell code:\n%s\n", shellCode);
 
         int childProcessExitStatusCode = system(shellCode);
