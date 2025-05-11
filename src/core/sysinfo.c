@@ -650,8 +650,7 @@ void sysinfo_dump(SysInfo * sysinfo) {
 
     switch(sysinfo->libc) {
         case LIBC_GNU:  printf("sysinfo.libc: glibc\n"); break;
-        case LIBC_MUSL:  printf("sysinfo.libc: musl\n");  break;
-        default: printf("sysinfo.libc: \n");
+        case LIBC_MUSL: printf("sysinfo.libc: musl\n");  break;
     }
 }
 
@@ -672,7 +671,6 @@ void sysinfo_dump_as_shell_script(SysInfo * sysinfo) {
 
     switch(sysinfo->libc) {
         case LIBC_GNU:  printf("NATIVE_PLATFORM_LIBC='glibc'\n"); break;
-        case LIBC_MUSL:  printf("NATIVE_PLATFORM_LIBC='musl'\n");  break;
-        default: printf("NATIVE_PLATFORM_KIND=\n");
+        case LIBC_MUSL: printf("NATIVE_PLATFORM_LIBC='musl'\n");  break;
     }
 }

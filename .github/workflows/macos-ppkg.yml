@@ -53,6 +53,7 @@ jobs:
       - run:  bin/uppm about -v
 
       - run:  bin/uppm sysinfo
+      - run:  bin/uppm sysinfo --shell
 
       - run:  bin/uppm integrate zsh
 
