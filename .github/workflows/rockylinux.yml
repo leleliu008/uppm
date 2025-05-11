@@ -42,7 +42,7 @@ jobs:
       - run:  ./ppkg update
       - run:  ./ppkg install uppm -I .
       - run:  ./ppkg tree    uppm
-      - run:  ./ppkg bundle    uppm .tar.xz
+      - run:  ./ppkg bundle  uppm .tar.xz
 
       - run: tar vxf uppm-*.tar.xz --strip-components=1
 
@@ -59,6 +59,8 @@ jobs:
 
       - run:  bin/uppm about
       - run:  bin/uppm about -v
+
+      - run:  bin/uppm sysinfo
 
       - run:  bin/uppm integrate zsh
 

@@ -450,7 +450,11 @@ int sysinfo_vers(char * buf, size_t bufSize) {
 #endif
 }
 
-#if defined (__linux__)
+#if defined (__ANDROID__)
+int sysinfo_libc() {
+    return 0;
+}
+#elif defined (__linux__)
 int determine_by_inspect_elf_files();
 int sysinfo_libc() {
     return determine_by_inspect_elf_files();
