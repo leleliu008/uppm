@@ -46,8 +46,8 @@ static int uppm_formula_repo_url_of_official_core(char buf[], const size_t bufSi
         return UPPM_ERROR;
     }
 
-    if (osVersMajor > 14) {
-        osVersMajor = 14;
+    if (osVersMajor > 15) {
+        osVersMajor = 15;
     }
 
     ret = snprintf(buf, bufSize, "https://github.com/leleliu008/uppm-package-repository-%s-%d.0-%s", osType, osVersMajor, osArch);
