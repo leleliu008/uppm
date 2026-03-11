@@ -342,7 +342,11 @@ static int uppm_formula_check(UPPMFormula * formula, const char * formulaFilePat
             } else if (strcmp(&srcFileName[srcFileNameLength - 4], ".zip") == 0) {
                 srcFileName[srcFileNameLength - 4] = '\0';
                 srcFileNameLength -= 4;
+            } else if (strcmp(&srcFileName[srcFileNameLength - 3], ".7z") == 0) {
+                srcFileName[srcFileNameLength - 3] = '\0';
+                srcFileNameLength -= 3;
             }
+
         } else if (srcFileNameLength > 7) {
                    if (strcmp(&srcFileName[srcFileNameLength - 7], ".tar.gz") == 0) {
                 srcFileName[srcFileNameLength - 7] = '\0';

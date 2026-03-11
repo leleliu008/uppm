@@ -210,6 +210,7 @@ int uppm_install(const char * packageName, bool verbose) {
     }
 
     if (strcmp(binFileNameExtension, ".zip") == 0 ||
+        strcmp(binFileNameExtension, ".7z")  == 0 ||
         strcmp(binFileNameExtension, ".tgz") == 0 ||
         strcmp(binFileNameExtension, ".txz") == 0 ||
         strcmp(binFileNameExtension, ".tlz") == 0 ||
