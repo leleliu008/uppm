@@ -16,27 +16,10 @@
 
 #define ERROR_NOT_ELF_FILE       120
 #define ERROR_BROKEN_ELF_FILE    130
-#define ERROR_NO_DYNAMIC_SECTION 140
-#define ERROR_NOT_DETERMINED     150
+#define ERROR_NOT_DETERMINED     200
 
 #define LIBC_GNU     1
 #define LIBC_MUSL    2
-
-__attribute__((always_inline)) static inline int determine(const char * p) {
-    if (p[0] == 'l' && p[1] == 'i' && p[2] == 'b' && p[3] == 'c') {
-        // libc.so.6
-        if (p[4] == '.' && p[5] == 's' && p[6] == 'o' && p[7] == '.' && (p[8] == '6' || p[8] == '5') && p[9] == '\0') {
-            return LIBC_GNU;
-        }
-
-        // libc.musl-x86_64.so.1
-        if (p[4] == '.' && p[5] == 'm' && p[6] == 'u' && p[7] == 's' && p[8] == 'l' && p[9] == '-') {
-            return LIBC_MUSL;
-        }
-    }
-
-    return ERROR_NOT_DETERMINED;
-}
 
 static int handle_elf32(const int fd, const char * const fp) {
     Elf32_Ehdr ehdr;
@@ -57,8 +40,6 @@ static int handle_elf32(const int fd, const char * const fp) {
 
     Elf32_Phdr phdr;
 
-    int hasPT_DYNAMIC = 0;
-
     for (unsigned int i = 1; i < ehdr.e_phnum; i++) {
         ret = pread(fd, &phdr, sizeof(Elf32_Phdr), ehdr.e_phoff + i * ehdr.e_phentsize);
 
@@ -73,123 +54,56 @@ static int handle_elf32(const int fd, const char * const fp) {
             return ERROR_NOT_FULLY_READ;
         }
 
-        if (phdr.p_type == PT_DYNAMIC) {
-            hasPT_DYNAMIC = 1;
-            break;
+        if (phdr.p_type != PT_INTERP) {
+            continue;
         }
-    }
 
-    if (hasPT_DYNAMIC == 0) {
-        fprintf(stderr, "There is no .dynamic section in file: %s\n", fp);
-        return ERROR_NO_DYNAMIC_SECTION;
-    }
+        char p[phdr.p_filesz];
 
-    ///////////////////////////////////////////////////////////
-
-    Elf32_Shdr shdr;
-
-    // .shstrtab section header offset in elf file, it usually is the last section header
-    off_t offset = ehdr.e_shoff + ehdr.e_shstrndx * ehdr.e_shentsize;
-
-    ret = pread(fd, &shdr, sizeof(Elf32_Shdr), offset);
-
-    if (ret == -1) {
-        perror(fp);
-        return ERROR_READ;
-    }
-
-    if (ret != sizeof(Elf32_Shdr)) {
-        perror(fp);
-        fprintf(stderr, "not fully read.\n");
-        return ERROR_NOT_FULLY_READ;
-    }
-
-    char shstrtab[shdr.sh_size];
-
-    ret = pread(fd, shstrtab, shdr.sh_size, shdr.sh_offset);
-
-    if (ret == -1) {
-        perror(fp);
-        return ERROR_READ;
-    }
-
-    if ((size_t)ret != shdr.sh_size) {
-        perror(fp);
-        fprintf(stderr, "not fully read.\n");
-        return ERROR_NOT_FULLY_READ;
-    }
-
-    ///////////////////////////////////////////////////////////
-
-    int hasdynstrSection = 0;
-
-    for (unsigned int i = 1; i < ehdr.e_shnum; i++) {
-        ret = pread(fd, &shdr, sizeof(Elf32_Shdr), ehdr.e_shoff + i * ehdr.e_shentsize);
+        ret = pread(fd, p, phdr.p_filesz, phdr.p_offset);
 
         if (ret == -1) {
             perror(fp);
             return ERROR_READ;
         }
 
-        if ((size_t)ret != sizeof(Elf32_Shdr)) {
+        if ((size_t)ret != phdr.p_filesz) {
             perror(fp);
             fprintf(stderr, "not fully read.\n");
             return ERROR_NOT_FULLY_READ;
         }
 
-        if (shdr.sh_type == SHT_STRTAB) {
-            if (strcmp(shstrtab + shdr.sh_name, ".dynstr") == 0) {
-                hasdynstrSection = 1;
-                break;
-            }
-        }
-    }
+        fprintf(stderr, "%s interpreter : %s\n", fp, p);
 
-    if (hasdynstrSection == 0) {
-        fprintf(stderr, "There is no .dynstr section in file: %s\n", fp);
-        return ERROR_NO_DYNAMIC_SECTION;
-    }
+        /*
+         * default dynamic loaders for glibc:
+         *
+         * x86_64     /lib64/ld-linux-x86-64.so.2
+         * aarch64    /lib/ld-linux-aarch64.so.1
+         * riscv64    /lib/ld-linux-riscv64-lp64d.so.1
+         * armhf      /lib/ld-linux-armhf.so.3
+         * ppc64le    /lib/powerpc64le-linux-gnu/ld64.so.2
+         * ppc64le    /lib64/ld64.so.2
+         * s390x      /lib/ld64.so.1
+         */
 
-    ///////////////////////////////////////////////////////////
+        /*
+         * default dynamic loaders for musl:
+         *
+         * armhf       /lib/ld-musl-armhf.so.1
+         * x86         /lib/ld-musl-i386.so.1
+         * s390x       /lib/ld-musl-s390x.so.1
+         * x86_64      /lib/ld-musl-x86_64.so.1
+         * aarch64     /lib/ld-musl-aarch64.so.1
+         * riscv64     /lib/ld-musl-riscv64.so.1
+         * ppc64le     /lib/ld-musl-powerpc64le.so.1
+         * loongarch64 /lib/ld-musl-loongarch64.so.1
+         */
 
-    Elf32_Dyn dyn;
-
-    for (int i = 0; ; i++) {
-        ret = pread(fd, &dyn, sizeof(Elf32_Dyn), phdr.p_offset + i * sizeof(Elf32_Dyn));
-
-        if (ret == -1) {
-            perror(fp);
-            return ERROR_READ;
-        }
-
-        if ((size_t)ret != sizeof(Elf32_Dyn)) {
-            perror(fp);
-            fprintf(stderr, "not fully read.\n");
-            return ERROR_NOT_FULLY_READ;
-        }
-
-        if (dyn.d_tag == DT_NULL) {
-            break;
-        }
-
-        if (dyn.d_tag == DT_NEEDED) {
-            long xoffset = shdr.sh_offset + dyn.d_un.d_val;
-
-            char buf[100];
-
-            ret = pread(fd, buf, 100, xoffset);
-
-            if (ret == -1) {
-                perror(fp);
-                return ERROR_READ;
-            }
-
-            //puts(buf);
-            ret = determine(buf);
-
-            if (ret != ERROR_NOT_DETERMINED) {
-                return ret;
-            }
+        if (strncmp(p, "/lib/ld-musl-", 13) == 0) {
+            return LIBC_MUSL;
+        } else {
+            return LIBC_GNU;
         }
     }
 
@@ -215,8 +129,6 @@ static int handle_elf64(const int fd, const char * const fp) {
 
     Elf64_Phdr phdr;
 
-    int hasPT_DYNAMIC = 0;
-
     for (unsigned int i = 1; i < ehdr.e_phnum; i++) {
         ret = pread(fd, &phdr, sizeof(Elf64_Phdr), ehdr.e_phoff + i * ehdr.e_phentsize);
 
@@ -231,123 +143,56 @@ static int handle_elf64(const int fd, const char * const fp) {
             return ERROR_NOT_FULLY_READ;
         }
 
-        if (phdr.p_type == PT_DYNAMIC) {
-            hasPT_DYNAMIC = 1;
-            break;
+        if (phdr.p_type != PT_INTERP) {
+            continue;
         }
-    }
 
-    if (hasPT_DYNAMIC == 0) {
-        fprintf(stderr, "There is no .dynamic section in file: %s\n", fp);
-        return ERROR_NO_DYNAMIC_SECTION;
-    }
+        char p[phdr.p_filesz];
 
-    ///////////////////////////////////////////////////////////
-
-    Elf64_Shdr shdr;
-
-    // .shstrtab section header offset in elf file, it usually is the last section header
-    off_t offset = ehdr.e_shoff + ehdr.e_shstrndx * ehdr.e_shentsize;
-
-    ret = pread(fd, &shdr, sizeof(Elf64_Shdr), offset);
-
-    if (ret == -1) {
-        perror(fp);
-        return ERROR_READ;
-    }
-
-    if (ret != sizeof(Elf64_Shdr)) {
-        perror(fp);
-        fprintf(stderr, "not fully read.\n");
-        return ERROR_NOT_FULLY_READ;
-    }
-
-    char shstrtab[shdr.sh_size];
-
-    ret = pread(fd, shstrtab, shdr.sh_size, shdr.sh_offset);
-
-    if (ret == -1) {
-        perror(fp);
-        return ERROR_READ;
-    }
-
-    if ((size_t)ret != shdr.sh_size) {
-        perror(fp);
-        fprintf(stderr, "not fully read.\n");
-        return ERROR_NOT_FULLY_READ;
-    }
-
-    ///////////////////////////////////////////////////////////
-
-    int hasdynstrSection = 0;
-
-    for (unsigned int i = 1; i < ehdr.e_shnum; i++) {
-        ret = pread(fd, &shdr, sizeof(Elf64_Shdr), ehdr.e_shoff + i * ehdr.e_shentsize);
+        ret = pread(fd, p, phdr.p_filesz, phdr.p_offset);
 
         if (ret == -1) {
             perror(fp);
             return ERROR_READ;
         }
 
-        if ((size_t)ret != sizeof(Elf64_Shdr)) {
+        if ((size_t)ret != phdr.p_filesz) {
             perror(fp);
             fprintf(stderr, "not fully read.\n");
             return ERROR_NOT_FULLY_READ;
         }
 
-        if (shdr.sh_type == SHT_STRTAB) {
-            if (strcmp(shstrtab + shdr.sh_name, ".dynstr") == 0) {
-                hasdynstrSection = 1;
-                break;
-            }
-        }
-    }
+        fprintf(stderr, "%s interpreter : %s\n", fp, p);
 
-    if (hasdynstrSection == 0) {
-        fprintf(stderr, "There is no .dynstr section in file: %s\n", fp);
-        return ERROR_NO_DYNAMIC_SECTION;
-    }
+        /*
+         * default dynamic loaders for glibc:
+         *
+         * x86_64     /lib64/ld-linux-x86-64.so.2
+         * aarch64    /lib/ld-linux-aarch64.so.1
+         * riscv64    /lib/ld-linux-riscv64-lp64d.so.1
+         * armhf      /lib/ld-linux-armhf.so.3
+         * ppc64le    /lib/powerpc64le-linux-gnu/ld64.so.2
+         * ppc64le    /lib64/ld64.so.2
+         * s390x      /lib/ld64.so.1
+         */
 
-    ///////////////////////////////////////////////////////////
+        /*
+         * default dynamic loaders for musl:
+         *
+         * armhf       /lib/ld-musl-armhf.so.1
+         * x86         /lib/ld-musl-i386.so.1
+         * s390x       /lib/ld-musl-s390x.so.1
+         * x86_64      /lib/ld-musl-x86_64.so.1
+         * aarch64     /lib/ld-musl-aarch64.so.1
+         * riscv64     /lib/ld-musl-riscv64.so.1
+         * ppc64le     /lib/ld-musl-powerpc64le.so.1
+         * loongarch64 /lib/ld-musl-loongarch64.so.1
+         */
 
-    Elf64_Dyn dyn;
-
-    for (int i = 0; ; i++) {
-        ret = pread(fd, &dyn, sizeof(Elf64_Dyn), phdr.p_offset + i * sizeof(Elf64_Dyn));
-
-        if (ret == -1) {
-            perror(fp);
-            return ERROR_READ;
-        }
-
-        if ((size_t)ret != sizeof(Elf64_Dyn)) {
-            perror(fp);
-            fprintf(stderr, "not fully read.\n");
-            return ERROR_NOT_FULLY_READ;
-        }
-
-        if (dyn.d_tag == DT_NULL) {
-            break;
-        }
-
-        if (dyn.d_tag == DT_NEEDED) {
-            long xoffset = shdr.sh_offset + dyn.d_un.d_val;
-
-            char buf[100];
-
-            ret = pread(fd, buf, 100, xoffset);
-
-            if (ret == -1) {
-                perror(fp);
-                return ERROR_READ;
-            }
-
-            //puts(buf);
-            ret = determine(buf);
-
-            if (ret != ERROR_NOT_DETERMINED) {
-                return ret;
-            }
+        if (strncmp(p, "/lib/ld-musl-", 13) == 0) {
+            return LIBC_MUSL;
+        } else {
+            return LIBC_GNU;
         }
     }
 
@@ -358,12 +203,12 @@ static int determine_by_inspect_elf_file(const char * fp) {
     struct stat st;
 
     if (stat(fp, &st) == -1) {
-        perror(fp);
+        //perror(fp);
         return ERROR_STAT;
     }
 
     if (st.st_size < 52) {
-        fprintf(stderr, "NOT an ELF file: %s\n", fp);
+        //fprintf(stderr, "NOT an ELF file: %s\n", fp);
         return ERROR_NOT_ELF_FILE;
     }
 
@@ -397,7 +242,7 @@ static int determine_by_inspect_elf_file(const char * fp) {
 
     // https://www.sco.com/developers/gabi/latest/ch4.eheader.html
     if ((a[0] != 0x7F) || (a[1] != 0x45) || (a[2] != 0x4C) || (a[3] != 0x46)) {
-        fprintf(stderr, "NOT an ELF file: %s\n", fp);
+        //fprintf(stderr, "NOT an ELF file: %s\n", fp);
         close(fd);
         return ERROR_NOT_ELF_FILE;
     }
@@ -417,10 +262,10 @@ static int determine_by_inspect_elf_file(const char * fp) {
     int ret;
 
     switch (a[4]) {
-        case 1: ret = handle_elf32(fd, fp); break;
-        case 2: ret = handle_elf64(fd, fp); break;
+        case ELFCLASS32: ret = handle_elf32(fd, fp); break;
+        case ELFCLASS64: ret = handle_elf64(fd, fp); break;
         default: 
-            fprintf(stderr, "Invalid ELF file: %s\n", fp);
+            //fprintf(stderr, "Invalid ELF file: %s\n", fp);
             ret = ERROR_BROKEN_ELF_FILE;
     }
 
@@ -430,7 +275,10 @@ static int determine_by_inspect_elf_file(const char * fp) {
 }
 
 int determine_by_inspect_elf_files() {
-    const char* list[2] = {"/sbin/init", "/bin/sh"};
+    // A Docker container usually does not have /sbin/init
+    // musl-based voidlinux has a fully statically linked /sbin/init
+    // https://github.com/oasislinux/oasis A GNU/Linux distribution where all executables are fully statically linked
+    const char* list[2] = {"/bin/sh", "/sbin/init"};
 
     int ret;
 
