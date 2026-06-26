@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: [24.04, 22.04]
+        version: ['26.04', 24.04, 22.04]
 
     container: ubuntu:${{ matrix.version }}
 
@@ -26,9 +26,9 @@ jobs:
       - run:  apt -y update
       - run:  apt -y install cmake ninja-build pkg-config g++ linux-headers-generic  curl zip unzip tar git
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           repository: microsoft/vcpkg
           path: vcpkg
