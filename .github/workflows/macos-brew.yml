@@ -56,6 +56,7 @@ jobs:
           install -d "$MY_FORMULA_DIR/"
           mv uppm.rb "$MY_FORMULA_DIR/"
 
+      - run:  brew trust leleliu008/tmp
       - run:  brew info    uppm
       - run:  brew install uppm -v
 
@@ -183,6 +184,7 @@ jobs:
           install -d "$MY_FORMULA_DIR/"
           mv uppm.rb "$MY_FORMULA_DIR/"
 
+      - run:  brew trust leleliu008/tmp
       - run:  brew info    uppm
       - run:  brew install uppm -v
 
