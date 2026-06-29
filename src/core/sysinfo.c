@@ -483,7 +483,7 @@ int sysinfo_libc() {
     return 0;
 }
 #elif defined (__linux__)
-#include "determine-linux-system-libc.c"
+#include "linux/determine-linux-system-libc.c"
 int sysinfo_libc() {
     return determine_by_inspect_elf_files();
 }
