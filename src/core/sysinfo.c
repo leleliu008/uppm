@@ -36,6 +36,9 @@ int sysinfo_kind(char buf[], size_t bufSize) {
 #elif defined (__DragonFly__)
     copy2buf(buf, bufSize, "dragonflybsd");
     return 0;
+#elif defined (__MidnightBSD__)
+    copy2buf(buf, bufSize, "midnightbsd");
+    return 0;
 #elif defined (__FreeBSD__)
     copy2buf(buf, bufSize, "freebsd");
     return 0;
@@ -50,6 +53,9 @@ int sysinfo_kind(char buf[], size_t bufSize) {
     return 0;
 #elif defined (__linux__)
     copy2buf(buf, bufSize, "linux");
+    return 0;
+#elif defined (__HAIKU__)
+    copy2buf(buf, bufSize, "haiku");
     return 0;
 #else
     struct utsname uts;
@@ -80,6 +86,9 @@ int sysinfo_type(char buf[], size_t bufSize) {
 #elif defined (__DragonFly__)
     copy2buf(buf, bufSize, "dragonflybsd");
     return 0;
+#elif defined (__MidnightBSD__)
+    copy2buf(buf, bufSize, "midnightbsd");
+    return 0;
 #elif defined (__FreeBSD__)
     copy2buf(buf, bufSize, "freebsd");
     return 0;
@@ -94,6 +103,9 @@ int sysinfo_type(char buf[], size_t bufSize) {
     return 0;
 #elif defined (__linux__)
     copy2buf(buf, bufSize, "linux");
+    return 0;
+#elif defined (__HAIKU__)
+    copy2buf(buf, bufSize, "haiku");
     return 0;
 #else
     struct utsname uts;
@@ -136,6 +148,9 @@ int sysinfo_code(char * buf, size_t bufSize) {
 #elif defined (__DragonFly__)
     copy2buf(buf, bufSize, "dragonflybsd");
     return 0;
+#elif defined (__MidnightBSD__)
+    copy2buf(buf, bufSize, "midnightbsd");
+    return 0;
 #elif defined (__FreeBSD__)
     copy2buf(buf, bufSize, "freebsd");
     return 0;
@@ -148,6 +163,9 @@ int sysinfo_code(char * buf, size_t bufSize) {
 #elif defined (__ANDROID__)
     copy2buf(buf, bufSize, "android");
     return 0;
+#elif defined (__HAIKU__)
+    copy2buf(buf, bufSize, "haiku");
+    return 0;
 #else
     const char * const filepath = "/etc/os-release";
     struct stat sb;
@@ -156,6 +174,7 @@ int sysinfo_code(char * buf, size_t bufSize) {
         FILE * file = fopen(filepath, "r");
 
         if (file == NULL) {
+            perror(filepath);
             return -1;
         }
 
@@ -213,6 +232,9 @@ int sysinfo_name(char * buf, size_t bufSize) {
 #elif defined (__DragonFly__)
     copy2buf(buf, bufSize, "DragonFlyBSD");
     return 0;
+#elif defined (__MidnightBSD__)
+    copy2buf(buf, bufSize, "MidnightBSD");
+    return 0;
 #elif defined (__FreeBSD__)
     copy2buf(buf, bufSize, "FreeBSD");
     return 0;
@@ -224,6 +246,9 @@ int sysinfo_name(char * buf, size_t bufSize) {
     return 0;
 #elif defined (__ANDROID__)
     copy2buf(buf, bufSize, "Android");
+    return 0;
+#elif defined (__HAIKU__)
+    copy2buf(buf, bufSize, "Haiku");
     return 0;
 #else
     const char * const filepath = "/etc/os-release";
@@ -281,7 +306,7 @@ int sysinfo_name(char * buf, size_t bufSize) {
 }
 
 int sysinfo_vers(char * buf, size_t bufSize) {
-#if defined (__NetBSD__) || defined (__OpenBSD__)
+#if defined (__NetBSD__) || defined (__OpenBSD__) || defined (__HAIKU__)
     struct utsname uts;
 
     if (uname(&uts) < 0) {
@@ -404,6 +429,7 @@ int sysinfo_vers(char * buf, size_t bufSize) {
         FILE * file = fopen(filepath, "r");
 
         if (file == NULL) {
+            perror(filepath);
             return -1;
         }
 
@@ -457,7 +483,7 @@ int sysinfo_libc() {
     return 0;
 }
 #elif defined (__linux__)
-int determine_by_inspect_elf_files();
+#include "determine-linux-system-libc.c"
 int sysinfo_libc() {
     return determine_by_inspect_elf_files();
 }
@@ -650,9 +676,11 @@ void sysinfo_dump(SysInfo * sysinfo) {
 
     switch(sysinfo->libc) {
         case LIBC_GNU:  printf("sysinfo.libc: glibc\n"); break;
-        case LIBC_MUSL: printf("sysinfo.libc: musl\n");  break;
+        case LIBC_MUSL:  printf("sysinfo.libc: musl\n");  break;
+        default: printf("sysinfo.libc: \n");
     }
 }
+
 
 void sysinfo_dump_as_shell_script(SysInfo * sysinfo) {
     if (sysinfo == NULL) {
@@ -672,5 +700,6 @@ void sysinfo_dump_as_shell_script(SysInfo * sysinfo) {
     switch(sysinfo->libc) {
         case LIBC_GNU:  printf("NATIVE_PLATFORM_LIBC='glibc'\n"); break;
         case LIBC_MUSL: printf("NATIVE_PLATFORM_LIBC='musl'\n");  break;
+        default:        printf("NATIVE_PLATFORM_LIBC=\n");
     }
 }
