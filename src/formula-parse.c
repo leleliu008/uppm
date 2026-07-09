@@ -381,26 +381,11 @@ static int uppm_formula_check(UPPMFormula * formula, const char * formulaFilePat
 
         //printf("----------------srcFileName = %s\n", srcFileName);
 
-        char * splitedStr = strtok(srcFileName, "-");
+        char * splitStr = strtok(srcFileName, "-");
 
-        while (splitedStr != NULL) {
-            if (regex_matched(splitedStr, "^[0-9]+(\\.[0-9]+)+[a-z]?$") == 0) {
-                formula->version = strdup(splitedStr);
-
-                if (formula->version == NULL) {
-                    return UPPM_ERROR_MEMORY_ALLOCATE;
-                } else {
-                    return UPPM_OK;
-                }
-            } else {
-                if (errno != 0) {
-                    perror(NULL);
-                    return UPPM_ERROR;
-                }
-            }
-
-            if (regex_matched(splitedStr, "^[vV][0-9]+(\\.[0-9]+)+[a-z]?$") == 0) {
-                formula->version = strdup(&splitedStr[1]);
+        while (splitStr != NULL) {
+            if (regex_matched(splitStr, "^[0-9]+(\\.[0-9]+)+[a-z]?$") == 0) {
+                formula->version = strdup(splitStr);
 
                 if (formula->version == NULL) {
                     return UPPM_ERROR_MEMORY_ALLOCATE;
@@ -414,8 +399,8 @@ static int uppm_formula_check(UPPMFormula * formula, const char * formulaFilePat
                 }
             }
 
-            if (regex_matched(splitedStr, "^[0-9]{3,8}$") == 0) {
-                formula->version = strdup(splitedStr);
+            if (regex_matched(splitStr, "^[vV][0-9]+(\\.[0-9]+)+[a-z]?$") == 0) {
+                formula->version = strdup(&splitStr[1]);
 
                 if (formula->version == NULL) {
                     return UPPM_ERROR_MEMORY_ALLOCATE;
@@ -429,8 +414,8 @@ static int uppm_formula_check(UPPMFormula * formula, const char * formulaFilePat
                 }
             }
 
-            if (regex_matched(splitedStr, "^[vrR][0-9]{2,8}[a-z]?$") == 0) {
-                formula->version = strdup(&splitedStr[1]);
+            if (regex_matched(splitStr, "^[0-9]{3,8}$") == 0) {
+                formula->version = strdup(splitStr);
 
                 if (formula->version == NULL) {
                     return UPPM_ERROR_MEMORY_ALLOCATE;
@@ -444,7 +429,22 @@ static int uppm_formula_check(UPPMFormula * formula, const char * formulaFilePat
                 }
             }
 
-            splitedStr = strtok(NULL, "-");
+            if (regex_matched(splitStr, "^[vrR][0-9]{2,8}[a-z]?$") == 0) {
+                formula->version = strdup(&splitStr[1]);
+
+                if (formula->version == NULL) {
+                    return UPPM_ERROR_MEMORY_ALLOCATE;
+                } else {
+                    return UPPM_OK;
+                }
+            } else {
+                if (errno != 0) {
+                    perror(NULL);
+                    return UPPM_ERROR;
+                }
+            }
+
+            splitStr = strtok(NULL, "-");
         }
 
         if (formula->version == NULL) {

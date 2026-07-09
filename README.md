@@ -2,16 +2,14 @@
 
 Universal Prebuild Package Manager for Unix-like systems.
 
-<br>
-
 **Note**: This project is being actively developed. It's in beta stage and may not be stable. Some features are subject to change without notice.
 
 ## dependences
 
 |dependency|required?|purpose|
 |----|---------|-------|
-|[cmake](https://cmake.org/)|required |for generating `build.ninja`|
-|[ninja](https://ninja-build.org/)|required |for doing jobs that read from `build.ninja`|
+|[cmake](https://cmake.org/)|required|for generating `build.ninja`|
+|[ninja](https://ninja-build.org/)|required|for doing jobs that read from `build.ninja`|
 |[pkg-config>=0.18](https://www.freedesktop.org/wiki/Software/pkg-config/)|required|for finding libraries.|
 ||||
 |[jansson](https://github.com/akheron/jansson)|required|for parsing and creating JSON.|
@@ -21,7 +19,7 @@ Universal Prebuild Package Manager for Unix-like systems.
 |[openssl](https://www.openssl.org/)|required|for https requesting support and SHA-256 sum checking support.|
 |[libarchive](https://www.libarchive.org/)|required|for uncompressing .zip and .tar.* files.|
 |[zlib](https://www.zlib.net/)|required|for compressing and uncompressing.|
-|[pcre2](https://www.pcre.org/)||for Regular Expressions support.<br>only required on OpenBSD.|
+|[pcre2](https://www.pcre.org/)||for Regular Expressions support. only required on OpenBSD.|
 
 ## build and install uppm via [ppkg](https://github.com/leleliu008/ppkg)
 
@@ -223,37 +221,37 @@ all relevant directories and files are located in `~/.uppm` directory.
 **Caveats**:
 
 - Please do NOT place your own files in `~/.uppm` directory, as `uppm` will change files in `~/.uppm` directory without notice.
-- Please do NOT run `uppm` command in parallell to avoid destroying the data.
+- Please do NOT run `uppm` command in parallel to avoid destroying the data.
 
 ## uppm command usage
 
-* **show help of this command**
+- **show help of this command**
 
     ```bash
     uppm -h
     uppm --help
     ```
 
-* **show version of this command**
+- **show version of this command**
 
     ```bash
     uppm -V
     uppm --version
     ```
 
-* **show basic information about this software**
+- **show basic information about this software**
 
     ```bash
     uppm about
     ```
 
-* **show basic information about your current running operation system**
+- **show basic information about your current running operation system**
 
     ```bash
     uppm sysinfo
     ```
 
-* **integrate `zsh-completion` script**
+- **integrate `zsh-completion` script**
 
     ```bash
     uppm integrate zsh
@@ -265,20 +263,20 @@ all relevant directories and files are located in `~/.uppm` directory.
 
     **Note**: to apply this feature, you may need to run the command `autoload -U compinit && compinit` in your terminal (your current running shell must be zsh).
 
-* **update all available formula repositories**
+- **update all available formula repositories**
 
     ```bash
     uppm update
     ```
 
-* **search all available packages whose name matches the given regular expression pattern**
+- **search all available packages whose name matches the given regular expression pattern**
 
     ```bash
     uppm search curl
     uppm search lib
     ```
 
-* **show information of the given package**
+- **show information of the given package**
 
     ```bash
     uppm info curl
@@ -321,7 +319,7 @@ all relevant directories and files are located in `~/.uppm` directory.
     uppm info @all --yaml | yq .
     ```
 
-* **show packages that are depended by the given package**
+- **show packages that are depended by the given package**
 
     ```bash
     uppm depends curl
@@ -347,7 +345,7 @@ all relevant directories and files are located in `~/.uppm` directory.
     uppm depends curl -o xx.svg
     ```
 
-* **download resources of the given package to the local cache**
+- **download resources of the given package to the local cache**
 
     ```bash
     uppm fetch curl
@@ -357,28 +355,28 @@ all relevant directories and files are located in `~/.uppm` directory.
     uppm fetch @all -v
     ```
 
-* **install packages**
+- **install packages**
 
     ```bash
     uppm install curl
     uppm install curl bzip2 -v
     ```
 
-* **reinstall packages**
+- **reinstall packages**
 
     ```bash
     uppm reinstall curl
     uppm reinstall curl bzip2 -v
     ```
 
-* **uninstall packages**
+- **uninstall packages**
 
     ```bash
     uppm uninstall curl
     uppm uninstall curl bzip2 -v
     ```
 
-* **upgrade the outdated packages**
+- **upgrade the outdated packages**
 
     ```bash
     uppm upgrade
@@ -386,34 +384,34 @@ all relevant directories and files are located in `~/.uppm` directory.
     uppm upgrade curl bzip2 -v
     ```
 
-* **upgrade this software**
+- **upgrade this software**
 
     ```bash
     uppm upgrade-self
     uppm upgrade-self -v
     ```
 
-* **view the formula of the given package**
+- **view the formula of the given package**
 
     ```bash
     uppm formula-view curl
     uppm formula-view curl --no-color
     ```
 
-* **edit the formula of the given package**
+- **edit the formula of the given package**
 
     ```bash
     uppm formula-edit curl
     uppm formula-edit curl --editor=/usr/local/bin/vim
     ```
 
-* **list all avaliable formula repositories**
+- **list all available formula repositories**
 
     ```bash
     uppm formula-repo-list
     ```
 
-* **create a new empty formula repository**
+- **create a new empty formula repository**
 
     ```bash
     uppm formula-repo-init my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo
@@ -423,7 +421,7 @@ all relevant directories and files are located in `~/.uppm` directory.
     uppm formula-repo-init my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --enable
     ```
 
-* **create a new empty formula repository then sync with server**
+- **create a new empty formula repository then sync with server**
 
     ```bash
     uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo
@@ -433,25 +431,25 @@ all relevant directories and files are located in `~/.uppm` directory.
     uppm formula-repo-add my_repo https://github.com/leleliu008/uppm-formula-repository-my_repo --enable
     ```
 
-* **delete the given formula repository**
+- **delete the given formula repository**
 
     ```bash
     uppm formula-repo-del my_repo
     ```
 
-* **sync the given formula repository with server**
+- **sync the given formula repository with server**
 
     ```bash
     uppm formula-repo-sync my_repo
     ```
 
-* **show information of the given formula repository**
+- **show information of the given formula repository**
 
     ```bash
     uppm formula-repo-info my_repo
     ```
 
-* **change the config of the given formula repository**
+- **change the config of the given formula repository**
 
     ```bash
     uppm formula-repo-conf my_repo --url=https://github.com/leleliu008/uppm-formula-repository-my_repo
@@ -462,56 +460,56 @@ all relevant directories and files are located in `~/.uppm` directory.
     uppm formula-repo-conf my_repo --disable
     ```
 
-* **list all available packages**
+- **list all available packages**
 
     ```bash
     uppm ls-available
     ```
 
-* **list all installed packages**
+- **list all installed packages**
 
     ```bash
     uppm ls-installed
     ```
 
-* **list all outdated packages**
+- **list all outdated packages**
 
     ```bash
     uppm ls-outdated
     ```
 
-* **check if the given package is available ?**
+- **check if the given package is available ?**
 
     ```bash
     uppm is-available curl
     ```
 
-* **check if the given package is installed ?**
+- **check if the given package is installed ?**
 
     ```bash
     uppm is-installed curl
     ```
 
-* **check if the given package is outdated ?**
+- **check if the given package is outdated ?**
 
     ```bash
     uppm is-outdated  curl
     ```
 
-* **list the installed files of the given installed package in a tree-like format**
+- **list the installed files of the given installed package in a tree-like format**
 
     ```bash
     uppm tree curl
     uppm tree curl -L 3
     ```
 
-* **generate url-transform sample**
+- **generate url-transform sample**
 
     ```bash
     uppm gen-url-transform-sample
     ```
 
-* **extra common used utilities**
+- **extra common used utilities**
 
     ```bash
     uppm util zlib-deflate -L 6 < input/file/path
@@ -536,7 +534,7 @@ all relevant directories and files are located in `~/.uppm` directory.
     uppm util which tree -a
     ```
 
-* **delete the unused cached files**
+- **delete the unused cached files**
 
     ```bash
     uppm cleanup
@@ -544,15 +542,15 @@ all relevant directories and files are located in `~/.uppm` directory.
 
 ## environment variables
 
-* **HOME**
+- **HOME**
 
     This environment variable already have been set on most systems, if not set or set a empty string, you will receive an error message.
 
-* **PATH**
+- **PATH**
 
     This environment variable already have been set on most systems, if not set or set a empty string, you will receive an error message.
 
-* **SSL_CERT_FILE**
+- **SSL_CERT_FILE**
 
     ```bash
     curl -LO https://curl.se/ca/cacert.pem
@@ -561,7 +559,7 @@ all relevant directories and files are located in `~/.uppm` directory.
 
     In general, you don't need to set this environment variable, but, if you encounter the reporting `the SSL certificate is invalid`, trying to run above commands in your terminal will do the trick.
 
-* **UPPM_HOME**
+- **UPPM_HOME**
 
     If this environment variable is not set, `$HOME/.uppm` will be used as the default value.
 
@@ -569,7 +567,7 @@ all relevant directories and files are located in `~/.uppm` directory.
     export UPPM_HOME=$HOME/uppm-home
     ```
 
-* **UPPM_URL_TRANSFORM**
+- **UPPM_URL_TRANSFORM**
 
     ```bash
     export UPPM_URL_TRANSFORM=/path/of/url-transform
@@ -628,17 +626,17 @@ If a uppm formula repository is `disabled`, which means uppm would not search fo
 
 uppm official formula repository's url:
 
-* <https://github.com/leleliu008/uppm-package-repository-android-aarch64>
-* <https://github.com/leleliu008/uppm-package-repository-linux-x86_64>
-* <https://github.com/leleliu008/uppm-package-repository-linux-aarch64>
-* <https://github.com/leleliu008/uppm-package-repository-linux-riscv64>
-* <https://github.com/leleliu008/uppm-package-repository-linux-ppc64le>
-* <https://github.com/leleliu008/uppm-package-repository-linux-s390x>
-* <https://github.com/leleliu008/uppm-package-repository-macos-x86_64>
-* <https://github.com/leleliu008/uppm-package-repository-macos-arm64>
-* <https://github.com/leleliu008/uppm-package-repository-freebsd-amd64>
-* <https://github.com/leleliu008/uppm-package-repository-openbsd-amd64>
-* <https://github.com/leleliu008/uppm-package-repository-netbsd-amd64>
+- <https://github.com/leleliu008/uppm-package-repository-android-aarch64>
+- <https://github.com/leleliu008/uppm-package-repository-linux-x86_64>
+- <https://github.com/leleliu008/uppm-package-repository-linux-aarch64>
+- <https://github.com/leleliu008/uppm-package-repository-linux-riscv64>
+- <https://github.com/leleliu008/uppm-package-repository-linux-ppc64le>
+- <https://github.com/leleliu008/uppm-package-repository-linux-s390x>
+- <https://github.com/leleliu008/uppm-package-repository-macos-x86_64>
+- <https://github.com/leleliu008/uppm-package-repository-macos-arm64>
+- <https://github.com/leleliu008/uppm-package-repository-freebsd-amd64>
+- <https://github.com/leleliu008/uppm-package-repository-openbsd-amd64>
+- <https://github.com/leleliu008/uppm-package-repository-netbsd-amd64>
 
 uppm official formula repository would be automatically fetched to local cache as name `official-core` when you run `uppm update` command.
 

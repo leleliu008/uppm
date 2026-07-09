@@ -115,21 +115,21 @@ static int uppm_depends_make_xxx(const char * dotScriptStr, size_t len, const ch
     return UPPM_ERROR;
 }
 
-static int string_append(char ** outP, size_t * outSize, size_t * outCapcity, const char * buf, size_t bufLength) {
-    size_t  oldCapcity = (*outCapcity);
-    size_t needCapcity = oldCapcity + bufLength + 1U;
+static int string_append(char ** outP, size_t * outSize, size_t * outCapacity, const char * buf, size_t bufLength) {
+    size_t  oldCapacity = (*outCapacity);
+    size_t needCapacity = oldCapacity + bufLength + 1U;
 
-    if (needCapcity > oldCapcity) {
-        size_t newCapcity = needCapcity + 256U;
+    if (needCapacity > oldCapacity) {
+        size_t newCapacity = needCapacity + 256U;
 
-        char * p = (char*)realloc(*outP, newCapcity * sizeof(char));
+        char * p = (char*)realloc(*outP, newCapacity * sizeof(char));
 
         if (p == NULL) {
             free(*outP);
             return UPPM_ERROR_MEMORY_ALLOCATE;
         } else {
             (*outP) = p;
-            (*outCapcity) = newCapcity;
+            (*outCapacity) = newCapacity;
             memset(&p[*outSize], 0, 256U + bufLength + 1U);
         }
     }
@@ -149,7 +149,7 @@ typedef struct {
 typedef struct {
     char * nodeList;
     size_t nodeListSize;
-    size_t nodeListCapcity;
+    size_t nodeListCapacity;
 } DirectedPath;
 
 int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, const char * outputFilePath) {
@@ -159,23 +159,23 @@ int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, con
 
     char * p = NULL;
     size_t pSize = 0;
-    size_t pCapcity = 0;
+    size_t pCapacity = 0;
 
     ////////////////////////////////////////////////////////////////
 
-    size_t          directedPathArrayListCapcity = 0;
+    size_t          directedPathArrayListCapacity = 0;
     size_t          directedPathArrayListSize    = 0;
     DirectedPath ** directedPathArrayList        = NULL;
 
     ////////////////////////////////////////////////////////////////
 
-    size_t         packageSetCapcity = 0;
+    size_t         packageSetCapacity = 0;
     size_t         packageSetSize    = 0;
     UPPMPackage ** packageSet        = NULL;
 
     ////////////////////////////////////////////////////////////////
 
-    size_t   packageNameStackCapcity = 1;
+    size_t   packageNameStackCapacity = 1;
     size_t   packageNameStackSize    = 0;
     char * * packageNameStack = (char**)calloc(1, sizeof(char*));
 
@@ -218,8 +218,8 @@ int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, con
                 goto finalize;
             }
 
-            if (packageSetSize == packageSetCapcity) {
-                UPPMPackage ** p = (UPPMPackage**)realloc(packageSet, (packageSetCapcity + 10U) * sizeof(UPPMPackage*));
+            if (packageSetSize == packageSetCapacity) {
+                UPPMPackage ** p = (UPPMPackage**)realloc(packageSet, (packageSetCapacity + 10U) * sizeof(UPPMPackage*));
 
                 if (p == NULL) {
                     free(packageName);
@@ -228,10 +228,10 @@ int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, con
                     goto finalize;
                 }
 
-                memset(p + packageSetCapcity, 0, 10);
+                memset(p + packageSetCapacity, 0, 10);
 
                 packageSet = p;
-                packageSetCapcity += 10;
+                packageSetCapacity += 10;
             }
 
             UPPMPackage * package = (UPPMPackage*)malloc(sizeof(UPPMPackage));
@@ -269,7 +269,7 @@ int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, con
         char     buf[bufLength];
         snprintf(buf, bufLength, "    \"%s\" -> {", packageName);
 
-        ret = string_append(&p, &pSize, &pCapcity, buf, bufLength - 1);
+        ret = string_append(&p, &pSize, &pCapacity, buf, bufLength - 1);
 
         if (ret != UPPM_OK) {
             goto finalize;
@@ -298,7 +298,7 @@ int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, con
             char    buf[bufLength];
             snprintf(buf, bufLength, " \"%s\"", depPackageName);
 
-            ret = string_append(&p, &pSize, &pCapcity, buf, bufLength - 1U);
+            ret = string_append(&p, &pSize, &pCapacity, buf, bufLength - 1U);
 
             if (ret != UPPM_OK) {
                 goto finalize;
@@ -308,18 +308,18 @@ int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, con
 
             ////////////////////////////////////////////////////////////////
 
-            if (packageNameStackSize == packageNameStackCapcity) {
-                char ** p = (char**)realloc(packageNameStack, (packageNameStackCapcity + 10U) * sizeof(char*));
+            if (packageNameStackSize == packageNameStackCapacity) {
+                char ** p = (char**)realloc(packageNameStack, (packageNameStackCapacity + 10U) * sizeof(char*));
 
                 if (p == NULL) {
                     ret = UPPM_ERROR_MEMORY_ALLOCATE;
                     goto finalize;
                 }
 
-                memset(p + packageNameStackCapcity, 0, 10);
+                memset(p + packageNameStackCapacity, 0, 10);
 
                 packageNameStack = p;
-                packageNameStackCapcity += 10;
+                packageNameStackCapacity += 10;
             }
 
             char * p = strdup(depPackageName);
@@ -335,7 +335,7 @@ int uppm_depends(const char * packageName, UPPMDependsOutputType outputType, con
             depPackageName = strtok (NULL, " ");
         }
 
-        ret = string_append(&p, &pSize, &pCapcity, " }\n", 3);
+        ret = string_append(&p, &pSize, &pCapacity, " }\n", 3);
     }
 
 finalize:

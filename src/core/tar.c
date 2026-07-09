@@ -220,7 +220,7 @@ finalize:
 typedef struct {
     char ** array;
     size_t  size;
-    size_t  capcity;
+    size_t  capacity;
 } StringArrayList;
 
 int list_files(const char * dirPath, bool verbose, StringArrayList * stringArrayList) {
@@ -273,9 +273,9 @@ int list_files(const char * dirPath, bool verbose, StringArrayList * stringArray
                     return ret;
                 }
             } else {
-                if (stringArrayList->size == stringArrayList->capcity) {
-                    size_t  newCapcity = stringArrayList->capcity + 10U;
-                    char ** p = (char**)realloc(stringArrayList->array, newCapcity * sizeof(char*));
+                if (stringArrayList->size == stringArrayList->capacity) {
+                    size_t  newCapacity = stringArrayList->capacity + 10U;
+                    char ** p = (char**)realloc(stringArrayList->array, newCapacity * sizeof(char*));
 
                     if (p == NULL) {
                         if (stringArrayList->array != NULL) {
@@ -296,7 +296,7 @@ int list_files(const char * dirPath, bool verbose, StringArrayList * stringArray
                     }
 
                     stringArrayList->array   = p;
-                    stringArrayList->capcity = newCapcity;
+                    stringArrayList->capacity = newCapacity;
                 }
 
                 char * p2 = strdup(filePath);

@@ -6,7 +6,7 @@
 
 #include "uppm.h"
 
-int uppm_list_the_available_packages(UPPMPackageNameCallbak packageNameCallbak, const void * payload) {
+int uppm_list_the_available_packages(UPPMPackageNameCallback packageNameCallback, const void * payload) {
     UPPMFormulaRepoList * formulaRepoList = NULL;
 
     int ret = uppm_formula_repo_list(&formulaRepoList);
@@ -74,7 +74,7 @@ int uppm_list_the_available_packages(UPPMPackageNameCallbak packageNameCallbak, 
                 if (strcmp(fileNameSuffix, ".yml") == 0) {
                     fileName[fileNameLength - 4] = '\0';
 
-                    ret = packageNameCallbak(fileName, j, payload);
+                    ret = packageNameCallback(fileName, j, payload);
 
                     j++;
 

@@ -40,7 +40,7 @@ int uppm_formula_repo_list(UPPMFormulaRepoList * * out) {
         return UPPM_ERROR;
     }
 
-    size_t capcity = 5;
+    size_t capacity = 5;
 
     UPPMFormulaRepoList * formulaRepoList = NULL;
 
@@ -102,7 +102,7 @@ int uppm_formula_repo_list(UPPMFormulaRepoList * * out) {
                 goto finalize;
             }
 
-            formulaRepoList->repos = (UPPMFormulaRepo**)calloc(capcity, sizeof(UPPMFormulaRepo*));
+            formulaRepoList->repos = (UPPMFormulaRepo**)calloc(capacity, sizeof(UPPMFormulaRepo*));
 
             if (formulaRepoList->repos == NULL) {
                 uppm_formula_repo_free(formulaRepo);
@@ -112,9 +112,9 @@ int uppm_formula_repo_list(UPPMFormulaRepoList * * out) {
             }
         }
 
-        if (capcity == formulaRepoList->size) {
-            capcity += 5;
-            UPPMFormulaRepo ** formulaRepoArray = (UPPMFormulaRepo**)realloc(formulaRepoList->repos, capcity * sizeof(UPPMFormulaRepo*));
+        if (capacity == formulaRepoList->size) {
+            capacity += 5;
+            UPPMFormulaRepo ** formulaRepoArray = (UPPMFormulaRepo**)realloc(formulaRepoList->repos, capacity * sizeof(UPPMFormulaRepo*));
 
             if (formulaRepoArray == NULL) {
                 uppm_formula_repo_free(formulaRepo);
