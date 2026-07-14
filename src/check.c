@@ -5,8 +5,6 @@
 #include <stdbool.h>
 #include <sys/stat.h>
 
-#include "core/regex/regex.h"
-
 #include "uppm.h"
 
 int uppm_check_if_the_given_argument_matches_package_name_pattern(const char * arg) {
@@ -18,15 +16,32 @@ int uppm_check_if_the_given_argument_matches_package_name_pattern(const char * a
         return UPPM_ERROR_ARG_IS_EMPTY;
     }
 
-    if (regex_matched(arg, UPPM_PACKAGE_NAME_PATTERN) == 0) {
-        return UPPM_OK;
-    } else {
-        if (errno == 0) {
-            return UPPM_ERROR_ARG_IS_INVALID;
-        } else {
-            perror(NULL);
-            return UPPM_ERROR;
+    for (int i = 0; ; i++) {
+        if (i == 50) {
+            return UPPM_ERROR_PACKAGE_NAME_IS_INVALID;
         }
+
+        if (arg[i] == '\0') {
+            return UPPM_OK;
+        }
+
+        if (arg[i] == '+' || arg[i] == '-' || arg[i] == '_' || arg[i] == '.' || arg[i] == '@') {
+            continue;
+        }
+
+        if (arg[i] >= '0' && arg[i] <= '9') {
+            continue;
+        }
+
+        if (arg[i] >= 'A' && arg[i] <= 'Z') {
+            continue;
+        }
+
+        if (arg[i] >= 'a' && arg[i] <= 'z') {
+            continue;
+        }
+
+        return UPPM_ERROR_PACKAGE_NAME_IS_INVALID;
     }
 }
 
