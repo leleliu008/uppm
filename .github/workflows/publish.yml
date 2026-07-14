@@ -423,4 +423,5 @@ jobs:
       - run: git -c init.defaultBranch=master init
       - run: git remote add origin ${{ github.repositoryUrl }}
 
-      - run: gh release create '0.15.4+${{ needs.check.outputs.git-sha }}' *.tar.xz --title '0.15.4+${{ needs.check.outputs.git-sha }}' --notes 'build-from: https://github.com/leleliu008/uppm/tree/${{ needs.check.outputs.git-sha }}'
+      - run: |
+          gh release create '0.15.4+${{ needs.check.outputs.git-sha }}' *.tar.xz --title '0.15.4+${{ needs.check.outputs.git-sha }}' --notes 'build-from: https://github.com/leleliu008/uppm/tree/${{ needs.check.outputs.git-sha }}'
